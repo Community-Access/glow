@@ -3,6 +3,7 @@
 Version consistency validator for GLOW releases.
 
 Ensures all version strings across the project match the target release version.
+Source of truth: VERSION file at repo root
 Required locations:
   - desktop/pyproject.toml: version = "X.X.X"
   - office-addin/package.json: "version": "X.X.X"
@@ -18,19 +19,22 @@ from pathlib import Path
 # Repository root
 REPO_ROOT = Path(__file__).parent.parent
 
-# Target release version from desktop/pyproject.toml (source of truth)
+# Target release version from VERSION file (single source of truth)
 def get_target_version() -> str:
-    """Extract version from desktop/pyproject.toml (source of truth)."""
-    desktop_pyproject = REPO_ROOT / "desktop/pyproject.toml"
-    if not desktop_pyproject.exists():
-        raise FileNotFoundError(f"Cannot find {desktop_pyproject}")
+    """Extract version from VERSION file (source of truth)."""
+    version_file = REPO_ROOT / "VERSION"
+    if not version_file.exists():
+        raise FileNotFoundError(f"Cannot find {version_file}")
     
-    content = desktop_pyproject.read_text()
-    match = re.search(r'version\s*=\s*"([^"]+)"', content)
-    if not match:
-        raise ValueError("Cannot find version in desktop/pyproject.toml")
+    version = version_file.read_text().strip()
+    if not version:
+        raise ValueError("VERSION file is empty")
     
-    return match.group(1)
+    # Validate semantic versioning
+    if not re.match(r'^\d+\.\d+\.\d+$', version):
+        raise ValueError(f"Invalid version format in VERSION file: {version}")
+    
+    return version
 
 
 def check_version_in_file(filepath: Path, pattern: str, expected_version: str) -> bool:
@@ -57,10 +61,10 @@ def main():
     try:
         target_version = get_target_version()
     except Exception as e:
-        print(f"[FAIL] Cannot determine target version: {e}")
+        print(f"[FAIL] Cannot determine target version from VERSION file: {e}")
         return 1
     
-    print(f"[CHECK] Verifying all versions match: {target_version}\n")
+    print(f"[CHECK] Verifying all versions match VERSION file: {target_version}\n")
     
     errors = []
     
