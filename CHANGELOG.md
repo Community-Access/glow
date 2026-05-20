@@ -25,6 +25,10 @@ Releases are tagged in the [GitHub repository](https://github.com/Community-Acce
 
 ## [Unreleased]
 
+### Fixed
+
+- **Web Fix: default ACB runs no longer get mislabeled as custom due to heading detection.** `web/src/acb_large_print_web/customization_warning.py` now treats `detect_headings=True` with `heading_accuracy=balanced` as the default behavior and only flags heading detection when it is disabled or switched to a non-default accuracy mode. Added regression coverage in `web/tests/test_customization_warning.py` for both default behavior and disabled heading detection.
+
 ## [7.6.0] - 2026-05-19
 
 ### Added

@@ -13,7 +13,8 @@ def test_detect_fix_customizations_ignores_default_fix_options():
             "para_indent_in": 0.0,
             "first_line_indent_in": 0.0,
             "preserve_heading_alignment": False,
-            "detect_headings": False,
+            "detect_headings": True,
+            "heading_accuracy": "balanced",
             "suppress_link_text": False,
             "suppress_missing_alt_text": False,
             "suppress_faux_heading": False,
@@ -34,6 +35,18 @@ def test_detect_fix_customizations_flags_non_default_list_indent():
 
     assert has_customizations is True
     assert reasons == ['Document formatting customizations: List indent changed to 0.5"']
+
+
+def test_detect_fix_customizations_flags_heading_detection_disabled():
+    has_customizations, reasons = detect_fix_customizations(
+        {
+            "mode": "full",
+            "detect_headings": False,
+        }
+    )
+
+    assert has_customizations is True
+    assert reasons == ["Document formatting customizations: Heading detection disabled"]
 
 
 def test_generate_customization_warning_uses_plain_paragraphs_without_hard_wraps():
