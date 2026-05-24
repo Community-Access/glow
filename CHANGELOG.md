@@ -6,6 +6,17 @@ Releases are tagged in the [GitHub repository](https://github.com/Community-Acce
 
 ---
 
+## [8.0.0] - 2026-05-23
+
+### Added
+
+- **PageFlow** at `/page-flow/`: extract readable article text from the web, follow simple next-page pagination, review and edit the cleaned text on-page, and download narrated audio from the same screen. Wired into the homepage mission grid and the Listen and Speak sidebar group.
+- **Trafilatura-powered extraction dependency** added to the web app so PageFlow can turn messy article HTML into readable text before narration.
+
+### Changed
+
+- **Release versions synchronized to 8.0.0** across `VERSION`, `web/pyproject.toml`, `desktop/pyproject.toml`, `web/package.json`, and `office-addin/package.json`.
+
 ## [7.0.0] - 2026-05-13
 
 ### Added
@@ -24,6 +35,8 @@ Releases are tagged in the [GitHub repository](https://github.com/Community-Acce
 - **Accessibility tracking infrastructure**: Added logging for accessibility scan status and crawl noise detection to support continuous monitoring and trend analysis.
 
 ## [Unreleased]
+
+
 
 ## [7.6.0] - 2026-05-19
 

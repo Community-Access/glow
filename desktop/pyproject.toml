@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "acb-large-print"
-version = "7.6.0" # Keep in sync with ../VERSION
+version = "8.0.0" # Keep in sync with ../VERSION
 description = "Audit, fix, and template Word documents for ACB Large Print Guidelines compliance"
 readme = "README.md"
 requires-python = ">=3.10"

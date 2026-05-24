@@ -1,0 +1,86 @@
+{% extends "base.html" %}
+
+{% block title %}PageFlow{% endblock %}
+{% block heading %}PageFlow{% endblock %}
+
+{% block content %}
+<p>Turn article pages into clean text you can read, edit, and narrate. PageFlow follows simple pagination links when it finds them, then presents the extracted text before you generate audio.</p>
+
+{% if error %}
+<div class="error-box" role="alert">
+  <p><strong>Error:</strong> {{ error }}</p>
+</div>
+{% endif %}
+
+{% if not any_engine_ready %}
+<div class="notice-box" role="status">
+  <p><strong>Audio is not ready on this server.</strong> You can still extract and read article text, but narration download will be unavailable until a speech engine is installed.</p>
+</div>
+{% endif %}
+
+<section>
+  <h2 id="page-flow-extract-heading">Extract an article</h2>
+  <form method="post" action="{{ url_for('page_flow.page_flow_form') }}" novalidate>
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <fieldset>
+      <legend>Article source</legend>
+      <label for="source-url">Article URL</label>
+      <input type="url" id="source-url" name="source_url" value="{{ source_url }}" placeholder="https://example.com/article" required aria-describedby="source-url-hint">
+      <p id="source-url-hint" class="help-text">Paste a news story, essay, or newsletter article URL. PageFlow will try to follow pagination links if the article spans multiple pages.</p>
+    </fieldset>
+    <button type="submit" class="btn-primary">Extract readable text</button>
+  </form>
+</section>
+
+{% if article %}
+<section>
+  <h2 id="page-flow-read-heading">Readable text</h2>
+  <p class="help-text">Source: <a href="{{ article.final_url }}" target="_blank" rel="noreferrer">{{ article.final_url }}</a></p>
+  {% if article.page_urls|length > 1 %}
+  <p class="help-text">Combined from {{ article.page_urls|length }} pages.</p>
+  <ol>
+    {% for page_url in article.page_urls %}
+    <li><a href="{{ page_url }}" target="_blank" rel="noreferrer">{{ page_url }}</a></li>
+    {% endfor %}
+  </ol>
+  {% endif %}
+
+  <form method="post" action="{{ url_for('page_flow.page_flow_download') }}" novalidate>
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <input type="hidden" name="source_url" value="{{ source_url }}">
+    <fieldset>
+      <legend>Edit before narration</legend>
+      <label for="article-title">Title</label>
+      <input type="text" id="article-title" name="title" value="{{ title }}" maxlength="200" aria-describedby="article-title-hint">
+      <p id="article-title-hint" class="help-text">You can edit the title before downloading audio.</p>
+
+      <label for="article-text">Article text</label>
+      <textarea id="article-text" name="text" rows="18">{{ article_text }}</textarea>
+      <p class="help-text">You can edit the text here before generating audio.</p>
+
+      <label for="voice">Narration voice</label>
+      <select id="voice" name="voice"{% if not any_engine_ready %} disabled aria-disabled="true"{% endif %}>
+        {% if engine_status.kokoro.ready and kokoro_voices %}
+        <optgroup label="Kokoro ONNX">
+          {% for voice in kokoro_voices %}
+          <option value="kokoro:{{ voice.id }}"{% if default_voice_id == 'kokoro:' ~ voice.id %} selected{% endif %}>{{ voice.label }} - {{ voice.accent }}</option>
+          {% endfor %}
+        </optgroup>
+        {% endif %}
+        {% if engine_status.piper.ready and piper_voices %}
+        <optgroup label="Piper TTS">
+          {% for voice in piper_voices %}
+          <option value="piper:{{ voice.id }}"{% if default_voice_id == 'piper:' ~ voice.id %} selected{% endif %}>{{ voice.label }} - {{ voice.accent }}</option>
+          {% endfor %}
+        </optgroup>
+        {% endif %}
+      </select>
+
+      <p class="help-text">Estimated narration time: {{ (estimated_audio_seconds / 60)|round(1) }} minutes.</p>
+    </fieldset>
+
+    <button type="submit" class="btn-primary"{% if not any_engine_ready %} disabled aria-disabled="true"{% endif %}>Download audio</button>
+  </form>
+</section>
+{% endif %}
+{% endblock %}

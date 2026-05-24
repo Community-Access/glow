@@ -61,6 +61,7 @@ If AI is disabled, GLOW hides the AI-specific entry points and keeps the rest of
 6. [How to Convert Between Formats](#6-how-to-convert-between-formats)
 7. [Braille Studio: Text-to-Braille Translation](#7-braille-studio-text-to-braille-translation)
 8. [Speech Studio: Document-to-Audio](#8-speech-studio-document-to-audio)
+   - [PageFlow: Read Articles and Narrate Them](#pageflow-read-articles-and-narrate-them)
 9. [BITS Whisperer: Transcribe Audio](#9-bits-whisperer-transcribe-audio)
 10. [AI Playground (Beta): Explore Ollama Models](#10-ai-playground-beta-explore-ollama-models)
 11. [MarkItDown + AI Integration: Smarter Text Extraction](#11-markitdown--ai-integration-smarter-text-extraction)
@@ -89,7 +90,7 @@ GLOW 5.0.0 is a full UX redesign release. The horizontal tab bar that previously
    - **Assess** -- Document Audit and Site Audit for finding accessibility barriers
    - **Fix and Build** -- Fix Document and Build Template for correcting and starting fresh
    - **Transform** -- Convert Format and Braille Studio for format and medium changes
-   - **Listen and Speak** -- Speech Studio and Whisperer for audio workflows
+   - **Listen and Speak** -- Speech Studio, PageFlow, and Whisperer for read-aloud and audio workflows
    - **Explore and Learn** -- Document Chat, Magic Lab, Guidelines, User Guide, FAQ, and Settings
 3. **Responsive sidebar** -- On small screens the sidebar collapses to a hamburger menu. Clicking the hamburger slides the sidebar over the page with a focus trap and Escape-key dismissal.
 4. **Correct ARIA pattern** -- All navigation links now use `aria-current="page"` (the correct ARIA 1.1 attribute for navigation). The prior `role="tab"` misuse has been removed.
@@ -931,6 +932,26 @@ Speech Studio synthesizes English documents to MP3 or WAV audio. Users can narra
 ### Workflow tip: Convert → Speech
 
 After converting a document to Markdown, HTML, or another format, the Convert tool offers a direct **Speech** button. Jump straight to Speech Studio with your newly converted document — no re-upload needed.
+
+### PageFlow: read articles and narrate them
+
+PageFlow is the browser-reading companion for articles, essays, and newsletters. It extracts the readable text from a URL, follows simple next-page pagination when a story spans multiple pages, shows you the cleaned text, and then lets you edit or narrate it before downloading audio.
+
+### How to use PageFlow
+
+1. **Open PageFlow** -- Select **PageFlow** under the **Listen and Speak** group in the left sidebar.
+2. **Paste an article URL** -- Enter the page you want to read. PageFlow will try to detect pagination links and combine the story into one view.
+3. **Review the extracted text** -- Check the cleaned text, which removes most navigation and boilerplate content.
+4. **Edit if needed** -- Trim, correct, or rearrange the text before narration.
+5. **Choose a narration voice** -- Pick the voice you want PageFlow to use for the audio version.
+6. **Download audio** -- Generate an MP3 or WAV narration file from the article text.
+
+### When to use PageFlow
+
+- You want a reading-mode style view for a long article instead of the original page layout.
+- The article spans multiple pages and you want the pages merged into one readable flow.
+- You want to skim or revise the extracted text before generating speech.
+- You want a single place to read first and listen later without changing tools.
 
 ---
 

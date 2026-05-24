@@ -127,6 +127,9 @@
 <li><a href="#how-to-use-speech-studio">How to use Speech Studio</a></li>
 <li><a href="#features">Features</a></li>
 <li><a href="#workflow-tip-convert-speech">Workflow tip: Convert → Speech</a></li>
+<li><a href="#pageflow-read-articles-and-narrate-them">PageFlow: read articles and narrate them</a></li>
+<li><a href="#how-to-use-pageflow">How to use PageFlow</a></li>
+<li><a href="#when-to-use-pageflow">When to use PageFlow</a></li>
 </ul>
 </li>
 <li><a href="#9-bits-whisperer-transcribe-audio">9. BITS Whisperer: Transcribe Audio</a><ul>
@@ -465,6 +468,7 @@
 <li><a href="#6-how-to-convert-between-formats">How to Convert Between Formats</a></li>
 <li><a href="#7-braille-studio-text-to-braille-translation">Braille Studio: Text-to-Braille Translation</a></li>
 <li><a href="#8-speech-studio-document-to-audio">Speech Studio: Document-to-Audio</a></li>
+<li><a href="#pageflow-read-articles-and-narrate-them">PageFlow: Read Articles and Narrate Them</a></li>
 <li><a href="#9-bits-whisperer-transcribe-audio">BITS Whisperer: Transcribe Audio</a></li>
 <li><a href="#10-ai-playground-beta-explore-ollama-models">AI Playground (Beta): Explore Ollama Models</a></li>
 <li><a href="#11-markitdown--ai-integration-smarter-text-extraction">MarkItDown + AI Integration: Smarter Text Extraction</a></li>
@@ -490,7 +494,7 @@
 <li><strong>Assess</strong> -- Document Audit and Site Audit for finding accessibility barriers</li>
 <li><strong>Fix and Build</strong> -- Fix Document and Build Template for correcting and starting fresh</li>
 <li><strong>Transform</strong> -- Convert Format and Braille Studio for format and medium changes</li>
-<li><strong>Listen and Speak</strong> -- Speech Studio and Whisperer for audio workflows</li>
+<li><strong>Listen and Speak</strong> -- Speech Studio, PageFlow, and Whisperer for read-aloud and audio workflows</li>
 <li><strong>Explore and Learn</strong> -- Document Chat, Magic Lab, Guidelines, User Guide, FAQ, and Settings</li>
 <li><strong>Responsive sidebar</strong> -- On small screens the sidebar collapses to a hamburger menu. Clicking the hamburger slides the sidebar over the page with a focus trap and Escape-key dismissal.</li>
 <li><strong>Correct ARIA pattern</strong> -- All navigation links now use <code>aria-current="page"</code> (the correct ARIA 1.1 attribute for navigation). The prior <code>role="tab"</code> misuse has been removed.</li>
@@ -1325,6 +1329,24 @@ acb-lp detect-headings document.docx --ai --ai-prompt prompt.txt --threshold 75
 </ul>
 <h3 id="workflow-tip-convert-speech">Workflow tip: Convert → Speech</h3>
 <p>After converting a document to Markdown, HTML, or another format, the Convert tool offers a direct <strong>Speech</strong> button. Jump straight to Speech Studio with your newly converted document — no re-upload needed.</p>
+<h3 id="pageflow-read-articles-and-narrate-them">PageFlow: read articles and narrate them</h3>
+<p>PageFlow is the browser-reading companion for articles, essays, and newsletters. It extracts the readable text from a URL, follows simple next-page pagination when a story spans multiple pages, shows you the cleaned text, and then lets you edit or narrate it before downloading audio.</p>
+<h3 id="how-to-use-pageflow">How to use PageFlow</h3>
+<ol>
+<li><strong>Open PageFlow</strong> -- Select <strong>PageFlow</strong> under the <strong>Listen and Speak</strong> group in the left sidebar.</li>
+<li><strong>Paste an article URL</strong> -- Enter the page you want to read. PageFlow will try to detect pagination links and combine the story into one view.</li>
+<li><strong>Review the extracted text</strong> -- Check the cleaned text, which removes most navigation and boilerplate content.</li>
+<li><strong>Edit if needed</strong> -- Trim, correct, or rearrange the text before narration.</li>
+<li><strong>Choose a narration voice</strong> -- Pick the voice you want PageFlow to use for the audio version.</li>
+<li><strong>Download audio</strong> -- Generate an MP3 or WAV narration file from the article text.</li>
+</ol>
+<h3 id="when-to-use-pageflow">When to use PageFlow</h3>
+<ul>
+<li>You want a reading-mode style view for a long article instead of the original page layout.</li>
+<li>The article spans multiple pages and you want the pages merged into one readable flow.</li>
+<li>You want to skim or revise the extracted text before generating speech.</li>
+<li>You want a single place to read first and listen later without changing tools.</li>
+</ul>
 <hr />
 <h2 id="9-bits-whisperer-transcribe-audio">9. BITS Whisperer: Transcribe Audio</h2>
 <p>BITS Whisperer transcribes audio files into accessible text documents using the Whisper API. GLOW may normalize OGG, FLAC, AAC, or Opus uploads into a more compatible temporary format before sending them for transcription.</p>

@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "acb-large-print-web"
-version = "7.6.0" # Keep in sync with ../../VERSION
+version = "8.0.0" # Keep in sync with ../../VERSION
 description = "Flask web interface for the ACB Large Print Tool"
 readme = "README.md"
 requires-python = ">=3.13"
@@ -34,6 +34,7 @@ dependencies = [
     "requests>=2.33.0",
     "mutagen>=1.47.0",
     "lxml>=5.4.0",
+    "trafilatura>=1.10.0",
     "pytesseract>=0.3.13",
     "huggingface-hub>=1.13.0",
     "kokoro-onnx>=0.4.7",

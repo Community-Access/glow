@@ -393,6 +393,7 @@ def create_app(config: dict | None = None) -> Flask:
     from .routes.admin import admin_bp
     from .routes.rules_ref import rules_ref_bp
     from .routes.speech import speech_bp
+    from .routes.page_flow import page_flow_bp
     from .routes.braille import braille_bp
     from .routes.magic import magic_bp
     from .routes.site_audit import site_audit_bp
@@ -427,6 +428,7 @@ def create_app(config: dict | None = None) -> Flask:
     app.register_blueprint(admin_bp, url_prefix="/admin")
     app.register_blueprint(rules_ref_bp, url_prefix="/rules")
     app.register_blueprint(speech_bp, url_prefix="/speech")
+    app.register_blueprint(page_flow_bp, url_prefix="/page-flow")
     app.register_blueprint(braille_bp, url_prefix="/braille")
     app.register_blueprint(magic_bp, url_prefix="/magic")
     app.register_blueprint(site_audit_bp, url_prefix="/site-audit")

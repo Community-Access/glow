@@ -176,9 +176,17 @@
 
         <!-- ── Group 4: Listen and Speak ──────────────────────────── -->
         {% if feature_speech_enabled or ai_whisperer_enabled %}
-        <li class="sidebar-group sidebar-group--listen{% if request.blueprint in ['speech', 'whisperer'] %} sidebar-group--active{% endif %}">
+        <li class="sidebar-group sidebar-group--listen{% if request.blueprint in ['speech', 'whisperer', 'page_flow'] %} sidebar-group--active{% endif %}">
           <span class="sidebar-group-label" id="nav-group-listen">Listen and Speak</span>
           <ul aria-labelledby="nav-group-listen" role="list">
+            <li>
+              <a href="{{ url_for('page_flow.page_flow_form') }}"
+                 class="sidebar-link{% if request.blueprint == 'page_flow' %} sidebar-link--active{% endif %}"
+                 {% if request.blueprint == 'page_flow' %}aria-current="page"{% endif %}>
+                <svg class="nav-icon" width="16" height="16" viewBox="0 0 16 16" aria-hidden="true" focusable="false"><path d="M3 2h6l4 4v8H3z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M9 2v4h4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M5 8h6M5 11h5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+                PageFlow
+              </a>
+            </li>
             {% if feature_speech_enabled %}
             <li>
               <a href="{{ url_for('speech.speech_form') }}"
@@ -204,7 +212,7 @@
         {% endif %}
 
         <!-- ── Group 5: Explore and Learn ─────────────────────────── -->
-        <li class="sidebar-group sidebar-group--explore{% if request.blueprint in ['ai', 'chat', 'alt_text', 'guidelines', 'rules_ref', 'guide', 'faq', 'settings', 'workshop'] %} sidebar-group--active{% endif %}">
+        <li class="sidebar-group sidebar-group--explore{% if request.blueprint in ['ai', 'chat', 'alt_text', 'guidelines', 'rules_ref', 'guide', 'faq', 'settings', 'workshop', 'page_flow'] %} sidebar-group--active{% endif %}">
           <span class="sidebar-group-label" id="nav-group-explore">Explore and Learn</span>
           <ul aria-labelledby="nav-group-explore" role="list">
             {% if ai_entry_enabled %}

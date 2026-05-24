@@ -1,6 +1,6 @@
 {
   "name": "acb-large-print-addin",
-  "version": "7.6.0",
+  "version": "8.0.0",
   "description": "ACB Large Print Guidelines compliance add-in for Microsoft Word",
   "scripts": {
     "build": "webpack --mode production",
