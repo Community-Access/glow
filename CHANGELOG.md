@@ -6,6 +6,16 @@ Releases are tagged in the [GitHub repository](https://github.com/Community-Acce
 
 ---
 
+## [Unreleased]
+
+### Fixed
+
+- **Live job progress now streams in real time** through the reverse proxy. Added `flush_interval -1` to the Caddy `reverse_proxy` for `letitglow.app` and narrowed `encode gzip` to a content-type allow-list so `text/event-stream` is never buffered or compressed. This affects every Server-Sent Events endpoint: job progress (convert, audit, fix, template, export, speech, page-flow), AI playground stream, speech stream, and the Ollama chat proxy. Previously the progress bar appeared frozen until the user manually refreshed. ([web/Caddyfile](web/Caddyfile))
+
+### Changed
+
+- **Job progress page auto-advances on success.** When a queued job completes and a `continue_url` is set (e.g., PageFlow handing off to the narration page), the universal progress screen now announces "Done. Continuing\u2026" and navigates to the next step after a short delay. Any click or keypress cancels the auto-advance so users who want the Download or Continue link still control the page. ([web/src/acb_large_print_web/templates/jobs/progress.html](web/src/acb_large_print_web/templates/jobs/progress.html))
+
 ## [8.0.0] - 2026-05-23
 
 ### Added

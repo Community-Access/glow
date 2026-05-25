@@ -43,8 +43,29 @@ letitglow.app {
     }
 
     handle {
-        reverse_proxy web:8000
-        encode gzip
+        reverse_proxy web:8000 {
+            # Stream bytes to the client as soon as the upstream yields them.
+            # Required so Server-Sent Events (job progress, AI playground,
+            # speech, Ollama chat) reach the browser in real time instead of
+            # being held back by Caddy's response buffer.
+            flush_interval -1
+        }
+
+        # Gzip text-based responses only. text/event-stream is deliberately
+        # excluded so SSE bytes are not buffered into a compression window.
+        encode {
+            gzip
+            match {
+                header Content-Type text/html*
+                header Content-Type text/plain*
+                header Content-Type text/css*
+                header Content-Type text/xml*
+                header Content-Type application/json*
+                header Content-Type application/javascript*
+                header Content-Type application/xml*
+                header Content-Type image/svg+xml*
+            }
+        }
 
         header {
             X-Content-Type-Options nosniff

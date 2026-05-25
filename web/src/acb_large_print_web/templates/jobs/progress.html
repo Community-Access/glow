@@ -44,6 +44,21 @@
   var continueWrap = document.getElementById('job-continue-wrap');
   var continueLink = document.getElementById('job-continue');
 
+  // Auto-advance to the post-job page when a continue URL is available so the
+  // user is not stranded on a completed progress screen. Cancelled if the user
+  // interacts with the page (so a click on Download or Continue wins).
+  var autoAdvanceCancelled = false;
+  var cancelAutoAdvance = function () { autoAdvanceCancelled = true; };
+  document.addEventListener('click', cancelAutoAdvance, { once: true });
+  document.addEventListener('keydown', cancelAutoAdvance, { once: true });
+  function autoAdvance(url) {
+    if (!url) return;
+    setTimeout(function () {
+      if (autoAdvanceCancelled) return;
+      window.location.assign(url);
+    }, 1200);
+  }
+
   function applyStatus(s) {
     var pct = Number(s.progress || 0);
     bar.value = pct;
@@ -62,7 +77,8 @@
       }
       cancelForm.hidden = true;
       retryForm.hidden = true;
-      msg.textContent = 'Done.';
+      msg.textContent = s.continue_url ? 'Done. Continuing\u2026' : 'Done.';
+      autoAdvance(s.continue_url);
       return true;
     }
     if (s.state === 'CANCELLED') {
@@ -89,6 +105,8 @@
       continueWrap.hidden = !continueUrl;
       if (continueUrl) {
         continueLink.setAttribute('href', continueUrl);
+        msg.textContent = 'Done. Continuing\u2026';
+        autoAdvance(continueUrl);
       }
     }
     cancelForm.hidden = true;
