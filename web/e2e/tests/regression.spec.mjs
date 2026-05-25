@@ -122,13 +122,22 @@ test.describe('GLOW web regression suite', () => {
     await page.goto('/template/');
     await ensureConsent(page);
 
-    await page.getByRole('button', { name: /Create Template/i }).click();
-
-    const onJobPage = await page
-      .waitForURL((url) => url.pathname.includes('/job/'), { timeout: 15000 })
+    const downloadPromise = page.waitForEvent('download', { timeout: 30000 }).catch(() => null);
+    const jobRedirectPromise = page
+      .waitForURL((url) => url.pathname.includes('/job/'), { timeout: 30000 })
       .then(() => true)
       .catch(() => false);
 
+    await page.getByRole('button', { name: /Create Template/i }).click();
+
+    const directDownload = await downloadPromise;
+    if (directDownload) {
+      const suggested = directDownload.suggestedFilename();
+      expect(suggested.toLowerCase()).toContain('.dotx');
+      return;
+    }
+
+    const onJobPage = await jobRedirectPromise;
     if (onJobPage) {
       await expect(page.getByRole('link', { name: /Download result/i })).toBeVisible({ timeout: 120000 });
       const [download] = await Promise.all([
@@ -140,12 +149,7 @@ test.describe('GLOW web regression suite', () => {
       return;
     }
 
-    const [download] = await Promise.all([
-      page.waitForEvent('download'),
-      page.getByRole('button', { name: /Create Template/i }).click(),
-    ]);
-    const suggested = download.suggestedFilename();
-    expect(suggested.toLowerCase()).toContain('.dotx');
+    throw new Error('Template flow produced neither direct download nor job progress redirect');
   });
 
   test('site-audit flow scans local page and renders artifact links', async ({ page, baseURL }) => {
