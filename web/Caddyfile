@@ -3,7 +3,7 @@
 # This configures:
 #   - csedesigns.com / www.csedesigns.com -- static site from ./www/
 #   - letitglow.app -- canonical reverse proxy to Flask/Gunicorn
-#   - lp.csedesigns.com + glow.bits-acb.org -- permanent redirect to letitglow.app
+#   - lp.csedesigns.com + glow.bits-acb.org + www.letitglow.app -- permanent redirect to letitglow.app
 
 # Main website -- static files
 csedesigns.com, www.csedesigns.com {
@@ -19,7 +19,7 @@ csedesigns.com, www.csedesigns.com {
 }
 
 # Legacy app hostnames -> canonical hostname
-lp.csedesigns.com, glow.bits-acb.org {
+lp.csedesigns.com, glow.bits-acb.org, www.letitglow.app {
     # Keep existing GGG URLs stable for externally shared links.
     handle_path /ggg* {
         reverse_proxy ggg:80
