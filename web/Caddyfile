@@ -18,7 +18,7 @@ csedesigns.com, www.csedesigns.com {
 }
 
 # ACB Large Print web application -- reverse proxy to Flask/Gunicorn
-lp.csedesigns.com, glow.bits-acb.org {
+letitglow.app, lp.csedesigns.com, glow.bits-acb.org {
     handle /auth* {
         reverse_proxy keycloak:8080
     }
