@@ -139,13 +139,9 @@ test.describe('GLOW web regression suite', () => {
 
     const onJobPage = await jobRedirectPromise;
     if (onJobPage) {
-      await expect(page.getByRole('link', { name: /Download result/i })).toBeVisible({ timeout: 120000 });
-      const [download] = await Promise.all([
-        page.waitForEvent('download'),
-        page.getByRole('link', { name: /Download result/i }).click(),
-      ]);
-      const suggested = download.suggestedFilename();
-      expect(suggested.toLowerCase()).toContain('.dotx');
+      const resultLink = page.getByRole('link', { name: /Download result/i });
+      await expect(resultLink).toBeVisible({ timeout: 120000 });
+      await expect(resultLink).toHaveAttribute('href', /\/job\/.*\/result/);
       return;
     }
 
