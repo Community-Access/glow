@@ -36,6 +36,10 @@ Releases are tagged in the [GitHub repository](https://github.com/Community-Acce
 
 ## [Unreleased]
 
+### Fixed
+
+- **Celery worker tasks crashing with "Working outside of application context"**: When the worker container ran `celery -A acb_large_print_web.tasks worker` directly, the `ContextTask` wrapper installed by `make_celery(app)` was never applied because Flask's `create_app()` only runs in the web container. Every queued job (`glow.convert`, `glow.pageflow_extract`, `glow.speech`, `glow.template`, `glow.export`, `glow.audit`, `glow.fix`, `glow.speech_prepare`) failed immediately on `current_app.instance_path` access, leaving job pages stuck at `Queued · 0% complete · Attempt 0 of 2`. Added a `celeryd_init` signal handler in `web/src/acb_large_print_web/tasks/__init__.py` that calls `create_app()` at worker startup so the Flask app context wrapping is in place before the prefork pool begins consuming tasks.
+
 ### Added
 
 - **Celery worker liveness in `/health` and Docker healthcheck**: `web/src/acb_large_print_web/app.py` now probes the Celery worker pool via `celery_app.control.inspect().ping()` and includes a new `worker` entry in both `services` and `readiness`. When `CELERY_BROKER_URL` is configured but no workers respond, `/health` flips to `degraded`, which causes `scripts/deploy-app.sh` and `scripts/post-deploy-check.sh` to fail fast instead of marking a deploy as complete while jobs silently stall in `Queued` state. Added a corresponding Docker `healthcheck` to the `worker` service in `web/docker-compose.prod.yml` (runs `celery -A acb_large_print_web.tasks inspect ping`) so Docker surfaces a wedged worker for the `restart: unless-stopped` policy. Eager-mode (no broker) deployments report `not-configured` and remain green.
