@@ -18,7 +18,7 @@ from __future__ import annotations
 
 import os
 
-from celery import Celery
+from celery import Celery, Task
 
 # ---------------------------------------------------------------------------
 # Celery singleton (configured lazily; bound to Flask app in create_app)
@@ -30,11 +30,42 @@ _backend = os.environ.get("CELERY_RESULT_BACKEND", _broker or "")
 # Use in-memory eager mode when no broker is configured.
 _eager = not bool(_broker)
 
+# Module-level Flask app reference. Populated by make_celery() (web side) or by
+# the celeryd_init signal handler (worker side). ContextTask uses it to push an
+# app context around every task invocation. Tasks decorated with
+# @celery_app.task pick up ContextTask via the task_cls argument below, so the
+# binding is honored regardless of import order.
+_flask_app = None
+
+
+class ContextTask(Task):
+    """Base Task that runs every invocation inside a Flask application context.
+
+    Tasks are registered at import time, before any signal handlers fire, so the
+    base class must exist before the @celery_app.task decorators run. The Flask
+    app itself is resolved lazily on first call (workers) or set eagerly by
+    make_celery() (web process).
+    """
+
+    abstract = True
+
+    def __call__(self, *args, **kwargs):
+        global _flask_app
+        if _flask_app is None:
+            # Lazy bootstrap for standalone worker processes that never ran
+            # create_app() during import.
+            from acb_large_print_web.app import create_app
+            _flask_app = create_app()
+        with _flask_app.app_context():
+            return self.run(*args, **kwargs)
+
+
 celery_app = Celery(
     "glow",
     broker=_broker or "memory://localhost/",
     backend=_backend or "cache+memory://",
     include=["acb_large_print_web.tasks.convert_tasks"],
+    task_cls=ContextTask,
 )
 
 celery_app.conf.update(
@@ -56,25 +87,22 @@ celery_app.conf.update(
 def make_celery(flask_app) -> Celery:
     """Bind the Celery app to a Flask application context.
 
-    Call this from ``create_app`` after the Flask app is fully configured.
+    Called from ``create_app`` after the Flask app is fully configured. Sets
+    the module-level Flask app reference so ContextTask can push an app
+    context around each task invocation. Also copies any ``CELERY_*`` keys
+    from Flask config into the Celery app config.
     """
-    class ContextTask(celery_app.Task):  # type: ignore[misc]
-        abstract = True
-
-        def __call__(self, *args, **kwargs):
-            with flask_app.app_context():
-                return self.run(*args, **kwargs)
-
-    celery_app.Task = ContextTask  # type: ignore[assignment]
+    global _flask_app
+    _flask_app = flask_app
     celery_app.config_from_object(flask_app.config, namespace="CELERY")
     return celery_app
 
 
 # When launched as a standalone worker (`celery -A acb_large_print_web.tasks worker`),
-# create_app() is never called, so ContextTask is never installed and any task that
-# touches current_app crashes with "Working outside of application context".
-# Bind a Flask app at worker startup so the ContextTask wrapper is in place before
-# the prefork pool forks child consumers.
+# create_app() is never called from anywhere else, so trigger it via celeryd_init so
+# Flask config/extensions are applied to the worker process. ContextTask still works
+# without this (lazy bootstrap on first task call) but eager init produces clearer
+# startup logs and surfaces config errors immediately.
 from celery.signals import celeryd_init  # noqa: E402
 
 
@@ -87,7 +115,7 @@ def _bind_flask_app_to_worker(**_kwargs):  # pragma: no cover - exercised in con
         logging.getLogger(__name__).exception("celeryd_init: failed to import create_app")
         return
     try:
-        create_app()  # side effect: invokes make_celery() and installs ContextTask
+        create_app()  # side effect: invokes make_celery() and sets _flask_app
     except Exception:
         import logging
         logging.getLogger(__name__).exception("celeryd_init: create_app() failed")
