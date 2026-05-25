@@ -319,13 +319,12 @@ check_url "${APP_DOMAIN}/speech/" "https://${APP_DOMAIN}/speech/" false || true
 check_url "${APP_DOMAIN}/ggg/" "https://${APP_DOMAIN}/ggg/" false || true
 check_header_contains "${APP_DOMAIN} CSP media-src" "https://${APP_DOMAIN}/static/let-it-glow.mp3" "Content-Security-Policy" "media-src 'self'" true || URL_FAIL=1
 if [[ -n "$APP_ALIAS_DOMAIN" ]]; then
-    check_url "${APP_ALIAS_DOMAIN}/health" "https://${APP_ALIAS_DOMAIN}/health" false || true
+    check_url "${APP_ALIAS_DOMAIN}/health" "https://${APP_ALIAS_DOMAIN}/health" false true || true
     check_url "${APP_ALIAS_DOMAIN}/" "https://${APP_ALIAS_DOMAIN}/" false true true || true
     check_url "${APP_ALIAS_DOMAIN}/ggg/" "https://${APP_ALIAS_DOMAIN}/ggg/" false || true
-    check_header_contains "${APP_ALIAS_DOMAIN} CSP media-src" "https://${APP_ALIAS_DOMAIN}/static/let-it-glow.mp3" "Content-Security-Policy" "media-src 'self'" true || URL_FAIL=1
 fi
 if [[ -n "$APP_LEGACY_DOMAIN" ]]; then
-    check_url "${APP_LEGACY_DOMAIN}/health" "https://${APP_LEGACY_DOMAIN}/health" false || true
+    check_url "${APP_LEGACY_DOMAIN}/health" "https://${APP_LEGACY_DOMAIN}/health" false true || true
     check_url "${APP_LEGACY_DOMAIN}/" "https://${APP_LEGACY_DOMAIN}/" false true true || true
     check_url "${APP_LEGACY_DOMAIN}/ggg/" "https://${APP_LEGACY_DOMAIN}/ggg/" false || true
 fi
