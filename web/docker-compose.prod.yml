@@ -232,6 +232,16 @@ services:
       keycloak:
         condition: service_started
     restart: unless-stopped
+    healthcheck:
+      # Ask Celery itself whether at least one worker is responding to ping.
+      # Returns non-zero (failing the healthcheck) when no workers reply,
+      # which combined with restart: unless-stopped causes Docker to surface
+      # the failure and the deploy script's /health probe to mark degraded.
+      test: ["CMD-SHELL", "celery -A acb_large_print_web.tasks inspect ping -d celery@$(hostname) --timeout=5 >/dev/null 2>&1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 45s
     logging:
       driver: json-file
       options:

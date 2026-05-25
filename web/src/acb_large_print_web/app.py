@@ -637,6 +637,8 @@ def create_app(config: dict | None = None) -> Flask:
                 "detail": "GLOW_ENABLE_BRAILLE is disabled",
             }
 
+        worker_probe = _probe_celery_worker()
+
         services = {
             "web": {"status": "ok", "detail": "service responding"},
             "keycloak": keycloak_probe,
@@ -644,6 +646,7 @@ def create_app(config: dict | None = None) -> Flask:
             "whisper": whisper_probe,
             "speech": speech_probe,
             "braille": braille_probe,
+            "worker": worker_probe,
         }
 
         readiness = {
@@ -701,6 +704,16 @@ def create_app(config: dict | None = None) -> Flask:
                     1,
                 ),
             },
+            "worker": {
+                "status": (
+                    "ready"
+                    if worker_probe["status"] == "ok"
+                    else ("not-configured" if worker_probe["status"] == "not-configured" else "not-ready")
+                ),
+                "enabled": worker_probe["status"] != "not-configured",
+                "reachable": worker_probe["status"] == "ok",
+                "worker_count": worker_probe.get("worker_count", 0),
+            },
             "wcag22aa_gate": {
                 "status": deployment["gates"]["wcag22aa"],
             },
@@ -715,17 +728,19 @@ def create_app(config: dict | None = None) -> Flask:
         keycloak_ok = keycloak_probe["status"] in ("ok", "not-configured")
         speech_ok = (not speech_enabled) or (speech_probe["status"] == "ok")
         braille_ok = (not braille_enabled) or (braille_probe["status"] == "ok")
-        all_ok = provider_ok and budget_ok and keycloak_ok and speech_ok and braille_ok
+        worker_ok = worker_probe["status"] in ("ok", "not-configured")
+        all_ok = provider_ok and budget_ok and keycloak_ok and speech_ok and braille_ok and worker_ok
 
         _hduration_ms = round((_htime.monotonic() - _hstart) * 1000)
         app.logger.info(
-            "HEALTH status=%s openrouter=%s keycloak=%s whisper=%s speech=%s braille=%s budget_pct=%.1f%% duration_ms=%d",
+            "HEALTH status=%s openrouter=%s keycloak=%s whisper=%s speech=%s braille=%s worker=%s budget_pct=%.1f%% duration_ms=%d",
             "ok" if all_ok else "degraded",
             openrouter_probe["status"],
             keycloak_probe["status"],
             whisper_probe["status"],
             speech_probe["status"],
             braille_probe["status"],
+            worker_probe["status"],
             readiness["budget"]["pct_used"],
             _hduration_ms,
         )
@@ -987,3 +1002,43 @@ def _probe_openrouter(timeout: float = 4.0) -> dict[str, str]:
 def _probe_whisper(timeout: float = 4.0) -> dict[str, str]:
     """Whisperer uses the same OpenRouter key -- delegate to the OpenRouter probe."""
     return _probe_openrouter(timeout=timeout)
+
+
+def _probe_celery_worker(timeout: float = 2.0) -> dict[str, str]:
+    """Probe the Celery worker pool via broker round-trip.
+
+    Returns ``{"status": "ok"}`` when at least one worker replies to
+    ``inspect.ping()`` within ``timeout`` seconds.  When no broker is
+    configured (``CELERY_BROKER_URL`` unset, eager mode), returns
+    ``not-configured`` so the overall health stays green on single-container
+    deployments.
+
+    A ``not-ready`` result means the broker is configured but no worker is
+    consuming the queue -- jobs will sit in ``Queued`` state forever until a
+    worker comes back, which is precisely the failure mode we want to surface.
+    """
+    if not os.environ.get("CELERY_BROKER_URL"):
+        return {
+            "status": "not-configured",
+            "detail": "CELERY_BROKER_URL not set -- queue runs in eager mode",
+        }
+    try:
+        from .tasks import celery_app
+
+        replies = celery_app.control.inspect(timeout=timeout).ping()
+        if not replies:
+            return {
+                "status": "not-ready",
+                "detail": "No Celery workers responded to ping -- queue will stall",
+                "worker_count": 0,
+            }
+        return {
+            "status": "ok",
+            "detail": f"{len(replies)} worker(s) responding",
+            "worker_count": len(replies),
+        }
+    except Exception as exc:  # pragma: no cover -- broker outage path
+        return {
+            "status": "unreachable",
+            "detail": f"Celery ping failed: {exc}",
+        }
