@@ -122,11 +122,28 @@ test.describe('GLOW web regression suite', () => {
     await page.goto('/template/');
     await ensureConsent(page);
 
+    await page.getByRole('button', { name: /Create Template/i }).click();
+
+    const onJobPage = await page
+      .waitForURL((url) => url.pathname.includes('/job/'), { timeout: 15000 })
+      .then(() => true)
+      .catch(() => false);
+
+    if (onJobPage) {
+      await expect(page.getByRole('link', { name: /Download result/i })).toBeVisible({ timeout: 120000 });
+      const [download] = await Promise.all([
+        page.waitForEvent('download'),
+        page.getByRole('link', { name: /Download result/i }).click(),
+      ]);
+      const suggested = download.suggestedFilename();
+      expect(suggested.toLowerCase()).toContain('.dotx');
+      return;
+    }
+
     const [download] = await Promise.all([
       page.waitForEvent('download'),
       page.getByRole('button', { name: /Create Template/i }).click(),
     ]);
-
     const suggested = download.suggestedFilename();
     expect(suggested.toLowerCase()).toContain('.dotx');
   });

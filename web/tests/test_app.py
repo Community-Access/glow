@@ -1511,8 +1511,9 @@ class TestSettingsIntegration:
         assert b"/static/speech.js" in resp.data
         assert b"oninput=" not in resp.data
         assert b"URL.createObjectURL" not in resp.data
+        assert b'<select id="speech-voice" name="voice"' in resp.data
         assert re.search(
-            rb'<input type="radio" name="voice" value="kokoro:af_bella"\s+checked>',
+            rb'<option value="kokoro:af_bella"\s+selected>',
             resp.data,
         )
 
