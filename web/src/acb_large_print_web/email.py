@@ -5,7 +5,7 @@ email address via the Postmark transactional email API.
 
 Configuration (environment variables):
   POSTMARK_SERVER_TOKEN  -- Postmark server API token (required to send)
-  POSTMARK_FROM_EMAIL    -- Sender address (default: reports@glow.bits-acb.org)
+  POSTMARK_FROM_EMAIL    -- Sender address (default: no-reply@notify.letitglow.app)
 
 If POSTMARK_SERVER_TOKEN is not set, send attempts are skipped and callers
 receive (False, "Email service not configured") rather than raising.
@@ -33,7 +33,7 @@ log = logging.getLogger(__name__)
 
 _POSTMARK_API_URL = "https://api.postmarkapp.com/email"
 _POSTMARK_STREAM = "transactional"  # Always transactional for audit reports
-_DEFAULT_FROM = "reports@glow.bits-acb.org"
+_DEFAULT_FROM = "no-reply@notify.letitglow.app"
 _REQUEST_TIMEOUT = 8  # seconds
 
 

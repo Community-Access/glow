@@ -50,7 +50,7 @@ skip_no_key = pytest.mark.skipif(
 def _auth_headers() -> dict[str, str]:
     return {
         "Authorization": f"Bearer {_API_KEY}",
-        "HTTP-Referer": "https://glow.bits-acb.org",
+        "HTTP-Referer": "https://letitglow.app",
         "X-Title": "GLOW Integration Tests",
         "Content-Type": "application/json",
     }
@@ -320,7 +320,7 @@ class TestOpenRouterWhisper:
         audio_bytes = _silent_wav_bytes(duration_seconds=1.0)
         headers = {
             "Authorization": f"Bearer {_API_KEY}",
-            "HTTP-Referer": "https://glow.bits-acb.org",
+            "HTTP-Referer": "https://letitglow.app",
             "X-Title": "GLOW Integration Tests",
         }
         resp = requests.post(
@@ -359,7 +359,7 @@ class TestOpenRouterWhisper:
         audio_bytes = _silent_wav_bytes(duration_seconds=0.5)
         headers = {
             "Authorization": f"Bearer {_API_KEY}",
-            "HTTP-Referer": "https://glow.bits-acb.org",
+            "HTTP-Referer": "https://letitglow.app",
             "X-Title": "GLOW Integration Tests",
         }
         resp = requests.post(

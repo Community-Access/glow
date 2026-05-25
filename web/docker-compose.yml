@@ -45,7 +45,7 @@ services:
       # - FEEDBACK_PASSWORD=change-me-in-production
       # Postmark email notifications (optional -- email reports to users)
       # - POSTMARK_SERVER_TOKEN=your-postmark-server-token
-      # - POSTMARK_FROM_EMAIL=reports@glow.bits-acb.org
+      # - POSTMARK_FROM_EMAIL=no-reply@notify.letitglow.app
     volumes:
       - feedback-data:/app/instance
       - speech-models:/app/instance/speech_models

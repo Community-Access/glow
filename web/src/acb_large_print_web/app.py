@@ -147,7 +147,7 @@ def create_app(config: dict | None = None) -> Flask:
         }
         # Inject AI flags (from ai_features)
         ctx.update(_get_ai_flags())
-        # Inject deployment branding profile (BITS default, UArizona optional)
+        # Inject deployment branding profile (Community Access default, optional overrides)
         ctx.update(_get_branding_context())
 
         # Inject visitor count for footer display
@@ -556,7 +556,7 @@ def create_app(config: dict | None = None) -> Flask:
         }
         whisper_probe = _probe_whisper() if ai_configured else {
             "status": "not-configured",
-            "detail": "OPENROUTER_API_KEY not set -- BITS Whisperer disabled",
+            "detail": "OPENROUTER_API_KEY not set -- Whisperer disabled",
         }
         from .keycloak import get_keycloak_health_url
         keycloak_url = get_keycloak_health_url()
@@ -963,7 +963,7 @@ def _probe_openrouter(timeout: float = 4.0) -> dict[str, str]:
         "https://openrouter.ai/api/v1/models",
         headers={
             "Authorization": f"Bearer {key}",
-            "HTTP-Referer": "https://glow.bits-acb.org",
+            "HTTP-Referer": "https://letitglow.app",
             "X-Title": "GLOW Health Check",
         },
         method="GET",

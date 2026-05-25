@@ -208,7 +208,7 @@ def fetch_user_provider_models(provider: str, api_key: str) -> list[dict[str, An
             f"{_OPENROUTER_BASE}/models",
             headers={
                 "Authorization": f"Bearer {api_key}",
-                "HTTP-Referer": "https://glow.bits-acb.org",
+                "HTTP-Referer": "https://letitglow.app",
                 "X-Title": "GLOW",
             },
             timeout=20,
@@ -936,7 +936,7 @@ def _openrouter_completion(
     api_key = get_openrouter_api_key()
     headers = {
         "Authorization": f"Bearer {api_key}",
-        "HTTP-Referer": "https://glow.bits-acb.org",
+        "HTTP-Referer": "https://letitglow.app",
         "X-Title": "GLOW",
         "Content-Type": "application/json",
     }
@@ -974,7 +974,7 @@ def _openrouter_user_completion(
         raise RuntimeError("No OpenRouter API key in session.")
     headers = {
         "Authorization": f"Bearer {api_key}",
-        "HTTP-Referer": "https://glow.bits-acb.org",
+        "HTTP-Referer": "https://letitglow.app",
         "X-Title": "GLOW",
         "Content-Type": "application/json",
     }
@@ -1393,7 +1393,7 @@ def describe_image(
     api_key = _openrouter_key()
     headers = {
         "Authorization": f"Bearer {api_key}",
-        "HTTP-Referer": "https://glow.bits-acb.org",
+        "HTTP-Referer": "https://letitglow.app",
         "X-Title": "GLOW",
         "Content-Type": "application/json",
     }
@@ -1514,7 +1514,7 @@ def transcribe(
     if transcript is None:
         headers = {
             "Authorization": f"Bearer {api_key}",
-            "HTTP-Referer": "https://glow.bits-acb.org",
+            "HTTP-Referer": "https://letitglow.app",
             "X-Title": "GLOW",
         }
         try:
@@ -1681,7 +1681,7 @@ def _transcribe_via_input_audio(
     }
     headers = {
         "Authorization": f"Bearer {api_key}",
-        "HTTP-Referer": "https://glow.bits-acb.org",
+        "HTTP-Referer": "https://letitglow.app",
         "X-OpenRouter-Title": "GLOW",
         "Content-Type": "application/json",
     }
@@ -1803,7 +1803,7 @@ def get_model_catalog() -> list[dict[str, Any]]:
     api_key = get_openrouter_api_key()
     headers = {
         "Authorization": f"Bearer {api_key}",
-        "HTTP-Referer": "https://glow.bits-acb.org",
+        "HTTP-Referer": "https://letitglow.app",
         "X-Title": "GLOW",
     }
     try:

@@ -23,7 +23,7 @@
   <h3>Convert and Export workflows</h3>
   <p>Converted and exported files follow the same pattern as the Fix workflow: the server holds your uploaded file only for the duration of processing. Once the result is delivered or the session ends, the file is deleted. Stale uploads are swept every hour.</p>
 
-  <h3>BITS Whisperer audio workflow</h3>
+  <h3>Whisperer audio workflow</h3>
   <p>For audio transcription, GLOW keeps the uploaded recording and generated transcript only for the time required to complete conversion and deliver the download. Active in-progress transcription jobs are kept alive so long recordings can finish reliably. After download, temporary files are deleted. If the flow is abandoned before download, stale files are removed by retention cleanup.</p>
   <p>For eligible long recordings, users may opt into background processing. In that mode, GLOW can send lifecycle emails (queued, started, completed, and cleared) when email delivery is configured. Completed background jobs are retrieved via a single-use secure link plus a retrieval password set by the user at submission time.</p>
   <p>If a completed background transcript is not retrieved within the secure retrieval window (default 4 hours), GLOW clears the content and can send a final notification confirming removal.</p>
@@ -35,22 +35,22 @@
 <section>
   <h2 id="ai-heading">Artificial Intelligence</h2>
   {% if ai_chat_enabled or ai_whisperer_enabled or ai_alt_text_enabled or ai_markitdown_llm_enabled %}
-  <p>GLOW uses artificial intelligence only in features that explicitly require it, such as Document Chat and BITS Whisperer. The core audit, fix, template, export, and many conversion workflows remain rule-based and can be used without AI.</p>
+  <p>GLOW uses artificial intelligence only in features that explicitly require it, such as Document Chat and Whisperer. The core audit, fix, template, export, and many conversion workflows remain rule-based and can be used without AI.</p>
   <p>For text reasoning features, GLOW uses an OpenRouter-based gateway with provider privacy controls. Requests are routed with privacy-aware settings designed to prefer providers that do not retain prompts or use them for training. For audio transcription, GLOW sends audio to the Whisper API only for the transcription request.</p>
   <p>GLOW itself does not use your documents, prompts, or transcripts to train any model. GLOW stores only minimal metadata needed for quota, cost, and operational reporting. You should still avoid submitting highly sensitive information to AI-powered workflows unless your organization's policy permits it.</p>
   <p>Every results page shows a clear statement indicating whether AI was or was not used during that specific transaction.</p>
   {% else %}
-  <p>AI features are not enabled on this server. Core audit, fix, template, export, and many conversion workflows remain available and are rule-based; no requests are sent to external AI providers. Audio transcription via BITS Whisperer is not available when AI is disabled.</p>
+  <p>AI features are not enabled on this server. Core audit, fix, template, export, and many conversion workflows remain available and are rule-based; no requests are sent to external AI providers. Audio transcription via Whisperer is not available when AI is disabled.</p>
   {% endif %}
 </section>
 
 <section>
   <h2 id="rights-heading">Data Rights and Use</h2>
-  <p>BITS (Blind Information Technology Solutions) does not claim any rights to the content you upload. Your documents belong to you.</p>
+  <p>Project operators do not claim any rights to the content you upload. Your documents belong to you.</p>
   <p>GLOW does not sell, share, license, or otherwise transfer document content to any third party for advertising or independent product training. When you use an AI-powered workflow, GLOW transmits only the content required to complete that request to the configured AI provider.</p>
 
   <h3>Operational analytics</h3>
-  <p>GLOW collects a limited set of operational analytics to understand service health and adoption. This includes an aggregate visitor counter (unique browser sessions) and per-tool usage counts (Audit, Fix, Convert, Template Builder, BITS Whisperer, and Document Chat), with a last-used timestamp for each tool.</p>
+  <p>GLOW collects a limited set of operational analytics to understand service health and adoption. This includes an aggregate visitor counter (unique browser sessions) and per-tool usage counts (Audit, Fix, Convert, Template Builder, Whisperer, and Document Chat), with a last-used timestamp for each tool.</p>
   <p>These analytics are stored in local SQLite files on the server (`instance/visitor_counter.db` and `instance/tool_usage.db`) and are used only for internal reporting, capacity planning, and product improvement. They do not include uploaded document contents, extracted text, prompts, transcript bodies, or fixed-file output.</p>
   <p>Analytics are shown in aggregate in administrator reporting views and are not used for advertising, profiling, or sale to third parties.</p>
 </section>
@@ -76,19 +76,19 @@
   {% if feature_admin_login_enabled %}
   <p>Administrative dashboards use a separate admin-only authentication flow. Admin sign-in options (email magic link and configured OAuth providers) are only enabled when email delivery is configured. Admin access requests require approval by an existing approved admin.</p>
   {% endif %}
-  <p>If you submit feedback through the Feedback page, your message is stored in an encrypted SQLite database on the server and is accessible only to BITS administrators. Feedback is retained to help improve the tool and is not shared externally.</p>
+  <p>If you submit feedback through the Feedback page, your message is stored in an encrypted SQLite database on the server and is accessible only to approved administrators. Feedback is retained to help improve the tool and is not shared externally.</p>
   <p>If you choose to remember your preferences on the Settings page, GLOW stores those defaults in your browser's local storage on your device only. The saved data contains your chosen defaults, custom rule sets, and page-state preferences such as Rules Reference filters. It does not include document content and is not sent to the server.</p>
 </section>
 
 <section>
   <h2 id="security-heading">Security</h2>
-  <p>All traffic to glow.bits-acb.org is encrypted using HTTPS (TLS). Uploaded files are validated for format integrity before processing. The application runs under a non-root container user and enforces rate limits to protect against abuse.</p>
+  <p>All traffic to letitglow.app is encrypted using HTTPS (TLS). Uploaded files are validated for format integrity before processing. The application runs under a non-root container user and enforces rate limits to protect against abuse.</p>
   <p>Temporary upload directories are stored in an isolated path on the server filesystem. Path traversal protections prevent any request from accessing files outside the designated upload area.</p>
 </section>
 
 <section>
   <h2 id="contact-heading">Questions and Contact</h2>
-  <p>If you have questions about this policy or how your data is handled, contact BITS through the <a href="{{ url_for('feedback.feedback_form') }}">Feedback page</a> or visit <a href="https://www.bits-acb.org">bits-acb.org</a>.</p>
+  <p>If you have questions about this policy or how your data is handled, contact the project team through the <a href="{{ url_for('feedback.feedback_form') }}">Feedback page</a>.</p>
   <p>This policy was last updated on April 29, 2026.</p>
 </section>
 

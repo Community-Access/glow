@@ -3312,7 +3312,8 @@ body.theme-uarizona .brand-logo {
   max-height: 36px;
 }
 
-/* BITS logo: square mark, slightly smaller */
+/* Community Access logo sizing (legacy theme-bits kept for compatibility) */
+body.theme-communityaccess .brand-logo,
 body.theme-bits .brand-logo {
   max-height: 44px;
   border-radius: 0.25rem;

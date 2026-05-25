@@ -66,7 +66,7 @@ services:
       KC_DB: "dev-file"
       KC_HTTP_ENABLED: "true"
       KC_HTTP_RELATIVE_PATH: "/auth"
-      KC_HOSTNAME: ${KEYCLOAK_HOSTNAME:-lp.csedesigns.com}
+      KC_HOSTNAME: ${KEYCLOAK_HOSTNAME:-letitglow.app}
       KC_HOSTNAME_STRICT: "false"
       KC_PROXY_HEADERS: "xforwarded"
       KC_HEALTH_ENABLED: "true"
@@ -116,13 +116,13 @@ services:
       - GLOW_ENABLE_AI_HEADING_FIX=${GLOW_ENABLE_AI_HEADING_FIX:-1}
       - GLOW_ENABLE_AI_ALT_TEXT=${GLOW_ENABLE_AI_ALT_TEXT:-0}
       - GLOW_ENABLE_AI_MARKITDOWN_LLM=${GLOW_ENABLE_AI_MARKITDOWN_LLM:-1}
-      # Branding profile: 'bits' (default) or 'uarizona'
-      - GLOW_BRAND_PROFILE=${GLOW_BRAND_PROFILE:-bits}
+      # Branding profile: 'communityaccess' (default) or 'uarizona'
+      - GLOW_BRAND_PROFILE=${GLOW_BRAND_PROFILE:-communityaccess}
       # Feedback-to-GitHub sync is enabled when FEEDBACK_GITHUB_TOKEN is set in .env
       # Postmark email notifications (optional -- email audit reports to users)
       # Set these in the .env file loaded via env_file above:
       #   POSTMARK_SERVER_TOKEN=your-postmark-server-token
-      #   POSTMARK_FROM_EMAIL=reports@glow.bits-acb.org
+      #   POSTMARK_FROM_EMAIL=no-reply@notify.letitglow.app
     volumes:
       - feedback-data:/app/instance
       - speech-models:/app/instance/speech_models

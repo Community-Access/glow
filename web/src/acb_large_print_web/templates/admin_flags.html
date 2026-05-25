@@ -102,12 +102,13 @@
         {% if brand_is_uarizona %}
           <code>uarizona</code> &mdash; University of Arizona theme (Arizona Red &amp; Navy, UA wordmark logo).
         {% else %}
-          <code>bits</code> &mdash; BITS default theme (navy, BITS logo). This is the default when no profile is set.
+          <code>communityaccess</code> &mdash; Community Access theme (neutral branding and Community Access logo). This is the default when no profile is set.
         {% endif %}
       </p>
       <p>The branding profile is a deployment-level setting and cannot be changed here. To switch profiles, set the <code>GLOW_BRAND_PROFILE</code> environment variable before starting the container:</p>
       <ul>
-        <li><code>GLOW_BRAND_PROFILE=bits</code> &mdash; BITS / ACB theme (default)</li>
+        <li><code>GLOW_BRAND_PROFILE=communityaccess</code> &mdash; Community Access theme (default)</li>
+        <li><code>GLOW_BRAND_PROFILE=bits</code> &mdash; legacy alias mapped to Community Access theme</li>
         <li><code>GLOW_BRAND_PROFILE=uarizona</code> &mdash; University of Arizona theme</li>
       </ul>
       <p>In <code>docker-compose.yml</code> add it under the <code>environment:</code> key, then redeploy. A restart is required for the change to take effect.</p>

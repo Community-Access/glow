@@ -27,9 +27,7 @@
     <p><strong>ACB and APH are the two large-print production standards supported in GLOW.</strong></p>
     {% endif %}
     <ul>
-      {% if not brand_is_uarizona %}
-      <li><strong>ACB:</strong> best fit for consumer and member publications. This is the default baseline in GLOW.</li>
-      {% endif %}
+      <li{% if brand_is_uarizona %} hidden{% endif %}><strong>ACB:</strong> best fit for consumer and member publications. This is the default baseline in GLOW.</li>
       <li><strong>APH:</strong> best fit for educational and student-facing large-print workflows, with full Release 1.2.0 submission alignment in the APH Submission profile.</li>
       <li><strong>AFB JVIB style:</strong> not a large-print production standard and not offered as a fix/audit mode in GLOW. It is a manuscript submission standard for academic publishing in the <em>Journal of Visual Impairment &amp; Blindness</em>.</li>
     </ul>
@@ -38,7 +36,7 @@
     <p><strong>Reference links:</strong> <a href="https://www.aph.org/resources/large-print-guidelines/">APH large-print guidelines</a> and <a href="https://afb.org/news-publications/publications/jvib/authors/afb-style-guidelines">AFB JVIB style guidelines</a>.</p>
     {% else %}
     <p>Use AFB JVIB guidance directly when preparing an academic manuscript for JVIB submission. For large-print production output, use ACB or APH profiles in GLOW.</p>
-    <p><strong>Reference links:</strong> <a href="https://www.bits-acb.org">BITS / ACB</a>, <a href="https://www.aph.org/resources/large-print-guidelines/">APH large-print guidelines</a>, and <a href="https://afb.org/news-publications/publications/jvib/authors/afb-style-guidelines">AFB JVIB style guidelines</a>.</p>
+    <p><strong>Reference links:</strong> <a href="https://acb.org/large-print-guidelines">ACB large-print guidelines</a>, <a href="https://www.aph.org/resources/large-print-guidelines/">APH large-print guidelines</a>, and <a href="https://afb.org/news-publications/publications/jvib/authors/afb-style-guidelines">AFB JVIB style guidelines</a>.</p>
     {% endif %}
   </details>
   <a href="#toc-heading" class="back-to-top">Back to table of contents</a>

@@ -9,10 +9,10 @@ def get_branding_context() -> dict[str, str | bool]:
     """Return template-safe branding values based on deployment profile.
 
     Set `GLOW_BRAND_PROFILE=uarizona` for the University of Arizona deployment.
-    Any other value uses the default BITS/ACB presentation.
+    Any other value uses the default Community Access presentation.
     """
 
-    profile = os.environ.get("GLOW_BRAND_PROFILE", "bits").strip().lower()
+    profile = os.environ.get("GLOW_BRAND_PROFILE", "communityaccess").strip().lower()
     is_uarizona = profile in {"uarizona", "ua", "uofa", "university-of-arizona"}
 
     if is_uarizona:
@@ -36,22 +36,24 @@ def get_branding_context() -> dict[str, str | bool]:
             "brand_favicon": "favicon-uarizona.svg",
         }
 
+    # Legacy aliases ("bits", "acb") intentionally resolve to the neutral
+    # Community Access profile during the migration.
     return {
-        "brand_profile": "bits",
+        "brand_profile": "communityaccess",
         "brand_is_uarizona": False,
         "brand_title_suffix": "GLOW (Guided Layout & Output Workflow)",
         "brand_nav_label": "GLOW Accessibility",
         "brand_heading_label": "GLOW",
-        "brand_whisperer_label": "BITS Whisperer",
-        "brand_guidelines_name": "ACB Large Print Guidelines",
-        "brand_guidelines_summary": "ACB, WCAG, and APH submission guidance",
-        "brand_about_heading": "About the ACB Large Print Guidelines",
-        "brand_about_intro": "The American Council of the Blind (ACB) Large Print Guidelines specify formatting standards that make printed and digital documents readable for people with low vision.",
-        "brand_footer_org_line": "A BITS community project. Blind Information Technology Solutions, a special interest affiliate of the American Council of the Blind.",
-        "brand_footer_story_line": "GLOW = Guided Layout & Output Workflow. Magical guidance for real-world accessibility work.",
-        "brand_logo_file": "logo-bits.png",
-        "brand_logo_alt": "BITS – Blind Information Technology Solutions",
-        "brand_logo_height": "44",
-        "brand_theme_class": "theme-bits",
+        "brand_whisperer_label": "Audio Whisperer",
+        "brand_guidelines_name": "Large Print Accessibility Guidelines",
+        "brand_guidelines_summary": "large-print, WCAG, and APH guidance",
+        "brand_about_heading": "About Large Print Accessibility Guidelines",
+        "brand_about_intro": "GLOW applies large-print formatting and digital accessibility standards that support people with low vision and screen reader users.",
+        "brand_footer_org_line": "A Community Access open source project.",
+        "brand_footer_story_line": "GLOW = Guided Layout & Output Workflow. Practical guidance for real-world accessibility work.",
+        "brand_logo_file": "logo-community-access.png",
+        "brand_logo_alt": "Community Access",
+        "brand_logo_height": "40",
+        "brand_theme_class": "theme-communityaccess",
         "brand_favicon": "favicon.svg",
     }

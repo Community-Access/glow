@@ -8,5 +8,5 @@ services:
       GLOW_ENABLE_AI_HEADING_FIX: "${GLOW_ENABLE_AI_HEADING_FIX:-0}"
       GLOW_ENABLE_AI_ALT_TEXT: "${GLOW_ENABLE_AI_ALT_TEXT:-0}"
       GLOW_ENABLE_AI_MARKITDOWN_LLM: "${GLOW_ENABLE_AI_MARKITDOWN_LLM:-0}"
-      # Branding profile: 'bits' (default) or 'uarizona'
-      GLOW_BRAND_PROFILE: "${GLOW_BRAND_PROFILE:-bits}"
+      # Branding profile: 'communityaccess' (default) or 'uarizona'
+      GLOW_BRAND_PROFILE: "${GLOW_BRAND_PROFILE:-communityaccess}"

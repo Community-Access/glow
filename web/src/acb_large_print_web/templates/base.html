@@ -377,11 +377,7 @@
             <li><a href="{{ url_for('consent.consent_form') }}"{% if request.blueprint == 'consent' %} aria-current="page"{% endif %}>Terms of Use</a></li>
           </ul>
         </nav>
-        {% if brand_is_uarizona %}
         <p>{{ brand_footer_org_line }}</p>
-        {% else %}
-        <p><a href="https://www.bits-acb.org">BITS</a> community project. Blind Information Technology Solutions, a special interest affiliate of the American Council of the Blind.</p>
-        {% endif %}
         <p>{{ brand_footer_story_line }}</p>
         {% set _ns = namespace(parts=[]) %}
         {% if feature_word_enabled %}{% set _ns.parts = _ns.parts + ["Word (.docx)"] %}{% endif %}

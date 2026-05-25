@@ -269,7 +269,7 @@ Useful switches:
 | `SECRET_KEY` | Random per-start | Flask session secret. Set a fixed value in production. |
 | `FEEDBACK_PASSWORD` | (unset) | Set to enable `/feedback/review?key=<password>`. Disabled when unset. |
 | `POSTMARK_SERVER_TOKEN` | (unset) | Postmark server token used for audit-report emails, Whisperer notifications, and admin magic-link sign-in emails. |
-| `POSTMARK_FROM_EMAIL` | `reports@glow.bits-acb.org` | Sender address used by Postmark-delivered app emails. |
+| `POSTMARK_FROM_EMAIL` | `no-reply@notify.letitglow.app` | Sender address used by Postmark-delivered app emails. |
 | `LOG_LEVEL` | `INFO` | Python logging level (DEBUG, INFO, WARNING, ERROR). |
 | `MAX_CONTENT_LENGTH` | 500 MB | Maximum upload file size. |
 | `GLOW_CONVERT_ASYNC` | `1` | Enable queue-first processing for heavy workflows. Set to `0` to force synchronous route execution. |

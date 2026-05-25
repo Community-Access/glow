@@ -48,7 +48,7 @@ trap finalize_log EXIT
 APP_ROOT="${APP_ROOT:-$HOME/app}"
 WEB_ROOT="${WEB_ROOT:-$APP_ROOT/web}"
 COMPOSE_FILE="docker-compose.prod.yml"
-APP_DOMAIN="${APP_DOMAIN:-lp.csedesigns.com}"
+APP_DOMAIN="${APP_DOMAIN:-letitglow.app}"
 APP_ALIAS_DOMAIN="${APP_ALIAS_DOMAIN:-}"
 MAIN_DOMAIN="${MAIN_DOMAIN:-csedesigns.com}"
 ENABLE_PREDEPLOY_BACKUP="${ENABLE_PREDEPLOY_BACKUP:-1}"

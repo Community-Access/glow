@@ -64,8 +64,8 @@ case "$ACTION" in
         echo "    /health endpoint: still available"
         echo ""
         echo "Verify:"
-        echo "  curl -I https://lp.csedesigns.com/        # Should see 503 Service Unavailable"
-        echo "  curl -I https://lp.csedesigns.com/health   # Should see 200 OK"
+        echo "  curl -I https://letitglow.app/        # Should see 503 Service Unavailable"
+        echo "  curl -I https://letitglow.app/health   # Should see 200 OK"
         ;;
     off)
         echo "--- Disabling maintenance mode ---"
@@ -75,8 +75,8 @@ case "$ACTION" in
         echo "    Site is now live"
         echo ""
         echo "Verify:"
-        echo "  curl -I https://lp.csedesigns.com/        # Should see 200 OK (home page)"
-        echo "  curl -I https://lp.csedesigns.com/health   # Should see 200 OK"
+        echo "  curl -I https://letitglow.app/        # Should see 200 OK (home page)"
+        echo "  curl -I https://letitglow.app/health   # Should see 200 OK"
         ;;
     status)
         echo "--- Checking maintenance mode status ---"

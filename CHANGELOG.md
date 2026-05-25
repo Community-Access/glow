@@ -48,6 +48,10 @@ Releases are tagged in the [GitHub repository](https://github.com/Community-Acce
 - **Speech voice selection simplified**: Speech Studio now uses one combined voice combo box across ready engines instead of grouped radio clusters, and corresponding client-side state handling now reads/writes a single selected value.
 - **PageFlow voice selection simplified**: PageFlow narration voice selection now uses one combined voice combo box and removed engine-filter UI/script complexity.
 - **Speech prepare queue API response**: queued Speech document preparation now returns JSON (`202` with `job_url`) for fetch-based UI flows, while preserving synchronous fallback behavior when queueing is unavailable.
+- **Canonical web domain defaults moved to `letitglow.app`** across deployment/runtime config: updated production Caddy routing, deploy script defaults, post-deploy checks, Keycloak hostname default, and maintenance/status helper guidance to use `letitglow.app` as the primary host while preserving legacy host behavior.
+- **Legacy host redirect policy finalized with GGG exception**: legacy app hosts now redirect to canonical `letitglow.app` for normal routes, but continue to serve `/ggg*` directly so existing externally shared podcast/workshop distribution links keep working without redirect churn.
+- **Community Access is now the default public branding profile**: switched default `GLOW_BRAND_PROFILE` behavior from `bits` to `communityaccess`, added Community Access logo asset, updated footer/org copy, and adjusted public-facing consent/about/privacy/guidelines wording toward neutral attribution.
+- **OpenRouter referer and email sender defaults aligned to migration plan**: OpenRouter `HTTP-Referer` defaults now use `https://letitglow.app`, and Postmark default sender moved to `no-reply@notify.letitglow.app`.
 
 ### Fixed
 

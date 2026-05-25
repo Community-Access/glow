@@ -55,19 +55,13 @@
   <ul>
     <li><strong>Audit Quality &amp; Document Intelligence:</strong> Enhanced Word heading normalization (Heading 1&ndash;6), paragraph spacing repair for mixed-format documents, smarter PDF scanned-image detection with per-page DPI quality checks (flagging pages below 150 DPI for OCR re-scan), and optional EPUBCheck integration for authoritative EPUB package validation.</li>
     <li><strong>Report and Action Clarity:</strong> Improved audit and fix guidance with better cross-links between findings and next actions, format-specific post-fix recommendations, and feature-gated navigation that never shows dead-end links.</li>
-    <li><strong>Deployment-Aware Branding Profiles:</strong> New <code>GLOW_BRAND_PROFILE</code> setting supports <code>bits</code> (default ACB/BITS identity) and <code>uarizona</code> (University of Arizona deployment), controlling logos, colors, alt text, favicons, and shared wording from a single deployment variable.</li>
+    <li><strong>Deployment-Aware Branding Profiles:</strong> <code>GLOW_BRAND_PROFILE</code> supports a neutral Community Access default profile and optional deployment-specific variants, controlling logos, colors, alt text, favicons, and shared wording from a single deployment variable.</li>
     <li><strong>Granular Feature Controls:</strong> Per-direction convert flags (<code>GLOW_ENABLE_CONVERT_TO_MARKDOWN</code>, <code>GLOW_ENABLE_CONVERT_TO_HTML</code>, etc.), dedicated HTML export control, and per-feature AI gating (Chat, Whisperer, heading assistance, alt-text helpers) allow operators to phase features safely without forking code.</li>
     <li><strong>Consent &amp; Privacy Gate:</strong> First-time visitors are shown a transparent agreement explaining retention, cloud AI usage where applicable, and privacy protections. HttpOnly cookies, no ad tracking.</li>
-    <li><strong>Quick Start Path:</strong> Universal upload form that shows contextual actions (Audit, Fix, Convert, Export, Template, BITS Whisperer) based on file type. Reduces barrier to entry for accessibility newcomers.</li>
-    {% if ai_whisperer_enabled %}
-    <li><strong>BITS Whisperer:</strong> Audio transcription (MP3, WAV, M4A, OGG, FLAC, AAC, Opus) to Markdown or Word via OpenRouter audio transcription, with server-side cleanup, temporary retention, two-stage form workflow, and optional client-side diagnostics.</li>
-    {% endif %}
-    {% if ai_chat_enabled %}
-    <li><strong>Document Chat with Grounded Tools:</strong> Privacy-aware document Q&amp;A powered by OpenRouter with seven specialized tools: document summary, section content extraction, table analysis, decision/action mining, compliance assessment, and comprehensive "what passes" feedback for balanced responses.</li>
-    {% endif %}
-    {% if ai_configured %}
-    <li><strong>Cloud-Ready AI Gateway:</strong> Centralized OpenRouter routing with provider privacy controls, transient retry/backoff, budget enforcement, queue wait controls, and compatibility fallbacks for edge cases &mdash; all while preserving rule-based non-AI workflows.</li>
-    {% endif %}
+    <li><strong>Quick Start Path:</strong> Universal upload form that shows contextual actions (Audit, Fix, Convert, Export, Template, Whisperer) based on file type. Reduces barrier to entry for accessibility newcomers.</li>
+    <li{% if not ai_whisperer_enabled %} hidden{% endif %}><strong>Whisperer:</strong> Audio transcription (MP3, WAV, M4A, OGG, FLAC, AAC, Opus) to Markdown or Word via OpenRouter audio transcription, with server-side cleanup, temporary retention, two-stage form workflow, and optional client-side diagnostics.</li>
+    <li{% if not ai_chat_enabled %} hidden{% endif %}><strong>Document Chat with Grounded Tools:</strong> Privacy-aware document Q&amp;A powered by OpenRouter with seven specialized tools: document summary, section content extraction, table analysis, decision/action mining, compliance assessment, and comprehensive "what passes" feedback for balanced responses.</li>
+    <li{% if not ai_configured %} hidden{% endif %}><strong>Cloud-Ready AI Gateway:</strong> Centralized OpenRouter routing with provider privacy controls, transient retry/backoff, budget enforcement, queue wait controls, and compatibility fallbacks for edge cases &mdash; all while preserving rule-based non-AI workflows.</li>
     <li><strong>Smart Concurrency Gating:</strong> Protective semaphores for AI and audio jobs with configurable queue-wait times. When capacity is full, users receive a 503 Busy response with Retry-After guidance instead of silent failures.</li>
     <li><strong>Release-Safe Accessibility Regression Gate:</strong> Automated Playwright browser regression testing plus axe-core WCAG 2.2 AA scanning converted to SARIF for GitHub code scanning visibility. Ensures every release maintains accessibility compliance across key routes.</li>
   </ul>
@@ -92,16 +86,14 @@
     <dt><a href="https://acb.org/">American Council of the Blind (ACB)</a></dt>
     <dd>The nation's leading membership organization of blind and visually impaired people. ACB publishes the Large Print Guidelines through its <a href="https://acb.org/board-publications">Board of Publications</a>, which define minimum standards for font, size, spacing, emphasis, and layout in large print materials.</dd>
 
-    <dt><a href="https://www.bits-acb.org">Blind Information Technology Solutions (BITS)</a></dt>
-    <dd>A special interest affiliate of the American Council of the Blind. BITS members are professionals in the technology field who are blind or visually impaired. BITS sponsors this open source project to advance document accessibility tooling.</dd>
+    <dt><a href="https://community-access.org">Community Access</a></dt>
+    <dd>An open source community focused on practical accessibility tooling, workflows, and training resources for inclusive document and web publishing.</dd>
 
     <dt><a href="https://www.w3.org/WAI/">W3C Web Accessibility Initiative (WAI)</a></dt>
     <dd>Develops the Web Content Accessibility Guidelines (WCAG), which GLOW uses for digital content requirements including contrast, reflow, and line spacing.</dd>
 
-    {% if feature_epub_enabled %}
-    <dt><a href="https://daisy.org/">DAISY Consortium</a></dt>
-    <dd>An international association of libraries and organizations serving people with print disabilities. DAISY develops the <a href="https://daisy.github.io/ace/">Ace accessibility checker</a>, the <a href="https://github.com/daisy/a11y-meta-viewer">Accessibility Metadata Viewer</a>, and the <a href="https://kb.daisy.org/publishing/">Accessible Publishing Knowledge Base</a> used by GLOW for ePub accessibility.</dd>
-    {% endif %}
+    <dt{% if not feature_epub_enabled %} hidden{% endif %}><a href="https://daisy.org/">DAISY Consortium</a></dt>
+    <dd{% if not feature_epub_enabled %} hidden{% endif %}>An international association of libraries and organizations serving people with print disabilities. DAISY develops the <a href="https://daisy.github.io/ace/">Ace accessibility checker</a>, the <a href="https://github.com/daisy/a11y-meta-viewer">Accessibility Metadata Viewer</a>, and the <a href="https://kb.daisy.org/publishing/">Accessible Publishing Knowledge Base</a> used by GLOW for ePub accessibility.</dd>
   </dl>
   <a href="#main" class="back-to-top">Back to top</a>
 </section>
@@ -217,7 +209,7 @@
         <td><a href="https://github.com/openai/whisper">OpenAI Whisper</a></td>
         <td>API</td>
         <td>MIT</td>
-        <td>Speech recognition model family used through OpenRouter's audio transcription endpoint for BITS Whisperer. No separate Whisper API key is required.</td>
+        <td>Speech recognition model family used through OpenRouter's audio transcription endpoint for Whisperer. No separate Whisper API key is required.</td>
       </tr>
       {% endif %}
       {% if ai_configured %}
@@ -405,7 +397,7 @@
   <p>This project adheres to the <a href="https://github.com/Community-Access/glow/blob/main/CODE_OF_CONDUCT.md">Contributor Covenant Code of Conduct</a>. All participants are expected to uphold these community standards of respect and inclusivity.</p>
 
   <h3>Security</h3>
-  <p>For security concerns, please do not open a public issue. Instead, contact the BITS team as described in the <a href="https://github.com/Community-Access/glow/blob/main/SECURITY.md">Security Policy</a>.</p>
+  <p>For security concerns, please do not open a public issue. Instead, contact the project maintainers as described in the <a href="https://github.com/Community-Access/glow/blob/main/SECURITY.md">Security Policy</a>.</p>
 
   <h3>Getting Help</h3>
   <ul>
@@ -432,7 +424,7 @@
     <dd><a href="https://opensource.org/licenses/MIT">MIT License</a></dd>
 
     <dt>Author</dt>
-    <dd>Jeff Bishop, President of <a href="https://www.bits-acb.org">BITS</a></dd>
+    <dd>Jeff Bishop, project maintainer</dd>
 
     <dt>Current release</dt>
     <dd>{{ release_version }}</dd>
@@ -556,7 +548,7 @@
   <p>We gratefully acknowledge the <a href="https://daisy.org/">DAISY Consortium</a> for their leadership in accessible publishing. GLOW relies on three DAISY projects: <a href="https://daisy.github.io/ace/">DAISY Ace</a> for EPUB accessibility validation, the <a href="https://github.com/daisy/a11y-meta-viewer">DAISY Accessibility Metadata Viewer</a> for human-readable display of EPUB accessibility metadata per the <a href="https://w3c.github.io/publ-a11y/a11y-meta-display-guide/2.0/draft/techniques/epub-metadata/">W3C Accessibility Metadata Display Guide 2.0</a>, and <a href="https://daisy.github.io/pipeline/">DAISY Pipeline 2</a> for advanced document-to-EPUB and EPUB-to-DAISY conversions that produce accessible publications for e-readers, refreshable braille displays, and DAISY players.</p>
   {% endif %}
   <p>The HTML conversion engine is powered by <a href="https://pandoc.org/">Pandoc</a>, the universal document converter created by John MacFarlane. Pandoc transforms Markdown, Word, reStructuredText, OpenDocument, Rich Text, and ePub files into accessible HTML with ACB Large Print styling.</p>
-  <p>Thanks also to the <a href="https://www.bits-acb.org">BITS</a> community for testing, feedback, and ongoing development support, and to the open source maintainers whose libraries make GLOW possible.</p>
+  <p>Thanks to the accessibility community for testing, feedback, and ongoing development support, and to the open source maintainers whose libraries make GLOW possible.</p>
   <p>A heartfelt thank you to <a href="https://github.com/jamalmazrui">Jamal Mazrui</a>, whose decades of pioneering work in assistive technology and accessibility tooling continue to inspire developers across the community. Two of his projects directly shaped GLOW 2.6.0: <a href="https://github.com/jamalmazrui/extCheck">extCheck</a>, a beautifully comprehensive 73-rule document accessibility auditor for Word, Excel, PowerPoint, and Markdown, and <a href="https://github.com/jamalmazrui/xlHeaders">xlHeaders</a>, an elegant VBScript utility that annotates Excel workbooks with named ranges so screen readers can announce column and row headers in context. GLOW's new PowerPoint timing and animation checks, Markdown quality checks, Excel blank-row and default table-name rules, and the xlHeaders-inspired named-range fixer all trace their lineage to Jamal's open-source generosity. His tools are free, practical, and built with the lived experience of a screen reader user — exactly the kind of accessibility leadership this community needs.</p>
   <a href="#main" class="back-to-top">Back to top</a>
 </section>
