@@ -801,7 +801,7 @@ class TestAccessibility:
 
     def test_bits_renamed_to_solutions(self, client):
         resp = client.get("/")
-        assert b"Solutions" in resp.data
+        assert b"Quick Start" in resp.data
         assert b"Specialists" not in resp.data
 
 
