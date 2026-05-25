@@ -5,8 +5,11 @@ param(
     [string]$LocalGggPath = "C:\code\ggg",
     [string]$RemoteGggPath = "~/ggg",
     [switch]$Apply,
+    [switch]$SkipUpload,
     [string]$AppRoot = "~/app",
-    [string]$WebRoot = "~/app/web"
+    [string]$WebRoot = "~/app/web",
+    [int]$ServiceWaitSeconds = 300,
+    [int]$ServiceCheckIntervalSeconds = 10
 )
 
 Set-StrictMode -Version Latest
@@ -35,6 +38,7 @@ Write-Host "Server: $ServerUser@$ServerHost"
 Write-Host "Local:  $LocalGggPath"
 Write-Host "Remote: $RemoteGggPath"
 Write-Host "Apply runtime: $Apply"
+Write-Host "Skip upload: $SkipUpload"
 Write-Host ""
 
 Test-CommandAvailable -Name "ssh"
@@ -84,36 +88,42 @@ Write-Host "- APP:  $AppRoot"
 Write-Host "- WEB:  $WebRoot"
 Write-Host ""
 
-Write-Host "Preparing remote folder..."
-Invoke-Remote -Command "mkdir -p '$RemoteGggPath'; find '$RemoteGggPath' -mindepth 1 -maxdepth 1 -exec rm -rf {} +"
-Write-Host "Remote folder prepared."
-Write-Host ""
+if (-not $SkipUpload) {
+    Write-Host "Preparing remote folder..."
+    Invoke-Remote -Command "mkdir -p '$RemoteGggPath'; find '$RemoteGggPath' -mindepth 1 -maxdepth 1 -exec rm -rf {} +"
+    Write-Host "Remote folder prepared."
+    Write-Host ""
 
-Write-Host "Uploading all GGG files (including media) ..."
-$tempTar = Join-Path $env:TEMP ("ggg-sync-" + [Guid]::NewGuid().ToString("N") + ".tar")
+    Write-Host "Uploading all GGG files (including media) ..."
+    $tempTar = Join-Path $env:TEMP ("ggg-sync-" + [Guid]::NewGuid().ToString("N") + ".tar")
 
-try {
-    & tar -C $LocalGggPath -cf $tempTar .
-    if ($LASTEXITCODE -ne 0) {
-        throw "Failed creating tar archive (exit $LASTEXITCODE)."
+    try {
+        & tar -C $LocalGggPath -cf $tempTar .
+        if ($LASTEXITCODE -ne 0) {
+            throw "Failed creating tar archive (exit $LASTEXITCODE)."
+        }
+
+        $remoteTar = "$RemoteGggPath/ggg-upload.tar"
+        & scp $tempTar "${ServerUser}@${ServerHost}:$remoteTar"
+        if ($LASTEXITCODE -ne 0) {
+            throw "Upload failed during scp (exit $LASTEXITCODE)."
+        }
+
+        Invoke-Remote -Command "tar -xf '$remoteTar' -C '$RemoteGggPath'; rm -f '$remoteTar'"
+    }
+    finally {
+        if (Test-Path -LiteralPath $tempTar) {
+            Remove-Item -LiteralPath $tempTar -Force -ErrorAction SilentlyContinue
+        }
     }
 
-    $remoteTar = "$RemoteGggPath/ggg-upload.tar"
-    & scp $tempTar "${ServerUser}@${ServerHost}:$remoteTar"
-    if ($LASTEXITCODE -ne 0) {
-        throw "Upload failed during scp (exit $LASTEXITCODE)."
-    }
-
-    Invoke-Remote -Command "tar -xf '$remoteTar' -C '$RemoteGggPath'; rm -f '$remoteTar'"
+    Write-Host "Upload complete."
+    Write-Host ""
 }
-finally {
-    if (Test-Path -LiteralPath $tempTar) {
-        Remove-Item -LiteralPath $tempTar -Force -ErrorAction SilentlyContinue
-    }
+else {
+    Write-Host "Skipping upload as requested."
+    Write-Host ""
 }
-
-Write-Host "Upload complete."
-Write-Host ""
 
 Write-Host "Verifying remote content..."
 Invoke-Remote -Command "set -e; test -f '$RemoteGggPath/Caddyfile'; test -d '$RemoteGggPath/site'; ls -lah '$RemoteGggPath' | head; ls -lah '$RemoteGggPath/site' | head"
@@ -125,16 +135,25 @@ if ($Apply) {
     Invoke-Remote -Command "mkdir -p '$AppRoot/ggg'"
     Invoke-Remote -Command "if command -v rsync >/dev/null 2>&1; then rsync -av --delete '$RemoteGggPath/' '$AppRoot/ggg/'; else rm -rf '$AppRoot/ggg'/*; cp -a '$RemoteGggPath/'* '$AppRoot/ggg/'; fi"
 
-    $hasGggService = $true
-    try {
-        Invoke-Remote -Command "cd '$WebRoot' && docker compose -f docker-compose.prod.yml config --services | grep -Fxq ggg"
-    }
-    catch {
-        $hasGggService = $false
-    }
+    $hasGggService = $false
+    $deadline = (Get-Date).AddSeconds([Math]::Max(0, $ServiceWaitSeconds))
+
+    do {
+        try {
+            Invoke-Remote -Command "cd '$WebRoot' && docker compose -f docker-compose.prod.yml config --services | grep -Fxq ggg"
+            $hasGggService = $true
+        }
+        catch {
+            $hasGggService = $false
+            if ((Get-Date) -lt $deadline) {
+                Write-Host "GGG service not visible yet in compose; waiting $ServiceCheckIntervalSeconds seconds..."
+                Start-Sleep -Seconds ([Math]::Max(1, $ServiceCheckIntervalSeconds))
+            }
+        }
+    } until ($hasGggService -or ((Get-Date) -ge $deadline))
 
     if (-not $hasGggService) {
-        throw "Remote compose file at $WebRoot/docker-compose.prod.yml does not define service 'ggg'. Deploy the Glow config changes first, then rerun with -Apply."
+        throw "Remote compose file at $WebRoot/docker-compose.prod.yml still does not define service 'ggg' after waiting $ServiceWaitSeconds seconds. Ensure deployment is complete, then rerun with -Apply (or increase -ServiceWaitSeconds)."
     }
 
     Invoke-Remote -Command "cd '$WebRoot' && docker compose -f docker-compose.prod.yml up -d --no-deps --force-recreate ggg caddy"

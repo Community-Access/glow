@@ -122,7 +122,7 @@ jobs:
             # *expected* outcome of a regression gate: we still want a JSON file
             # so we can convert it to SARIF and upload it to code scanning.
             # The actual gating happens after SARIF upload (see "Gate" step).
-            npx @axe-core/cli \
+            npx --no-install axe \
               http://127.0.0.1:5100/ \
               http://127.0.0.1:5100/audit/ \
               http://127.0.0.1:5100/fix/ \

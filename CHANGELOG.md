@@ -36,6 +36,11 @@ Releases are tagged in the [GitHub repository](https://github.com/Community-Acce
 
 ## [Unreleased]
 
+### Fixed
+
+- **Accessibility Regression Gate `/guide/` contrast stability**: strengthened code-block contrast for syntax-classed fenced code (`pre > code.language-*`) in `web/src/acb_large_print_web/static/forms.css` to prevent intermittent `color-contrast` serious violations in scheduled axe runs.
+- **Accessibility Regression SARIF workflow reliability**: updated `.github/workflows/accessibility-regression.yml` to run the local locked `axe` binary (`npx --no-install axe`) instead of dynamically fetching `@axe-core/cli`, reducing Chrome/ChromeDriver version drift failures in CI.
+
 
 
 ## [7.6.0] - 2026-05-19
