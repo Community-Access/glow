@@ -81,7 +81,7 @@ from celery.signals import celeryd_init  # noqa: E402
 @celeryd_init.connect
 def _bind_flask_app_to_worker(**_kwargs):  # pragma: no cover - exercised in container
     try:
-        from acb_large_print_web import create_app
+        from acb_large_print_web.app import create_app
     except Exception:
         import logging
         logging.getLogger(__name__).exception("celeryd_init: failed to import create_app")
