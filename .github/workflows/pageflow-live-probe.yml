@@ -1,0 +1,46 @@
+name: PageFlow Live Probe
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "17 8 * * *"
+
+permissions:
+  contents: read
+
+jobs:
+  live-probe:
+    runs-on: ubuntu-latest
+    continue-on-error: true
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+
+      - name: Install web dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r web/requirements.txt
+          pip install -e web
+          pip install -e desktop
+
+      - name: Run PageFlow live probes (non-blocking)
+        working-directory: web
+        env:
+          PYTHONPATH: src
+        run: |
+          python tools/page_flow_live_probe.py \
+            --corpus tests/fixtures/page_flow_live_corpus.txt \
+            --out test-results/page_flow_live_probe.json \
+            --max-pages 5
+
+      - name: Upload probe report artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: pageflow-live-probe-report
+          path: web/test-results/page_flow_live_probe.json

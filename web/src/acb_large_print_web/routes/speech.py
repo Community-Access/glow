@@ -13,8 +13,10 @@ from __future__ import annotations
 
 import json
 import io
+import os
 import subprocess
 import time
+import uuid
 from pathlib import Path
 
 from flask import (
@@ -25,6 +27,7 @@ from flask import (
     make_response,
     render_template,
     request,
+    url_for,
 )
 
 from acb_large_print.converter import convert_to_markdown
@@ -48,8 +51,12 @@ from ..speech import (
 from ..magic_features import apply_pronunciation_dictionary
 from .. import speech_metrics
 from ..upload import AUDIO_EXTENSIONS, CONVERT_EXTENSIONS, UploadError, get_temp_dir, validate_upload
+from ..upload import UPLOAD_TEMP_BASE
+from ..tasks.convert_tasks import create_job, run_speech_prepare_job
 
 speech_bp = Blueprint("speech", __name__)
+
+_ASYNC_SPEECH_ENABLED = os.environ.get("GLOW_CONVERT_ASYNC", "1") == "1"
 
 _TEXT_MAX_LEN = 500
 _DOC_EXTRACT_NAME = "speech_source.txt"
@@ -61,6 +68,41 @@ _DEFAULT_DEMO_TEXT = (
     "Welcome to Speech Studio. "
     "Choose a voice, tune speed and pitch, and create clear narration for your audience."
 )
+
+
+def _voice_options(engine_status: dict) -> list[dict]:
+    """Return a single combined voice list for all ready engines."""
+    options: list[dict] = []
+
+    if engine_status.get("kokoro", {}).get("ready"):
+        for voice in KOKORO_VOICES:
+            options.append(
+                {
+                    "value": f"kokoro:{voice['id']}",
+                    "label": f"{voice['label']} (Kokoro - {voice['accent']}, {voice['gender']})",
+                }
+            )
+
+    piper_ready = list(engine_status.get("piper", {}).get("voices_available", []))
+    curated_by_id = {voice["id"]: voice for voice in PIPER_VOICES}
+    for voice_id in piper_ready:
+        curated = curated_by_id.get(voice_id)
+        if curated:
+            options.append(
+                {
+                    "value": f"piper:{curated['id']}",
+                    "label": f"{curated['label']} (Piper - {curated['accent']}, {curated['gender']})",
+                }
+            )
+            continue
+        options.append(
+            {
+                "value": f"piper:{voice_id}",
+                "label": f"{voice_id} (Piper)",
+            }
+        )
+
+    return options
 
 
 def _speech_flag(name: str, default: bool = True) -> bool:
@@ -98,6 +140,7 @@ def _apply_pronunciation_dictionary_if_enabled(text: str) -> str:
 def speech_form():
     status = get_engine_status()
     any_ready = status["kokoro"]["ready"] or status["piper"]["ready"]
+    voice_options = _voice_options(status)
     prefill_token = (request.args.get("token") or "").strip()
     prefill_filename = None
     if prefill_token:
@@ -121,6 +164,8 @@ def speech_form():
         all_accept=_DOC_ACCEPT,
         prefill_token=prefill_token or None,
         prefill_filename=prefill_filename,
+        voice_options=voice_options,
+        default_voice_id=(voice_options[0]["value"] if voice_options else ""),
     )
 
 
@@ -233,6 +278,30 @@ def speech_download():
         return jsonify({"error": "Text must not be empty."}), 400
 
     text = _apply_pronunciation_dictionary_if_enabled(text)
+
+    if _ASYNC_SPEECH_ENABLED:
+        try:
+            job_url = _queue_speech_text_job(
+                text=text,
+                input_filename="speech-typed-input.txt",
+                voice_id=voice_id,
+                speed=speed,
+                pitch=pitch,
+                output_format="mp3",
+            )
+            return (
+                jsonify(
+                    {
+                        "queued": True,
+                        "job_url": job_url,
+                        "message": "Speech conversion queued.",
+                    }
+                ),
+                202,
+            )
+        except Exception:
+            current_app.logger.exception("Speech typed download queueing failed; falling back to synchronous rendering")
+
     try:
         wav_bytes, wav_filename = synthesize(voice_id, text, speed=speed, pitch=pitch)
     except SpeechError as exc:
@@ -281,6 +350,35 @@ def speech_prepare_document():
     """Extract text from an uploaded document and return synthesis estimates."""
     if not _speech_flag("GLOW_ENABLE_CONVERT_TO_SPEECH"):
         return _convert_disabled_response()
+    if _ASYNC_SPEECH_ENABLED and not current_app.config.get("TESTING", False):
+        try:
+            token, saved_path, filename = _resolve_document_source()
+            speed = _parse_float(request.form.get("speed"), default=1.0, lo=0.5, hi=2.0)
+            job_id = str(uuid.uuid4())
+            create_job(
+                job_id,
+                "speech_prepare",
+                saved_path.name,
+                meta={
+                    "op": "speech_prepare",
+                    "upload_token": token,
+                    "input_filename": filename,
+                    "speed": speed,
+                },
+            )
+            run_speech_prepare_job.delay(job_id, token, saved_path.name, speed)
+            return (
+                jsonify(
+                    {
+                        "queued": True,
+                        "job_url": str(url_for("jobs.job_progress", job_id=job_id)),
+                        "message": "Speech preparation queued.",
+                    }
+                ),
+                202,
+            )
+        except Exception:
+            current_app.logger.exception("Speech prepare queueing failed; falling back to synchronous processing")
     try:
         token, saved_path, filename = _resolve_document_source()
         text = _extract_document_text(saved_path)
@@ -434,6 +532,33 @@ def speech_document_download():
 
     try:
         text = _apply_pronunciation_dictionary_if_enabled(_load_extracted_text(token))
+    except UploadError as exc:
+        return jsonify({"error": str(exc)}), 400
+
+    if _ASYNC_SPEECH_ENABLED:
+        try:
+            job_url = _queue_speech_text_job(
+                text=text,
+                input_filename="speech-document-input.txt",
+                voice_id=voice_id,
+                speed=speed,
+                pitch=pitch,
+                output_format="mp3",
+            )
+            return (
+                jsonify(
+                    {
+                        "queued": True,
+                        "job_url": job_url,
+                        "message": "Document speech conversion queued.",
+                    }
+                ),
+                202,
+            )
+        except Exception:
+            current_app.logger.exception("Speech document download queueing failed; falling back to synchronous rendering")
+
+    try:
         started = time.monotonic()
         wav_bytes, wav_filename = synthesize_document_text(
             voice_id,
@@ -678,3 +803,48 @@ def _source_size_for_token(token: str) -> int:
         except OSError:
             continue
     return total
+
+
+def _queue_speech_text_job(
+    *,
+    text: str,
+    input_filename: str,
+    voice_id: str,
+    speed: float,
+    pitch: int,
+    output_format: str,
+) -> str:
+    """Queue a speech conversion job from already-normalized text."""
+    from ..tasks.convert_tasks import create_job, run_speech_job
+
+    upload_token = str(uuid.uuid4())
+    temp_dir = UPLOAD_TEMP_BASE / upload_token
+    temp_dir.mkdir(parents=True, exist_ok=True)
+    (temp_dir / _DOC_EXTRACT_NAME).write_text(text, encoding="utf-8")
+    (temp_dir / _DOC_RENDERED_NAME).write_text(text, encoding="utf-8")
+
+    job_id = str(uuid.uuid4())
+    create_job(
+        job_id,
+        "speech",
+        input_filename,
+        meta={
+            "op": "speech",
+            "upload_token": upload_token,
+            "input_filename": input_filename,
+            "voice_id": voice_id,
+            "speed": speed,
+            "pitch": pitch,
+            "output_format": output_format,
+        },
+    )
+    run_speech_job.delay(
+        job_id,
+        upload_token,
+        input_filename,
+        voice_id,
+        speed,
+        pitch,
+        output_format,
+    )
+    return str(url_for("jobs.job_progress", job_id=job_id))

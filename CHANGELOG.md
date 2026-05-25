@@ -36,6 +36,19 @@ Releases are tagged in the [GitHub repository](https://github.com/Community-Acce
 
 ## [Unreleased]
 
+### Added
+
+- **Queue-first heavy workflow expansion across the web app**: extended the shared `/job/<id>/` progress model beyond Convert to include Export, Template generation, Speech document preparation, Speech document/typed downloads, PageFlow extraction, single-file Audit submit, and non-interactive Fix runs. Added new queued task handlers in `web/src/acb_large_print_web/tasks/convert_tasks.py` plus retry dispatch support for these operations.
+- **PageFlow queued extraction handoff**: added queued extraction operation support and a completion route (`/page-flow/from-job/<job_id>`) so users can resume in the editable PageFlow text screen after background extraction completes.
+- **Job progress continue actions**: added optional `continue_url` support in job status payloads and progress UI so queued preprocess workflows can guide users back to the correct next step.
+- **Queue route regression coverage**: added `web/tests/test_queue_routes.py` to validate queue path behavior for Template, Export, Speech Prepare, Audit, and Fix.
+
+### Changed
+
+- **Speech voice selection simplified**: Speech Studio now uses one combined voice combo box across ready engines instead of grouped radio clusters, and corresponding client-side state handling now reads/writes a single selected value.
+- **PageFlow voice selection simplified**: PageFlow narration voice selection now uses one combined voice combo box and removed engine-filter UI/script complexity.
+- **Speech prepare queue API response**: queued Speech document preparation now returns JSON (`202` with `job_url`) for fetch-based UI flows, while preserving synchronous fallback behavior when queueing is unavailable.
+
 ### Fixed
 
 - **Accessibility Regression Gate `/guide/` contrast stability**: strengthened code-block contrast for syntax-classed fenced code (`pre > code.language-*`) in `web/src/acb_large_print_web/static/forms.css` to prevent intermittent `color-contrast` serious violations in scheduled axe runs.

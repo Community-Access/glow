@@ -7,6 +7,7 @@ based on file format. It is used by the FastAPI endpoints in main.py.
 from pathlib import Path
 import tempfile
 import shutil
+import sys
 
 
 from acb_large_print.auditor import audit_document
@@ -17,6 +18,50 @@ from acb_large_print.pandoc_converter import convert_to_html, convert_to_docx
 from acb_large_print.reporter import generate_json_report, generate_text_report, generate_html_report
 
 SUPPORTED_FORMATS = {"markdown", "md", "docx", "html"}
+
+
+def run_page_flow_extract(source_url: str, *, max_pages: int = 5, follow_pagination: bool = True):
+    """Extract readable article text from a web URL using PageFlow logic.
+
+    Returns a JSON-serializable dictionary with normalized article details.
+    """
+    if not source_url or not str(source_url).strip():
+        raise ValueError("source_url is required")
+
+    # Prefer direct import when package path is already configured.
+    try:
+        from acb_large_print_web.listen_later import extract_article, ArticleExtractionError
+    except ImportError:
+        # Fallback for standalone mcp_server execution: add web/src to path.
+        project_root = Path(__file__).resolve().parents[1]
+        web_src = project_root / "web" / "src"
+        if str(web_src) not in sys.path:
+            sys.path.insert(0, str(web_src))
+        try:
+            from acb_large_print_web.listen_later import extract_article, ArticleExtractionError
+        except Exception as exc:
+            raise RuntimeError(
+                "PageFlow extraction requires web/src/acb_large_print_web to be importable"
+            ) from exc
+
+    try:
+        article = extract_article(
+            str(source_url).strip(),
+            max_pages=max(1, int(max_pages)),
+            follow_pagination=bool(follow_pagination),
+        )
+    except ArticleExtractionError as exc:
+        raise ValueError(str(exc)) from exc
+
+    return {
+        "source_url": article.source_url,
+        "final_url": article.final_url,
+        "title": article.title,
+        "text": article.text,
+        "page_urls": list(article.page_urls),
+        "page_count": len(article.page_urls),
+        "char_count": len(article.text or ""),
+    }
 
 
 def run_audit(file_path: Path, fmt: str):

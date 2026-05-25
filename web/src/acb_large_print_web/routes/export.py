@@ -1,15 +1,20 @@
 """Export route -- convert a .docx to ACB-compliant HTML."""
 
+import os
+import uuid
+
 import zipfile
 
-from flask import Blueprint, abort, redirect, render_template, request, send_file, url_for
+from flask import Blueprint, abort, current_app, redirect, render_template, request, send_file, url_for
 
 from acb_large_print.exporter import export_cms_fragment, export_standalone_html
 
 from ..feature_flags import get_flag
+from ..tasks.convert_tasks import create_job, run_export_job
 from ..upload import UploadError, cleanup_token, get_temp_dir, validate_upload
 
 export_bp = Blueprint("export", __name__)
+_ASYNC_HEAVY_ENABLED = os.environ.get("GLOW_CONVERT_ASYNC", "1") == "1"
 
 
 @export_bp.route("/", methods=["GET"])
@@ -29,6 +34,25 @@ def export_submit():
 
         title = request.form.get("title", "").strip()
         mode = request.form.get("mode", "standalone")
+
+        if _ASYNC_HEAVY_ENABLED and not current_app.config.get("TESTING", False):
+            job_id = str(uuid.uuid4())
+            create_job(
+                job_id,
+                "export",
+                saved_path.name,
+                meta={
+                    "op": "export",
+                    "upload_token": token,
+                    "input_filename": saved_path.name,
+                    "options": {
+                        "title": title,
+                        "mode": mode,
+                    },
+                },
+            )
+            run_export_job.delay(job_id, token, {"title": title, "mode": mode})
+            return redirect(url_for("jobs.job_progress", job_id=job_id))
 
         temp_dir = get_temp_dir(token)
 

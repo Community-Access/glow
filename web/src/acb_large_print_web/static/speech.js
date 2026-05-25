@@ -6,8 +6,10 @@
   }
 
   function getSelectedVoice() {
-    var selected = document.querySelector('input[name="voice"]:checked');
-    return selected ? selected.value : "";
+    if (voiceSelect) {
+      return voiceSelect.value || "";
+    }
+    return "";
   }
 
   function getFormState() {
@@ -151,69 +153,30 @@
     });
   }
 
-  var voiceInputs = document.querySelectorAll('input[name="voice"]');
-  function normalizeVoiceSelection() {
-    if (!voiceInputs || !voiceInputs.length) {
-      return;
-    }
-
-    var checked = [];
-    for (var i = 0; i < voiceInputs.length; i += 1) {
-      if (voiceInputs[i].checked) {
-        checked.push(voiceInputs[i]);
-      }
-    }
-
-    if (checked.length > 1) {
-      for (var j = 1; j < checked.length; j += 1) {
-        checked[j].checked = false;
-      }
-      return;
-    }
-
-    if (checked.length === 0) {
-      for (var k = 0; k < voiceInputs.length; k += 1) {
-        if (!voiceInputs[k].disabled) {
-          voiceInputs[k].checked = true;
-          return;
-        }
-      }
-    }
-  }
-
+  var voiceSelect = byId("speech-voice");
   function restoreVoiceSelectionFromSettings() {
+    if (!voiceSelect) {
+      return;
+    }
     if (!window.glowPreferences || typeof window.glowPreferences.loadSettings !== "function") {
-      normalizeVoiceSelection();
       return;
     }
     var settings = window.glowPreferences.loadSettings();
     var wanted = settings && settings.speech && settings.speech.voice ? settings.speech.voice : "";
-    var found = false;
-
-    if (wanted && voiceInputs && voiceInputs.length) {
-      for (var i = 0; i < voiceInputs.length; i += 1) {
-        if (!voiceInputs[i].disabled && voiceInputs[i].value === wanted) {
-          voiceInputs[i].checked = true;
-          found = true;
-          break;
-        }
-      }
+    if (!wanted) {
+      return;
     }
-
-    if (!found) {
-      normalizeVoiceSelection();
+    for (var i = 0; i < voiceSelect.options.length; i += 1) {
+      if (voiceSelect.options[i].value === wanted) {
+        voiceSelect.value = wanted;
+        break;
+      }
     }
   }
 
-  if (voiceInputs && voiceInputs.length) {
-    for (var i = 0; i < voiceInputs.length; i += 1) {
-      voiceInputs[i].addEventListener("change", function () {
-        normalizeVoiceSelection();
-        persistState();
-      });
-    }
+  if (voiceSelect) {
     restoreVoiceSelectionFromSettings();
-    normalizeVoiceSelection();
+    voiceSelect.addEventListener("change", persistState);
   }
 
   var previewBtn = byId("preview-btn");
@@ -453,6 +416,13 @@
         return resp.json();
       })
       .then(function (json) {
+        if (json && json.queued && json.job_url) {
+          showDocumentStatus("Preparation queued. Opening progress page...");
+          window.location.assign(json.job_url);
+          var queuedError = new Error("Speech preparation queued");
+          queuedError.isQueued = true;
+          return Promise.reject(queuedError);
+        }
         preparedDocument = json;
         if (documentTokenInput) {
           documentTokenInput.value = json.token || "";
@@ -528,6 +498,9 @@
           });
       })
       .catch(function (err) {
+        if (err && err.isQueued) {
+          return;
+        }
         setBusy(false);
         showDocumentError(err && err.message ? err.message : String(err));
       });
@@ -558,13 +531,25 @@
             if (!resp.ok) {
               return errorFromResponse(resp);
             }
-            return Promise.all([resp.blob(), Promise.resolve(resp.headers.get("Content-Disposition"))]);
+            var contentType = resp.headers.get("Content-Type") || "";
+            if (contentType.indexOf("application/json") >= 0) {
+              return resp.json().then(function (json) {
+                return { queued: !!(json && json.queued), job_url: json && json.job_url };
+              });
+            }
+            return Promise.all([resp.blob(), Promise.resolve(resp.headers.get("Content-Disposition"))])
+              .then(function (result) {
+                return { queued: false, blob: result[0], disposition: result[1] };
+              });
           })
           .then(function (result) {
-            var blob = result[0];
-            var disposition = result[1];
-            var filename = parseFilenameFromDisposition(disposition);
-            triggerDownload(blob, filename);
+            if (result.queued && result.job_url) {
+              showDocumentStatus("Queued for background conversion. Opening progress page...");
+              window.location.assign(result.job_url);
+              return;
+            }
+            var filename = parseFilenameFromDisposition(result.disposition);
+            triggerDownload(result.blob, filename);
             showDocumentStatus("Full document audio is ready and downloaded.");
           })
           .catch(function (err) {
@@ -576,6 +561,9 @@
           });
       })
       .catch(function (err) {
+        if (err && err.isQueued) {
+          return;
+        }
         setBusy(false);
         showDocumentError(err && err.message ? err.message : String(err));
       });
@@ -648,6 +636,52 @@
       ensureDocumentPrepared().catch(function (err) {
         showDocumentError(err && err.message ? err.message : String(err));
       });
+    });
+  }
+
+  if (downloadBtn && form && form.getAttribute("action")) {
+    downloadBtn.addEventListener("click", function () {
+      clearError();
+      clearStatus();
+      setBusy(true);
+      showStatus("Preparing downloadable audio...");
+
+      fetch(form.getAttribute("action"), {
+        method: "POST",
+        headers: { "X-CSRFToken": getCsrfToken() },
+        body: buildFormData(false)
+      })
+        .then(function (resp) {
+          if (!resp.ok) {
+            return errorFromResponse(resp);
+          }
+          var contentType = resp.headers.get("Content-Type") || "";
+          if (contentType.indexOf("application/json") >= 0) {
+            return resp.json().then(function (json) {
+              return { queued: !!(json && json.queued), job_url: json && json.job_url };
+            });
+          }
+          return Promise.all([resp.blob(), Promise.resolve(resp.headers.get("Content-Disposition"))])
+            .then(function (result) {
+              return { queued: false, blob: result[0], disposition: result[1] };
+            });
+        })
+        .then(function (result) {
+          if (result.queued && result.job_url) {
+            showStatus("Queued for background conversion. Opening progress page...");
+            window.location.assign(result.job_url);
+            return;
+          }
+          var filename = parseFilenameFromDisposition(result.disposition);
+          triggerDownload(result.blob, filename);
+          showStatus("Download is ready.");
+        })
+        .catch(function (err) {
+          showError("Download failed: " + (err && err.message ? err.message : err));
+        })
+        .finally(function () {
+          setBusy(false);
+        });
     });
   }
 

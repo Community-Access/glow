@@ -1,0 +1,1890 @@
+<h1
+id="prd-transactional-email-architecture-for-glow-using-amazon-ses-keycloak-and-optional-agentmail">PRD:
+Transactional Email Architecture for GLOW Using Amazon SES, Keycloak,
+and Optional AgentMail</h1>
+<p><strong>Product:</strong> GLOW — Guided Layout &amp; Output
+Workflow<br />
+<strong>Primary umbrella domain:</strong>
+<code>letitglow.app</code><br />
+<strong>Primary public site:</strong>
+<code>https://letitglow.app</code><br />
+<strong>Primary owner:</strong> Blind Information Technology Solutions
+(BITS) / GLOW project leadership<br />
+<strong>Prepared for:</strong> Jeff Bishop<br />
+<strong>Prepared on:</strong> May 25, 2026<br />
+<strong>Document status:</strong> Implementation-ready draft<br />
+<strong>Recommended first milestone:</strong> Keycloak identity email +
+GLOW feedback/admin transactional email through Amazon SES</p>
+<hr />
+<h2 id="executive-summary">1. Executive Summary</h2>
+<p>GLOW needs a reliable, privacy-conscious, accessible, and governable
+email architecture for service-related transactional messages. The
+recommended architecture is:</p>
+<pre class="text"><code>Keycloak + Amazon SES SMTP
+  Identity email:
+  - email verification
+  - password reset
+  - required actions
+  - administrative account notifications
+
+GLOW application + Amazon SES API v2
+  Application transactional email:
+  - feedback confirmations
+  - feedback routing to administrators
+  - operational alerts
+  - optional future job-completion notices
+
+AgentMail
+  Future optional module only:
+  - agent-owned inboxes
+  - AI support triage
+  - threaded agent conversations
+  - inbound workflow intake</code></pre>
+<p>Amazon SES should be presented to AWS as a <strong>low-volume,
+controlled, transactional email system</strong> for GLOW. It should not
+be represented as a newsletter system, campaign platform, convention
+promotion tool, fundraising blast tool, or general BITS community
+mailing service.</p>
+<p>Keycloak improves the design because it moves identity email into a
+mature identity provider, while SES remains the delivery,
+authentication, reputation, bounce, complaint, and suppression
+layer.</p>
+<p>AgentMail can be valuable later, but it should remain <strong>out of
+scope for Phase 1</strong>. It is an inbox API for AI agents, not the
+right foundation for Keycloak password resets or GLOW transactional
+notices.</p>
+<h3 id="domain-refactor-decision-letitglow.app">1.1 Domain refactor
+decision: letitglow.app</h3>
+<p>This PRD has been refactored so that <code>letitglow.app</code> is
+the public and technical umbrella domain for GLOW. BITS remains the
+sponsoring organization and governance home, but GLOW transactional
+email, Keycloak identity email, future agent inboxes, DNS
+authentication, bounce handling, and AWS SES production-access language
+should be aligned under the <code>letitglow.app</code> domain
+family.</p>
+<p>Recommended domain layout:</p>
+<pre class="text"><code>letitglow.app
+  Primary public site and application entry point
+
+notify.letitglow.app
+  Amazon SES verified identity for transactional email
+
+bounce.notify.letitglow.app
+  Amazon SES custom MAIL FROM and bounce domain
+
+agents.letitglow.app
+  Future AgentMail/agent-inbox subdomain, out of scope for Phase 1</code></pre>
+<p>If <code>glow.bits-acb.org</code> remains active during transition,
+it should be treated as a legacy or redirect domain, not the primary SES
+sending identity. Avoid mixing sender reputation between
+<code>bits-acb.org</code> and <code>letitglow.app</code> unless there is
+a specific governance reason to do so.</p>
+<hr />
+<h2 id="product-problem">2. Product Problem</h2>
+<p>GLOW needs to send important service email without creating
+deliverability, privacy, accessibility, or abuse-management
+problems.</p>
+<p>Current and future GLOW workflows may require:</p>
+<ul>
+<li>Account verification and password reset messages.</li>
+<li>Administrator sign-in and required-action messages.</li>
+<li>Feedback confirmations.</li>
+<li>Feedback routing to GLOW maintainers or administrators.</li>
+<li>Security and operational alerts.</li>
+<li>Optional job-completion notices when a user explicitly requests
+notification.</li>
+<li>Future receipts or acknowledgments if GLOW adds donations,
+sponsorship workflows, paid services, or institutional access.</li>
+</ul>
+<p>Without a governed architecture, email can become a risk:</p>
+<ul>
+<li>Poor deliverability.</li>
+<li>Bounces and complaints damaging sender reputation.</li>
+<li>AWS SES production access denial.</li>
+<li>Privacy concerns if files, reports, or generated outputs are
+emailed.</li>
+<li>Inaccessible email templates.</li>
+<li>Uncontrolled email paths inside application code.</li>
+<li>Confusion between transactional email and BITS communications.</li>
+</ul>
+<hr />
+<h2 id="goals">3. Goals</h2>
+<h3 id="business-and-mission-goals">3.1 Business and mission goals</h3>
+<ol type="1">
+<li>Support GLOW’s accessibility mission with reliable transactional
+email.</li>
+<li>Protect the reputation of GLOW, BITS, and the
+<code>letitglow.app</code> domain, while preserving BITS as the
+sponsoring organization.</li>
+<li>Preserve GLOW’s privacy-forward posture.</li>
+<li>Make the Amazon SES production-access request honest, clear, and
+low-risk.</li>
+<li>Keep the system simple enough to operate by a small team.</li>
+<li>Support future growth without starting with an overbuilt or risky
+architecture.</li>
+</ol>
+<h3 id="technical-goals">3.2 Technical goals</h3>
+<ol type="1">
+<li>Use Amazon SES as the primary transactional delivery provider.</li>
+<li>Use Keycloak for identity-related email.</li>
+<li>Use a dedicated GLOW transactional sending subdomain.</li>
+<li>Implement DKIM, SPF, DMARC, and a custom MAIL FROM domain.</li>
+<li>Use SES configuration sets for monitoring and event publishing.</li>
+<li>Enable bounce and complaint suppression.</li>
+<li>Store email events in an audit log.</li>
+<li>Build accessible email templates.</li>
+<li>Prevent direct email sending outside the approved service
+layer.</li>
+<li>Separate future agent inboxes from transactional email.</li>
+</ol>
+<h3 id="compliance-and-trust-goals">3.3 Compliance and trust goals</h3>
+<ol type="1">
+<li>Do not send unsolicited email.</li>
+<li>Do not send marketing through the transactional SES identity.</li>
+<li>Do not use purchased, scraped, rented, or third-party lists.</li>
+<li>Do not email uploaded files, converted documents, extracted text, or
+private accessibility reports.</li>
+<li>Suppress hard bounces and complaints.</li>
+<li>Maintain clear public privacy and notification language.</li>
+</ol>
+<hr />
+<h2 id="non-goals">4. Non-Goals</h2>
+<p>This project does <strong>not</strong> include:</p>
+<pre class="text"><code>BITS newsletters
+GLOW promotional campaigns
+ACB convention announcements
+Fundraising blasts
+Marketing automation
+Cold outreach
+Imported mailing lists
+Purchased or scraped lists
+Bulk community email
+Emailing user-uploaded files
+Emailing converted output files
+Emailing private accessibility audit results by default
+Using AgentMail for Keycloak password resets
+Using AgentMail for core transactional delivery</code></pre>
+<p>If newsletters, convention announcements, or broad community outreach
+are needed, use a separate, opt-in email marketing platform with its own
+consent, unsubscribe, and reputation model.</p>
+<hr />
+<h2 id="key-design-decision">5. Key Design Decision</h2>
+<h3 id="three-lane-email-architecture">5.1 Three-lane email
+architecture</h3>
+<pre class="text"><code>Lane 1: Identity Email
+Provider path: Keycloak → Amazon SES SMTP
+Purpose: account verification, password reset, required actions, account security messages
+Domain: notify.letitglow.app
+Out of scope: marketing, newsletters, document delivery
+
+Lane 2: GLOW Application Transactional Email
+Provider path: GLOW → Amazon SES API v2
+Purpose: feedback confirmations, admin notifications, system alerts, optional job-completion notices
+Domain: notify.letitglow.app
+Out of scope: identity flows already handled by Keycloak
+
+Lane 3: Future Agent Inboxes
+Provider path: GLOW agents → AgentMail
+Purpose: future AI-agent inboxes, support triage, inbound workflow classification, threaded agent conversations
+Domain: agents.letitglow.app
+Out of scope for Phase 1</code></pre>
+<h3 id="why-this-split-matters">5.2 Why this split matters</h3>
+<p>Keycloak should own identity email because it already controls
+accounts, realms, password reset, required actions, and account security
+flows.</p>
+<p>GLOW should own application email because it understands feedback,
+jobs, workflows, and operational alerts.</p>
+<p>Amazon SES should own deliverability and reputation controls.</p>
+<p>AgentMail should only be introduced if GLOW later needs <strong>email
+inboxes for AI agents</strong>, not merely a way to send transactional
+messages.</p>
+<hr />
+<h2 id="domain-and-identity-strategy">6. Domain and Identity
+Strategy</h2>
+<p>The operational rule is simple: <strong>all GLOW-generated
+transactional mail should live under <code>letitglow.app</code>, not
+under personal addresses or the broader BITS organizational
+domain.</strong> This keeps GLOW deliverability, privacy, governance,
+and reputation management clean.</p>
+<h3 id="recommended-sending-subdomain">6.1 Recommended sending
+subdomain</h3>
+<pre class="text"><code>notify.letitglow.app</code></pre>
+<h3 id="recommended-mail-from-bounce-domain">6.2 Recommended MAIL FROM /
+bounce domain</h3>
+<pre class="text"><code>bounce.notify.letitglow.app</code></pre>
+<h3 id="recommended-future-agentmail-subdomain">6.3 Recommended future
+AgentMail subdomain</h3>
+<pre class="text"><code>agents.letitglow.app</code></pre>
+<h3 id="recommended-sender-addresses">6.4 Recommended sender
+addresses</h3>
+<pre class="text"><code>no-reply@notify.letitglow.app
+security@notify.letitglow.app
+support@notify.letitglow.app
+feedback@notify.letitglow.app
+alerts@notify.letitglow.app</code></pre>
+<h3 id="recommended-human-support-addresses">6.5 Recommended human
+support addresses</h3>
+<p>Use these for user-facing replies, website contact forms, and
+internal administration. These do not need to be the primary SES From
+addresses unless explicitly verified and governed.</p>
+<pre class="text"><code>support@letitglow.app
+admin@letitglow.app
+dmarc@letitglow.app</code></pre>
+<h3 id="recommended-display-names">6.6 Recommended display names</h3>
+<pre class="text"><code>GLOW
+GLOW Security
+GLOW Support
+GLOW Feedback
+GLOW System Alerts</code></pre>
+<h3 id="domain-separation-policy">6.7 Domain separation policy</h3>
+<p>Use the dedicated GLOW notification subdomain only for transactional
+email.</p>
+<p>Do not use:</p>
+<pre class="text"><code>jeff@...
+personal addresses
+general BITS list addresses
+individual officer addresses
+board or committee list addresses</code></pre>
+<p>for system-generated GLOW email. Human support addresses such as
+<code>support@letitglow.app</code> or <code>admin@letitglow.app</code>
+may be used for replies and contact workflows, but automated From
+addresses should remain under <code>notify.letitglow.app</code> unless a
+new sender identity is intentionally approved.</p>
+<hr />
+<h2 id="amazon-ses-production-access-strategy">7. Amazon SES Production
+Access Strategy</h2>
+<h3 id="desired-aws-framing">7.1 Desired AWS framing</h3>
+<p>The AWS request should be honest and specific:</p>
+<blockquote>
+<p>GLOW uses Amazon SES for low-volume transactional email. Identity
+email is generated by Keycloak and delivered through SES SMTP.
+Application-specific email is generated by GLOW and delivered through
+SES API v2. Recipients are users or administrators who initiated an
+action, have an account relationship, submitted feedback, or requested a
+service notification. GLOW does not use SES for marketing, newsletters,
+purchased lists, scraped lists, convention announcements, fundraising
+blasts, or unsolicited outreach.</p>
+</blockquote>
+<h3 id="avoid-the-phrase-full-access">7.2 Avoid the phrase “full
+access”</h3>
+<p>Use:</p>
+<pre class="text"><code>production access
+move out of the SES sandbox
+transactional sending access
+modest initial sending quota</code></pre>
+<p>Avoid:</p>
+<pre class="text"><code>full access
+unrestricted sending
+bulk email capability
+send to everyone
+campaigns
+blasts
+mailing lists</code></pre>
+<h3 id="initial-quota-recommendation">7.3 Initial quota
+recommendation</h3>
+<p>Request a conservative quota:</p>
+<pre class="text"><code>Daily quota: 1,000 recipients/day
+Maximum send rate: 1 to 5 recipients/second
+Mail type: Transactional
+Primary Region: us-east-1, unless hosting or operations require another Region</code></pre>
+<p>This is enough for early GLOW use while avoiding the appearance of a
+bulk sender.</p>
+<h3 id="production-access-request-text">7.4 Production access request
+text</h3>
+<p>Use this as the core request narrative:</p>
+<pre class="text"><code>GLOW, Guided Layout &amp; Output Workflow, is a free accessibility workflow tool sponsored by Blind Information Technology Solutions. GLOW helps users and administrators work with accessibility-related workflows such as auditing, fixing, converting, and preparing digital content.
+
+We are requesting Amazon SES production access for low-volume transactional email only.
+
+GLOW uses Keycloak as its identity and access management provider. Identity-related transactional messages, such as email verification, password reset, required actions, and account-related administrative notices, are generated by Keycloak and delivered through Amazon SES SMTP.
+
+The GLOW application itself sends only limited service-related transactional messages, such as feedback confirmations, feedback routing to administrators, operational alerts, and future optional job-completion notices requested by users.
+
+We will not use this SES configuration for newsletters, promotional campaigns, convention announcements, fundraising blasts, cold outreach, or unsolicited bulk email. We do not use purchased, rented, scraped, or third-party mailing lists.
+
+Uploaded files, converted documents, extracted text, private accessibility reports, and user API keys are not emailed. Transactional messages contain only minimal service information necessary for the specific action.
+
+Recipients are administrators of the service, users who initiated an action on the site, or individuals who submitted feedback and provided an email address for confirmation.
+
+We will configure a verified sending domain, DKIM, SPF, DMARC, a custom MAIL FROM domain, SES configuration sets, event notifications, CloudWatch monitoring, and account-level suppression for bounces and complaints.
+
+Initial expected volume is modest: approximately 50 to 300 messages per day, with occasional peaks during workshops, testing events, or public demonstrations. We are requesting a conservative initial quota and will request increases only after establishing healthy sending history.</code></pre>
+<h3 id="if-aws-asks-for-more-information">7.5 If AWS asks for more
+information</h3>
+<p>Respond with concrete answers:</p>
+<pre class="text"><code>Message types:
+- Keycloak verification emails
+- Keycloak password reset emails
+- Keycloak required-action emails
+- feedback confirmations
+- admin feedback notices
+- operational alerts
+- optional user-requested job-completion notices
+
+Recipient source:
+- GLOW administrators
+- authenticated users
+- users who request account actions
+- users who submit feedback and provide an email address
+- users who explicitly request job-completion notification
+
+List policy:
+- no purchased lists
+- no scraped lists
+- no rented lists
+- no imported third-party lists
+- no bulk marketing lists
+
+Bounce handling:
+- hard bounces are suppressed
+- complaints are suppressed
+- SES account-level suppression is enabled
+- application-level suppression prevents future sends
+- admins review unusual events
+
+Privacy:
+- no uploaded files
+- no generated files
+- no extracted document text
+- no private accessibility report content
+- no API keys
+- no sensitive stack traces</code></pre>
+<hr />
+<h2 id="authoritative-source-notes">8. Authoritative Source Notes</h2>
+<p>The implementation plan in this PRD is based on current documentation
+from AWS, Keycloak, and AgentMail.</p>
+<p>Key points:</p>
+<ul>
+<li><p>Amazon SES production access is required to move out of the
+sandbox; once in production, you may send to arbitrary recipients, but
+sender identities still must be verified.<br />
+Source: <a
+href="https://docs.aws.amazon.com/ses/latest/dg/request-production-access.html"
+class="uri">https://docs.aws.amazon.com/ses/latest/dg/request-production-access.html</a></p></li>
+<li><p>SES sandbox accounts are limited to verified recipients, 200
+messages per 24-hour period, and 1 message per second.<br />
+Source: <a
+href="https://docs.aws.amazon.com/ses/latest/dg/request-production-access.html"
+class="uri">https://docs.aws.amazon.com/ses/latest/dg/request-production-access.html</a></p></li>
+<li><p>SES verified identities can be domains, subdomains, or email
+addresses; domain verification requires DNS access.<br />
+Source: <a
+href="https://docs.aws.amazon.com/ses/latest/dg/creating-identities.html"
+class="uri">https://docs.aws.amazon.com/ses/latest/dg/creating-identities.html</a></p></li>
+<li><p>A custom MAIL FROM domain requires DNS records including MX and
+SPF/TXT records.<br />
+Source: <a
+href="https://docs.aws.amazon.com/ses/latest/dg/mail-from.html"
+class="uri">https://docs.aws.amazon.com/ses/latest/dg/mail-from.html</a></p></li>
+<li><p>DMARC uses SPF and DKIM to detect spoofing and phishing; using
+both provides stronger protection.<br />
+Source: <a
+href="https://docs.aws.amazon.com/ses/latest/dg/send-email-authentication-dmarc.html"
+class="uri">https://docs.aws.amazon.com/ses/latest/dg/send-email-authentication-dmarc.html</a></p></li>
+<li><p>SES account-level suppression can be configured for bounces and
+complaints.<br />
+Source: <a
+href="https://docs.aws.amazon.com/ses/latest/dg/sending-email-suppression-list.html"
+class="uri">https://docs.aws.amazon.com/ses/latest/dg/sending-email-suppression-list.html</a></p></li>
+<li><p>SES SMTP credentials are not the same as normal AWS credentials
+and are Region-specific.<br />
+Source: <a
+href="https://docs.aws.amazon.com/ses/latest/dg/smtp-credentials.html"
+class="uri">https://docs.aws.amazon.com/ses/latest/dg/smtp-credentials.html</a></p></li>
+<li><p>SES supports STARTTLS on ports 25, 587, or 2587 and TLS Wrapper
+on ports 465 or 2465.<br />
+Source: <a
+href="https://docs.aws.amazon.com/ses/latest/dg/smtp-connect.html"
+class="uri">https://docs.aws.amazon.com/ses/latest/dg/smtp-connect.html</a></p></li>
+<li><p>Keycloak sends email for verification, forgotten passwords, and
+server-event/admin notifications when SMTP settings are configured for a
+realm.<br />
+Source: <a
+href="https://www.keycloak.org/docs/latest/server_admin/index.html"
+class="uri">https://www.keycloak.org/docs/latest/server_admin/index.html</a></p></li>
+<li><p>Keycloak’s realm email settings include From, Reply-To, Envelope
+from, Host, Port, encryption, authentication, username, and
+password/token settings; AWS SMTP requires password authentication
+rather than XOAUTH2.<br />
+Source: <a
+href="https://www.keycloak.org/docs/latest/server_admin/index.html"
+class="uri">https://www.keycloak.org/docs/latest/server_admin/index.html</a></p></li>
+<li><p>AgentMail describes itself as an email inbox API for AI agents
+and supports API-managed inboxes, threads/replies, attachments, realtime
+events, custom domains, SDKs/MCP, semantic search, and data
+extraction.<br />
+Source: <a href="https://www.agentmail.to/"
+class="uri">https://www.agentmail.to/</a></p></li>
+</ul>
+<hr />
+<h2 id="functional-requirements">9. Functional Requirements</h2>
+<h3 id="keycloak-identity-email-requirements">9.1 Keycloak identity
+email requirements</h3>
+<p>Keycloak shall send:</p>
+<pre class="text"><code>email_verification
+password_reset
+required_action
+account_update_notice
+admin_initiated_action</code></pre>
+<p>Keycloak shall not send:</p>
+<pre class="text"><code>newsletters
+announcements
+marketing
+BITS community messages
+campaigns
+document outputs
+audit reports</code></pre>
+<h3 id="glow-application-email-requirements">9.2 GLOW application email
+requirements</h3>
+<p>GLOW shall send:</p>
+<pre class="text"><code>feedback_confirmation
+feedback_admin_notice
+system_error_alert
+security_alert_for_application_events
+optional_job_completion_notice
+future_receipt_or_acknowledgment</code></pre>
+<p>GLOW shall not send:</p>
+<pre class="text"><code>identity email owned by Keycloak
+uploaded files
+converted files
+private audit reports
+API keys
+document extraction content
+bulk messages</code></pre>
+<h3 id="agentmail-future-requirements">9.3 AgentMail future
+requirements</h3>
+<p>AgentMail may be considered later for:</p>
+<pre class="text"><code>agent-owned inboxes
+support triage
+threaded agent conversations
+inbound request classification
+workshop intake
+AI accessibility-agent communication</code></pre>
+<p>AgentMail shall not be used for Phase 1.</p>
+<p>AgentMail shall not be used for:</p>
+<pre class="text"><code>Keycloak account verification
+Keycloak password reset
+core transactional sending
+bulk outreach
+marketing
+newsletters
+automatic document-processing intake without privacy review</code></pre>
+<hr />
+<h2 id="privacy-and-data-handling-requirements">10. Privacy and Data
+Handling Requirements</h2>
+<h3 id="prohibited-email-content">10.1 Prohibited email content</h3>
+<p>No GLOW transactional email may include:</p>
+<pre class="text"><code>uploaded files
+converted files
+Braille output files
+audio output files
+PDF output files
+Word output files
+extracted text
+private accessibility reports
+full audit results
+document screenshots
+API keys
+temporary storage paths
+internal job IDs that expose infrastructure
+server stack traces containing user data
+long-lived public download links</code></pre>
+<h3 id="allowed-email-content">10.2 Allowed email content</h3>
+<p>Emails may include:</p>
+<pre class="text"><code>service name
+reason for message
+date and approximate time
+generic workflow type
+short-lived identity link from Keycloak
+feedback ticket/reference number
+support instructions
+privacy reminder</code></pre>
+<h3 id="job-completion-notices">10.3 Job-completion notices</h3>
+<p>Optional job-completion notices must be:</p>
+<pre class="text"><code>opt-in per job
+off by default
+minimal
+no attachments
+no output links in Phase 1
+no file content
+no extracted text
+no full reports</code></pre>
+<p>Suggested content:</p>
+<pre class="text"><code>Your requested GLOW process has completed.
+
+For your privacy, GLOW does not attach uploaded files, converted files, document text, or private accessibility results to email. Please return to the same browser session to download your result.</code></pre>
+<h3 id="public-privacy-language-to-add-to-glow">10.4 Public privacy
+language to add to GLOW</h3>
+<p>Add a section to GLOW’s privacy or help page:</p>
+<pre class="text"><code>Transactional Email
+
+GLOW may send limited transactional email related to use or administration of the service, such as account verification, password reset messages, administrator notices, feedback confirmations, security notices, and optional user-requested job-completion notices.
+
+GLOW does not send uploaded files, converted documents, extracted text, private accessibility reports, user API keys, or generated outputs by email.
+
+GLOW does not use this notification system for marketing, newsletters, campaign messages, convention announcements, fundraising blasts, purchased lists, scraped lists, or unsolicited bulk email.</code></pre>
+<hr />
+<h2 id="accessibility-requirements-for-email">11. Accessibility
+Requirements for Email</h2>
+<p>All user-facing email must be accessible.</p>
+<h3 id="plain-text">11.1 Plain text</h3>
+<p>Every template shall have a plain-text version.</p>
+<h3 id="html-email">11.2 HTML email</h3>
+<p>HTML email shall:</p>
+<pre class="text"><code>use semantic headings
+use short paragraphs
+place the purpose near the top
+use meaningful link text
+avoid image-only meaning
+avoid color-only meaning
+avoid tiny text
+avoid unexplained symbols
+avoid emoji as required meaning
+avoid dense tables
+include support/contact information</code></pre>
+<h3 id="link-text">11.3 Link text</h3>
+<p>Good:</p>
+<pre class="text"><code>Sign in to GLOW
+Reset your GLOW password
+View your feedback confirmation
+Contact GLOW support</code></pre>
+<p>Bad:</p>
+<pre class="text"><code>Click here
+Here
+Read more
+This link</code></pre>
+<h3 id="screen-reader-review">11.4 Screen reader review</h3>
+<p>Each template shall be reviewed with:</p>
+<pre class="text"><code>keyboard only
+screen reader reading order
+plain-text mode
+mobile email client if practical</code></pre>
+<hr />
+<h2 id="technical-architecture">12. Technical Architecture</h2>
+<h3 id="high-level-architecture">12.1 High-level architecture</h3>
+<pre class="text"><code>Keycloak Realm
+  ↓ SMTP
+Amazon SES SMTP endpoint
+  ↓
+SES verified identity: notify.letitglow.app
+  ↓
+Default SES configuration set: glow-transactional-production
+  ↓
+SES event destinations
+  ↓
+SNS/EventBridge
+  ↓
+Webhook/Lambda event processor
+  ↓
+GLOW email_events + email_suppressions
+  ↓
+Admin monitoring dashboard</code></pre>
+<pre class="text"><code>GLOW Application
+  ↓
+Internal email service/module
+  ↓
+Queue + rate limiter
+  ↓
+Amazon SES API v2
+  ↓
+SES configuration set: glow-transactional-production
+  ↓
+Same event and suppression pipeline</code></pre>
+<pre class="text"><code>Future AgentMail Module
+  ↓
+AgentMail inboxes on agents.letitglow.app
+  ↓
+Human-approved or policy-controlled agent responses
+  ↓
+Separate logs and privacy review</code></pre>
+<h3 id="configuration-set-strategy">12.2 Configuration set strategy</h3>
+<p>Create one initial configuration set:</p>
+<pre class="text"><code>glow-transactional-production</code></pre>
+<p>Assign it as the default configuration set to:</p>
+<pre class="text"><code>notify.letitglow.app</code></pre>
+<p>This matters because Keycloak may not easily add custom SES headers.
+A default configuration set at the verified identity helps ensure
+Keycloak-generated mail is still covered by SES event processing.</p>
+<h3 id="event-processing-strategy">12.3 Event processing strategy</h3>
+<p>Capture at least:</p>
+<pre class="text"><code>SEND
+DELIVERY
+BOUNCE
+COMPLAINT
+REJECT
+RENDERING_FAILURE
+DELIVERY_DELAY</code></pre>
+<p>Do not enable open or click tracking in Phase 1 unless there is a
+strong operational reason. GLOW should prioritize privacy and minimalism
+over engagement analytics.</p>
+<hr />
+<h2 id="data-model">13. Data Model</h2>
+<h3 id="email_messages">13.1 <code>email_messages</code></h3>
+<div class="sourceCode" id="cb38"><pre
+class="sourceCode sql"><code class="sourceCode sql"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a><span class="kw">CREATE</span> <span class="kw">TABLE</span> email_messages (</span>
+<span id="cb38-2"><a href="#cb38-2" aria-hidden="true" tabindex="-1"></a>    <span class="kw">id</span> BIGSERIAL <span class="kw">PRIMARY</span> <span class="kw">KEY</span>,</span>
+<span id="cb38-3"><a href="#cb38-3" aria-hidden="true" tabindex="-1"></a>    message_uuid UUID <span class="kw">NOT</span> <span class="kw">NULL</span> <span class="kw">UNIQUE</span>,</span>
+<span id="cb38-4"><a href="#cb38-4" aria-hidden="true" tabindex="-1"></a>    ses_message_id TEXT,</span>
+<span id="cb38-5"><a href="#cb38-5" aria-hidden="true" tabindex="-1"></a>    provider TEXT <span class="kw">NOT</span> <span class="kw">NULL</span> <span class="kw">DEFAULT</span> <span class="st">&#39;ses&#39;</span>,</span>
+<span id="cb38-6"><a href="#cb38-6" aria-hidden="true" tabindex="-1"></a>    source_system TEXT <span class="kw">NOT</span> <span class="kw">NULL</span>, <span class="co">-- keycloak or glow</span></span>
+<span id="cb38-7"><a href="#cb38-7" aria-hidden="true" tabindex="-1"></a>    recipient_email TEXT <span class="kw">NOT</span> <span class="kw">NULL</span>,</span>
+<span id="cb38-8"><a href="#cb38-8" aria-hidden="true" tabindex="-1"></a>    recipient_hash TEXT <span class="kw">NOT</span> <span class="kw">NULL</span>,</span>
+<span id="cb38-9"><a href="#cb38-9" aria-hidden="true" tabindex="-1"></a>    sender_email TEXT <span class="kw">NOT</span> <span class="kw">NULL</span>,</span>
+<span id="cb38-10"><a href="#cb38-10" aria-hidden="true" tabindex="-1"></a>    email_type TEXT <span class="kw">NOT</span> <span class="kw">NULL</span>,</span>
+<span id="cb38-11"><a href="#cb38-11" aria-hidden="true" tabindex="-1"></a>    template_name TEXT <span class="kw">NOT</span> <span class="kw">NULL</span>,</span>
+<span id="cb38-12"><a href="#cb38-12" aria-hidden="true" tabindex="-1"></a>    template_version TEXT <span class="kw">NOT</span> <span class="kw">NULL</span>,</span>
+<span id="cb38-13"><a href="#cb38-13" aria-hidden="true" tabindex="-1"></a>    subject TEXT <span class="kw">NOT</span> <span class="kw">NULL</span>,</span>
+<span id="cb38-14"><a href="#cb38-14" aria-hidden="true" tabindex="-1"></a>    status TEXT <span class="kw">NOT</span> <span class="kw">NULL</span> <span class="kw">DEFAULT</span> <span class="st">&#39;queued&#39;</span>,</span>
+<span id="cb38-15"><a href="#cb38-15" aria-hidden="true" tabindex="-1"></a>    configuration_set TEXT,</span>
+<span id="cb38-16"><a href="#cb38-16" aria-hidden="true" tabindex="-1"></a>    triggering_event TEXT,</span>
+<span id="cb38-17"><a href="#cb38-17" aria-hidden="true" tabindex="-1"></a>    related_object_type TEXT,</span>
+<span id="cb38-18"><a href="#cb38-18" aria-hidden="true" tabindex="-1"></a>    related_object_id TEXT,</span>
+<span id="cb38-19"><a href="#cb38-19" aria-hidden="true" tabindex="-1"></a>    created_at <span class="dt">TIMESTAMP</span> <span class="kw">NOT</span> <span class="kw">NULL</span> <span class="kw">DEFAULT</span> <span class="fu">CURRENT_TIMESTAMP</span>,</span>
+<span id="cb38-20"><a href="#cb38-20" aria-hidden="true" tabindex="-1"></a>    queued_at <span class="dt">TIMESTAMP</span>,</span>
+<span id="cb38-21"><a href="#cb38-21" aria-hidden="true" tabindex="-1"></a>    sent_at <span class="dt">TIMESTAMP</span>,</span>
+<span id="cb38-22"><a href="#cb38-22" aria-hidden="true" tabindex="-1"></a>    delivered_at <span class="dt">TIMESTAMP</span>,</span>
+<span id="cb38-23"><a href="#cb38-23" aria-hidden="true" tabindex="-1"></a>    bounced_at <span class="dt">TIMESTAMP</span>,</span>
+<span id="cb38-24"><a href="#cb38-24" aria-hidden="true" tabindex="-1"></a>    complained_at <span class="dt">TIMESTAMP</span>,</span>
+<span id="cb38-25"><a href="#cb38-25" aria-hidden="true" tabindex="-1"></a>    rejected_at <span class="dt">TIMESTAMP</span>,</span>
+<span id="cb38-26"><a href="#cb38-26" aria-hidden="true" tabindex="-1"></a>    failed_at <span class="dt">TIMESTAMP</span>,</span>
+<span id="cb38-27"><a href="#cb38-27" aria-hidden="true" tabindex="-1"></a>    last_error TEXT</span>
+<span id="cb38-28"><a href="#cb38-28" aria-hidden="true" tabindex="-1"></a>);</span></code></pre></div>
+<h3 id="email_events">13.2 <code>email_events</code></h3>
+<div class="sourceCode" id="cb39"><pre
+class="sourceCode sql"><code class="sourceCode sql"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a><span class="kw">CREATE</span> <span class="kw">TABLE</span> email_events (</span>
+<span id="cb39-2"><a href="#cb39-2" aria-hidden="true" tabindex="-1"></a>    <span class="kw">id</span> BIGSERIAL <span class="kw">PRIMARY</span> <span class="kw">KEY</span>,</span>
+<span id="cb39-3"><a href="#cb39-3" aria-hidden="true" tabindex="-1"></a>    message_uuid UUID,</span>
+<span id="cb39-4"><a href="#cb39-4" aria-hidden="true" tabindex="-1"></a>    ses_message_id TEXT,</span>
+<span id="cb39-5"><a href="#cb39-5" aria-hidden="true" tabindex="-1"></a>    provider TEXT <span class="kw">NOT</span> <span class="kw">NULL</span> <span class="kw">DEFAULT</span> <span class="st">&#39;ses&#39;</span>,</span>
+<span id="cb39-6"><a href="#cb39-6" aria-hidden="true" tabindex="-1"></a>    event_type TEXT <span class="kw">NOT</span> <span class="kw">NULL</span>,</span>
+<span id="cb39-7"><a href="#cb39-7" aria-hidden="true" tabindex="-1"></a>    event_payload JSONB <span class="kw">NOT</span> <span class="kw">NULL</span>,</span>
+<span id="cb39-8"><a href="#cb39-8" aria-hidden="true" tabindex="-1"></a>    recipient_email TEXT,</span>
+<span id="cb39-9"><a href="#cb39-9" aria-hidden="true" tabindex="-1"></a>    recipient_hash TEXT,</span>
+<span id="cb39-10"><a href="#cb39-10" aria-hidden="true" tabindex="-1"></a>    created_at <span class="dt">TIMESTAMP</span> <span class="kw">NOT</span> <span class="kw">NULL</span> <span class="kw">DEFAULT</span> <span class="fu">CURRENT_TIMESTAMP</span></span>
+<span id="cb39-11"><a href="#cb39-11" aria-hidden="true" tabindex="-1"></a>);</span></code></pre></div>
+<h3 id="email_suppressions">13.3 <code>email_suppressions</code></h3>
+<div class="sourceCode" id="cb40"><pre
+class="sourceCode sql"><code class="sourceCode sql"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a><span class="kw">CREATE</span> <span class="kw">TABLE</span> email_suppressions (</span>
+<span id="cb40-2"><a href="#cb40-2" aria-hidden="true" tabindex="-1"></a>    <span class="kw">id</span> BIGSERIAL <span class="kw">PRIMARY</span> <span class="kw">KEY</span>,</span>
+<span id="cb40-3"><a href="#cb40-3" aria-hidden="true" tabindex="-1"></a>    email TEXT <span class="kw">NOT</span> <span class="kw">NULL</span> <span class="kw">UNIQUE</span>,</span>
+<span id="cb40-4"><a href="#cb40-4" aria-hidden="true" tabindex="-1"></a>    email_hash TEXT <span class="kw">NOT</span> <span class="kw">NULL</span>,</span>
+<span id="cb40-5"><a href="#cb40-5" aria-hidden="true" tabindex="-1"></a>    reason TEXT <span class="kw">NOT</span> <span class="kw">NULL</span>, <span class="co">-- bounce, complaint, manual, unsubscribe, abuse</span></span>
+<span id="cb40-6"><a href="#cb40-6" aria-hidden="true" tabindex="-1"></a>    <span class="kw">source</span> TEXT <span class="kw">NOT</span> <span class="kw">NULL</span>, <span class="co">-- ses, admin, user, migration</span></span>
+<span id="cb40-7"><a href="#cb40-7" aria-hidden="true" tabindex="-1"></a>    provider_message_id TEXT,</span>
+<span id="cb40-8"><a href="#cb40-8" aria-hidden="true" tabindex="-1"></a>    first_seen_at <span class="dt">TIMESTAMP</span> <span class="kw">NOT</span> <span class="kw">NULL</span> <span class="kw">DEFAULT</span> <span class="fu">CURRENT_TIMESTAMP</span>,</span>
+<span id="cb40-9"><a href="#cb40-9" aria-hidden="true" tabindex="-1"></a>    last_seen_at <span class="dt">TIMESTAMP</span> <span class="kw">NOT</span> <span class="kw">NULL</span> <span class="kw">DEFAULT</span> <span class="fu">CURRENT_TIMESTAMP</span>,</span>
+<span id="cb40-10"><a href="#cb40-10" aria-hidden="true" tabindex="-1"></a>    manually_reviewed <span class="dt">BOOLEAN</span> <span class="kw">NOT</span> <span class="kw">NULL</span> <span class="kw">DEFAULT</span> <span class="kw">FALSE</span>,</span>
+<span id="cb40-11"><a href="#cb40-11" aria-hidden="true" tabindex="-1"></a>    notes TEXT</span>
+<span id="cb40-12"><a href="#cb40-12" aria-hidden="true" tabindex="-1"></a>);</span></code></pre></div>
+<h3 id="email_templates">13.4 <code>email_templates</code></h3>
+<div class="sourceCode" id="cb41"><pre
+class="sourceCode sql"><code class="sourceCode sql"><span id="cb41-1"><a href="#cb41-1" aria-hidden="true" tabindex="-1"></a><span class="kw">CREATE</span> <span class="kw">TABLE</span> email_templates (</span>
+<span id="cb41-2"><a href="#cb41-2" aria-hidden="true" tabindex="-1"></a>    <span class="kw">id</span> BIGSERIAL <span class="kw">PRIMARY</span> <span class="kw">KEY</span>,</span>
+<span id="cb41-3"><a href="#cb41-3" aria-hidden="true" tabindex="-1"></a>    template_name TEXT <span class="kw">NOT</span> <span class="kw">NULL</span>,</span>
+<span id="cb41-4"><a href="#cb41-4" aria-hidden="true" tabindex="-1"></a>    template_version TEXT <span class="kw">NOT</span> <span class="kw">NULL</span>,</span>
+<span id="cb41-5"><a href="#cb41-5" aria-hidden="true" tabindex="-1"></a>    subject_template TEXT <span class="kw">NOT</span> <span class="kw">NULL</span>,</span>
+<span id="cb41-6"><a href="#cb41-6" aria-hidden="true" tabindex="-1"></a>    text_body_template TEXT <span class="kw">NOT</span> <span class="kw">NULL</span>,</span>
+<span id="cb41-7"><a href="#cb41-7" aria-hidden="true" tabindex="-1"></a>    html_body_template TEXT,</span>
+<span id="cb41-8"><a href="#cb41-8" aria-hidden="true" tabindex="-1"></a>    source_system TEXT <span class="kw">NOT</span> <span class="kw">NULL</span>, <span class="co">-- keycloak or glow</span></span>
+<span id="cb41-9"><a href="#cb41-9" aria-hidden="true" tabindex="-1"></a>    is_active <span class="dt">BOOLEAN</span> <span class="kw">NOT</span> <span class="kw">NULL</span> <span class="kw">DEFAULT</span> <span class="kw">TRUE</span>,</span>
+<span id="cb41-10"><a href="#cb41-10" aria-hidden="true" tabindex="-1"></a>    created_at <span class="dt">TIMESTAMP</span> <span class="kw">NOT</span> <span class="kw">NULL</span> <span class="kw">DEFAULT</span> <span class="fu">CURRENT_TIMESTAMP</span>,</span>
+<span id="cb41-11"><a href="#cb41-11" aria-hidden="true" tabindex="-1"></a>    <span class="kw">UNIQUE</span>(template_name, template_version)</span>
+<span id="cb41-12"><a href="#cb41-12" aria-hidden="true" tabindex="-1"></a>);</span></code></pre></div>
+<h3 id="email_policy_audit">13.5 <code>email_policy_audit</code></h3>
+<div class="sourceCode" id="cb42"><pre
+class="sourceCode sql"><code class="sourceCode sql"><span id="cb42-1"><a href="#cb42-1" aria-hidden="true" tabindex="-1"></a><span class="kw">CREATE</span> <span class="kw">TABLE</span> email_policy_audit (</span>
+<span id="cb42-2"><a href="#cb42-2" aria-hidden="true" tabindex="-1"></a>    <span class="kw">id</span> BIGSERIAL <span class="kw">PRIMARY</span> <span class="kw">KEY</span>,</span>
+<span id="cb42-3"><a href="#cb42-3" aria-hidden="true" tabindex="-1"></a>    actor TEXT <span class="kw">NOT</span> <span class="kw">NULL</span>,</span>
+<span id="cb42-4"><a href="#cb42-4" aria-hidden="true" tabindex="-1"></a>    action TEXT <span class="kw">NOT</span> <span class="kw">NULL</span>,</span>
+<span id="cb42-5"><a href="#cb42-5" aria-hidden="true" tabindex="-1"></a>    target_email_hash TEXT,</span>
+<span id="cb42-6"><a href="#cb42-6" aria-hidden="true" tabindex="-1"></a>    details JSONB,</span>
+<span id="cb42-7"><a href="#cb42-7" aria-hidden="true" tabindex="-1"></a>    created_at <span class="dt">TIMESTAMP</span> <span class="kw">NOT</span> <span class="kw">NULL</span> <span class="kw">DEFAULT</span> <span class="fu">CURRENT_TIMESTAMP</span></span>
+<span id="cb42-8"><a href="#cb42-8" aria-hidden="true" tabindex="-1"></a>);</span></code></pre></div>
+<hr />
+<h2 id="step-by-step-implementation-walkthrough">14. Step-by-Step
+Implementation Walkthrough</h2>
+<h2 id="phase-0-decisions-and-preparation">Phase 0: Decisions and
+Preparation</h2>
+<h3 id="step-0.1-choose-one-aws-region">Step 0.1: Choose one AWS
+Region</h3>
+<p>Recommended:</p>
+<pre class="text"><code>us-east-1</code></pre>
+<p>Record the decision:</p>
+<pre class="text"><code>GLOW_SES_REGION=us-east-1</code></pre>
+<p>Important: SES identities, SMTP credentials, production access
+status, quotas, and configuration are Region-specific. Do not split the
+initial implementation across multiple Regions.</p>
+<h3 id="step-0.2-confirm-scope">Step 0.2: Confirm scope</h3>
+<p>Phase 1 includes:</p>
+<pre class="text"><code>Keycloak email verification
+Keycloak password reset
+Keycloak required action
+Keycloak administrative notices
+GLOW feedback confirmation
+GLOW feedback admin notice
+GLOW system alerts
+SES bounce and complaint processing
+SES suppression
+CloudWatch monitoring</code></pre>
+<p>Phase 1 excludes:</p>
+<pre class="text"><code>job-completion notices
+attachments
+download links
+audit reports by email
+AgentMail
+newsletters
+marketing
+bulk email</code></pre>
+<h3 id="step-0.3-confirm-dns-control">Step 0.3: Confirm DNS control</h3>
+<p>You need access to DNS for:</p>
+<pre class="text"><code>letitglow.app
+notify.letitglow.app
+bounce.notify.letitglow.app</code></pre>
+<p>If DNS is managed outside AWS Route 53, confirm who can add CNAME,
+MX, and TXT records.</p>
+<h3 id="step-0.4-prepare-public-site-language">Step 0.4: Prepare public
+site language</h3>
+<p>Before requesting production access, add or update pages for:</p>
+<pre class="text"><code>About GLOW
+Contact
+Privacy
+Transactional Email
+Support</code></pre>
+<p>AWS reviewers should see a real, legitimate, non-placeholder
+site.</p>
+<hr />
+<h2 id="phase-1-aws-account-hygiene">Phase 1: AWS Account Hygiene</h2>
+<h3 id="step-1.1-secure-the-aws-account">Step 1.1: Secure the AWS
+account</h3>
+<p>Required:</p>
+<pre class="text"><code>MFA enabled for root
+MFA enabled for admin users
+No root access keys
+CloudTrail enabled
+Billing alerts enabled
+Least-privilege IAM
+No SES credentials in GitHub
+No SES credentials in public config</code></pre>
+<h3 id="step-1.2-create-a-budget-alert">Step 1.2: Create a budget
+alert</h3>
+<p>Create a modest AWS budget alert, for example:</p>
+<pre class="text"><code>Monthly budget alert: $25 or $50
+Alert at: 50%, 80%, 100%</code></pre>
+<h3 id="step-1.3-create-iam-structure">Step 1.3: Create IAM
+structure</h3>
+<p>Recommended IAM identities:</p>
+<pre class="text"><code>glow-ses-api-sender
+glow-keycloak-ses-smtp
+glow-ses-admin-readonly</code></pre>
+<p>Use separate credentials for Keycloak SMTP and GLOW API sending. This
+improves rotation and incident response.</p>
+<hr />
+<h2 id="phase-2-create-ses-domain-identity">Phase 2: Create SES Domain
+Identity</h2>
+<h3 id="step-2.1-open-ses">Step 2.1: Open SES</h3>
+<p>Go to:</p>
+<pre class="text"><code>Amazon SES → Configuration → Identities → Create identity</code></pre>
+<h3 id="step-2.2-create-domain-identity">Step 2.2: Create domain
+identity</h3>
+<p>Identity type:</p>
+<pre class="text"><code>Domain</code></pre>
+<p>Domain:</p>
+<pre class="text"><code>notify.letitglow.app</code></pre>
+<p>Enable:</p>
+<pre class="text"><code>Easy DKIM
+DKIM signing</code></pre>
+<h3 id="step-2.3-assign-default-configuration-set-later">Step 2.3:
+Assign default configuration set later</h3>
+<p>If the configuration set already exists, assign it during identity
+creation. If not, return after creating the configuration set.</p>
+<h3 id="step-2.4-publish-dkim-dns-records">Step 2.4: Publish DKIM DNS
+records</h3>
+<p>SES will provide DKIM CNAME records. Add all provided CNAME records
+to DNS.</p>
+<h3 id="step-2.5-wait-for-verification">Step 2.5: Wait for
+verification</h3>
+<p>SES identity status should become:</p>
+<pre class="text"><code>Verified</code></pre>
+<hr />
+<h2 id="phase-3-create-ses-configuration-set">Phase 3: Create SES
+Configuration Set</h2>
+<h3 id="step-3.1-create-configuration-set">Step 3.1: Create
+configuration set</h3>
+<p>Name:</p>
+<pre class="text"><code>glow-transactional-production</code></pre>
+<p>AWS CLI example:</p>
+<div class="sourceCode" id="cb58"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb58-1"><a href="#cb58-1" aria-hidden="true" tabindex="-1"></a><span class="ex">aws</span> sesv2 create-configuration-set <span class="dt">\</span></span>
+<span id="cb58-2"><a href="#cb58-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">--configuration-set-name</span> glow-transactional-production <span class="dt">\</span></span>
+<span id="cb58-3"><a href="#cb58-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">--region</span> us-east-1</span></code></pre></div>
+<h3 id="step-3.2-assign-default-configuration-set-to-identity">Step 3.2:
+Assign default configuration set to identity</h3>
+<div class="sourceCode" id="cb59"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb59-1"><a href="#cb59-1" aria-hidden="true" tabindex="-1"></a><span class="ex">aws</span> sesv2 put-email-identity-configuration-set-attributes <span class="dt">\</span></span>
+<span id="cb59-2"><a href="#cb59-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">--email-identity</span> notify.letitglow.app <span class="dt">\</span></span>
+<span id="cb59-3"><a href="#cb59-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">--configuration-set-name</span> glow-transactional-production <span class="dt">\</span></span>
+<span id="cb59-4"><a href="#cb59-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">--region</span> us-east-1</span></code></pre></div>
+<h3 id="step-3.3-disable-openclick-tracking-in-phase-1">Step 3.3:
+Disable open/click tracking in Phase 1</h3>
+<p>Do not configure open/click tracking initially. GLOW does not need
+engagement analytics for identity and service email.</p>
+<hr />
+<h2 id="phase-4-configure-custom-mail-from">Phase 4: Configure Custom
+MAIL FROM</h2>
+<h3 id="step-4.1-set-mail-from-domain">Step 4.1: Set MAIL FROM
+domain</h3>
+<p>MAIL FROM domain:</p>
+<pre class="text"><code>bounce.notify.letitglow.app</code></pre>
+<h3 id="step-4.2-add-mx-record">Step 4.2: Add MX record</h3>
+<p>For <code>us-east-1</code>:</p>
+<pre class="text"><code>Name: bounce.notify.letitglow.app
+Type: MX
+Value: 10 feedback-smtp.us-east-1.amazonses.com</code></pre>
+<p>If you choose a different Region, use the correct Regional feedback
+SMTP host.</p>
+<h3 id="step-4.3-add-spf-record-for-mail-from">Step 4.3: Add SPF record
+for MAIL FROM</h3>
+<pre class="text"><code>Name: bounce.notify.letitglow.app
+Type: TXT
+Value: &quot;v=spf1 include:amazonses.com -all&quot;</code></pre>
+<h3 id="step-4.4-verify-mail-from-status">Step 4.4: Verify MAIL FROM
+status</h3>
+<p>SES should show custom MAIL FROM as successful.</p>
+<hr />
+<h2 id="phase-5-configure-dmarc">Phase 5: Configure DMARC</h2>
+<h3 id="step-5.1-start-with-monitoring-mode">Step 5.1: Start with
+monitoring mode</h3>
+<pre class="text"><code>Name: _dmarc.notify.letitglow.app
+Type: TXT
+Value: &quot;v=DMARC1; p=none; rua=mailto:CHANGE-ME-DMARC-REPORTING-ADDRESS; adkim=s; aspf=r&quot;</code></pre>
+<p>Replace <code>CHANGE-ME-DMARC-REPORTING-ADDRESS</code> with an
+address or DMARC reporting service you control. Use relaxed SPF
+alignment because the custom MAIL FROM domain is
+<code>bounce.notify.letitglow.app</code>, while the visible From domain
+is <code>notify.letitglow.app</code>. DKIM should still be strictly
+aligned to the visible From domain.</p>
+<h3 id="step-5.2-monitor-reports">Step 5.2: Monitor reports</h3>
+<p>Review DMARC aggregate reports for:</p>
+<pre class="text"><code>alignment failures
+unexpected senders
+spoofing attempts
+misconfigured subdomains</code></pre>
+<h3 id="step-5.3-move-to-stricter-policy-after-stabilization">Step 5.3:
+Move to stricter policy after stabilization</h3>
+<p>After stable sending:</p>
+<pre class="text"><code>p=quarantine</code></pre>
+<p>Long-term, after confidence:</p>
+<pre class="text"><code>p=reject</code></pre>
+<hr />
+<h2 id="phase-6-configure-suppression">Phase 6: Configure
+Suppression</h2>
+<h3 id="step-6.1-enable-account-level-suppression">Step 6.1: Enable
+account-level suppression</h3>
+<div class="sourceCode" id="cb67"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb67-1"><a href="#cb67-1" aria-hidden="true" tabindex="-1"></a><span class="ex">aws</span> sesv2 put-account-suppression-attributes <span class="dt">\</span></span>
+<span id="cb67-2"><a href="#cb67-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">--suppressed-reasons</span> BOUNCE COMPLAINT <span class="dt">\</span></span>
+<span id="cb67-3"><a href="#cb67-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">--region</span> us-east-1</span></code></pre></div>
+<h3 id="step-6.2-configure-suppression-for-the-configuration-set">Step
+6.2: Configure suppression for the configuration set</h3>
+<div class="sourceCode" id="cb68"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb68-1"><a href="#cb68-1" aria-hidden="true" tabindex="-1"></a><span class="ex">aws</span> sesv2 put-configuration-set-suppression-options <span class="dt">\</span></span>
+<span id="cb68-2"><a href="#cb68-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">--configuration-set-name</span> glow-transactional-production <span class="dt">\</span></span>
+<span id="cb68-3"><a href="#cb68-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">--suppressed-reasons</span> BOUNCE COMPLAINT <span class="dt">\</span></span>
+<span id="cb68-4"><a href="#cb68-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">--region</span> us-east-1</span></code></pre></div>
+<h3 id="step-6.3-build-application-level-suppression">Step 6.3: Build
+application-level suppression</h3>
+<p>Before GLOW sends any app-specific email:</p>
+<pre class="text"><code>Check local suppression table.
+Check message type eligibility.
+Check rate limits.
+Check whether user opted in for optional notices.
+Reject send if suppression applies.</code></pre>
+<h3 id="step-6.4-suppression-rules">Step 6.4: Suppression rules</h3>
+<pre class="text"><code>Hard bounce:
+  suppress immediately
+
+Complaint:
+  suppress immediately
+
+Repeated soft bounce:
+  suppress after threshold
+
+Manual suppression:
+  admin may suppress with reason
+
+Manual removal:
+  allowed only with documented reason
+
+Complaint removal:
+  require strong evidence of user consent or correction</code></pre>
+<hr />
+<h2 id="phase-7-configure-event-publishing">Phase 7: Configure Event
+Publishing</h2>
+<h3 id="step-7.1-choose-event-destination">Step 7.1: Choose event
+destination</h3>
+<p>Recommended Phase 1:</p>
+<pre class="text"><code>SNS topic: glow-ses-events</code></pre>
+<p>Alternative:</p>
+<pre class="text"><code>EventBridge</code></pre>
+<p>SNS is simple and works well with either a Lambda processor or HTTPS
+webhook.</p>
+<h3 id="step-7.2-create-sns-topic">Step 7.2: Create SNS topic</h3>
+<div class="sourceCode" id="cb73"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb73-1"><a href="#cb73-1" aria-hidden="true" tabindex="-1"></a><span class="ex">aws</span> sns create-topic <span class="dt">\</span></span>
+<span id="cb73-2"><a href="#cb73-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">--name</span> glow-ses-events <span class="dt">\</span></span>
+<span id="cb73-3"><a href="#cb73-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">--region</span> us-east-1</span></code></pre></div>
+<h3 id="step-7.3-add-ses-event-destination">Step 7.3: Add SES event
+destination</h3>
+<p>Configure <code>glow-transactional-production</code> to publish these
+events:</p>
+<pre class="text"><code>SEND
+DELIVERY
+BOUNCE
+COMPLAINT
+REJECT
+RENDERING_FAILURE
+DELIVERY_DELAY</code></pre>
+<h3 id="step-7.4-create-event-processor">Step 7.4: Create event
+processor</h3>
+<p>Options:</p>
+<pre class="text"><code>Option A: SNS → AWS Lambda → GLOW database
+Option B: SNS → HTTPS webhook → GLOW application
+Option C: EventBridge → Lambda → GLOW database</code></pre>
+<p>Recommended for simplicity:</p>
+<pre class="text"><code>SNS → Lambda → GLOW API endpoint or database</code></pre>
+<h3 id="step-7.5-event-processor-responsibilities">Step 7.5: Event
+processor responsibilities</h3>
+<pre class="text"><code>Validate incoming event authenticity.
+Parse SES event type.
+Store raw event payload.
+Map SES message ID to local email record.
+Update email status.
+Suppress hard bounces.
+Suppress complaints.
+Notify administrator on complaint.
+Notify administrator on unusual bounce spike.</code></pre>
+<hr />
+<h2 id="phase-8-create-ses-smtp-credentials-for-keycloak">Phase 8:
+Create SES SMTP Credentials for Keycloak</h2>
+<h3 id="step-8.1-create-smtp-credentials">Step 8.1: Create SMTP
+credentials</h3>
+<p>Go to:</p>
+<pre class="text"><code>Amazon SES → SMTP settings → Create SMTP credentials</code></pre>
+<p>Name:</p>
+<pre class="text"><code>glow-keycloak-ses-smtp</code></pre>
+<p>Save:</p>
+<pre class="text"><code>SMTP username
+SMTP password</code></pre>
+<p>Important: SES SMTP credentials are not the same as normal AWS access
+keys and are Region-specific.</p>
+<h3 id="step-8.2-store-credentials-securely">Step 8.2: Store credentials
+securely</h3>
+<p>Preferred:</p>
+<pre class="text"><code>environment variables
+container secrets
+server secret manager
+Keycloak vault if configured</code></pre>
+<p>Avoid:</p>
+<pre class="text"><code>source code
+GitHub
+plain text deployment notes
+shared documents
+WordPress admin fields unless unavoidable</code></pre>
+<hr />
+<h2 id="phase-9-configure-keycloak-email">Phase 9: Configure Keycloak
+Email</h2>
+<h3 id="step-9.1-open-the-correct-realm">Step 9.1: Open the correct
+realm</h3>
+<p>In Keycloak Admin Console:</p>
+<pre class="text"><code>Select GLOW realm
+Realm settings
+Email tab</code></pre>
+<h3 id="step-9.2-configure-template-fields">Step 9.2: Configure template
+fields</h3>
+<pre class="text"><code>From:
+no-reply@notify.letitglow.app
+
+From display name:
+GLOW
+
+Reply to:
+support@letitglow.app
+
+Reply to display name:
+GLOW Support
+
+Envelope from:
+bounce.notify.letitglow.app</code></pre>
+<h3 id="step-9.3-configure-smtp-connection">Step 9.3: Configure SMTP
+connection</h3>
+<p>For <code>us-east-1</code>:</p>
+<pre class="text"><code>Host:
+email-smtp.us-east-1.amazonaws.com
+
+Port:
+587
+
+Encryption:
+StartTLS
+
+Authentication:
+On
+
+Authentication Type:
+Password
+
+Username:
+[SES SMTP username]
+
+Password:
+[SES SMTP password]</code></pre>
+<p>If port 587 fails, test TLS Wrapper:</p>
+<pre class="text"><code>Port:
+465
+
+Encryption:
+SSL/TLS</code></pre>
+<h3 id="step-9.4-send-keycloak-test-email">Step 9.4: Send Keycloak test
+email</h3>
+<p>Use Keycloak’s test connection feature.</p>
+<p>Expected result:</p>
+<pre class="text"><code>Test email delivered.
+SES event logged.
+Configuration set applied.
+No bounce or complaint.</code></pre>
+<h3 id="step-9.5-enable-forgot-password-if-desired">Step 9.5: Enable
+forgot password if desired</h3>
+<p>In Keycloak:</p>
+<pre class="text"><code>Realm settings
+Login tab
+Forgot password: ON</code></pre>
+<p>Confirm that email settings are configured before enabling or testing
+reset flows.</p>
+<h3 id="step-9.6-review-keycloak-email-templates">Step 9.6: Review
+Keycloak email templates</h3>
+<p>Review or customize Keycloak email theme templates for:</p>
+<pre class="text"><code>plain language
+GLOW branding
+meaningful links
+minimal content
+no marketing language
+no unnecessary graphics
+accessibility</code></pre>
+<hr />
+<h2 id="phase-10-create-glow-ses-api-sender">Phase 10: Create GLOW SES
+API Sender</h2>
+<h3 id="step-10.1-create-iam-user-or-role">Step 10.1: Create IAM user or
+role</h3>
+<p>Name:</p>
+<pre class="text"><code>glow-ses-api-sender</code></pre>
+<h3 id="step-10.2-least-privilege-policy-concept">Step 10.2:
+Least-privilege policy concept</h3>
+<p>Start with this concept and narrow by verified identity ARN if
+practical:</p>
+<div class="sourceCode" id="cb91"><pre
+class="sourceCode json"><code class="sourceCode json"><span id="cb91-1"><a href="#cb91-1" aria-hidden="true" tabindex="-1"></a><span class="fu">{</span></span>
+<span id="cb91-2"><a href="#cb91-2" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;Version&quot;</span><span class="fu">:</span> <span class="st">&quot;2012-10-17&quot;</span><span class="fu">,</span></span>
+<span id="cb91-3"><a href="#cb91-3" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;Statement&quot;</span><span class="fu">:</span> <span class="ot">[</span></span>
+<span id="cb91-4"><a href="#cb91-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">{</span></span>
+<span id="cb91-5"><a href="#cb91-5" aria-hidden="true" tabindex="-1"></a>      <span class="dt">&quot;Sid&quot;</span><span class="fu">:</span> <span class="st">&quot;SendGlowTransactionalEmail&quot;</span><span class="fu">,</span></span>
+<span id="cb91-6"><a href="#cb91-6" aria-hidden="true" tabindex="-1"></a>      <span class="dt">&quot;Effect&quot;</span><span class="fu">:</span> <span class="st">&quot;Allow&quot;</span><span class="fu">,</span></span>
+<span id="cb91-7"><a href="#cb91-7" aria-hidden="true" tabindex="-1"></a>      <span class="dt">&quot;Action&quot;</span><span class="fu">:</span> <span class="ot">[</span></span>
+<span id="cb91-8"><a href="#cb91-8" aria-hidden="true" tabindex="-1"></a>        <span class="st">&quot;ses:SendEmail&quot;</span></span>
+<span id="cb91-9"><a href="#cb91-9" aria-hidden="true" tabindex="-1"></a>      <span class="ot">]</span><span class="fu">,</span></span>
+<span id="cb91-10"><a href="#cb91-10" aria-hidden="true" tabindex="-1"></a>      <span class="dt">&quot;Resource&quot;</span><span class="fu">:</span> <span class="st">&quot;*&quot;</span></span>
+<span id="cb91-11"><a href="#cb91-11" aria-hidden="true" tabindex="-1"></a>    <span class="fu">}</span></span>
+<span id="cb91-12"><a href="#cb91-12" aria-hidden="true" tabindex="-1"></a>  <span class="ot">]</span></span>
+<span id="cb91-13"><a href="#cb91-13" aria-hidden="true" tabindex="-1"></a><span class="fu">}</span></span></code></pre></div>
+<p>Avoid allowing unrelated AWS services.</p>
+<h3 id="step-10.3-store-credentials-securely">Step 10.3: Store
+credentials securely</h3>
+<p>Preferred:</p>
+<pre class="text"><code>IAM role attached to server
+environment variables
+secret manager
+restricted deployment secret</code></pre>
+<p>Avoid:</p>
+<pre class="text"><code>hard-coded keys
+GitHub repository secrets that are over-broad
+logs
+admin UI display</code></pre>
+<hr />
+<h2 id="phase-11-build-glow-internal-email-module">Phase 11: Build GLOW
+Internal Email Module</h2>
+<h3 id="step-11.1-suggested-module-structure">Step 11.1: Suggested
+module structure</h3>
+<pre class="text"><code>glow_email/
+  __init__.py
+  client.py
+  queue.py
+  templates.py
+  suppression.py
+  events.py
+  audit.py
+  rate_limit.py
+  validators.py</code></pre>
+<h3 id="step-11.2-required-central-send-function">Step 11.2: Required
+central send function</h3>
+<div class="sourceCode" id="cb95"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb95-1"><a href="#cb95-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> send_transactional_email(</span>
+<span id="cb95-2"><a href="#cb95-2" aria-hidden="true" tabindex="-1"></a>    recipient: <span class="bu">str</span>,</span>
+<span id="cb95-3"><a href="#cb95-3" aria-hidden="true" tabindex="-1"></a>    email_type: <span class="bu">str</span>,</span>
+<span id="cb95-4"><a href="#cb95-4" aria-hidden="true" tabindex="-1"></a>    template_name: <span class="bu">str</span>,</span>
+<span id="cb95-5"><a href="#cb95-5" aria-hidden="true" tabindex="-1"></a>    context: <span class="bu">dict</span>,</span>
+<span id="cb95-6"><a href="#cb95-6" aria-hidden="true" tabindex="-1"></a>    triggering_event: <span class="bu">str</span>,</span>
+<span id="cb95-7"><a href="#cb95-7" aria-hidden="true" tabindex="-1"></a>    related_object_type: <span class="bu">str</span> <span class="op">|</span> <span class="va">None</span> <span class="op">=</span> <span class="va">None</span>,</span>
+<span id="cb95-8"><a href="#cb95-8" aria-hidden="true" tabindex="-1"></a>    related_object_id: <span class="bu">str</span> <span class="op">|</span> <span class="va">None</span> <span class="op">=</span> <span class="va">None</span>,</span>
+<span id="cb95-9"><a href="#cb95-9" aria-hidden="true" tabindex="-1"></a>) <span class="op">-&gt;</span> <span class="bu">str</span>:</span>
+<span id="cb95-10"><a href="#cb95-10" aria-hidden="true" tabindex="-1"></a>    <span class="co">&quot;&quot;&quot;</span></span>
+<span id="cb95-11"><a href="#cb95-11" aria-hidden="true" tabindex="-1"></a><span class="co">    Sends approved GLOW transactional email through Amazon SES.</span></span>
+<span id="cb95-12"><a href="#cb95-12" aria-hidden="true" tabindex="-1"></a><span class="co">    Rejects unknown types, suppressed recipients, and disallowed content.</span></span>
+<span id="cb95-13"><a href="#cb95-13" aria-hidden="true" tabindex="-1"></a><span class="co">    Returns local message UUID.</span></span>
+<span id="cb95-14"><a href="#cb95-14" aria-hidden="true" tabindex="-1"></a><span class="co">    &quot;&quot;&quot;</span></span></code></pre></div>
+<h3 id="step-11.3-approved-email-type-registry">Step 11.3: Approved
+email type registry</h3>
+<div class="sourceCode" id="cb96"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb96-1"><a href="#cb96-1" aria-hidden="true" tabindex="-1"></a>ALLOWED_EMAIL_TYPES <span class="op">=</span> {</span>
+<span id="cb96-2"><a href="#cb96-2" aria-hidden="true" tabindex="-1"></a>    <span class="st">&quot;feedback_confirmation&quot;</span>,</span>
+<span id="cb96-3"><a href="#cb96-3" aria-hidden="true" tabindex="-1"></a>    <span class="st">&quot;feedback_admin_notice&quot;</span>,</span>
+<span id="cb96-4"><a href="#cb96-4" aria-hidden="true" tabindex="-1"></a>    <span class="st">&quot;system_error_alert&quot;</span>,</span>
+<span id="cb96-5"><a href="#cb96-5" aria-hidden="true" tabindex="-1"></a>    <span class="st">&quot;application_security_alert&quot;</span>,</span>
+<span id="cb96-6"><a href="#cb96-6" aria-hidden="true" tabindex="-1"></a>    <span class="st">&quot;optional_job_completion_notice&quot;</span>,</span>
+<span id="cb96-7"><a href="#cb96-7" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div>
+<h3 id="step-11.4-explicitly-rejected-types">Step 11.4: Explicitly
+rejected types</h3>
+<div class="sourceCode" id="cb97"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb97-1"><a href="#cb97-1" aria-hidden="true" tabindex="-1"></a>REJECTED_EMAIL_TYPES <span class="op">=</span> {</span>
+<span id="cb97-2"><a href="#cb97-2" aria-hidden="true" tabindex="-1"></a>    <span class="st">&quot;newsletter&quot;</span>,</span>
+<span id="cb97-3"><a href="#cb97-3" aria-hidden="true" tabindex="-1"></a>    <span class="st">&quot;marketing&quot;</span>,</span>
+<span id="cb97-4"><a href="#cb97-4" aria-hidden="true" tabindex="-1"></a>    <span class="st">&quot;fundraising_blast&quot;</span>,</span>
+<span id="cb97-5"><a href="#cb97-5" aria-hidden="true" tabindex="-1"></a>    <span class="st">&quot;convention_announcement&quot;</span>,</span>
+<span id="cb97-6"><a href="#cb97-6" aria-hidden="true" tabindex="-1"></a>    <span class="st">&quot;community_update&quot;</span>,</span>
+<span id="cb97-7"><a href="#cb97-7" aria-hidden="true" tabindex="-1"></a>    <span class="st">&quot;bulk_import&quot;</span>,</span>
+<span id="cb97-8"><a href="#cb97-8" aria-hidden="true" tabindex="-1"></a>    <span class="st">&quot;document_attachment&quot;</span>,</span>
+<span id="cb97-9"><a href="#cb97-9" aria-hidden="true" tabindex="-1"></a>    <span class="st">&quot;audit_report_delivery&quot;</span>,</span>
+<span id="cb97-10"><a href="#cb97-10" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div>
+<h3 id="step-11.5-content-safety-validator">Step 11.5: Content safety
+validator</h3>
+<p>Before sending, scan context for prohibited fields:</p>
+<div class="sourceCode" id="cb98"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb98-1"><a href="#cb98-1" aria-hidden="true" tabindex="-1"></a>PROHIBITED_CONTEXT_KEYS <span class="op">=</span> {</span>
+<span id="cb98-2"><a href="#cb98-2" aria-hidden="true" tabindex="-1"></a>    <span class="st">&quot;uploaded_file&quot;</span>,</span>
+<span id="cb98-3"><a href="#cb98-3" aria-hidden="true" tabindex="-1"></a>    <span class="st">&quot;uploaded_file_path&quot;</span>,</span>
+<span id="cb98-4"><a href="#cb98-4" aria-hidden="true" tabindex="-1"></a>    <span class="st">&quot;converted_file&quot;</span>,</span>
+<span id="cb98-5"><a href="#cb98-5" aria-hidden="true" tabindex="-1"></a>    <span class="st">&quot;converted_file_path&quot;</span>,</span>
+<span id="cb98-6"><a href="#cb98-6" aria-hidden="true" tabindex="-1"></a>    <span class="st">&quot;extracted_text&quot;</span>,</span>
+<span id="cb98-7"><a href="#cb98-7" aria-hidden="true" tabindex="-1"></a>    <span class="st">&quot;api_key&quot;</span>,</span>
+<span id="cb98-8"><a href="#cb98-8" aria-hidden="true" tabindex="-1"></a>    <span class="st">&quot;access_token&quot;</span>,</span>
+<span id="cb98-9"><a href="#cb98-9" aria-hidden="true" tabindex="-1"></a>    <span class="st">&quot;refresh_token&quot;</span>,</span>
+<span id="cb98-10"><a href="#cb98-10" aria-hidden="true" tabindex="-1"></a>    <span class="st">&quot;stack_trace&quot;</span>,</span>
+<span id="cb98-11"><a href="#cb98-11" aria-hidden="true" tabindex="-1"></a>    <span class="st">&quot;document_contents&quot;</span>,</span>
+<span id="cb98-12"><a href="#cb98-12" aria-hidden="true" tabindex="-1"></a>    <span class="st">&quot;audit_report_body&quot;</span>,</span>
+<span id="cb98-13"><a href="#cb98-13" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div>
+<p>If prohibited fields are present, reject the send and log a policy
+violation.</p>
+<hr />
+<h2 id="phase-12-build-queue-and-rate-limiting">Phase 12: Build Queue
+and Rate Limiting</h2>
+<h3 id="step-12.1-queue-requirement">Step 12.1: Queue requirement</h3>
+<p>All application email should go through a queue.</p>
+<p>Recommended queue options:</p>
+<pre class="text"><code>database-backed queue
+Redis queue
+Celery/RQ if Python-based
+SQS if staying in AWS</code></pre>
+<h3 id="step-12.2-rate-limits">Step 12.2: Rate limits</h3>
+<p>Initial limits:</p>
+<pre class="text"><code>Global GLOW app email: 1 message/second
+Feedback confirmation: 3 per recipient per hour
+Feedback admin notice: grouped if spam detected
+System alerts: deduplicate within 10-minute windows
+Job-completion notice: 1 per job, only if opted in</code></pre>
+<h3 id="step-12.3-retry-policy">Step 12.3: Retry policy</h3>
+<pre class="text"><code>Transient SES error:
+  retry with exponential backoff
+
+Throttling:
+  retry with backoff and respect quota
+
+Hard bounce:
+  no retry
+
+Complaint:
+  no retry
+
+Suppressed recipient:
+  no send
+
+Policy violation:
+  no send, alert admin</code></pre>
+<hr />
+<h2 id="phase-13-templates">Phase 13: Templates</h2>
+<h3 id="step-13.1-initial-glow-templates">Step 13.1: Initial GLOW
+templates</h3>
+<pre class="text"><code>feedback_confirmation.txt
+feedback_confirmation.html
+feedback_admin_notice.txt
+feedback_admin_notice.html
+system_error_alert.txt
+system_error_alert.html
+application_security_alert.txt
+application_security_alert.html</code></pre>
+<h3 id="step-13.2-future-templates">Step 13.2: Future templates</h3>
+<pre class="text"><code>optional_job_completion_notice.txt
+optional_job_completion_notice.html
+receipt_acknowledgment.txt
+receipt_acknowledgment.html</code></pre>
+<h3 id="step-13.3-universal-footer-for-user-facing-glow-email">Step
+13.3: Universal footer for user-facing GLOW email</h3>
+<pre class="text"><code>You are receiving this message because you or an administrator initiated an action in GLOW.
+
+GLOW does not send uploaded files, converted files, extracted document text, private accessibility results, or user API keys by email.
+
+GLOW is a project sponsored by Blind Information Technology Solutions.</code></pre>
+<h3
+id="step-13.4-universal-footer-for-optional-job-completion-notice">Step
+13.4: Universal footer for optional job-completion notice</h3>
+<pre class="text"><code>You requested this job-completion notice. For your privacy, GLOW does not attach your files or generated outputs to email.</code></pre>
+<hr />
+<h2 id="phase-14-test-in-ses-sandbox">Phase 14: Test in SES Sandbox</h2>
+<h3 id="step-14.1-verify-test-recipients">Step 14.1: Verify test
+recipients</h3>
+<p>While in sandbox, verify test recipient addresses or use the SES
+mailbox simulator.</p>
+<h3 id="step-14.2-test-keycloak-flows">Step 14.2: Test Keycloak
+flows</h3>
+<p>Test:</p>
+<pre class="text"><code>email verification
+password reset
+required action
+administrator-initiated action email
+test SMTP connection</code></pre>
+<h3 id="step-14.3-test-glow-app-flows">Step 14.3: Test GLOW app
+flows</h3>
+<p>Test:</p>
+<pre class="text"><code>feedback confirmation
+feedback admin notice
+system alert
+policy rejection for prohibited content
+suppressed recipient rejection
+rate-limit rejection</code></pre>
+<h3 id="step-14.4-test-ses-event-handling">Step 14.4: Test SES event
+handling</h3>
+<p>Use simulator/test patterns to confirm:</p>
+<pre class="text"><code>delivery event captured
+bounce event captured
+complaint event captured
+reject event captured
+suppression update performed
+admin alert triggered</code></pre>
+<h3 id="step-14.5-accessibility-testing">Step 14.5: Accessibility
+testing</h3>
+<p>For every template:</p>
+<pre class="text"><code>plain-text version exists
+HTML has semantic structure
+links have meaningful text
+purpose is near top
+screen reader order is logical
+no image-only meaning</code></pre>
+<hr />
+<h2 id="phase-15-request-ses-production-access">Phase 15: Request SES
+Production Access</h2>
+<h3 id="step-15.1-pre-request-checklist">Step 15.1: Pre-request
+checklist</h3>
+<pre class="text"><code>[ ] Website identifies GLOW clearly.
+[ ] Privacy page includes transactional email language.
+[ ] Contact/support information is available.
+[ ] SES identity is verified.
+[ ] DKIM records are verified.
+[ ] Custom MAIL FROM is verified.
+[ ] SPF is configured.
+[ ] DMARC exists.
+[ ] Configuration set exists.
+[ ] Default configuration set is assigned to identity.
+[ ] Account-level suppression is enabled.
+[ ] Event pipeline is tested.
+[ ] Keycloak test email works.
+[ ] GLOW test email works.
+[ ] No marketing language appears in the request.</code></pre>
+<h3 id="step-15.2-submit-request">Step 15.2: Submit request</h3>
+<p>In SES:</p>
+<pre class="text"><code>Account dashboard
+Request production access
+Mail type: Transactional
+Website URL: https://letitglow.app
+Use case description: use Section 7.4
+Requested daily quota: 1,000 recipients/day
+Requested send rate: 1 to 5 recipients/second</code></pre>
+<h3 id="step-15.3-if-denied">Step 15.3: If denied</h3>
+<p>Do not resubmit the same text.</p>
+<p>Improve:</p>
+<pre class="text"><code>website public legitimacy
+privacy language
+specific message types
+specific recipient sources
+lower quota
+bounce/complaint proof
+suppression description
+DNS authentication proof</code></pre>
+<p>Then respond with:</p>
+<pre class="text"><code>We have clarified that GLOW sends only transactional identity and service email. We have verified the domain, configured DKIM, SPF, DMARC, custom MAIL FROM, event notifications, and suppression for bounces and complaints. We do not send marketing, newsletters, purchased lists, scraped lists, or user files by email.</code></pre>
+<hr />
+<h2 id="phase-16-production-rollout">Phase 16: Production Rollout</h2>
+<h3 id="step-16.1-enable-keycloak-first">Step 16.1: Enable Keycloak
+first</h3>
+<p>Enable:</p>
+<pre class="text"><code>Keycloak verification email
+Keycloak password reset email
+Keycloak required-action email</code></pre>
+<p>Monitor for 3 to 7 days.</p>
+<h3 id="step-16.2-enable-glow-feedback-mail">Step 16.2: Enable GLOW
+feedback mail</h3>
+<p>Enable:</p>
+<pre class="text"><code>feedback confirmation
+feedback admin notice</code></pre>
+<p>Monitor for 1 to 2 weeks.</p>
+<h3 id="step-16.3-enable-system-alerts">Step 16.3: Enable system
+alerts</h3>
+<p>Enable:</p>
+<pre class="text"><code>system_error_alert
+application_security_alert</code></pre>
+<p>Group alerts to avoid noisy bursts.</p>
+<h3 id="step-16.4-defer-job-completion-email">Step 16.4: Defer
+job-completion email</h3>
+<p>Enable only after stable metrics and explicit design review.</p>
+<hr />
+<h2 id="monitoring-and-operations">15. Monitoring and Operations</h2>
+<h3 id="daily-monitoring-during-first-month">15.1 Daily monitoring
+during first month</h3>
+<p>Review:</p>
+<pre class="text"><code>messages sent
+deliveries
+bounces
+complaints
+rejects
+rendering failures
+suppressed recipients
+quota usage
+unexpected volume spikes
+Keycloak SMTP failures
+GLOW API send failures</code></pre>
+<h3 id="weekly-monitoring-after-stabilization">15.2 Weekly monitoring
+after stabilization</h3>
+<p>Review:</p>
+<pre class="text"><code>bounce rate
+complaint rate
+suppression list
+template failures
+CloudWatch alarms
+credential age
+IAM policy scope
+unusual recipient patterns</code></pre>
+<h3 id="alert-triggers">15.3 Alert triggers</h3>
+<p>Immediate review if:</p>
+<pre class="text"><code>any complaint occurs
+bounce rate spikes
+send volume spikes unexpectedly
+SES rejects increase
+Keycloak password reset abuse appears
+CloudWatch alarm fires
+AWS sends reputation warning
+unknown sender appears in DMARC reports</code></pre>
+<hr />
+<h2 id="admin-dashboard-requirements">16. Admin Dashboard
+Requirements</h2>
+<p>Create:</p>
+<pre class="text"><code>/admin/email</code></pre>
+<h3 id="dashboard-sections">16.1 Dashboard sections</h3>
+<pre class="text"><code>Recent messages
+Keycloak message events
+GLOW app message events
+Bounces
+Complaints
+Suppressed addresses
+Template versions
+Quota usage
+CloudWatch health summary
+Manual test email
+Policy violations</code></pre>
+<h3 id="admin-actions">16.2 Admin actions</h3>
+<pre class="text"><code>view message metadata
+view event history
+manually suppress address
+remove suppression with documented reason
+send test email to verified admin
+export event log
+view template version</code></pre>
+<h3 id="admin-restrictions">16.3 Admin restrictions</h3>
+<p>Admins must not be able to:</p>
+<pre class="text"><code>send bulk email
+upload recipient lists
+send marketing through this system
+attach user files
+email audit reports by default
+override complaint suppressions casually</code></pre>
+<hr />
+<h2 id="security-requirements">17. Security Requirements</h2>
+<h3 id="credential-rules">17.1 Credential rules</h3>
+<pre class="text"><code>No AWS keys in source code.
+No AWS keys in GitHub.
+No AWS keys in downloadable logs.
+No AWS keys in email.
+No AWS keys visible in admin UI.
+Use least privilege.
+Rotate SES SMTP credentials.
+Rotate API credentials.
+Prefer IAM roles over long-lived keys where hosting supports it.</code></pre>
+<h3 id="keycloak-security">17.2 Keycloak security</h3>
+<pre class="text"><code>Use HTTPS.
+Configure secure frontend URL.
+Enable brute-force protection where appropriate.
+Use short-lived reset links.
+Review required actions.
+Review email update workflow.
+Limit admin privileges.
+Audit admin events.</code></pre>
+<h3 id="glow-app-security">17.3 GLOW app security</h3>
+<pre class="text"><code>Centralize sending.
+Reject unknown email types.
+Reject prohibited content.
+Rate-limit by recipient and workflow.
+Log policy violations.
+Protect webhooks.
+Validate SNS signatures if using SNS HTTPS.</code></pre>
+<hr />
+<h2 id="agentmail-future-module">18. AgentMail Future Module</h2>
+<h3 id="decision">18.1 Decision</h3>
+<p>AgentMail is out of scope for Phase 1.</p>
+<h3 id="why-agentmail-is-not-phase-1">18.2 Why AgentMail is not Phase
+1</h3>
+<p>AgentMail is designed for AI-agent inboxes and two-way agent email
+workflows. GLOW currently needs reliable transactional delivery and
+Keycloak identity email. SES is the better foundation for that.</p>
+<h3 id="future-agentmail-use-cases">18.3 Future AgentMail use cases</h3>
+<p>Potentially valuable later:</p>
+<pre class="text"><code>GLOW support triage agent
+GLOW accessibility audit intake agent
+GLOW workshop intake agent
+GLOW documentation assistant inbox
+GLOW issue classification agent</code></pre>
+<h3 id="future-agentmail-requirements">18.4 Future AgentMail
+requirements</h3>
+<p>If implemented later:</p>
+<pre class="text"><code>Use agents.letitglow.app.
+Do not use AgentMail for Keycloak identity email.
+Do not use AgentMail for SES production-access justification.
+Do not use AgentMail for bulk mail.
+Require human approval for outbound free-form agent replies.
+Require templates or allow-lists for automated replies.
+Do not allow automatic processing of sensitive attachments without privacy review.
+Do not forward GLOW uploads or outputs into AgentMail by default.</code></pre>
+<h3 id="suggested-future-inboxes">18.5 Suggested future inboxes</h3>
+<pre class="text"><code>support-triage@agents.letitglow.app
+feedback-agent@agents.letitglow.app
+training-agent@agents.letitglow.app
+audit-intake@agents.letitglow.app</code></pre>
+<hr />
+<h2 id="risks-and-mitigations">19. Risks and Mitigations</h2>
+<table>
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+</colgroup>
+<thead>
+<tr>
+<th>Risk</th>
+<th>Impact</th>
+<th>Mitigation</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>AWS denies production access</td>
+<td>Launch delay</td>
+<td>Submit narrow transactional request with verified domain and
+controls</td>
+</tr>
+<tr>
+<td>High bounce rate</td>
+<td>SES review or pause</td>
+<td>Validate addresses, suppress hard bounces, monitor events</td>
+</tr>
+<tr>
+<td>Complaint event</td>
+<td>Reputation damage</td>
+<td>Send only expected mail, suppress immediately, review message
+type</td>
+</tr>
+<tr>
+<td>Credential compromise</td>
+<td>Abuse of SES</td>
+<td>Least privilege, MFA, key rotation, no keys in GitHub</td>
+</tr>
+<tr>
+<td>Keycloak SMTP misconfiguration</td>
+<td>Password resets fail</td>
+<td>Test SMTP, monitor errors, document settings</td>
+</tr>
+<tr>
+<td>Configuration set not applied to Keycloak mail</td>
+<td>Missing events</td>
+<td>Assign default configuration set to identity</td>
+</tr>
+<tr>
+<td>GLOW accidentally sends private content</td>
+<td>Trust and privacy harm</td>
+<td>Content validator, prohibited keys, template review</td>
+</tr>
+<tr>
+<td>AgentMail introduced too early</td>
+<td>Scope creep and privacy risk</td>
+<td>Keep out of Phase 1</td>
+</tr>
+<tr>
+<td>Inaccessible email templates</td>
+<td>User harm</td>
+<td>Plain text and semantic HTML review</td>
+</tr>
+<tr>
+<td>Email volume spikes during workshops</td>
+<td>Quota/reputation issue</td>
+<td>Queue, throttle, alert on spikes</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="acceptance-criteria">20. Acceptance Criteria</h2>
+<h3 id="ses-setup">20.1 SES setup</h3>
+<pre class="text"><code>[ ] SES domain identity verified.
+[ ] DKIM enabled and passing.
+[ ] Custom MAIL FROM verified.
+[ ] SPF configured.
+[ ] DMARC configured.
+[ ] Configuration set created.
+[ ] Default configuration set assigned to identity.
+[ ] Suppression enabled for bounces and complaints.
+[ ] Event publishing configured.
+[ ] CloudWatch alerts configured.</code></pre>
+<h3 id="keycloak-setup">20.2 Keycloak setup</h3>
+<pre class="text"><code>[ ] Keycloak realm email settings configured.
+[ ] Keycloak uses SES SMTP credentials.
+[ ] From address uses notify.letitglow.app.
+[ ] Envelope from uses bounce.notify.letitglow.app.
+[ ] Password reset email works.
+[ ] Verification email works.
+[ ] Required-action email works.
+[ ] Keycloak email events appear in SES event pipeline.</code></pre>
+<h3 id="glow-application-setup">20.3 GLOW application setup</h3>
+<pre class="text"><code>[ ] Central email module created.
+[ ] Queue implemented.
+[ ] Rate limits implemented.
+[ ] Approved email type registry implemented.
+[ ] Unknown types rejected.
+[ ] Suppressed recipients rejected.
+[ ] Prohibited content rejected.
+[ ] Templates have text and HTML versions.
+[ ] Email events logged.</code></pre>
+<h3 id="privacy">20.4 Privacy</h3>
+<pre class="text"><code>[ ] No uploaded files are emailed.
+[ ] No converted files are emailed.
+[ ] No extracted text is emailed.
+[ ] No private audit reports are emailed.
+[ ] No API keys are emailed.
+[ ] Privacy page describes transactional email.</code></pre>
+<h3 id="accessibility">20.5 Accessibility</h3>
+<pre class="text"><code>[ ] Plain text version exists for every template.
+[ ] HTML templates use semantic structure.
+[ ] Link text is meaningful.
+[ ] Purpose appears near top.
+[ ] Templates work with screen readers.</code></pre>
+<h3 id="production-access">20.6 Production access</h3>
+<pre class="text"><code>[ ] SES production request submitted as Transactional.
+[ ] Request includes Keycloak identity-email explanation.
+[ ] Request excludes marketing and bulk outreach.
+[ ] Request includes bounce/complaint/suppression handling.
+[ ] Initial quota request is conservative.</code></pre>
+<hr />
+<h2 id="implementation-backlog">21. Implementation Backlog</h2>
+<h3 id="epic-1-dns-and-ses-identity">Epic 1: DNS and SES Identity</h3>
+<pre class="text"><code>Task 1.1: Choose AWS Region.
+Task 1.2: Create notify.letitglow.app identity.
+Task 1.3: Add DKIM records.
+Task 1.4: Configure custom MAIL FROM.
+Task 1.5: Add SPF record.
+Task 1.6: Add DMARC record.
+Task 1.7: Verify all DNS statuses.</code></pre>
+<h3 id="epic-2-ses-monitoring-and-suppression">Epic 2: SES Monitoring
+and Suppression</h3>
+<pre class="text"><code>Task 2.1: Create configuration set.
+Task 2.2: Assign configuration set to identity.
+Task 2.3: Create SNS/EventBridge event destination.
+Task 2.4: Enable account-level suppression.
+Task 2.5: Enable configuration-set suppression.
+Task 2.6: Create CloudWatch alarms.
+Task 2.7: Build event processor.</code></pre>
+<h3 id="epic-3-keycloak-integration">Epic 3: Keycloak Integration</h3>
+<pre class="text"><code>Task 3.1: Create SES SMTP credentials.
+Task 3.2: Store credentials securely.
+Task 3.3: Configure Keycloak realm Email tab.
+Task 3.4: Test password reset.
+Task 3.5: Test verification email.
+Task 3.6: Review Keycloak templates.
+Task 3.7: Confirm SES events are captured.</code></pre>
+<h3 id="epic-4-glow-email-module">Epic 4: GLOW Email Module</h3>
+<pre class="text"><code>Task 4.1: Create email module.
+Task 4.2: Create allowed email type registry.
+Task 4.3: Create content safety validator.
+Task 4.4: Create queue.
+Task 4.5: Create rate limiter.
+Task 4.6: Create templates.
+Task 4.7: Create event log.
+Task 4.8: Create suppression checks.</code></pre>
+<h3 id="epic-5-admin-dashboard">Epic 5: Admin Dashboard</h3>
+<pre class="text"><code>Task 5.1: Recent message list.
+Task 5.2: Bounce and complaint list.
+Task 5.3: Suppression management.
+Task 5.4: Policy violation log.
+Task 5.5: Manual test email.
+Task 5.6: Export audit log.</code></pre>
+<h3 id="epic-6-ses-production-access">Epic 6: SES Production Access</h3>
+<pre class="text"><code>Task 6.1: Update public privacy language.
+Task 6.2: Verify website completeness.
+Task 6.3: Gather DNS/authentication proof.
+Task 6.4: Submit production access request.
+Task 6.5: Respond to AWS follow-up.
+Task 6.6: Enable production sending gradually.</code></pre>
+<h3 id="epic-7-future-agentmail-review">Epic 7: Future AgentMail
+Review</h3>
+<pre class="text"><code>Task 7.1: Defer AgentMail until transactional email is stable.
+Task 7.2: Define agent inbox privacy policy.
+Task 7.3: Define human approval rules.
+Task 7.4: Pilot one support triage inbox if needed.</code></pre>
+<hr />
+<h2 id="deployment-checklist">22. Deployment Checklist</h2>
+<pre class="text"><code>[ ] AWS account secured.
+[ ] SES Region chosen.
+[ ] DNS access confirmed.
+[ ] notify.letitglow.app identity created.
+[ ] DKIM records published.
+[ ] custom MAIL FROM configured.
+[ ] bounce.notify.letitglow.app MX record published.
+[ ] bounce.notify.letitglow.app SPF record published.
+[ ] DMARC record published.
+[ ] configuration set created.
+[ ] default configuration set assigned.
+[ ] SNS/EventBridge event destination configured.
+[ ] account-level suppression enabled.
+[ ] configuration-set suppression enabled.
+[ ] Keycloak SMTP credentials created.
+[ ] Keycloak Email tab configured.
+[ ] Keycloak test email successful.
+[ ] GLOW SES API credentials created.
+[ ] GLOW email module built.
+[ ] templates reviewed for accessibility.
+[ ] content safety checks implemented.
+[ ] event processor tested.
+[ ] admin dashboard minimally available.
+[ ] privacy page updated.
+[ ] SES production access request submitted.
+[ ] rollout begins with Keycloak only.
+[ ] feedback email enabled after initial monitoring.
+[ ] job-completion notices deferred.
+[ ] AgentMail deferred.</code></pre>
+<hr />
+<h2 id="recommended-phase-1-definition-of-done">23. Recommended Phase 1
+Definition of Done</h2>
+<p>Phase 1 is complete when:</p>
+<pre class="text"><code>Keycloak can send verification and password reset email through SES.
+GLOW can send feedback confirmation and admin notices through SES API.
+SES event publishing is working.
+Bounces and complaints are suppressed.
+Email templates are accessible.
+No prohibited private content can be sent.
+The public privacy page explains transactional email.
+AWS production access has been requested or approved.
+Monitoring and alerting are active.</code></pre>
+<hr />
+<h2 id="recommended-final-architecture-statement">24. Recommended Final
+Architecture Statement</h2>
+<p>Use this in internal documentation:</p>
+<blockquote>
+<p>GLOW uses Keycloak for identity management and Amazon SES for
+transactional email delivery. Keycloak sends account verification,
+password reset, and required-action messages through SES SMTP. GLOW
+sends limited application-specific transactional notices through SES API
+v2. SES provides sender authentication, configuration sets, event
+publishing, bounce and complaint monitoring, and suppression controls.
+AgentMail is reserved for future AI-agent inbox workflows and is not
+part of the core transactional email system.</p>
+</blockquote>
+<hr />
+<h2 id="appendix-a-dns-record-examples">25. Appendix A: DNS Record
+Examples</h2>
+<h3 id="dkim">DKIM</h3>
+<p>SES provides these. They will look similar to:</p>
+<pre class="text"><code>[random]._domainkey.notify.letitglow.app CNAME [random].dkim.amazonses.com
+[random]._domainkey.notify.letitglow.app CNAME [random].dkim.amazonses.com
+[random]._domainkey.notify.letitglow.app CNAME [random].dkim.amazonses.com</code></pre>
+<p>Use the exact values from SES.</p>
+<h3 id="mail-from-mx">MAIL FROM MX</h3>
+<pre class="text"><code>bounce.notify.letitglow.app MX 10 feedback-smtp.us-east-1.amazonses.com</code></pre>
+<h3 id="mail-from-spf">MAIL FROM SPF</h3>
+<pre class="text"><code>bounce.notify.letitglow.app TXT &quot;v=spf1 include:amazonses.com -all&quot;</code></pre>
+<h3 id="dmarc-monitoring">DMARC monitoring</h3>
+<pre class="text"><code>_dmarc.notify.letitglow.app TXT &quot;v=DMARC1; p=none; rua=mailto:CHANGE-ME-DMARC-REPORTING-ADDRESS; adkim=s; aspf=r&quot;</code></pre>
+<hr />
+<h2 id="appendix-b-keycloak-email-settings-snapshot">26. Appendix B:
+Keycloak Email Settings Snapshot</h2>
+<pre class="text"><code>Realm:
+GLOW
+
+Path:
+Realm settings → Email
+
+From:
+no-reply@notify.letitglow.app
+
+From display name:
+GLOW
+
+Reply to:
+support@letitglow.app
+
+Reply to display name:
+GLOW Support
+
+Envelope from:
+bounce.notify.letitglow.app
+
+Host:
+email-smtp.us-east-1.amazonaws.com
+
+Port:
+587
+
+Encryption:
+StartTLS
+
+Authentication:
+On
+
+Authentication Type:
+Password
+
+Username:
+[SES SMTP username]
+
+Password:
+[SES SMTP password]</code></pre>
+<hr />
+<h2 id="appendix-c-aws-cli-command-summary">27. Appendix C: AWS CLI
+Command Summary</h2>
+<div class="sourceCode" id="cb150"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb150-1"><a href="#cb150-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Create configuration set</span></span>
+<span id="cb150-2"><a href="#cb150-2" aria-hidden="true" tabindex="-1"></a><span class="ex">aws</span> sesv2 create-configuration-set <span class="dt">\</span></span>
+<span id="cb150-3"><a href="#cb150-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">--configuration-set-name</span> glow-transactional-production <span class="dt">\</span></span>
+<span id="cb150-4"><a href="#cb150-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">--region</span> us-east-1</span>
+<span id="cb150-5"><a href="#cb150-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb150-6"><a href="#cb150-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Assign default configuration set to identity</span></span>
+<span id="cb150-7"><a href="#cb150-7" aria-hidden="true" tabindex="-1"></a><span class="ex">aws</span> sesv2 put-email-identity-configuration-set-attributes <span class="dt">\</span></span>
+<span id="cb150-8"><a href="#cb150-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">--email-identity</span> notify.letitglow.app <span class="dt">\</span></span>
+<span id="cb150-9"><a href="#cb150-9" aria-hidden="true" tabindex="-1"></a>  <span class="at">--configuration-set-name</span> glow-transactional-production <span class="dt">\</span></span>
+<span id="cb150-10"><a href="#cb150-10" aria-hidden="true" tabindex="-1"></a>  <span class="at">--region</span> us-east-1</span>
+<span id="cb150-11"><a href="#cb150-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb150-12"><a href="#cb150-12" aria-hidden="true" tabindex="-1"></a><span class="co"># Enable account-level suppression</span></span>
+<span id="cb150-13"><a href="#cb150-13" aria-hidden="true" tabindex="-1"></a><span class="ex">aws</span> sesv2 put-account-suppression-attributes <span class="dt">\</span></span>
+<span id="cb150-14"><a href="#cb150-14" aria-hidden="true" tabindex="-1"></a>  <span class="at">--suppressed-reasons</span> BOUNCE COMPLAINT <span class="dt">\</span></span>
+<span id="cb150-15"><a href="#cb150-15" aria-hidden="true" tabindex="-1"></a>  <span class="at">--region</span> us-east-1</span>
+<span id="cb150-16"><a href="#cb150-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb150-17"><a href="#cb150-17" aria-hidden="true" tabindex="-1"></a><span class="co"># Enable configuration-set suppression</span></span>
+<span id="cb150-18"><a href="#cb150-18" aria-hidden="true" tabindex="-1"></a><span class="ex">aws</span> sesv2 put-configuration-set-suppression-options <span class="dt">\</span></span>
+<span id="cb150-19"><a href="#cb150-19" aria-hidden="true" tabindex="-1"></a>  <span class="at">--configuration-set-name</span> glow-transactional-production <span class="dt">\</span></span>
+<span id="cb150-20"><a href="#cb150-20" aria-hidden="true" tabindex="-1"></a>  <span class="at">--suppressed-reasons</span> BOUNCE COMPLAINT <span class="dt">\</span></span>
+<span id="cb150-21"><a href="#cb150-21" aria-hidden="true" tabindex="-1"></a>  <span class="at">--region</span> us-east-1</span>
+<span id="cb150-22"><a href="#cb150-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb150-23"><a href="#cb150-23" aria-hidden="true" tabindex="-1"></a><span class="co"># Create SNS topic</span></span>
+<span id="cb150-24"><a href="#cb150-24" aria-hidden="true" tabindex="-1"></a><span class="ex">aws</span> sns create-topic <span class="dt">\</span></span>
+<span id="cb150-25"><a href="#cb150-25" aria-hidden="true" tabindex="-1"></a>  <span class="at">--name</span> glow-ses-events <span class="dt">\</span></span>
+<span id="cb150-26"><a href="#cb150-26" aria-hidden="true" tabindex="-1"></a>  <span class="at">--region</span> us-east-1</span></code></pre></div>
+<hr />
+<h2 id="appendix-d-message-type-governance">28. Appendix D: Message Type
+Governance</h2>
+<h3 id="approved-in-phase-1">Approved in Phase 1</h3>
+<pre class="text"><code>keycloak_email_verification
+keycloak_password_reset
+keycloak_required_action
+keycloak_admin_action
+glow_feedback_confirmation
+glow_feedback_admin_notice
+glow_system_error_alert
+glow_application_security_alert</code></pre>
+<h3 id="approved-later-only-after-review">Approved later only after
+review</h3>
+<pre class="text"><code>glow_optional_job_completion_notice
+glow_receipt_acknowledgment
+glow_institution_invitation
+glow_workshop_account_notice</code></pre>
+<h3 id="not-approved">Not approved</h3>
+<pre class="text"><code>newsletter
+marketing
+fundraising_blast
+campaign
+convention_announcement
+bulk_list_send
+document_delivery
+audit_report_delivery
+agent_freeform_outbound_without_review</code></pre>
+<hr />
+<h2 id="appendix-e-agentmail-future-scope-language">29. Appendix E:
+AgentMail Future Scope Language</h2>
+<p>Use this language if adding AgentMail to roadmap documentation:</p>
+<blockquote>
+<p>AgentMail may be evaluated in a future phase as an email inbox API
+for GLOW accessibility agents. Its purpose would be to support
+controlled agent-owned inboxes for support triage, inbound issue
+classification, and threaded accessibility-agent workflows. AgentMail is
+not part of the Phase 1 Amazon SES implementation and will not be used
+for Keycloak identity email, password resets, core transactional
+delivery, bulk mail, or marketing. Any future AgentMail workflow must
+undergo privacy review before handling attachments, document content,
+accessibility reports, or user-submitted files.</p>
+</blockquote>
+<hr />
+<h2 id="appendix-f-ses-production-access-narrative">30. Appendix F: SES
+Production Access Narrative</h2>
+<pre class="text"><code>GLOW, Guided Layout &amp; Output Workflow, is a free accessibility workflow tool sponsored by Blind Information Technology Solutions. GLOW helps users and administrators work with accessibility-related workflows such as auditing, fixing, converting, and preparing digital content.
+
+We are requesting Amazon SES production access for low-volume transactional email only.
+
+GLOW uses Keycloak as its identity and access management provider. Identity-related transactional messages, such as email verification, password reset, required actions, and account-related administrative notices, are generated by Keycloak and delivered through Amazon SES SMTP.
+
+The GLOW application itself sends only limited service-related transactional messages, such as feedback confirmations, feedback routing to administrators, operational alerts, and future optional job-completion notices requested by users.
+
+We will not use this SES configuration for newsletters, promotional campaigns, convention announcements, fundraising blasts, cold outreach, or unsolicited bulk email. We do not use purchased, rented, scraped, or third-party mailing lists.
+
+Uploaded files, converted documents, extracted text, private accessibility reports, and user API keys are not emailed. Transactional messages contain only minimal service information necessary for the specific action.
+
+Recipients are administrators of the service, users who initiated an action on the site, or individuals who submitted feedback and provided an email address for confirmation.
+
+We will configure a verified sending domain, DKIM, SPF, DMARC, a custom MAIL FROM domain, SES configuration sets, event notifications, CloudWatch monitoring, and account-level suppression for bounces and complaints.
+
+Initial expected volume is modest: approximately 50 to 300 messages per day, with occasional peaks during workshops, testing events, or public demonstrations. We are requesting a conservative initial quota and will request increases only after establishing healthy sending history.</code></pre>
+<hr />
+<h2 id="appendix-g-plain-language-summary-for-stakeholders">31. Appendix
+G: Plain-Language Summary for Stakeholders</h2>
+<p>GLOW should use Amazon SES carefully and professionally. Keycloak
+should handle account-related email, such as password resets and
+verification messages. GLOW should handle only service-specific email,
+such as feedback confirmations and administrator alerts. Amazon SES
+should provide reliable delivery, sender authentication, bounce
+handling, complaint handling, and monitoring. AgentMail should be saved
+for a future phase if GLOW later needs AI agents with their own
+inboxes.</p>
+<p>The system should not be used for newsletters, convention
+announcements, fundraising blasts, or community marketing. It should
+never email uploaded files, converted documents, extracted text, private
+accessibility reports, or API keys.</p>
+<p>This keeps the architecture clean, protects GLOW’s privacy promise,
+improves the likelihood of Amazon SES approval, and gives the team a
+scalable foundation for future accessibility work.</p>

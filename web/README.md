@@ -1,6 +1,6 @@
 # GLOW Accessibility Web Application
 
-A Flask web application that provides browser-based access to the GLOW. Upload a Word, Excel, PowerPoint, Markdown, PDF, or ePub document, choose an operation (audit, fix, template, export, convert), and get results immediately -- no installation required.
+A Flask web application that provides browser-based access to the GLOW. Upload a Word, Excel, PowerPoint, Markdown, PDF, or ePub document, choose an operation (audit, fix, template, export, convert), and get results through either immediate responses or background jobs with progress tracking -- no installation required.
 
 ## Features
 
@@ -12,6 +12,25 @@ A Flask web application that provides browser-based access to the GLOW. Upload a
 - **Guidelines** -- browse the full ACB Large Print specification and WCAG 2.2 supplement
 - **About** -- project mission, organizations, standards, open source dependencies, and acknowledgments
 - **Feedback** -- collect user feedback with SQLite storage and password-protected review
+
+### Queue-First Heavy Operations
+
+When `GLOW_CONVERT_ASYNC=1` (default), heavy workflows run as background jobs and route to the shared progress page at `/job/<id>/`.
+
+- **Convert** (long-running directions)
+- **Speech** (typed/document downloads and document preparation)
+- **PageFlow** (article extraction and narration download)
+- **Audit** (single-file audit submit)
+- **Fix** (non-interactive fix runs)
+- **Template** generation
+- **Export** generation
+
+The job progress surface supports:
+
+- Live updates via SSE with JSON polling fallback
+- Cancel and retry controls
+- Result download links (`/job/<id>/result`)
+- Optional continue links for follow-up workflows (for example, queued Speech Prepare returning to Speech Studio)
 
 ### Recently Completed Fix UX/Behavior Updates
 
@@ -132,6 +151,64 @@ Current measured outcomes:
 - 4,800-scenario denser randomized comparison: 0 false positives, 0 false negatives
 - 1,000-document ACB fix-then-audit sweep: 0 remaining ACB findings
 
+### PageFlow Wild-Pattern Regression Testing
+
+PageFlow extraction is validated with a deterministic offline regression matrix
+that mimics real-world web patterns (editorial CMS, ad-heavy pages,
+JS-heavy Next.js/SPA shells, ecommerce collections, and noisy pagination).
+
+Primary regression tests:
+
+```bash
+cd web
+PYTHONPATH=src pytest tests/test_page_flow_regression_matrix.py tests/test_listen_later.py tests/test_page_flow.py -q
+```
+
+Wild-pattern fixture corpus:
+
+- `tests/fixtures/page_flow_wild_patterns.py`
+
+Capture a live page into a fixture skeleton for review:
+
+```bash
+cd web
+python tools/capture_page_flow_fixture.py \
+  --url "https://example.com/article" \
+  --name example_article \
+  --out tests/fixtures/captured/example_article.json
+```
+
+Notes:
+
+- Captured fixtures should be reviewed and trimmed before being added to CI.
+- Keep CI tests offline and deterministic; use optional live probes only as a
+  non-blocking monitoring lane.
+
+Nightly live probe lane:
+
+- Workflow: `.github/workflows/pageflow-live-probe.yml`
+- Script: `web/tools/page_flow_live_probe.py`
+- Corpus: `web/tests/fixtures/page_flow_live_corpus.txt`
+
+Run manually:
+
+```bash
+cd web
+PYTHONPATH=src python tools/page_flow_live_probe.py \
+  --corpus tests/fixtures/page_flow_live_corpus.txt \
+  --out test-results/page_flow_live_probe.json \
+  --max-pages 5
+```
+
+Optional browser-rendered adapter (PageFlow parity mode):
+
+- `GLOW_PAGEFLOW_BROWSER_ADAPTER=auto` (default): use Node/Playwright adapter only for JS-heavy pages
+- `GLOW_PAGEFLOW_BROWSER_ADAPTER=1`: force adapter for all pages
+- `GLOW_PAGEFLOW_BROWSER_ADAPTER=0`: disable adapter
+- `GLOW_PAGEFLOW_BROWSER_TIMEOUT_SEC=20`: adapter timeout (seconds)
+
+The adapter script is `web/tools/page_flow_render.mjs` and is fail-safe: when Node/Playwright is unavailable, extraction falls back to the standard parser path.
+
 ## Docker
 
 Build and run locally:
@@ -142,6 +219,17 @@ docker compose up --build
 ```
 
 The app is served on port 8000. For production deployment with Caddy (auto-TLS), see [docs/deployment.md](../docs/deployment.md).
+
+### Background Workers
+
+For full async queue processing in development or production, run a Celery worker alongside the web app:
+
+```bash
+cd web
+celery -A acb_large_print_web.tasks worker --loglevel=INFO
+```
+
+If no broker is configured, Celery runs in eager mode and tasks execute inline.
 
 ### WSL Staging Before Production Deploy
 
@@ -184,6 +272,9 @@ Useful switches:
 | `POSTMARK_FROM_EMAIL` | `reports@glow.bits-acb.org` | Sender address used by Postmark-delivered app emails. |
 | `LOG_LEVEL` | `INFO` | Python logging level (DEBUG, INFO, WARNING, ERROR). |
 | `MAX_CONTENT_LENGTH` | 500 MB | Maximum upload file size. |
+| `GLOW_CONVERT_ASYNC` | `1` | Enable queue-first processing for heavy workflows. Set to `0` to force synchronous route execution. |
+| `CELERY_BROKER_URL` | (unset) | Celery broker URL (for example Redis). When unset, Celery uses eager inline mode. |
+| `CELERY_RESULT_BACKEND` | (unset) | Optional Celery result backend. Defaults to broker when provided. |
 | `ADMIN_BOOTSTRAP_EMAILS` | (unset) | Comma-separated admin emails automatically approved for admin sign-in flows. |
 | `ADMIN_MAGIC_LINK_TTL_MINUTES` | `20` | Expiration window for admin email magic links. |
 | `GLOW_ENABLE_AI` | `1` | Master switch for all web AI features. Set to `0` to deploy the site with AI paths hidden and disabled while still shipping non-AI fixes. |

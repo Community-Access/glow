@@ -1,14 +1,17 @@
 """Template route -- generate an ACB-compliant Word template (.dotx)."""
 
+import os
 import uuid
 
-from flask import Blueprint, render_template, request, send_file
+from flask import Blueprint, current_app, redirect, render_template, request, send_file, url_for
 
 from acb_large_print.template import create_template
 
+from ..tasks.convert_tasks import create_job, run_template_job
 from ..upload import UPLOAD_TEMP_BASE, cleanup_tempdir
 
 template_bp = Blueprint("template", __name__)
+_ASYNC_HEAVY_ENABLED = os.environ.get("GLOW_CONVERT_ASYNC", "1") == "1"
 
 
 @template_bp.route("/", methods=["GET"])
@@ -69,6 +72,40 @@ def template_submit():
         token = str(uuid.uuid4())
         temp_dir = UPLOAD_TEMP_BASE / token
         temp_dir.mkdir(parents=True, exist_ok=True)
+
+        if _ASYNC_HEAVY_ENABLED and not current_app.config.get("TESTING", False):
+            job_id = str(uuid.uuid4())
+            create_job(
+                job_id,
+                "template",
+                f"{title}.dotx",
+                meta={
+                    "op": "template",
+                    "upload_token": token,
+                    "input_filename": f"{title}.dotx",
+                    "options": {
+                        "title": title,
+                        "bound": bound,
+                        "include_sample": include_sample,
+                        "standards_profile": standards_profile,
+                        "allowed_heading_levels": allowed_heading_levels,
+                        "style_size_overrides": style_size_overrides or None,
+                    },
+                },
+            )
+            run_template_job.delay(
+                job_id,
+                token,
+                {
+                    "title": title,
+                    "bound": bound,
+                    "include_sample": include_sample,
+                    "standards_profile": standards_profile,
+                    "allowed_heading_levels": allowed_heading_levels,
+                    "style_size_overrides": style_size_overrides or None,
+                },
+            )
+            return redirect(url_for("jobs.job_progress", job_id=job_id))
 
         output_path = temp_dir / "ACB-Large-Print-Template.dotx"
 

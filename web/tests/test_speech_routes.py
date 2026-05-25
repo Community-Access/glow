@@ -218,3 +218,71 @@ def test_speech_stream_uses_pronunciation_dictionary(client, monkeypatch: pytest
     assert res.status_code == 200
     assert res.headers.get("Content-Type", "").startswith("audio/wav")
     assert captured.get("text") == "glow toolkit"
+
+
+def test_speech_download_queues_job(client, monkeypatch: pytest.MonkeyPatch):
+    monkeypatch.setattr(speech_route, "_ASYNC_SPEECH_ENABLED", True)
+    monkeypatch.setattr(speech_route, "_queue_speech_text_job", lambda **kwargs: "/job/queued-typed/")
+
+    res = client.post(
+        "/speech/download",
+        data={
+            "voice": "kokoro:af_bella",
+            "text": "Queue this typed speech.",
+            "speed": "1.0",
+            "pitch": "0",
+        },
+    )
+    assert res.status_code == 202
+    payload = res.get_json()
+    assert payload is not None
+    assert payload.get("queued") is True
+    assert payload.get("job_url") == "/job/queued-typed/"
+
+
+def test_speech_document_download_queues_job(client, monkeypatch: pytest.MonkeyPatch):
+    monkeypatch.setattr(speech_route, "_ASYNC_SPEECH_ENABLED", True)
+    monkeypatch.setattr(speech_route, "_load_extracted_text", lambda token: "Prepared document text")
+    monkeypatch.setattr(speech_route, "_queue_speech_text_job", lambda **kwargs: "/job/queued-doc/")
+
+    res = client.post(
+        "/speech/document-download",
+        data={
+            "token": "11111111-1111-1111-1111-111111111111",
+            "voice": "kokoro:af_bella",
+            "speed": "1.0",
+            "pitch": "0",
+        },
+    )
+    assert res.status_code == 202
+    payload = res.get_json()
+    assert payload is not None
+    assert payload.get("queued") is True
+    assert payload.get("job_url") == "/job/queued-doc/"
+
+
+def test_speech_download_falls_back_to_sync_when_queue_fails(client, monkeypatch: pytest.MonkeyPatch):
+    monkeypatch.setattr(speech_route, "_ASYNC_SPEECH_ENABLED", True)
+
+    def _raise_queue(**kwargs):
+        raise RuntimeError("queue unavailable")
+
+    monkeypatch.setattr(speech_route, "_queue_speech_text_job", _raise_queue)
+    monkeypatch.setattr(
+        speech_route,
+        "synthesize",
+        lambda voice_id, text, speed, pitch: (b"RIFF....WAVE", "glow-speech-af_bella.wav"),
+    )
+    monkeypatch.setattr(speech_route, "wav_bytes_to_mp3", lambda wav_bytes: b"MP3DATA")
+
+    res = client.post(
+        "/speech/download",
+        data={
+            "voice": "kokoro:af_bella",
+            "text": "fallback to sync",
+            "speed": "1.0",
+            "pitch": "0",
+        },
+    )
+    assert res.status_code == 200
+    assert res.headers.get("Content-Type", "").startswith("audio/mpeg")

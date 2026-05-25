@@ -1,9 +1,11 @@
 """Fix route -- upload a document and download a remediated copy."""
 
 import json as _json
+import os
+import uuid
 from pathlib import Path
 
-from flask import Blueprint, Response, current_app, render_template, request, send_file
+from flask import Blueprint, Response, current_app, redirect, render_template, request, send_file, url_for
 from werkzeug.utils import secure_filename
 
 from ..rules import (
@@ -17,8 +19,6 @@ from ..rules import (
     get_rule_ids_by_severity,
     get_rules_by_format,
 )
-from flask import url_for
-
 from ..upload import (
     UploadError,
     cleanup_token,
@@ -28,8 +28,10 @@ from ..upload import (
 from ..gating import ai_gate, GatingError, RETRY_AFTER_SECONDS
 from ..customization_warning import detect_fix_customizations, generate_customization_warning
 from ..csv_export import findings_to_csv_bytes, safe_filename_stem
+from ..tasks.convert_tasks import create_job, run_fix_job
 
 fix_bp = Blueprint("fix", __name__)
+_ASYNC_HEAVY_ENABLED = os.environ.get("GLOW_CONVERT_ASYNC", "1") == "1"
 
 
 def _busy_response(operation: str, back_url: str):
@@ -723,6 +725,24 @@ def fix_submit():
         token, saved_path = validate_upload(request.files.get("document"))
         opts = _parse_form_options(request.form)
         ext = saved_path.suffix.lower()
+
+        if _ASYNC_HEAVY_ENABLED and not current_app.config.get("TESTING", False) and not (opts["detect_headings"] and ext == ".docx"):
+            async_opts = dict(opts)
+            async_opts.pop("rule_policy", None)
+            job_id = str(uuid.uuid4())
+            create_job(
+                job_id,
+                "fix",
+                saved_path.name,
+                meta={
+                    "op": "fix",
+                    "upload_token": token,
+                    "input_filename": saved_path.name,
+                    "options": async_opts,
+                },
+            )
+            run_fix_job.delay(job_id, token, saved_path.name, async_opts)
+            return redirect(url_for("jobs.job_progress", job_id=job_id))
 
         # Interactive heading review: detect candidates first for .docx
         if opts["detect_headings"] and ext == ".docx":

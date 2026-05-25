@@ -59,21 +59,11 @@
       <p class="help-text">You can edit the text here before generating audio.</p>
 
       <label for="voice">Narration voice</label>
+      <p id="voice-engine-filter-hint" class="help-text">All available voices from every ready engine are listed in one menu.</p>
       <select id="voice" name="voice"{% if not any_engine_ready %} disabled aria-disabled="true"{% endif %}>
-        {% if engine_status.kokoro.ready and kokoro_voices %}
-        <optgroup label="Kokoro ONNX">
-          {% for voice in kokoro_voices %}
-          <option value="kokoro:{{ voice.id }}"{% if default_voice_id == 'kokoro:' ~ voice.id %} selected{% endif %}>{{ voice.label }} - {{ voice.accent }}</option>
-          {% endfor %}
-        </optgroup>
-        {% endif %}
-        {% if engine_status.piper.ready and piper_voices %}
-        <optgroup label="Piper TTS">
-          {% for voice in piper_voices %}
-          <option value="piper:{{ voice.id }}"{% if default_voice_id == 'piper:' ~ voice.id %} selected{% endif %}>{{ voice.label }} - {{ voice.accent }}</option>
-          {% endfor %}
-        </optgroup>
-        {% endif %}
+        {% for voice in voice_options %}
+        <option value="{{ voice.value }}"{% if default_voice_id == voice.value %} selected{% endif %}>{{ voice.label }}</option>
+        {% endfor %}
       </select>
 
       <p class="help-text">Estimated narration time: {{ (estimated_audio_seconds / 60)|round(1) }} minutes.</p>
@@ -83,4 +73,5 @@
   </form>
 </section>
 {% endif %}
+
 {% endblock %}

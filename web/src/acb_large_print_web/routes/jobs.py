@@ -88,6 +88,7 @@ def job_status_stream(job_id: str):
                     "message": status.get("message", ""),
                     "error": status.get("error", ""),
                     "result_file": status.get("result_file", ""),
+                    "continue_url": status.get("continue_url", ""),
                     "attempt": int(status.get("attempt", 0)),
                     "max_attempts": int(status.get("max_attempts", 1)),
                     "retryable": bool(status.get("retryable", False)),
@@ -136,13 +137,14 @@ def job_status_poll(job_id: str):
 
 # Allowed result extensions to prevent path traversal
 _ALLOWED_RESULT_EXTS = {
-    ".md", ".html", ".htm", ".docx", ".odt", ".epub", ".pdf", ".zip",
+    ".md", ".html", ".htm", ".json", ".docx", ".odt", ".epub", ".pdf", ".zip",
     ".mp3", ".wav",
 }
 _RESULT_MIMETYPES = {
     ".md": "text/markdown; charset=utf-8",
     ".html": "text/html; charset=utf-8",
     ".htm": "text/html; charset=utf-8",
+    ".json": "application/json; charset=utf-8",
     ".docx": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
     ".odt": "application/vnd.oasis.opendocument.text",
     ".epub": "application/epub+zip",

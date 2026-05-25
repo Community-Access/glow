@@ -1,0 +1,13 @@
+# PageFlow live probe corpus (non-blocking observability lane)
+# Keep this list focused and stable; prefer representative patterns.
+
+https://www.macstories.net/stories/macos-monterey-the-macstories-review/
+https://www.macstories.net/stories/ios-and-ipados-15-the-macstories-review/
+https://www.raleys.com/collection/19307/5-dollar-member-monday?utm_source=homepage&utm_medium=hero+banner&utm_campaign=member+monday
+https://www.nytimes.com/
+https://www.theguardian.com/international
+https://blog.cloudflare.com/
+https://developer.mozilla.org/en-US/docs/Web/Accessibility
+https://www.reuters.com/world/
+https://arstechnica.com/
+https://www.theverge.com/

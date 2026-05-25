@@ -38,56 +38,13 @@
     {# Voice selector #}
     <fieldset>
       <legend>Voice</legend>
-      <p class="help-text" id="voice-group-hint">All voices are English only. Grouped by engine and accent.</p>
-
-      {% set kokoro_ready = engine_status.kokoro.ready %}
-      {% set piper_ready = engine_status.piper.ready %}
-
-      {% if kokoro_ready %}
-      <details open>
-        <summary><strong>Kokoro ONNX</strong> <span class="badge badge-success">Ready</span></summary>
-        <div class="radio-group">
-          {% for v in kokoro_voices %}
-          {% set vid = "kokoro:" ~ v.id %}
-          <label>
-            <input type="radio" name="voice" value="{{ vid }}"
-              {% if loop.first %}checked{% endif %}>
-            {{ v.label }}
-            <span class="help-text">{{ v.accent }} &middot; {{ v.gender }}</span>
-          </label>
-          {% endfor %}
-        </div>
-      </details>
-      {% else %}
-      <details>
-        <summary><strong>Kokoro ONNX</strong> <span class="badge badge-warning">Not ready</span></summary>
-        <p class="help-text">Kokoro is not installed or model files are missing. See setup details below.</p>
-      </details>
-      {% endif %}
-
-      {% if piper_ready %}
-      <details {% if not kokoro_ready %}open{% endif %}>
-        <summary><strong>Piper TTS</strong> <span class="badge badge-success">Ready</span></summary>
-        <div class="radio-group">
-          {% for v in piper_voices %}
-          {% if v.id in engine_status.piper.voices_available %}
-          {% set vid = "piper:" ~ v.id %}
-          <label>
-            <input type="radio" name="voice" value="{{ vid }}"
-              {% if loop.first and not kokoro_ready %}checked{% endif %}>
-            {{ v.label }}
-            <span class="help-text">{{ v.accent }} &middot; {{ v.gender }}</span>
-          </label>
-          {% endif %}
-          {% endfor %}
-        </div>
-      </details>
-      {% else %}
-      <details>
-        <summary><strong>Piper TTS</strong> <span class="badge badge-warning">Not ready</span></summary>
-        <p class="help-text">Piper is not installed or no voice model files are present. See setup details below.</p>
-      </details>
-      {% endif %}
+      <label for="speech-voice">Narration voice</label>
+      <p class="help-text" id="voice-group-hint">All available voices from every ready engine are listed in one menu.</p>
+      <select id="speech-voice" name="voice" aria-describedby="voice-group-hint" {% if not any_engine_ready %}disabled aria-disabled="true"{% endif %}>
+        {% for v in voice_options %}
+        <option value="{{ v.value }}" {% if v.value == default_voice_id %}selected{% endif %}>{{ v.label }}</option>
+        {% endfor %}
+      </select>
     </fieldset>
 
     {# Speed #}

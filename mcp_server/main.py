@@ -9,6 +9,7 @@ Endpoints:
 - /fix: Auto-fix accessibility issues
 - /convert: Convert between formats (Markdown, HTML, DOCX)
 - /report: Generate accessibility reports
+- /page-flow: Extract readable article text from a web URL
 
 See README.md and openapi.yaml for full documentation.
 """
@@ -21,9 +22,9 @@ from typing import Optional
 import tempfile
 from pathlib import Path
 try:
-    from .glow_mcp_utils import run_audit, run_report
+    from .glow_mcp_utils import run_audit, run_report, run_page_flow_extract
 except ImportError:  # Support direct module execution in tests.
-    from glow_mcp_utils import run_audit, run_report
+    from glow_mcp_utils import run_audit, run_report, run_page_flow_extract
 
 app = FastAPI(title="GLOW MCP Server", description="Accessibility audit/fix/convert/report API for agent integration.", version="7.2.0")
 
@@ -133,3 +134,24 @@ async def report(file: UploadFile = File(...), format: str = Form(...), report_t
         return JSONResponse({"error": str(e)}, status_code=400)
     finally:
         tmp_path.unlink(missing_ok=True)
+
+
+@app.post("/page-flow")
+async def page_flow_extract(
+    source_url: str = Form(...),
+    max_pages: int = Form(5),
+    follow_pagination: bool = Form(True),
+):
+    """Extract readable article text from a web page URL.
+
+    This endpoint mirrors GLOW PageFlow extraction behavior for MCP clients.
+    """
+    try:
+        result = run_page_flow_extract(
+            source_url,
+            max_pages=max_pages,
+            follow_pagination=follow_pagination,
+        )
+        return JSONResponse(content=result)
+    except Exception as e:
+        return JSONResponse({"error": str(e)}, status_code=400)

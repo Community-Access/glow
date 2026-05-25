@@ -2,10 +2,11 @@
 
 from collections import Counter
 from datetime import datetime, timezone
+import os
 from pathlib import Path
 import uuid
 
-from flask import Blueprint, Response, abort, render_template, request, session, url_for
+from flask import Blueprint, Response, abort, current_app, redirect, render_template, request, session, url_for
 from werkzeug.utils import secure_filename as _sf
 
 import re
@@ -28,8 +29,10 @@ from ..rules import (
 )
 from ..upload import UploadError, cleanup_token, validate_upload
 from ..customization_warning import detect_audit_customizations, generate_customization_warning
+from ..tasks.convert_tasks import create_job, run_audit_job
 
 audit_bp = Blueprint("audit", __name__)
+_ASYNC_HEAVY_ENABLED = os.environ.get("GLOW_CONVERT_ASYNC", "1") == "1"
 
 # Rule IDs where AI-powered alt-text suggestions apply.
 _ALT_TEXT_RULE_IDS: frozenset[str] = frozenset({
@@ -885,6 +888,37 @@ def _audit_single():
 
         if saved_path is None:
             token, saved_path = validate_upload(request.files.get("document"))
+
+        if _ASYNC_HEAVY_ENABLED and not current_app.config.get("TESTING", False):
+            job_id = str(uuid.uuid4())
+            create_job(
+                job_id,
+                "audit",
+                saved_path.name,
+                meta={
+                    "op": "audit",
+                    "upload_token": token,
+                    "input_filename": saved_path.name,
+                    "options": {
+                        "standards_profile": request.form.get("standards_profile", "acb_2025"),
+                        "category": request.form.getlist("category"),
+                        "mode": request.form.get("mode", "full"),
+                        "suppress_rule": request.form.getlist("suppress_rule"),
+                    },
+                },
+            )
+            run_audit_job.delay(
+                job_id,
+                token,
+                saved_path.name,
+                {
+                    "standards_profile": request.form.get("standards_profile", "acb_2025"),
+                    "category": request.form.getlist("category"),
+                    "mode": request.form.get("mode", "full"),
+                    "suppress_rule": request.form.getlist("suppress_rule"),
+                },
+            )
+            return redirect(url_for("jobs.job_progress", job_id=job_id))
 
         standards_profile = request.form.get("standards_profile", "acb_2025")
         profile_label = get_profile_label(standards_profile)

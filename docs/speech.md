@@ -130,7 +130,7 @@ User text + voice + speed + pitch
 The `/speech/` route provides:
 
 1. **Engine status** — which engines are installed and model files present
-2. **Voice selector** — all available voices grouped by engine and accent
+2. **Voice selector** — one combined voice list (single combo box) across ready engines
 3. **Speed slider** — 0.5× to 2.0×, step 0.1, default 1.0
 4. **Pitch slider** — −20 to +20 semitones, step 1, default 0
 5. **Speech text area** — up to 500 characters, live character counter
@@ -140,12 +140,13 @@ The `/speech/` route provides:
 9. **Preview progress messaging** — users get live status text while synthesis runs so long previews (15-20 seconds) remain clearly active
 10. **Document prepare step** — extracts uploaded document text, stores session token, and shows estimated audio + processing durations
 11. **Snippet preview** — previews the first two extracted sentences from the uploaded file
-12. **Full document render** — synthesizes full extracted text and downloads MP3 (or WAV fallback)
+12. **Full document render** — queue-first synthesis for full extracted text with job progress and MP3/WAV download
 13. **Smart timed announcements** — status announcements scale by expected runtime (short jobs: ~10-20 second updates, long jobs: ~45-150 second updates)
 14. **Adaptive estimate telemetry** — real conversion samples (word count, source size bytes, speed/voice, and measured processing time) are stored server-side and blended into future estimates for this deployment
 15. **Convert-tab handoff** — Convert now offers a "Speech audio" direction that opens Speech Studio with the uploaded file already loaded (no second upload)
+16. **Queued document preparation option** — long-running preparation can return a job progress flow and continue back to Speech Studio when complete
 
-No Redis queue and no async jobs yet. Full-document synthesis currently runs synchronously, with progress messaging tuned to expected processing time.
+Speech Studio now supports queue-first processing for heavy paths (document prepare + full-document downloads) through the shared `/job/<id>/` progress surface when async mode is enabled.
 
 ### Adaptive estimate telemetry
 
@@ -179,7 +180,6 @@ The admin dashboard includes a Speech Studio voice management page with one-clic
 
 ## Deferred to future release
 
-- Redis-backed async job queue for very long renders
 - Incremental/chunked streaming playback for long document synthesis
 - Optional email notifications for background speech renders
 - Azure AI Speech Tier 3 integration

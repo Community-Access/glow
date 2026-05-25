@@ -10,6 +10,7 @@ This server exposes GLOW's accessibility audit, fix, convert, and reporting feat
 - `POST /fix` — Auto-fix accessibility issues (DOCX only). Returns fixed file path, fix records, and post-fix audit.
 - `POST /convert` — Convert between formats (Markdown, HTML, DOCX). Returns output file path and converted text.
 - `POST /report` — Generate accessibility reports (JSON, text, or HTML) from a document. Returns the report as a string.
+- `POST /page-flow` — Extract readable article text from a web URL. Returns normalized text, title, page URLs, and counts.
 
 
 ## Usage
@@ -42,6 +43,15 @@ curl -F "file=@example.docx" -F "from_format=docx" -F "to_format=markdown" http:
 
 ```bash
 curl -F "file=@example.docx" -F "format=docx" -F "report_type=html" http://localhost:8000/report
+```
+
+### Example: Extract article text with PageFlow
+
+```bash
+curl -F "source_url=https://www.macstories.net/stories/macos-monterey-the-macstories-review/" \
+	-F "max_pages=5" \
+	-F "follow_pagination=true" \
+	http://localhost:8000/page-flow
 ```
 
 

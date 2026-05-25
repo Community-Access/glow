@@ -22,6 +22,7 @@ from __future__ import annotations
 import json
 import logging
 import os
+import shutil
 import time
 from pathlib import Path
 from typing import Any
@@ -218,7 +219,42 @@ def retry_convert_job(job_id: str) -> bool:
         cancel_requested=False,
         error=None,
     )
-    run_convert_job.delay(job_id, op, upload_token, input_filename, options)
+    if op in {"to_markdown", "to_html", "to_docx", "to_odt", "to_epub", "to_pdf", "pipeline"}:
+        run_convert_job.delay(job_id, op, upload_token, input_filename, options)
+    elif op == "speech":
+        run_speech_job.delay(
+            job_id,
+            upload_token,
+            input_filename,
+            str(meta.get("voice_id", "")),
+            float(meta.get("speed", 1.0)),
+            int(meta.get("pitch", 0)),
+            str(meta.get("output_format", "mp3")),
+        )
+    elif op == "speech_prepare":
+        run_speech_prepare_job.delay(
+            job_id,
+            upload_token,
+            input_filename,
+            float(meta.get("speed", 1.0)),
+        )
+    elif op == "audit":
+        run_audit_job.delay(job_id, upload_token, input_filename, options)
+    elif op == "fix":
+        run_fix_job.delay(job_id, upload_token, input_filename, options)
+    elif op == "export":
+        run_export_job.delay(job_id, upload_token, options)
+    elif op == "template":
+        run_template_job.delay(job_id, upload_token, options)
+    elif op == "pageflow_extract":
+        run_pageflow_extract_job.delay(
+            job_id,
+            str(meta.get("source_url", "")),
+            int(meta.get("max_pages", 5) or 5),
+            bool(meta.get("follow_pagination", True)),
+        )
+    else:
+        return False
     return True
 
 
@@ -729,3 +765,394 @@ def _run_speech(
     out_path = job_out_dir / f"{stem}.wav"
     out_path.write_bytes(wav_bytes)
     return str(out_path)
+
+
+def _serialize_findings(findings) -> list[dict[str, Any]]:
+    items: list[dict[str, Any]] = []
+    for finding in findings or []:
+        severity = finding.severity.value if hasattr(finding.severity, "value") else str(finding.severity)
+        items.append(
+            {
+                "rule_id": getattr(finding, "rule_id", ""),
+                "severity": severity,
+                "message": getattr(finding, "message", ""),
+                "location": getattr(finding, "location", "") or "",
+                "auto_fixable": getattr(finding, "auto_fixable", False),
+                "acb_reference": getattr(finding, "acb_reference", "") or "",
+            }
+        )
+    return items
+
+
+def _write_job_file(job_id: str, filename: str, source_path: Path) -> Path:
+    out_dir = _job_dir(job_id)
+    result_path = out_dir / filename
+    shutil.copy2(source_path, result_path)
+    return result_path
+
+
+@celery_app.task(bind=True, name="glow.template")  # type: ignore[misc]
+def run_template_job(
+    self,
+    job_id: str,
+    token: str,
+    options: dict[str, Any],
+) -> dict[str, Any]:
+    from acb_large_print.template import create_template
+
+    status = read_status(job_id)
+    max_attempts = max(1, int(status.get("max_attempts", 1)))
+    start_attempt = max(1, int(status.get("attempt", 0)) + 1)
+
+    for attempt in range(start_attempt, max_attempts + 1):
+        write_status(job_id, state="STARTED", progress=2, message="Starting template creation…", attempt=attempt, error=None, retryable=attempt < max_attempts)
+        try:
+            _assert_job_active(job_id)
+            out_dir = _job_dir(job_id)
+            out_path = out_dir / "ACB-Large-Print-Template.dotx"
+            write_status(job_id, state="PROGRESS", progress=30, message="Creating template…", retryable=True)
+            create_template(
+                out_path,
+                bound=bool(options.get("bound", False)),
+                include_sample=bool(options.get("include_sample", False)),
+                title=str(options.get("title") or "ACB Large Print Document"),
+                standards_profile=str(options.get("standards_profile") or "acb_2025"),
+                allowed_heading_levels=list(options.get("allowed_heading_levels") or [1, 2, 3]),
+                style_size_overrides=options.get("style_size_overrides") or None,
+            )
+            write_status(job_id, state="SUCCESS", progress=100, message="Done.", result_file=out_path.name, retryable=False)
+            return {"state": "SUCCESS", "result_file": out_path.name}
+        except Exception as exc:
+            err_msg = str(exc) or type(exc).__name__
+            if attempt < max_attempts:
+                write_status(job_id, state="RETRYING", progress=0, error=err_msg, message=f"Retrying template creation ({attempt}/{max_attempts})…", retryable=True)
+                continue
+            write_status(job_id, state="FAILURE", progress=0, error=err_msg, message="Template creation failed.", retryable=False)
+            log.exception("template job %s failed", job_id)
+            raise
+    return {"state": "FAILURE"}
+
+
+@celery_app.task(bind=True, name="glow.export")  # type: ignore[misc]
+def run_export_job(
+    self,
+    job_id: str,
+    token: str,
+    options: dict[str, Any],
+) -> dict[str, Any]:
+    from ..upload import get_temp_dir
+    from acb_large_print.exporter import export_cms_fragment, export_standalone_html
+    import zipfile
+
+    status = read_status(job_id)
+    max_attempts = max(1, int(status.get("max_attempts", 1)))
+    start_attempt = max(1, int(status.get("attempt", 0)) + 1)
+
+    for attempt in range(start_attempt, max_attempts + 1):
+        write_status(job_id, state="STARTED", progress=2, message="Starting export…", attempt=attempt, error=None, retryable=attempt < max_attempts)
+        try:
+            _assert_job_active(job_id)
+            temp_dir = get_temp_dir(token)
+            if not temp_dir:
+                raise FileNotFoundError(f"Upload token {token!r} not found or expired")
+            src = next((p for p in sorted(temp_dir.iterdir()) if p.is_file() and p.suffix.lower() == ".docx"), None)
+            if src is None:
+                raise FileNotFoundError("Export source document not found.")
+            mode = str(options.get("mode") or "standalone")
+            title = str(options.get("title") or "")
+            out_dir = _job_dir(job_id)
+            write_status(job_id, state="PROGRESS", progress=25, message="Rendering export…", retryable=True)
+            if mode == "cms":
+                out_path = out_dir / f"{src.stem}-cms.html"
+                export_cms_fragment(src, out_path, title=title)
+            else:
+                html_path = out_dir / "output.html"
+                export_standalone_html(src, html_path, title=title)
+                css_path = temp_dir / "acb-large-print.css"
+                out_path = out_dir / f"{src.stem}-acb-html.zip"
+                with zipfile.ZipFile(out_path, "w", zipfile.ZIP_DEFLATED) as zf:
+                    zf.write(html_path, html_path.name)
+                    if css_path.exists():
+                        zf.write(css_path, "acb-large-print.css")
+            result_name = out_path.name
+            write_status(job_id, state="SUCCESS", progress=100, message="Done.", result_file=result_name, retryable=False)
+            return {"state": "SUCCESS", "result_file": result_name}
+        except Exception as exc:
+            err_msg = str(exc) or type(exc).__name__
+            if attempt < max_attempts:
+                write_status(job_id, state="RETRYING", progress=0, error=err_msg, message=f"Retrying export ({attempt}/{max_attempts})…", retryable=True)
+                continue
+            write_status(job_id, state="FAILURE", progress=0, error=err_msg, message="Export failed.", retryable=False)
+            log.exception("export job %s failed", job_id)
+            raise
+    return {"state": "FAILURE"}
+
+
+@celery_app.task(bind=True, name="glow.audit")  # type: ignore[misc]
+def run_audit_job(
+    self,
+    job_id: str,
+    token: str,
+    input_filename: str,
+    options: dict[str, Any],
+) -> dict[str, Any]:
+    from ..upload import get_temp_dir
+    from acb_large_print.auditor import audit_document
+    from acb_large_print.md_auditor import audit_markdown
+    from acb_large_print.pptx_auditor import audit_presentation
+    from acb_large_print.pdf_auditor import audit_pdf
+    from acb_large_print.epub_auditor import audit_epub
+    from acb_large_print.xlsx_auditor import audit_workbook
+    from acb_large_print.constants import AUDIT_RULES
+
+    def _audit_by_ext(path: Path):
+        ext = path.suffix.lower()
+        if ext == ".xlsx":
+            return audit_workbook(path)
+        if ext == ".pptx":
+            return audit_presentation(path)
+        if ext == ".md":
+            return audit_markdown(path)
+        if ext == ".pdf":
+            return audit_pdf(path)
+        if ext == ".epub":
+            return audit_epub(path)
+        return audit_document(path)
+
+    status = read_status(job_id)
+    max_attempts = max(1, int(status.get("max_attempts", 1)))
+    start_attempt = max(1, int(status.get("attempt", 0)) + 1)
+
+    for attempt in range(start_attempt, max_attempts + 1):
+        write_status(job_id, state="STARTED", progress=2, message="Starting audit…", attempt=attempt, error=None, retryable=attempt < max_attempts)
+        try:
+            _assert_job_active(job_id)
+            temp_dir = get_temp_dir(token)
+            if not temp_dir:
+                raise FileNotFoundError(f"Upload token {token!r} not found or expired")
+            src = temp_dir / input_filename
+            if not src.exists():
+                raise FileNotFoundError(f"Source file not found: {src}")
+            write_status(job_id, state="PROGRESS", progress=25, message="Running audit…", retryable=True)
+            result = _audit_by_ext(src)
+            findings = _serialize_findings(getattr(result, "findings", []))
+            summary = {
+                "filename": input_filename,
+                "doc_format": src.suffix.lower().lstrip("."),
+                "score": int(getattr(result, "score", 0)),
+                "grade": str(getattr(result, "grade", "")),
+                "total_paragraphs": int(getattr(result, "total_paragraphs", 0)),
+                "total_runs": int(getattr(result, "total_runs", 0)),
+                "findings": findings,
+                "rules": list(AUDIT_RULES.keys()),
+            }
+            out_path = _job_dir(job_id) / f"{Path(input_filename).stem}-audit.json"
+            out_path.write_text(json.dumps(summary, indent=2, ensure_ascii=True), encoding="utf-8")
+            write_status(job_id, state="SUCCESS", progress=100, message="Done.", result_file=out_path.name, retryable=False)
+            return {"state": "SUCCESS", "result_file": out_path.name}
+        except Exception as exc:
+            err_msg = str(exc) or type(exc).__name__
+            if attempt < max_attempts:
+                write_status(job_id, state="RETRYING", progress=0, error=err_msg, message=f"Retrying audit ({attempt}/{max_attempts})…", retryable=True)
+                continue
+            write_status(job_id, state="FAILURE", progress=0, error=err_msg, message="Audit failed.", retryable=False)
+            log.exception("audit job %s failed", job_id)
+            raise
+    return {"state": "FAILURE"}
+
+
+@celery_app.task(bind=True, name="glow.fix")  # type: ignore[misc]
+def run_fix_job(
+    self,
+    job_id: str,
+    token: str,
+    input_filename: str,
+    options: dict[str, Any],
+) -> dict[str, Any]:
+    from ..upload import get_temp_dir
+    from acb_large_print_web.routes.fix import _fix_by_extension, _audit_by_extension
+
+    status = read_status(job_id)
+    max_attempts = max(1, int(status.get("max_attempts", 1)))
+    start_attempt = max(1, int(status.get("attempt", 0)) + 1)
+
+    for attempt in range(start_attempt, max_attempts + 1):
+        write_status(job_id, state="STARTED", progress=2, message="Starting fix…", attempt=attempt, error=None, retryable=attempt < max_attempts)
+        try:
+            _assert_job_active(job_id)
+            temp_dir = get_temp_dir(token)
+            if not temp_dir:
+                raise FileNotFoundError(f"Upload token {token!r} not found or expired")
+            src = temp_dir / input_filename
+            if not src.exists():
+                raise FileNotFoundError(f"Source file not found: {src}")
+            out_dir = _job_dir(job_id)
+            out_path = out_dir / f"{Path(input_filename).stem}-fixed{src.suffix.lower()}"
+            write_status(job_id, state="PROGRESS", progress=20, message="Applying fixes…", retryable=True)
+            fix_tuple = _fix_by_extension(
+                src,
+                out_path,
+                bound=bool(options.get("bound", False)),
+                list_indent_in=float(options.get("list_indent_in", 0.0)),
+                list_hanging_in=float(options.get("list_hanging_in", 0.0)),
+                list_level_indents=options.get("list_level_indents"),
+                para_indent_in=float(options.get("para_indent_in", 0.0)),
+                first_line_indent_in=float(options.get("first_line_indent_in", 0.0)),
+                preserve_heading_alignment=bool(options.get("preserve_heading_alignment", False)),
+                detect_headings=bool(options.get("detect_headings", False)),
+                use_ai=bool(options.get("use_ai", False)),
+                heading_threshold=options.get("heading_threshold"),
+                confirmed_headings=options.get("confirmed_headings"),
+                heading_accuracy=str(options.get("heading_accuracy") or "balanced"),
+                style_size_overrides=options.get("style_size_overrides"),
+            )
+            if len(fix_tuple) == 6:
+                fixed_path, total_fixes, fix_records, post_audit, warnings, _ai_meta = fix_tuple
+            else:
+                fixed_path, total_fixes, fix_records, post_audit, warnings = fix_tuple
+            post_audit_data = {
+                "score": int(getattr(post_audit, "score", 0)),
+                "grade": str(getattr(post_audit, "grade", "")),
+                "findings": _serialize_findings(getattr(post_audit, "findings", [])),
+            }
+            summary = {
+                "filename": input_filename,
+                "fixed_filename": Path(fixed_path).name,
+                "total_fixes": int(total_fixes),
+                "fix_records": [getattr(r, "__dict__", {}) for r in (fix_records or [])],
+                "warnings": list(warnings or []),
+                "post_audit": post_audit_data,
+            }
+            summary_path = out_dir / f"{Path(input_filename).stem}-fix.json"
+            summary_path.write_text(json.dumps(summary, indent=2, ensure_ascii=True), encoding="utf-8")
+            write_status(job_id, state="SUCCESS", progress=100, message="Done.", result_file=Path(fixed_path).name, retryable=False)
+            return {"state": "SUCCESS", "result_file": Path(fixed_path).name}
+        except Exception as exc:
+            err_msg = str(exc) or type(exc).__name__
+            if attempt < max_attempts:
+                write_status(job_id, state="RETRYING", progress=0, error=err_msg, message=f"Retrying fix ({attempt}/{max_attempts})…", retryable=True)
+                continue
+            write_status(job_id, state="FAILURE", progress=0, error=err_msg, message="Fix failed.", retryable=False)
+            log.exception("fix job %s failed", job_id)
+            raise
+    return {"state": "FAILURE"}
+
+
+@celery_app.task(bind=True, name="glow.speech_prepare")  # type: ignore[misc]
+def run_speech_prepare_job(
+    self,
+    job_id: str,
+    token: str,
+    input_filename: str,
+    speed: float,
+) -> dict[str, Any]:
+    from ..upload import get_temp_dir
+    from acb_large_print_web.speech import (
+        normalize_document_text,
+        estimate_audio_seconds_from_text,
+        estimate_processing_seconds_from_text,
+        first_sentences,
+    )
+    from acb_large_print_web.routes.speech import _extract_document_text, _DOC_EXTRACT_NAME, _DOC_RENDERED_NAME
+
+    status = read_status(job_id)
+    max_attempts = max(1, int(status.get("max_attempts", 1)))
+    start_attempt = max(1, int(status.get("attempt", 0)) + 1)
+
+    for attempt in range(start_attempt, max_attempts + 1):
+        write_status(job_id, state="STARTED", progress=2, message="Extracting document text…", attempt=attempt, error=None, retryable=attempt < max_attempts)
+        try:
+            _assert_job_active(job_id)
+            temp_dir = get_temp_dir(token)
+            if not temp_dir:
+                raise FileNotFoundError(f"Upload token {token!r} not found or expired")
+            src = temp_dir / input_filename
+            if not src.exists():
+                raise FileNotFoundError(f"Source file not found: {src}")
+            text = _extract_document_text(src)
+            cleaned = normalize_document_text(text)
+            if not cleaned:
+                raise ValueError("Could not extract readable text from this file.")
+            extracted_path = temp_dir / _DOC_EXTRACT_NAME
+            extracted_path.write_text(cleaned, encoding="utf-8")
+            rendered_path = temp_dir / _DOC_RENDERED_NAME
+            rendered_path.write_text(text, encoding="utf-8")
+            preview_text = first_sentences(cleaned, count=2, max_chars=500)
+            est_audio = estimate_audio_seconds_from_text(cleaned, speed=speed)
+            est_proc = estimate_processing_seconds_from_text(cleaned, speed=speed)
+            summary = {
+                "token": token,
+                "filename": input_filename,
+                "preview_text": preview_text,
+                "char_count": len(cleaned),
+                "word_count": len(cleaned.split()),
+                "estimate_audio_seconds": round(est_audio, 1),
+                "estimate_processing_seconds": round(est_proc, 1),
+                "continue_url": f"/speech/?token={token}",
+            }
+            (temp_dir / "speech_prepare.json").write_text(json.dumps(summary, indent=2, ensure_ascii=True), encoding="utf-8")
+            write_status(job_id, state="SUCCESS", progress=100, message="Done.", continue_url=summary["continue_url"], retryable=False)
+            return {"state": "SUCCESS", "continue_url": summary["continue_url"]}
+        except Exception as exc:
+            err_msg = str(exc) or type(exc).__name__
+            if attempt < max_attempts:
+                write_status(job_id, state="RETRYING", progress=0, error=err_msg, message=f"Retrying speech preparation ({attempt}/{max_attempts})…", retryable=True)
+                continue
+            write_status(job_id, state="FAILURE", progress=0, error=err_msg, message="Speech preparation failed.", retryable=False)
+            log.exception("speech_prepare job %s failed", job_id)
+            raise
+    return {"state": "FAILURE"}
+
+
+@celery_app.task(bind=True, name="glow.pageflow_extract")  # type: ignore[misc]
+def run_pageflow_extract_job(
+    self,
+    job_id: str,
+    source_url: str,
+    max_pages: int = 5,
+    follow_pagination: bool = True,
+) -> dict[str, Any]:
+    from acb_large_print_web.listen_later import extract_article
+
+    status = read_status(job_id)
+    max_attempts = max(1, int(status.get("max_attempts", 1)))
+    start_attempt = max(1, int(status.get("attempt", 0)) + 1)
+
+    for attempt in range(start_attempt, max_attempts + 1):
+        write_status(job_id, state="STARTED", progress=2, message="Starting page extraction…", attempt=attempt, error=None, retryable=attempt < max_attempts)
+        try:
+            _assert_job_active(job_id)
+            write_status(job_id, state="PROGRESS", progress=20, message="Fetching and extracting readable text…", retryable=True)
+            article = extract_article(
+                source_url,
+                max_pages=max(1, int(max_pages)),
+                follow_pagination=bool(follow_pagination),
+            )
+            payload = {
+                "source_url": article.source_url,
+                "final_url": article.final_url,
+                "title": article.title,
+                "text": article.text,
+                "page_urls": list(article.page_urls),
+            }
+            out_path = _job_dir(job_id) / "pageflow_extract.json"
+            out_path.write_text(json.dumps(payload, indent=2, ensure_ascii=True), encoding="utf-8")
+            write_status(
+                job_id,
+                state="SUCCESS",
+                progress=100,
+                message="Done.",
+                result_file=out_path.name,
+                continue_url=f"/page-flow/from-job/{job_id}",
+                retryable=False,
+            )
+            return {"state": "SUCCESS", "result_file": out_path.name}
+        except Exception as exc:
+            err_msg = str(exc) or type(exc).__name__
+            if attempt < max_attempts:
+                write_status(job_id, state="RETRYING", progress=0, error=err_msg, message=f"Retrying page extraction ({attempt}/{max_attempts})…", retryable=True)
+                continue
+            write_status(job_id, state="FAILURE", progress=0, error=err_msg, message="Page extraction failed.", retryable=False)
+            log.exception("pageflow_extract job %s failed", job_id)
+            raise
+    return {"state": "FAILURE"}

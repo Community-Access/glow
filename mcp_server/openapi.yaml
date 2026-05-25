@@ -11,6 +11,7 @@ info:
     - /fix: Auto-fix accessibility issues
     - /convert: Convert between formats (Markdown, HTML, DOCX)
     - /report: Generate accessibility reports
+    - /page-flow: Extract readable article text from a web URL
     
     See README.md for usage and integration notes.
 servers:
@@ -169,6 +170,60 @@ paths:
                 properties:
                   report:
                     type: string
+        '400':
+          description: Error response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+  /page-flow:
+    post:
+      summary: Extract readable article text from a web URL
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required: [source_url]
+              properties:
+                source_url:
+                  type: string
+                  description: Source URL to extract
+                max_pages:
+                  type: integer
+                  default: 5
+                  minimum: 1
+                follow_pagination:
+                  type: boolean
+                  default: true
+      responses:
+        '200':
+          description: Extracted article text and metadata
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  source_url:
+                    type: string
+                  final_url:
+                    type: string
+                  title:
+                    type: string
+                  text:
+                    type: string
+                  page_urls:
+                    type: array
+                    items:
+                      type: string
+                  page_count:
+                    type: integer
+                  char_count:
+                    type: integer
         '400':
           description: Error response
           content:

@@ -15,6 +15,7 @@ import re
 import threading
 import urllib.request
 import wave as _wave
+from itertools import chain
 from pathlib import Path
 
 # ---------------------------------------------------------------------------
@@ -338,9 +339,11 @@ def get_engine_status() -> dict:
     kokoro_models = _kokoro_models_present() if kokoro_installed else False
 
     piper_installed = _piper_installed()
-    piper_voices_available = [
-        v["id"] for v in PIPER_VOICES if _piper_voice_present(v["id"])
-    ] if piper_installed else []
+    piper_voices_available = []
+    if piper_installed:
+        curated = [v["id"] for v in PIPER_VOICES if _piper_voice_present(v["id"])]
+        discovered = _discover_installed_piper_voice_ids()
+        piper_voices_available = sorted(set(chain(curated, discovered)))
 
     kokoro_setup = []
     if not kokoro_installed:
@@ -381,6 +384,28 @@ def get_engine_status() -> dict:
             "setup_commands": piper_setup,
         },
     }
+
+
+def _discover_installed_piper_voice_ids() -> list[str]:
+    """Discover Piper voice IDs from on-disk model/config pairs.
+
+    This allows UI selectors to expose all available installed Piper voices,
+    including non-curated voices added manually.
+    """
+    base = _piper_model_dir()
+    if not base.exists():
+        return []
+
+    discovered: set[str] = set()
+    try:
+        for model_path in base.rglob("*.onnx"):
+            stem = model_path.stem
+            cfg_path = model_path.with_name(f"{stem}.onnx.json")
+            if cfg_path.exists() and stem:
+                discovered.add(stem)
+    except OSError:
+        return []
+    return sorted(discovered)
 
 
 # ---------------------------------------------------------------------------
