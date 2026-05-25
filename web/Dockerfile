@@ -107,10 +107,19 @@ USER app
 
 EXPOSE 8000
 
-# Run with gunicorn (production WSGI server)
+# Run with gunicorn (production WSGI server).
+# gthread workers are required for Server-Sent Events: each open SSE
+# connection holds one worker for up to _SSE_MAX_SECONDS (30 min) in
+# routes/jobs.py. With the default sync workers, 4 concurrent SSE viewers
+# wedged the entire app. gthread serves each long-lived stream on a
+# thread instead of monopolising a process. 2 workers * 16 threads = 32
+# concurrent requests, plenty of headroom for streams + page loads.
 CMD ["gunicorn", \
     "--bind", "0.0.0.0:8000", \
-    "--workers", "4", \
+    "--worker-class", "gthread", \
+    "--workers", "2", \
+    "--threads", "16", \
     "--timeout", "1800", \
+    "--keep-alive", "75", \
     "--access-logfile", "-", \
     "acb_large_print_web.app:create_app()"]

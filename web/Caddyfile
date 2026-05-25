@@ -42,17 +42,28 @@ letitglow.app {
         reverse_proxy ggg:80
     }
 
+    # Server-Sent Events endpoints. Handled BEFORE the general handle{} so
+    # the encode directive never sees these responses. The encode middleware
+    # inspects each response chunk to decide whether to compress, and that
+    # inspection buffers small SSE writes (heartbeats, progress deltas) until
+    # the upstream closes. Splitting these paths into a dedicated handle keeps
+    # the stream untouched between gunicorn and the browser.
+    @sse path /job/*/status /playground/stream
+    handle @sse {
+        header X-Content-Type-Options nosniff
+        header Strict-Transport-Security "max-age=63072000; includeSubDomains"
+        reverse_proxy web:8000 {
+            flush_interval -1
+        }
+    }
+
     handle {
         reverse_proxy web:8000 {
-            # Stream bytes to the client as soon as the upstream yields them.
-            # Required so Server-Sent Events (job progress, AI playground,
-            # speech, Ollama chat) reach the browser in real time instead of
-            # being held back by Caddy's response buffer.
             flush_interval -1
         }
 
-        # Gzip text-based responses only. text/event-stream is deliberately
-        # excluded so SSE bytes are not buffered into a compression window.
+        # Gzip text-based responses only. text/event-stream is excluded both
+        # by the allow-list below AND by the dedicated @sse handle above.
         encode {
             gzip
             match {

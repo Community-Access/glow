@@ -11,6 +11,8 @@ Releases are tagged in the [GitHub repository](https://github.com/Community-Acce
 ### Fixed
 
 - **Live job progress now streams in real time** through the reverse proxy. Added `flush_interval -1` to the Caddy `reverse_proxy` for `letitglow.app` and narrowed `encode gzip` to a content-type allow-list so `text/event-stream` is never buffered or compressed. This affects every Server-Sent Events endpoint: job progress (convert, audit, fix, template, export, speech, page-flow), AI playground stream, speech stream, and the Ollama chat proxy. Previously the progress bar appeared frozen until the user manually refreshed. ([web/Caddyfile](web/Caddyfile))
+- **SSE endpoints isolated from Caddy's `encode` handler.** The compression middleware inspects response chunks before deciding to skip non-matching content types, and that inspection buffered small SSE writes (progress deltas, heartbeats) even though `text/event-stream` was already off the allow-list. Moved `/job/*/status` and `/playground/stream` into a dedicated `@sse` matcher that bypasses `encode` entirely. ([web/Caddyfile](web/Caddyfile))
+- **Gunicorn switched from sync to gthread workers** (`--worker-class gthread --workers 2 --threads 16 --keep-alive 75`). Sync workers serve one request per process, so each open SSE connection was holding one of four worker processes for up to the 30-minute stream timeout in [web/src/acb_large_print_web/routes/jobs.py](web/src/acb_large_print_web/routes/jobs.py). Four concurrent progress viewers wedged the entire app. Threaded workers handle long-lived streams alongside normal page loads, raising effective concurrency from 4 to 32. ([web/Dockerfile](web/Dockerfile))
 
 ### Changed
 
