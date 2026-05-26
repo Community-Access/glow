@@ -1,7 +1,12 @@
 {% extends "base.html" %}
 {% block title %}Job Progress - GLOW{% endblock %}
 {% block content %}
-<section class="card">
+<section class="card"
+  id="job-progress-root"
+  data-state="{{ job_status.state or 'PENDING' }}"
+  data-stream-url="{{ url_for('jobs.job_status_stream', job_id=job_id) }}"
+  data-poll-url="{{ url_for('jobs.job_status_poll', job_id=job_id) }}"
+  data-error="{{ job_status.error or '' }}">
   <h1 id="job-title">Processing Job</h1>
   <p id="job-message" aria-live="polite">{{ job_status.message or 'Queued...' }}</p>
   <label id="job-progress-label" for="job-progress">Progress</label>
@@ -29,135 +34,5 @@
   </div>
 </section>
 
-<script>
-(function () {
-  var state = "{{ job_status.state or 'PENDING' }}";
-  var downloadWrap = document.getElementById('job-download-wrap');
-  var msg = document.getElementById('job-message');
-  var err = document.getElementById('job-error');
-  var bar = document.getElementById('job-progress');
-  var pctText = document.getElementById('job-progress-value');
-  var attemptText = document.getElementById('job-attempt');
-  var maxAttemptsText = document.getElementById('job-max-attempts');
-  var retryForm = document.getElementById('job-retry-form');
-  var cancelForm = document.getElementById('job-cancel-form');
-  var continueWrap = document.getElementById('job-continue-wrap');
-  var continueLink = document.getElementById('job-continue');
-
-  // Auto-advance to the post-job page when a continue URL is available so the
-  // user is not stranded on a completed progress screen. Cancelled if the user
-  // interacts with the page (so a click on Download or Continue wins).
-  var autoAdvanceCancelled = false;
-  var cancelAutoAdvance = function () { autoAdvanceCancelled = true; };
-  document.addEventListener('click', cancelAutoAdvance, { once: true });
-  document.addEventListener('keydown', cancelAutoAdvance, { once: true });
-  function autoAdvance(url) {
-    if (!url) return;
-    setTimeout(function () {
-      if (autoAdvanceCancelled) return;
-      window.location.assign(url);
-    }, 1200);
-  }
-
-  function applyStatus(s) {
-    var pct = Number(s.progress || 0);
-    bar.value = pct;
-    bar.setAttribute('aria-valuenow', String(pct));
-    pctText.textContent = String(pct);
-    attemptText.textContent = String(s.attempt || 0);
-    maxAttemptsText.textContent = String(s.max_attempts || 1);
-    msg.textContent = s.message || '';
-    if (s.state === 'SUCCESS') {
-      downloadWrap.hidden = !s.result_file;
-      if (continueWrap && continueLink) {
-        continueWrap.hidden = !s.continue_url;
-        if (s.continue_url) {
-          continueLink.setAttribute('href', s.continue_url);
-        }
-      }
-      cancelForm.hidden = true;
-      retryForm.hidden = true;
-      msg.textContent = s.continue_url ? 'Done. Continuing\u2026' : 'Done.';
-      autoAdvance(s.continue_url);
-      return true;
-    }
-    if (s.state === 'CANCELLED') {
-      cancelForm.hidden = true;
-      retryForm.hidden = !s.retryable;
-      err.textContent = s.error || 'Job cancelled.';
-      return true;
-    }
-    if (s.state === 'FAILURE') {
-      err.textContent = s.error || 'Job failed.';
-      cancelForm.hidden = true;
-      retryForm.hidden = !s.retryable;
-      return true;
-    }
-    retryForm.hidden = true;
-    cancelForm.hidden = false;
-    return false;
-  }
-
-  if (state === 'SUCCESS') {
-    downloadWrap.hidden = downloadWrap.getAttribute('data-has-result') !== '1';
-    if (continueWrap && continueLink) {
-      var continueUrl = continueWrap.getAttribute('data-continue-url') || '';
-      continueWrap.hidden = !continueUrl;
-      if (continueUrl) {
-        continueLink.setAttribute('href', continueUrl);
-        msg.textContent = 'Done. Continuing\u2026';
-        autoAdvance(continueUrl);
-      }
-    }
-    cancelForm.hidden = true;
-    retryForm.hidden = true;
-    return;
-  }
-  if (state === 'FAILURE') {
-    err.textContent = "{{ job_status.error or 'Job failed.' }}";
-    cancelForm.hidden = true;
-    retryForm.hidden = retryForm.getAttribute('data-retryable') !== '1';
-    return;
-  }
-  if (state === 'CANCELLED') {
-    err.textContent = "{{ job_status.error or 'Job cancelled.' }}";
-    cancelForm.hidden = true;
-    retryForm.hidden = retryForm.getAttribute('data-retryable') !== '1';
-    return;
-  }
-
-  if (!!window.EventSource) {
-    var es = new EventSource("{{ url_for('jobs.job_status_stream', job_id=job_id) }}");
-    es.onmessage = function (e) {
-      var payload = JSON.parse(e.data || '{}');
-      if (applyStatus(payload)) es.close();
-    };
-    es.addEventListener('success', function (e) {
-      var payload = JSON.parse(e.data || '{}');
-      applyStatus(payload);
-      es.close();
-    });
-    es.addEventListener('failure', function (e) {
-      var payload = JSON.parse(e.data || '{}');
-      applyStatus(payload);
-      es.close();
-    });
-    es.addEventListener('cancelled', function (e) {
-      var payload = JSON.parse(e.data || '{}');
-      applyStatus(payload);
-      es.close();
-    });
-  } else {
-    var poll = function () {
-      fetch("{{ url_for('jobs.job_status_poll', job_id=job_id) }}")
-        .then(function (r) { return r.json(); })
-        .then(function (payload) {
-          if (!applyStatus(payload)) setTimeout(poll, 1000);
-        })
-        .catch(function () { setTimeout(poll, 1500); });
-    };
-    poll();
-  }
-})();
-</script>
+<script src="{{ url_for('static', filename='job-progress.js') }}" defer></script>
 {% endblock %}
