@@ -1578,13 +1578,13 @@ class TestSettingsIntegration:
         assert "attachment;" in (download.headers.get("Content-Disposition") or "")
 
     def test_caddy_csp_allows_speech_preview_fetch_and_blob_audio(self):
-        caddyfile = Path("web/Caddyfile").read_text(encoding="utf-8")
-        caddyfile_example = Path("web/Caddyfile.example").read_text(encoding="utf-8")
+        # CSP is emitted per-request by Flask (with a fresh nonce per response)
+        # rather than by Caddy, so the directives now live in app.py. Caddy only
+        # handles transport-level + policy headers (HSTS, Permissions-Policy).
+        app_py = Path("web/src/acb_large_print_web/app.py").read_text(encoding="utf-8")
 
-        assert "connect-src 'self'" in caddyfile
-        assert "connect-src 'self'" in caddyfile_example
-        assert "media-src 'self' blob:" in caddyfile
-        assert "media-src 'self' blob:" in caddyfile_example
+        assert "connect-src 'self'" in app_py
+        assert "media-src 'self' blob:" in app_py
 
     def test_deploy_seeds_piper_default_voice(self):
         deploy_script = Path("scripts/deploy-app.sh").read_text(encoding="utf-8")

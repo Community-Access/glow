@@ -53,7 +53,7 @@ def test_job_progress_page_has_core_accessibility_semantics(tmp_path: Path, clie
     assert res.status_code == 200
 
     html = res.data.decode("utf-8")
-    assert '<section class="card">' in html
+    assert '<section class="card"' in html
     assert '<h1 id="job-title">Processing Job</h1>' in html
     assert 'id="job-message" aria-live="polite"' in html
     assert '<label id="job-progress-label" for="job-progress">Progress</label>' in html
