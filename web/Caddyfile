@@ -50,7 +50,8 @@ letitglow.app {
     # the stream untouched between gunicorn and the browser.
     @sse path /job/*/status /playground/stream
     handle @sse {
-        header X-Content-Type-Options nosniff
+        # Flask emits X-Content-Type-Options / X-Frame-Options / Referrer-Policy
+        # per response; only transport-level HSTS is added here.
         header Strict-Transport-Security "max-age=63072000; includeSubDomains"
         reverse_proxy web:8000 {
             flush_interval -1
@@ -79,13 +80,10 @@ letitglow.app {
         }
 
         header {
-            X-Content-Type-Options nosniff
-            X-Frame-Options DENY
-            Referrer-Policy strict-origin-when-cross-origin
+            # Flask owns X-Content-Type-Options, X-Frame-Options, Referrer-Policy,
+            # and the per-request Content-Security-Policy (with nonce). Caddy only
+            # adds transport-level + policy headers that don't depend on app state.
             Permissions-Policy "geolocation=(), microphone=(), camera=()"
-            # Content-Security-Policy is set per-request by Flask
-            # (web/src/acb_large_print_web/app.py) so it can include a
-            # per-response nonce for inline <script>/<style> blocks.
             Strict-Transport-Security "max-age=63072000; includeSubDomains"
         }
     }
