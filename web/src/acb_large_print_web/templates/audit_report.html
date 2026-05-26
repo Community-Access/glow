@@ -259,7 +259,7 @@
 {% endblock %}
 
 {% block extra_js %}
-<script>
+<script nonce="{{ csp_nonce }}">
 (function () {
   'use strict';
   /* Quick Wins filter */

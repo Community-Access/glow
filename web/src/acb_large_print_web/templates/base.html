@@ -7,7 +7,7 @@
   <meta name="color-scheme" content="light dark">
   <title>{% block title %}Home{% endblock %} | {{ brand_title_suffix }}</title>
   <link rel="icon" type="image/svg+xml" href="{{ url_for('static', filename=brand_favicon) }}">
-  <script>
+  <script nonce="{{ csp_nonce }}">
     /* Resolve user theme preference before first paint to avoid a flash.
        Stored values: "light" | "dark" | "auto" (default). */
     (function () {
@@ -416,6 +416,7 @@
   <script src="{{ url_for('static', filename='sidebar.js') }}"></script>
   <script src="{{ url_for('static', filename='ai-meter.js') }}"></script>
   <script src="{{ url_for('static', filename='client-logging.js') }}"></script>
+  <script src="{{ url_for('static', filename='inline-handlers.js') }}"></script>
   {% block extra_js %}{% endblock %}
   <div id="toast-container" aria-live="polite" aria-atomic="false"></div>
 </body>

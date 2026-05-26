@@ -83,7 +83,9 @@ letitglow.app {
             X-Frame-Options DENY
             Referrer-Policy strict-origin-when-cross-origin
             Permissions-Policy "geolocation=(), microphone=(), camera=()"
-            Content-Security-Policy "default-src 'none'; script-src 'self'; connect-src 'self'; style-src 'self'; img-src 'self'; media-src 'self' blob:; font-src 'self'; form-action 'self'; frame-ancestors 'none'; base-uri 'self'"
+            # Content-Security-Policy is set per-request by Flask
+            # (web/src/acb_large_print_web/app.py) so it can include a
+            # per-response nonce for inline <script>/<style> blocks.
             Strict-Transport-Security "max-age=63072000; includeSubDomains"
         }
     }

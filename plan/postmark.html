@@ -1,0 +1,134 @@
+<p>Yes — <strong>have a fallback</strong>, and the fallback I would look
+at first is <strong>Postmark</strong>, not “OpenMark.”</p>
+<p>I searched for <strong>OpenMark</strong> in the transactional
+email/SMTP context and did not find evidence that it is an email
+delivery provider. What I did find was <strong>OpenMark AI</strong>,
+which appears to be about benchmarking AI models, not sending
+transactional email. So I suspect you may mean
+<strong>Postmark</strong>.</p>
+<h2 id="my-honest-recommendation">My honest recommendation</h2>
+<p>Use this fallback order:</p>
+<pre class="text"><code>Plan A: Amazon SES
+Best if AWS approves you. Lowest cost, strong infrastructure, good fit if you are already using AWS.
+
+Plan B: Postmark
+Best fallback if AWS rejects or delays you. Easier operationally, very strong transactional-email posture, works with SMTP and API.
+
+Plan C: SMTP2GO or Mailgun
+Good alternates if Postmark does not fit pricing, policy, or approval needs.</code></pre>
+<p>For <strong>GLOW / letitglow.app</strong>, Postmark may actually be
+the cleaner short-term path if Amazon SES becomes a fight.</p>
+<h2 id="why-postmark-makes-sense-for-glow">Why Postmark makes sense for
+GLOW</h2>
+<p>Postmark is specifically positioned around reliable email delivery
+through both <strong>SMTP and API</strong>, and its own site emphasizes
+that transactional and promotional messages are routed through separate
+infrastructure so critical transactional mail is protected from
+bulk/promotional reputation problems. (<a
+href="https://postmarkapp.com/?utm_source=chatgpt.com"
+title="Postmark: Fast, Reliable Email Delivery Service | SMTP | API">Postmark</a>)</p>
+<p>That is exactly the story we want for GLOW:</p>
+<pre class="text"><code>Keycloak identity email:
+verification, password resets, required actions
+
+GLOW application email:
+feedback confirmations, admin notices, optional job-completion notices
+
+Not included:
+newsletters, BITS announcements, convention promotions, fundraising blasts, uploaded files, converted files, reports by email</code></pre>
+<p>Postmark also supports SMTP, which means it can work with
+<strong>Keycloak</strong> in the same architectural role SES would have
+played. Their SMTP setup uses:</p>
+<pre class="text"><code>Host: smtp.postmarkapp.com
+Port: 587
+Username: Postmark server or message stream API token
+Password: same API token
+Encryption: TLS</code></pre>
+<p>Postmark’s own SMTP guide says to use the transactional message
+stream’s API token as both the SMTP username and password. (<a
+href="https://postmarkapp.com/developer/user-guide/send-email-with-smtp?utm_source=chatgpt.com"
+title="Sending email with SMTP">Postmark</a>)</p>
+<h2 id="dns-comparison-ses-vs-postmark">DNS comparison: SES vs
+Postmark</h2>
+<p>With SES, you would configure:</p>
+<pre class="text"><code>notify.letitglow.app
+bounce.notify.letitglow.app
+DKIM CNAME records
+SPF
+DMARC
+custom MAIL FROM MX/TXT</code></pre>
+<p>With Postmark, you would still configure the domain, but the model is
+a little simpler:</p>
+<pre class="text"><code>notify.letitglow.app
+DKIM TXT record
+Return-Path CNAME record
+SPF / DMARC as appropriate</code></pre>
+<p>Postmark’s docs say DKIM records are added as TXT records and
+Return-Path records are added as CNAME records at your DNS provider,
+which in your case would be Namecheap. (<a
+href="https://postmarkapp.com/support/article/resources-for-adding-dkim-and-return-path-records-to-dns-for-common-hosts-and-dns-providers?utm_source=chatgpt.com"
+title="Resources for adding DKIM and Return-Path records to ...">Postmark</a>)</p>
+<h2 id="bounce-and-complaint-handling">Bounce and complaint
+handling</h2>
+<p>Postmark is strong here. It supports webhooks for bounces,
+deliveries, opens, clicks, and spam complaints. (<a
+href="https://postmarkapp.com/email-webhooks?utm_source=chatgpt.com"
+title="Webhooks">Postmark</a>) Its bounce webhook sends JSON to your
+application when Postmark processes a bounce. (<a
+href="https://postmarkapp.com/developer/webhooks/bounce-webhook?utm_source=chatgpt.com"
+title="Bounce webhook | Postmark Developer Documentation">Postmark</a>)</p>
+<p>So the same GLOW governance model still works:</p>
+<pre class="text"><code>Postmark webhook
+  ↓
+GLOW webhook endpoint
+  ↓
+email_events table
+  ↓
+email_suppressions table
+  ↓
+admin dashboard / alerting</code></pre>
+<h2 id="cost-difference">Cost difference</h2>
+<p>SES is usually cheaper at scale. Postmark is more expensive but much
+easier to operationalize.</p>
+<p>Postmark’s current pricing page lists a free developer tier with
+<strong>100 emails/month</strong>, and paid plans starting at
+<strong>$15/month for 10,000 emails/month</strong>, with overage pricing
+after that. (<a
+href="https://postmarkapp.com/pricing?utm_source=chatgpt.com"
+title="Postmark Pricing and Free Trial">Postmark</a>)</p>
+<p>For GLOW’s early transactional use, that is probably acceptable. We
+are not talking about a large newsletter list; we are talking about
+identity and system email.</p>
+<h2 id="where-i-would-not-use-postmark">Where I would not use
+Postmark</h2>
+<p>I would not use Postmark to blur the lanes.</p>
+<p>Do <strong>not</strong> use it for:</p>
+<pre class="text"><code>BITS Bytes
+ACB convention announcements
+general GLOW marketing
+fundraising campaigns
+imported member lists
+bulk community announcements</code></pre>
+<p>Keep those outside the GLOW transactional infrastructure.</p>
+<h2 id="updated-fallback-architecture">Updated fallback
+architecture</h2>
+<pre class="text"><code>Primary path:
+Keycloak → Amazon SES SMTP
+GLOW → Amazon SES API
+DNS: notify.letitglow.app / bounce.notify.letitglow.app
+
+Fallback path:
+Keycloak → Postmark SMTP
+GLOW → Postmark API
+DNS: notify.letitglow.app / Postmark Return-Path
+Webhooks: Postmark → GLOW suppression/event processor</code></pre>
+<h2 id="my-final-take">My final take</h2>
+<p>If AWS SES approves you, use SES.</p>
+<p>If AWS SES rejects or stalls you, <strong>Postmark is the best
+fallback I would choose first</strong> for GLOW because it is
+transactional-first, easy to connect to Keycloak by SMTP, supports API
+sending for GLOW, has good webhook coverage, and keeps the story
+clean.</p>
+<p>I would not use <strong>OpenMark</strong> unless you mean something
+different than what I found. For email delivery, the product you
+probably want is <strong>Postmark</strong>.</p>

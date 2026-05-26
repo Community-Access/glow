@@ -147,8 +147,8 @@
     <details class="rule-format-group">
       <summary>{{ fmt_info.label }} ({{ fmt_info.rules|length }} rules)</summary>
       <div class="rule-group-actions">
-        <button type="button" class="btn-tiny" onclick="glowToggleRuleGroup(this, true)">Select all</button>
-        <button type="button" class="btn-tiny" onclick="glowToggleRuleGroup(this, false)">Deselect all</button>
+        <button type="button" class="btn-tiny" data-toggle-rule-group="select">Select all</button>
+        <button type="button" class="btn-tiny" data-toggle-rule-group="deselect">Deselect all</button>
       </div>
       <div class="checkbox-group">
         {% for rule in fmt_info.rules %}
@@ -383,7 +383,7 @@
     </fieldset>
   </fieldset>
 
-  <script>
+  <script nonce="{{ csp_nonce }}">
     (function () {
       var chk = document.getElementById("detect-headings");
       var fields = document.getElementById("heading-ai-fields");
@@ -395,7 +395,7 @@
     })();
   </script>
 
-  <script>
+  <script nonce="{{ csp_nonce }}">
     (function () {
       var chk = document.getElementById("flush-lists");
       var fields = document.getElementById("list-indent-fields");
@@ -421,7 +421,7 @@
     })();
   </script>
 
-  <script>
+  <script nonce="{{ csp_nonce }}">
     (function () {
       var chk = document.getElementById("flush-paragraphs");
       var fields = document.getElementById("para-indent-fields");
@@ -450,7 +450,7 @@
   <p id="fix-processing-status" class="field-hint" aria-live="polite" aria-atomic="true"></p>
 </form>
 
-<script>
+<script nonce="{{ csp_nonce }}">
 (function () {
   'use strict';
   var form = document.querySelector('form[method="post"]');

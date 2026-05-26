@@ -98,13 +98,13 @@
         {% if row.status == 'queued' %}
         <form method="post" action="{{ url_for('admin.admin_queue_cancel', job_id=row.job_id) }}" class="inline-form">
           <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-          <button type="submit" class="btn-secondary" onclick="return confirm('Cancel this queued job? It will be removed from the queue.');">Cancel</button>
+          <button type="submit" class="btn-secondary" data-confirm="Cancel this queued job? It will be removed from the queue.">Cancel</button>
         </form>
         {% endif %}
         {% if row.status == 'failed' %}
         <form method="post" action="{{ url_for('admin.admin_queue_requeue', job_id=row.job_id) }}" class="inline-form">
           <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-          <button type="submit" class="btn-secondary" onclick="return confirm('Re-queue this failed job?');">Re-Queue</button>
+          <button type="submit" class="btn-secondary" data-confirm="Re-queue this failed job?">Re-Queue</button>
         </form>
         {% endif %}
       </td>
@@ -116,7 +116,7 @@
 <p>No audio jobs available.</p>
 {% endif %}
 
-<script>
+<script nonce="{{ csp_nonce }}">
 (function () {
   'use strict';
   function setCell(id, value) {

@@ -112,7 +112,7 @@
   {% endif %}
 </form>
 
-<script>
+<script nonce="{{ csp_nonce }}">
 (function () {
   'use strict';
   var form = document.querySelector('form[method="post"]');

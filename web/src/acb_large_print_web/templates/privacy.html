@@ -98,7 +98,7 @@
   <p>To withdraw your agreement and clear the consent record, use your browser's cookie controls to delete the <code>glow_consent_v1</code> cookie, or click the button below. You will be asked to agree again on your next visit.</p>
   <form method="post" action="{{ url_for('consent.consent_withdraw') }}">
     <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-    <button type="submit" class="btn-secondary" onclick="return confirm('Clear your consent record? You will be asked to agree again on your next visit.');">Clear My Consent Record</button>
+    <button type="submit" class="btn-secondary" data-confirm="Clear your consent record? You will be asked to agree again on your next visit.">Clear My Consent Record</button>
   </form>
 </section>
 {% endblock %}

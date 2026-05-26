@@ -335,7 +335,7 @@
       <input type="hidden" id="settings-speech-download-pitch" name="pitch" value="0">
     </form>
 
-    <script>
+    <script nonce="{{ csp_nonce }}">
     (function () {
       "use strict";
       var btn = document.getElementById("settings-speech-download");
@@ -414,7 +414,7 @@
 </form>
 
 {% if feature_cognitive_profile_enabled %}
-<script>
+<script nonce="{{ csp_nonce }}">
 (function () {
   var checkbox = document.getElementById('settings-cognitive-mode');
   if (!checkbox) return;
@@ -436,7 +436,7 @@
 </script>
 {% endif %}
 
-<style>
+<style nonce="{{ csp_nonce }}">
 .settings-rule-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(18rem, 1fr));

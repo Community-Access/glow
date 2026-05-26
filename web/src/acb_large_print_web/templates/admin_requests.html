@@ -34,11 +34,11 @@
         {% if row.status == 'pending' %}
         <form method="post" action="{{ url_for('admin.admin_approve_request', req_id=row.id) }}" class="inline-form">
           <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-          <button type="submit" class="btn-secondary" onclick="return confirm('Approve access for ' + {{ row.email | tojson }} + '?');">Approve</button>
+          <button type="submit" class="btn-secondary" data-confirm="Approve access for {{ row.email }}?">Approve</button>
         </form>
         <form method="post" action="{{ url_for('admin.admin_deny_request', req_id=row.id) }}" class="inline-form">
           <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-          <button type="submit" class="btn-secondary" onclick="return confirm('Deny access for ' + {{ row.email | tojson }} + '? This cannot be undone.');">Deny</button>
+          <button type="submit" class="btn-secondary" data-confirm="Deny access for {{ row.email }}? This cannot be undone.">Deny</button>
         </form>
         {% else %}
         ---

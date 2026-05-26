@@ -95,7 +95,7 @@
         aria-describedby="question-hint"
         maxlength="2000"
         placeholder="What is the main topic of section 3? How many tables are in this document? Where is the pricing information?"
-        oninput="document.getElementById('question-char-count').textContent = (2000 - this.value.length) + ' characters remaining';"></textarea>
+        data-char-count-target="question-char-count" data-char-count-max="2000"></textarea>
       <p id="question-char-count" class="field-hint" aria-live="polite" aria-atomic="true">2000 characters remaining.</p>
       <p id="question-hint" class="field-hint">
         Tip: Use specific keywords or section names. The AI will search the document and use tools like table extraction or section summarization to answer.
@@ -107,7 +107,7 @@
     <p id="chat-processing-status" class="field-hint" aria-live="polite" aria-atomic="true"></p>
   </form>
 
-  <script>
+  <script nonce="{{ csp_nonce }}">
   (function () {
     'use strict';
     var form = document.querySelector('form[action*="chat_submit"]');
@@ -255,7 +255,7 @@
   <form method="post" action="{{ url_for('chat.chat_clear') }}" style="display: inline;">
     <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
     <input type="hidden" name="token" value="{{ token }}">
-    <button type="submit" class="btn-secondary" onclick="return confirm('Clear all conversation turns? This cannot be undone.');"><span aria-hidden="true">🗑️</span> Clear Conversation</button>
+    <button type="submit" class="btn-secondary" data-confirm="Clear all conversation turns? This cannot be undone."><span aria-hidden="true">🗑️</span> Clear Conversation</button>
   </form>
 </section>
 {% endif %}

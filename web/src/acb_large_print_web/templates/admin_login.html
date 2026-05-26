@@ -28,7 +28,7 @@
     <button type="submit" class="btn-primary" id="admin-login-btn">Send Sign-In Link</button>
     <p id="admin-login-status" class="field-hint" aria-live="polite" aria-atomic="true"></p>
   </form>
-  <script>
+  <script nonce="{{ csp_nonce }}">
   (function () {
     'use strict';
     var form = document.querySelector('form[action*="admin_login_email"]');

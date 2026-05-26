@@ -44,7 +44,7 @@
   <p><a id="result-link" class="btn-primary" href="{{ url_for('site_audit.site_audit_run', run_id=run_id, access=access) }}">Open run results</a></p>
 </div>
 
-<script>
+<script nonce="{{ csp_nonce }}">
 (function () {
   var stateEl = document.getElementById('job-state');
   var progressEl = document.getElementById('job-progress');

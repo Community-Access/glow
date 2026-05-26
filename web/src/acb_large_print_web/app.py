@@ -5,6 +5,7 @@ from __future__ import annotations
 import json
 import logging
 import os
+import secrets
 import uuid
 from datetime import UTC, datetime
 from pathlib import Path
@@ -82,6 +83,12 @@ def create_app(config: dict | None = None) -> Flask:
         _g._request_start = _time.monotonic()
         incoming_id = (_req.headers.get("X-Request-ID") or "").strip()
         _g.request_id = incoming_id or uuid.uuid4().hex[:12]
+        # Per-request CSP nonce. Exposed to templates as `csp_nonce` via the
+        # context processor below, and injected into the Content-Security-Policy
+        # response header by `_log_request`. Allows inline <script>/<style>
+        # blocks (and inline event handlers handled separately) to execute
+        # under a strict CSP without resorting to 'unsafe-inline'.
+        _g.csp_nonce = secrets.token_urlsafe(16)
 
     @app.before_request
     def _count_visitor():
@@ -104,6 +111,27 @@ def create_app(config: dict | None = None) -> Flask:
         from flask import g as _g, request as _req
         request_id = getattr(_g, "request_id", "") or uuid.uuid4().hex[:12]
         response.headers["X-Request-ID"] = request_id
+        # Content-Security-Policy with per-request nonce. Set here (not in
+        # Caddyfile) because Caddy cannot generate per-response random values.
+        # Nonce covers inline <script>/<style> blocks; external scripts match
+        # 'self'. Inline event handlers are removed in templates and rewired
+        # via static/inline-handlers.js.
+        nonce = getattr(_g, "csp_nonce", "") or ""
+        if nonce and "Content-Security-Policy" not in response.headers:
+            response.headers["Content-Security-Policy"] = (
+                "default-src 'none'; "
+                f"script-src 'self' 'nonce-{nonce}'; "
+                "script-src-attr 'none'; "
+                "connect-src 'self'; "
+                f"style-src 'self' 'nonce-{nonce}'; "
+                "style-src-attr 'unsafe-inline'; "
+                "img-src 'self' data:; "
+                "media-src 'self' blob:; "
+                "font-src 'self'; "
+                "form-action 'self'; "
+                "frame-ancestors 'none'; "
+                "base-uri 'self'"
+            )
         duration_ms = round((_time.monotonic() - getattr(_g, '_request_start', _time.monotonic())) * 1000)
         # Skip noisy health poll logs unless they fail or are slow
         if _req.path == '/health' and response.status_code == 200 and duration_ms < 2000:
@@ -122,6 +150,7 @@ def create_app(config: dict | None = None) -> Flask:
     # Make rule metadata available in all templates
     @app.context_processor
     def inject_rules():
+        from flask import g as _g
         from .ai_features import get_all_flags as _get_ai_flags
         from .branding import get_branding_context as _get_branding_context
         from .version import get_version as _get_release_version
@@ -144,6 +173,7 @@ def create_app(config: dict | None = None) -> Flask:
             "web_version": web_ver,
             "desktop_version": desktop_ver,
             "release_version": release_ver,
+            "csp_nonce": getattr(_g, "csp_nonce", ""),
         }
         # Inject AI flags (from ai_features)
         ctx.update(_get_ai_flags())

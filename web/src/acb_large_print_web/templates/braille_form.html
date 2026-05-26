@@ -213,7 +213,7 @@
 {% endblock %}
 
 {% block extra_js %}
-<script>
+<script nonce="{{ csp_nonce }}">
   /* Hide output-format fieldset when direction is braille-to-text */
   (function () {
     var radios = document.querySelectorAll('input[name="direction"]');

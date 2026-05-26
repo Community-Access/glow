@@ -1,0 +1,1913 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>GLOW_Amazon_SES_Namecheap_Implementation_Guide</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        background-color: white;
+      }
+      body {
+        background-color: transparent;
+        color: black;
+        font-size: 12pt;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid #1a1a1a;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+    /* CSS for syntax highlighting */
+    html { -webkit-text-size-adjust: 100%; }
+    pre > code.sourceCode { white-space: pre; position: relative; }
+    pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+    pre > code.sourceCode > span:empty { height: 1.2em; }
+    .sourceCode { overflow: visible; }
+    code.sourceCode > span { color: inherit; text-decoration: inherit; }
+    div.sourceCode { margin: 1em 0; }
+    pre.sourceCode { margin: 0; }
+    @media screen {
+    div.sourceCode { overflow: auto; }
+    }
+    @media print {
+    pre > code.sourceCode { white-space: pre-wrap; }
+    pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+    }
+    pre.numberSource code
+      { counter-reset: source-line 0; }
+    pre.numberSource code > span
+      { position: relative; left: -4em; counter-increment: source-line; }
+    pre.numberSource code > span > a:first-child::before
+      { content: counter(source-line);
+        position: relative; left: -1em; text-align: right; vertical-align: baseline;
+        border: none; display: inline-block;
+        -webkit-touch-callout: none; -webkit-user-select: none;
+        -khtml-user-select: none; -moz-user-select: none;
+        -ms-user-select: none; user-select: none;
+        padding: 0 4px; width: 4em;
+        color: #aaaaaa;
+      }
+    pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+    div.sourceCode
+      {   }
+    @media screen {
+    pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+    }
+    code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+    code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+    code span.at { color: #7d9029; } /* Attribute */
+    code span.bn { color: #40a070; } /* BaseN */
+    code span.bu { color: #008000; } /* BuiltIn */
+    code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+    code span.ch { color: #4070a0; } /* Char */
+    code span.cn { color: #880000; } /* Constant */
+    code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+    code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+    code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+    code span.dt { color: #902000; } /* DataType */
+    code span.dv { color: #40a070; } /* DecVal */
+    code span.er { color: #ff0000; font-weight: bold; } /* Error */
+    code span.ex { } /* Extension */
+    code span.fl { color: #40a070; } /* Float */
+    code span.fu { color: #06287e; } /* Function */
+    code span.im { color: #008000; font-weight: bold; } /* Import */
+    code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+    code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+    code span.op { color: #666666; } /* Operator */
+    code span.ot { color: #007020; } /* Other */
+    code span.pp { color: #bc7a00; } /* Preprocessor */
+    code span.sc { color: #4070a0; } /* SpecialChar */
+    code span.ss { color: #bb6688; } /* SpecialString */
+    code span.st { color: #4070a0; } /* String */
+    code span.va { color: #19177c; } /* Variable */
+    code span.vs { color: #4070a0; } /* VerbatimString */
+    code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+  </style>
+</head>
+<body>
+<h1 id="glow-amazon-ses-implementation-walkthrough">GLOW Amazon SES
+Implementation Walkthrough</h1>
+<p><strong>Project:</strong> GLOW<br />
+<strong>Umbrella domain:</strong> <code>letitglow.app</code><br />
+<strong>DNS provider:</strong> Namecheap<br />
+<strong>Identity provider:</strong> Keycloak<br />
+<strong>Transactional email provider:</strong> Amazon SES<br />
+<strong>Recommended SES Region:</strong> <code>us-east-1</code><br />
+<strong>Recommended SES sender identity:</strong>
+<code>notify.letitglow.app</code><br />
+<strong>Recommended MAIL FROM / bounce domain:</strong>
+<code>bounce.notify.letitglow.app</code><br />
+<strong>Recommended future agent inbox domain:</strong>
+<code>agents.letitglow.app</code><br />
+<strong>Document type:</strong> Hand-holding implementation guide<br />
+<strong>Last updated:</strong> May 25, 2026</p>
+<hr />
+<h2 id="purpose-of-this-guide">1. Purpose of This Guide</h2>
+<p>This guide walks through the practical, step-by-step setup for Amazon
+SES transactional email for GLOW under the <code>letitglow.app</code>
+umbrella domain.</p>
+<p>It covers:</p>
+<ul>
+<li>What to configure in Amazon SES.</li>
+<li>What to configure in Namecheap DNS.</li>
+<li>How to configure Keycloak to send through SES.</li>
+<li>How to prepare the AWS production-access request.</li>
+<li>How to test safely.</li>
+<li>How to monitor bounces, complaints, and deliverability.</li>
+<li>How to avoid the mistakes that can cause SES approval delays or
+reputation problems.</li>
+</ul>
+<p>This guide assumes GLOW will use:</p>
+<pre class="text"><code>Keycloak -&gt; Amazon SES SMTP
+for identity email, such as email verification, password reset, required actions, and account notices.
+
+GLOW application -&gt; Amazon SES API v2
+for application-specific transactional email, such as feedback confirmations, admin notices, and optional future job-completion notices.
+
+AgentMail, if used later
+for future AI-agent inboxes only, not for core authentication or transactional delivery.</code></pre>
+<hr />
+<h2 id="important-scope-decisions">2. Important Scope Decisions</h2>
+<h3 id="what-amazon-ses-will-be-used-for">2.1 What Amazon SES will be
+used for</h3>
+<p>Use Amazon SES for controlled, low-volume transactional email
+only.</p>
+<p>Approved initial message types:</p>
+<pre class="text"><code>Keycloak identity email:
+- Email verification
+- Password reset
+- Required action email
+- Account update or administrator-triggered account notices
+
+GLOW application email:
+- Feedback confirmation
+- Feedback notification to administrators
+- Security alerts
+- System error alerts
+- Optional future job-completion notices, only if the user explicitly opts in</code></pre>
+<h3 id="what-amazon-ses-will-not-be-used-for">2.2 What Amazon SES will
+not be used for</h3>
+<p>Do not use this SES configuration for:</p>
+<pre class="text"><code>- Newsletters
+- BITS announcements
+- GLOW marketing
+- Convention promotions
+- Fundraising blasts
+- Bulk community email
+- Purchased lists
+- Rented lists
+- Scraped addresses
+- Cold outreach
+- Sending uploaded files
+- Sending converted files
+- Sending extracted document text
+- Sending full accessibility reports by default</code></pre>
+<p>This matters because AWS reviews SES production-access requests
+carefully. The cleanest and strongest story is:</p>
+<blockquote>
+<p>GLOW uses SES for low-volume transactional service email. Keycloak
+generates identity email. GLOW generates application-specific service
+email. No marketing. No bulk lists. No uploaded files or private results
+are emailed.</p>
+</blockquote>
+<hr />
+<h2 id="domain-plan">3. Domain Plan</h2>
+<p>Use separate subdomains so each email function has a clear
+purpose.</p>
+<table>
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
+<thead>
+<tr>
+<th>Purpose</th>
+<th>Domain or Address</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Public GLOW site</td>
+<td><code>https://letitglow.app</code></td>
+</tr>
+<tr>
+<td>SES sending identity</td>
+<td><code>notify.letitglow.app</code></td>
+</tr>
+<tr>
+<td>Default From address</td>
+<td><code>no-reply@notify.letitglow.app</code></td>
+</tr>
+<tr>
+<td>Security From address</td>
+<td><code>security@notify.letitglow.app</code></td>
+</tr>
+<tr>
+<td>Feedback From address</td>
+<td><code>feedback@notify.letitglow.app</code></td>
+</tr>
+<tr>
+<td>Reply-To address</td>
+<td><code>support@letitglow.app</code> if this mailbox exists</td>
+</tr>
+<tr>
+<td>Custom MAIL FROM domain</td>
+<td><code>bounce.notify.letitglow.app</code></td>
+</tr>
+<tr>
+<td>Envelope From address for Keycloak</td>
+<td><code>bounces@bounce.notify.letitglow.app</code></td>
+</tr>
+<tr>
+<td>Future agent inbox domain</td>
+<td><code>agents.letitglow.app</code></td>
+</tr>
+</tbody>
+</table>
+<p>Important distinction:</p>
+<pre class="text"><code>From address:
+no-reply@notify.letitglow.app
+
+MAIL FROM / Return-Path / bounce address:
+bounces@bounce.notify.letitglow.app</code></pre>
+<p>Do not use the bounce domain as a visible From address.</p>
+<hr />
+<h2 id="before-you-touch-aws-or-dns">4. Before You Touch AWS or DNS</h2>
+<h3 id="confirm-namecheap-is-actually-managing-dns">4.1 Confirm
+Namecheap is actually managing DNS</h3>
+<p>In Namecheap:</p>
+<ol type="1">
+<li>Sign in to Namecheap.</li>
+<li>Go to <strong>Domain List</strong>.</li>
+<li>Find <code>letitglow.app</code>.</li>
+<li>Choose <strong>Manage</strong>.</li>
+<li>Check <strong>Nameservers</strong>.</li>
+</ol>
+<p>If the domain uses Namecheap BasicDNS or PremiumDNS, you will manage
+records in Namecheap under <strong>Advanced DNS</strong>.</p>
+<p>If the domain uses custom nameservers, Namecheap will not be the
+active DNS provider. In that case, add the records wherever those
+nameservers are hosted.</p>
+<p>Namecheap’s own guidance says that if the Advanced DNS host-records
+area is not available, the domain is likely pointed to third-party or
+hosting nameservers, so records must be added at the active DNS provider
+instead.</p>
+<h3 id="decide-the-ses-region">4.2 Decide the SES Region</h3>
+<p>Recommended:</p>
+<pre class="text"><code>us-east-1</code></pre>
+<p>Use the same Region consistently for:</p>
+<pre class="text"><code>- SES domain identity
+- SMTP credentials
+- SES production access
+- Configuration set
+- Suppression settings
+- SNS/EventBridge event publishing
+- Keycloak SMTP endpoint</code></pre>
+<p>The SMTP endpoint for this guide will be:</p>
+<pre class="text"><code>email-smtp.us-east-1.amazonaws.com</code></pre>
+<h3 id="prepare-your-aws-account">4.3 Prepare your AWS account</h3>
+<p>Before using SES:</p>
+<ul>
+<li>Enable MFA on the root account.</li>
+<li>Enable MFA for administrator accounts.</li>
+<li>Do not use root credentials for daily work.</li>
+<li>Use least-privilege IAM users or roles.</li>
+<li>Enable CloudTrail.</li>
+<li>Create a billing alert.</li>
+<li>Make sure you have access to the Namecheap DNS account.</li>
+</ul>
+<h3 id="create-your-aws-account-exact-onboarding-sequence">4.4 Create
+your AWS account (exact onboarding sequence)</h3>
+<p>If you do not already have an AWS account, use this sequence
+exactly.</p>
+<h4 id="account-creation">4.4.1 Account creation</h4>
+<ol type="1">
+<li>Open AWS sign-up:</li>
+</ol>
+<pre class="text"><code>https://portal.aws.amazon.com/billing/signup</code></pre>
+<ol start="2" type="1">
+<li>Enter an email address dedicated to operations access.</li>
+<li>Set an AWS account name, for example:</li>
+</ol>
+<pre class="text"><code>GLOW Production</code></pre>
+<ol start="4" type="1">
+<li>Create a strong root password and store it in your password
+manager.</li>
+<li>Complete contact details and payment profile.</li>
+<li>Complete phone verification.</li>
+<li>Choose support plan:</li>
+</ol>
+<pre class="text"><code>Basic support (sufficient for initial setup)</code></pre>
+<h4 id="secure-the-root-user-immediately">4.4.2 Secure the root user
+immediately</h4>
+<ol type="1">
+<li>Sign in as root user one time.</li>
+<li>Turn on MFA for root user:</li>
+</ol>
+<ul>
+<li>Console path: Account menu -&gt; Security credentials -&gt;
+Multi-factor authentication (MFA).</li>
+</ul>
+<ol start="3" type="1">
+<li>Use an authenticator app or FIDO2 security key.</li>
+<li>Do not use the root user for daily operations after this step.</li>
+</ol>
+<h4 id="create-an-admin-operator-account-recommended">4.4.3 Create an
+admin operator account (recommended)</h4>
+<p>Preferred method:</p>
+<ol type="1">
+<li>Enable IAM Identity Center.</li>
+<li>Create an administrative permission set.</li>
+<li>Create your first human admin user and assign that permission
+set.</li>
+</ol>
+<p>Alternative method (if Identity Center is deferred):</p>
+<ol type="1">
+<li>Create one IAM user for human admin access.</li>
+<li>Attach <code>AdministratorAccess</code> for initial bootstrap
+only.</li>
+<li>Enable MFA on that user.</li>
+<li>Use this IAM user for console and CLI work.</li>
+</ol>
+<h4 id="configure-cli-access-for-the-admin-account">4.4.4 Configure CLI
+access for the admin account</h4>
+<ol type="1">
+<li>Install AWS CLI v2.</li>
+<li>Create access keys for the admin user only if CLI is required.</li>
+<li>Configure a named profile:</li>
+</ol>
+<div class="sourceCode" id="cb11"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="ex">aws</span> configure <span class="at">--profile</span> glow-admin</span></code></pre></div>
+<ol start="4" type="1">
+<li>Enter:</li>
+</ol>
+<pre class="text"><code>AWS Access Key ID:     &lt;admin access key&gt;
+AWS Secret Access Key: &lt;admin secret key&gt;
+Default region name:   us-east-1
+Default output format: json</code></pre>
+<ol start="5" type="1">
+<li>Validate identity:</li>
+</ol>
+<div class="sourceCode" id="cb13"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="ex">aws</span> sts get-caller-identity <span class="at">--profile</span> glow-admin</span></code></pre></div>
+<h4 id="baseline-account-guardrails-before-ses-setup">4.4.5 Baseline
+account guardrails before SES setup</h4>
+<ol type="1">
+<li>Turn on CloudTrail in all needed regions.</li>
+<li>Turn on GuardDuty (recommended).</li>
+<li>Create a billing alarm in CloudWatch.</li>
+<li>Confirm SES work will be done in:</li>
+</ol>
+<pre class="text"><code>us-east-1</code></pre>
+<ol start="5" type="1">
+<li>Continue to Section 6 only after the above is complete.</li>
+</ol>
+<hr />
+<h2 id="recommended-names-and-settings">5. Recommended Names and
+Settings</h2>
+<p>Use these exact names unless you have a strong reason to change
+them.</p>
+<pre class="text"><code>AWS Region:
+us-east-1
+
+SES identity:
+notify.letitglow.app
+
+Custom MAIL FROM domain:
+bounce.notify.letitglow.app
+
+SES configuration set:
+glow-transactional-production
+
+Keycloak SMTP host:
+email-smtp.us-east-1.amazonaws.com
+
+Keycloak SMTP port:
+587
+
+Keycloak SMTP encryption:
+STARTTLS
+
+Keycloak visible From:
+no-reply@notify.letitglow.app
+
+Keycloak Reply-To:
+support@letitglow.app
+
+Keycloak Envelope From:
+bounces@bounce.notify.letitglow.app</code></pre>
+<hr />
+<h1 id="part-a-amazon-ses-console-setup">Part A: Amazon SES Console
+Setup</h1>
+<h2 id="open-amazon-ses">6. Open Amazon SES</h2>
+<ol type="1">
+<li>Sign in to the AWS Console.</li>
+<li>Search for <strong>Amazon SES</strong>.</li>
+<li>Open <strong>Amazon Simple Email Service</strong>.</li>
+<li>Make sure the Region selector is set to:</li>
+</ol>
+<pre class="text"><code>US East (N. Virginia) us-east-1</code></pre>
+<p>Everything in this guide assumes <code>us-east-1</code>.</p>
+<hr />
+<h2 id="create-the-ses-configuration-set-first">7. Create the SES
+Configuration Set First</h2>
+<p>This lets you attach the configuration set to the domain identity
+later.</p>
+<ol type="1">
+<li>In Amazon SES, go to <strong>Configuration</strong>.</li>
+<li>Choose <strong>Configuration sets</strong>.</li>
+<li>Choose <strong>Create set</strong>.</li>
+<li>Name it:</li>
+</ol>
+<pre class="text"><code>glow-transactional-production</code></pre>
+<ol start="5" type="1">
+<li>For tracking options, do not enable open or click tracking at this
+stage.</li>
+<li>Enable reputation metrics if available.</li>
+<li>Leave dedicated IP pool unset unless you specifically purchased
+dedicated IPs.</li>
+<li>Save the configuration set.</li>
+</ol>
+<p>Recommended privacy choice:</p>
+<pre class="text"><code>Do not enable open tracking.
+Do not enable click tracking.</code></pre>
+<p>GLOW’s trust story is stronger if transactional email is minimal and
+privacy-forward.</p>
+<hr />
+<h2 id="create-the-ses-domain-identity">8. Create the SES Domain
+Identity</h2>
+<ol type="1">
+<li>In Amazon SES, go to <strong>Configuration</strong>.</li>
+<li>Choose <strong>Identities</strong>.</li>
+<li>Choose <strong>Create identity</strong>.</li>
+<li>Select <strong>Domain</strong>.</li>
+<li>Enter:</li>
+</ol>
+<pre class="text"><code>notify.letitglow.app</code></pre>
+<ol start="6" type="1">
+<li>Enable <strong>Easy DKIM</strong>.</li>
+<li>Use the default DKIM key length unless you have a reason to change
+it.</li>
+<li>If there is an option to assign a default configuration set,
+select:</li>
+</ol>
+<pre class="text"><code>glow-transactional-production</code></pre>
+<ol start="9" type="1">
+<li>Create the identity.</li>
+</ol>
+<p>Amazon SES will now show DKIM DNS records. Usually these are three
+CNAME records.</p>
+<p>Do not close the page until you have copied the DKIM records.</p>
+<hr />
+<h1 id="part-b-namecheap-dns-setup">Part B: Namecheap DNS Setup</h1>
+<h2 id="how-namecheap-host-values-work">9. How Namecheap Host Values
+Work</h2>
+<p>When entering records for <code>letitglow.app</code>, Namecheap
+usually expects the <strong>Host</strong> field to be relative to the
+root domain.</p>
+<p>For example:</p>
+<table>
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
+<thead>
+<tr>
+<th>Full DNS name</th>
+<th>Namecheap Host field</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>notify.letitglow.app</code></td>
+<td><code>notify</code></td>
+</tr>
+<tr>
+<td><code>_dmarc.notify.letitglow.app</code></td>
+<td><code>_dmarc.notify</code></td>
+</tr>
+<tr>
+<td><code>bounce.notify.letitglow.app</code></td>
+<td><code>bounce.notify</code></td>
+</tr>
+<tr>
+<td><code>abc123._domainkey.notify.letitglow.app</code></td>
+<td><code>abc123._domainkey.notify</code></td>
+</tr>
+</tbody>
+</table>
+<p>If you paste the full domain into the Host field and Namecheap
+appends <code>letitglow.app</code> again, you may accidentally create a
+broken record like:</p>
+<pre class="text"><code>abc123._domainkey.notify.letitglow.app.letitglow.app</code></pre>
+<p>Use the relative Host values shown in this guide unless Namecheap
+clearly indicates that it accepts fully qualified names.</p>
+<h3 id="namecheap-field-by-field-matrix-exact-values">9.1 Namecheap
+field-by-field matrix (exact values)</h3>
+<p>Use this matrix in Namecheap <strong>Advanced DNS -&gt; Host
+Records</strong>.</p>
+<table>
+<colgroup>
+<col style="width: 13%" />
+<col style="width: 13%" />
+<col style="width: 13%" />
+<col style="width: 13%" />
+<col style="width: 18%" />
+<col style="width: 13%" />
+<col style="width: 13%" />
+</colgroup>
+<thead>
+<tr>
+<th>Purpose</th>
+<th>Type</th>
+<th>Host</th>
+<th>Value / Target</th>
+<th style="text-align: right;">Priority</th>
+<th>TTL</th>
+<th>Value source</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Public apex site</td>
+<td>A Record</td>
+<td><code>@</code></td>
+<td><code>107.175.91.158</code></td>
+<td style="text-align: right;">n/a</td>
+<td>Automatic</td>
+<td>Known server IP</td>
+</tr>
+<tr>
+<td>Public www host</td>
+<td>A Record</td>
+<td><code>www</code></td>
+<td><code>107.175.91.158</code></td>
+<td style="text-align: right;">n/a</td>
+<td>Automatic</td>
+<td>Known server IP</td>
+</tr>
+<tr>
+<td>SES DKIM #1</td>
+<td>CNAME Record</td>
+<td><code>[SES_TOKEN_1]._domainkey.notify</code></td>
+<td><code>[SES_TOKEN_1].dkim.amazonses.com</code></td>
+<td style="text-align: right;">n/a</td>
+<td>Automatic</td>
+<td>Generated by SES identity</td>
+</tr>
+<tr>
+<td>SES DKIM #2</td>
+<td>CNAME Record</td>
+<td><code>[SES_TOKEN_2]._domainkey.notify</code></td>
+<td><code>[SES_TOKEN_2].dkim.amazonses.com</code></td>
+<td style="text-align: right;">n/a</td>
+<td>Automatic</td>
+<td>Generated by SES identity</td>
+</tr>
+<tr>
+<td>SES DKIM #3</td>
+<td>CNAME Record</td>
+<td><code>[SES_TOKEN_3]._domainkey.notify</code></td>
+<td><code>[SES_TOKEN_3].dkim.amazonses.com</code></td>
+<td style="text-align: right;">n/a</td>
+<td>Automatic</td>
+<td>Generated by SES identity</td>
+</tr>
+<tr>
+<td>MAIL FROM MX</td>
+<td>MX Record</td>
+<td><code>bounce.notify</code></td>
+<td><code>feedback-smtp.us-east-1.amazonses.com</code></td>
+<td style="text-align: right;"><code>10</code></td>
+<td>Automatic</td>
+<td>Known for SES region <code>us-east-1</code></td>
+</tr>
+<tr>
+<td>MAIL FROM SPF</td>
+<td>TXT Record</td>
+<td><code>bounce.notify</code></td>
+<td><code>v=spf1 include:amazonses.com -all</code></td>
+<td style="text-align: right;">n/a</td>
+<td>Automatic</td>
+<td>Static value</td>
+</tr>
+<tr>
+<td>DMARC for sender subdomain</td>
+<td>TXT Record</td>
+<td><code>_dmarc.notify</code></td>
+<td><code>v=DMARC1; p=none; rua=mailto:dmarc@letitglow.app; adkim=s; aspf=r</code></td>
+<td style="text-align: right;">n/a</td>
+<td>Automatic</td>
+<td>Static value</td>
+</tr>
+<tr>
+<td>Optional root DMARC</td>
+<td>TXT Record</td>
+<td><code>_dmarc</code></td>
+<td><code>v=DMARC1; p=none; rua=mailto:dmarc@letitglow.app</code></td>
+<td style="text-align: right;">n/a</td>
+<td>Automatic</td>
+<td>Static value</td>
+</tr>
+</tbody>
+</table>
+<p>Notes:</p>
+<ul>
+<li>The only values you cannot pre-fill are the three DKIM token pairs.
+Those come from SES after creating <code>notify.letitglow.app</code>
+identity.</li>
+<li>For A records, do not use <code>http://</code> or
+<code>https://</code> in the value.</li>
+<li>For CNAME records, the value must be a domain name, not an IP.</li>
+<li>Do not create a CNAME for <code>bounce.notify</code>; MX and CNAME
+must not coexist on the same host.</li>
+</ul>
+<hr />
+<h2 id="add-the-ses-dkim-cname-records-in-namecheap">10. Add the SES
+DKIM CNAME Records in Namecheap</h2>
+<p>In Namecheap:</p>
+<ol type="1">
+<li>Sign in.</li>
+<li>Go to <strong>Domain List</strong>.</li>
+<li>Select <strong>Manage</strong> for <code>letitglow.app</code>.</li>
+<li>Open the <strong>Advanced DNS</strong> tab.</li>
+<li>Scroll to <strong>Host Records</strong>.</li>
+<li>Choose <strong>Add New Record</strong>.</li>
+</ol>
+<p>Amazon SES will give you three DKIM CNAME records.</p>
+<p>They will look something like this:</p>
+<pre class="text"><code>Name:
+abc123def456._domainkey.notify.letitglow.app
+
+Value:
+abc123def456.dkim.amazonses.com</code></pre>
+<p>In Namecheap, enter it like this:</p>
+<table>
+<colgroup>
+<col style="width: 25%" />
+<col style="width: 25%" />
+<col style="width: 25%" />
+<col style="width: 25%" />
+</colgroup>
+<thead>
+<tr>
+<th>Type</th>
+<th>Host</th>
+<th>Value</th>
+<th>TTL</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>CNAME Record</td>
+<td><code>abc123def456._domainkey.notify</code></td>
+<td><code>abc123def456.dkim.amazonses.com</code></td>
+<td>Automatic</td>
+</tr>
+</tbody>
+</table>
+<p>Repeat for all three SES DKIM records.</p>
+<p>Important:</p>
+<ul>
+<li>Use the exact tokens Amazon SES gives you.</li>
+<li>Do not invent the DKIM values.</li>
+<li>Do not include quotation marks.</li>
+<li>If SES shows a trailing dot at the end of the value, Namecheap may
+accept it with or without the dot. If Namecheap rejects the value,
+remove only the trailing dot.</li>
+</ul>
+<p>After adding the records, return to SES and wait for the identity to
+verify. DNS can verify quickly, but AWS documentation notes DNS changes
+can take up to 72 hours to propagate.</p>
+<hr />
+<h2 id="configure-the-custom-mail-from-domain-in-ses">11. Configure the
+Custom MAIL FROM Domain in SES</h2>
+<p>Back in Amazon SES:</p>
+<ol type="1">
+<li>Go to <strong>Identities</strong>.</li>
+<li>Select:</li>
+</ol>
+<pre class="text"><code>notify.letitglow.app</code></pre>
+<ol start="3" type="1">
+<li>Find <strong>Custom MAIL FROM domain</strong>.</li>
+<li>Choose <strong>Edit</strong> or <strong>Set custom MAIL FROM
+domain</strong>.</li>
+<li>Enter:</li>
+</ol>
+<pre class="text"><code>bounce.notify.letitglow.app</code></pre>
+<ol start="6" type="1">
+<li>For behavior on MX failure, choose:</li>
+</ol>
+<pre class="text"><code>Reject message</code></pre>
+<p>Why reject?</p>
+<p>Because if the MAIL FROM domain breaks, you want GLOW email to fail
+loudly rather than silently falling back to an Amazon-owned MAIL FROM
+domain. This protects your authentication posture.</p>
+<p>SES will give you an MX record and SPF TXT record for the custom MAIL
+FROM domain.</p>
+<hr />
+<h2 id="add-the-mail-from-mx-record-in-namecheap">12. Add the MAIL FROM
+MX Record in Namecheap</h2>
+<p>In Namecheap <strong>Advanced DNS</strong>, add:</p>
+<table>
+<colgroup>
+<col style="width: 18%" />
+<col style="width: 18%" />
+<col style="width: 18%" />
+<col style="width: 25%" />
+<col style="width: 18%" />
+</colgroup>
+<thead>
+<tr>
+<th>Type</th>
+<th>Host</th>
+<th>Value / Mail Server</th>
+<th style="text-align: right;">Priority</th>
+<th>TTL</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>MX Record</td>
+<td><code>bounce.notify</code></td>
+<td><code>feedback-smtp.us-east-1.amazonses.com</code></td>
+<td style="text-align: right;"><code>10</code></td>
+<td>Automatic</td>
+</tr>
+</tbody>
+</table>
+<p>Important:</p>
+<ul>
+<li>Use <code>feedback-smtp.us-east-1.amazonses.com</code> for
+<code>us-east-1</code>.</li>
+<li>If you chose a different SES Region, use the feedback SMTP domain
+for that Region.</li>
+<li>Do not create a CNAME record for <code>bounce.notify</code>; MX and
+CNAME cannot safely coexist for the same host.</li>
+</ul>
+<hr />
+<h2 id="add-the-mail-from-spf-txt-record-in-namecheap">13. Add the MAIL
+FROM SPF TXT Record in Namecheap</h2>
+<p>In Namecheap <strong>Advanced DNS</strong>, add:</p>
+<table>
+<colgroup>
+<col style="width: 25%" />
+<col style="width: 25%" />
+<col style="width: 25%" />
+<col style="width: 25%" />
+</colgroup>
+<thead>
+<tr>
+<th>Type</th>
+<th>Host</th>
+<th>Value</th>
+<th>TTL</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>TXT Record</td>
+<td><code>bounce.notify</code></td>
+<td><code>v=spf1 include:amazonses.com -all</code></td>
+<td>Automatic</td>
+</tr>
+</tbody>
+</table>
+<p>This tells receiving mail systems that Amazon SES is allowed to send
+mail for the bounce domain.</p>
+<hr />
+<h2 id="add-dmarc-for-the-ses-sending-subdomain">14. Add DMARC for the
+SES Sending Subdomain</h2>
+<p>Add this TXT record in Namecheap:</p>
+<table>
+<colgroup>
+<col style="width: 25%" />
+<col style="width: 25%" />
+<col style="width: 25%" />
+<col style="width: 25%" />
+</colgroup>
+<thead>
+<tr>
+<th>Type</th>
+<th>Host</th>
+<th>Value</th>
+<th>TTL</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>TXT Record</td>
+<td><code>_dmarc.notify</code></td>
+<td><code>v=DMARC1; p=none; rua=mailto:dmarc@letitglow.app; adkim=s; aspf=r</code></td>
+<td>Automatic</td>
+</tr>
+</tbody>
+</table>
+<p>Recommended starting policy:</p>
+<pre class="text"><code>p=none</code></pre>
+<p>This means “monitor only.” It does not reject or quarantine messages
+yet.</p>
+<p>Why <code>adkim=s</code>?</p>
+<pre class="text"><code>adkim=s</code></pre>
+<p>means strict DKIM alignment. Since SES will sign using the
+<code>notify.letitglow.app</code> identity, this is appropriate once
+DKIM is working.</p>
+<p>Why <code>aspf=r</code>?</p>
+<pre class="text"><code>aspf=r</code></pre>
+<p>means relaxed SPF alignment. This is helpful because the visible From
+domain is <code>notify.letitglow.app</code>, while the custom MAIL FROM
+domain is <code>bounce.notify.letitglow.app</code>. Relaxed SPF
+alignment avoids unnecessary SPF alignment failures.</p>
+<p>Later, after stable sending, you can move to:</p>
+<pre class="text"><code>p=quarantine</code></pre>
+<p>And eventually:</p>
+<pre class="text"><code>p=reject</code></pre>
+<p>Do not jump straight to <code>p=reject</code> until you have verified
+DKIM, SPF, DMARC, and all application mail flows.</p>
+<hr />
+<h2 id="optional-add-root-dmarc-for-letitglow.app">15. Optional: Add
+Root DMARC for letitglow.app</h2>
+<p>If <code>letitglow.app</code> will also send email from the root
+domain, add a root DMARC record too.</p>
+<table>
+<colgroup>
+<col style="width: 25%" />
+<col style="width: 25%" />
+<col style="width: 25%" />
+<col style="width: 25%" />
+</colgroup>
+<thead>
+<tr>
+<th>Type</th>
+<th>Host</th>
+<th>Value</th>
+<th>TTL</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>TXT Record</td>
+<td><code>_dmarc</code></td>
+<td><code>v=DMARC1; p=none; rua=mailto:dmarc@letitglow.app</code></td>
+<td>Automatic</td>
+</tr>
+</tbody>
+</table>
+<p>Do this carefully if the root domain already has email services such
+as Google Workspace, Microsoft 365, Fastmail, Namecheap Private Email,
+or another mail host.</p>
+<p>Only one DMARC TXT record should exist per domain/subdomain.</p>
+<hr />
+<h2 id="dns-record-summary-for-namecheap">16. DNS Record Summary for
+Namecheap</h2>
+<p>Use this as your working checklist.</p>
+<h3 id="dkim-records-from-ses">16.1 DKIM records from SES</h3>
+<p>You will have three records like this:</p>
+<table>
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+</colgroup>
+<thead>
+<tr>
+<th>Type</th>
+<th>Host</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>CNAME</td>
+<td><code>[SES_TOKEN_1]._domainkey.notify</code></td>
+<td><code>[SES_TOKEN_1].dkim.amazonses.com</code></td>
+</tr>
+<tr>
+<td>CNAME</td>
+<td><code>[SES_TOKEN_2]._domainkey.notify</code></td>
+<td><code>[SES_TOKEN_2].dkim.amazonses.com</code></td>
+</tr>
+<tr>
+<td>CNAME</td>
+<td><code>[SES_TOKEN_3]._domainkey.notify</code></td>
+<td><code>[SES_TOKEN_3].dkim.amazonses.com</code></td>
+</tr>
+</tbody>
+</table>
+<p>Use the actual SES values.</p>
+<h3 id="mail-from-records">16.2 MAIL FROM records</h3>
+<table>
+<colgroup>
+<col style="width: 23%" />
+<col style="width: 23%" />
+<col style="width: 23%" />
+<col style="width: 30%" />
+</colgroup>
+<thead>
+<tr>
+<th>Type</th>
+<th>Host</th>
+<th>Value / Mail Server</th>
+<th style="text-align: right;">Priority</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>MX</td>
+<td><code>bounce.notify</code></td>
+<td><code>feedback-smtp.us-east-1.amazonses.com</code></td>
+<td style="text-align: right;"><code>10</code></td>
+</tr>
+<tr>
+<td>TXT</td>
+<td><code>bounce.notify</code></td>
+<td><code>v=spf1 include:amazonses.com -all</code></td>
+<td style="text-align: right;">n/a</td>
+</tr>
+</tbody>
+</table>
+<h3 id="dmarc-records">16.3 DMARC records</h3>
+<table>
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+</colgroup>
+<thead>
+<tr>
+<th>Type</th>
+<th>Host</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>TXT</td>
+<td><code>_dmarc.notify</code></td>
+<td><code>v=DMARC1; p=none; rua=mailto:dmarc@letitglow.app; adkim=s; aspf=r</code></td>
+</tr>
+<tr>
+<td>TXT</td>
+<td><code>_dmarc</code></td>
+<td><code>v=DMARC1; p=none; rua=mailto:dmarc@letitglow.app</code></td>
+</tr>
+</tbody>
+</table>
+<p>The root DMARC record is optional but recommended if the root domain
+will send email.</p>
+<hr />
+<h1 id="part-c-verify-ses-identity-and-mail-from">Part C: Verify SES
+Identity and MAIL FROM</h1>
+<h2 id="verify-the-identity-in-ses">17. Verify the Identity in SES</h2>
+<p>In Amazon SES:</p>
+<ol type="1">
+<li>Go to <strong>Configuration</strong>.</li>
+<li>Choose <strong>Identities</strong>.</li>
+<li>Select:</li>
+</ol>
+<pre class="text"><code>notify.letitglow.app</code></pre>
+<p>Confirm:</p>
+<pre class="text"><code>Identity status: Verified
+DKIM status: Successful</code></pre>
+<p>If it is not verified:</p>
+<ul>
+<li>Wait longer.</li>
+<li>Recheck the Namecheap Host fields.</li>
+<li>Make sure you did not accidentally duplicate the domain name.</li>
+<li>Make sure no CNAME host conflicts exist.</li>
+<li>Confirm you are looking at the same SES Region where you created the
+identity.</li>
+</ul>
+<hr />
+<h2 id="verify-custom-mail-from">18. Verify Custom MAIL FROM</h2>
+<p>In the same SES identity screen, confirm:</p>
+<pre class="text"><code>Custom MAIL FROM status: Successful</code></pre>
+<p>If it is not successful:</p>
+<ul>
+<li>Confirm the MX record exists at
+<code>bounce.notify.letitglow.app</code>.</li>
+<li>Confirm the SPF TXT record exists at
+<code>bounce.notify.letitglow.app</code>.</li>
+<li>Confirm the MX value uses the correct SES Region.</li>
+<li>Confirm the Host field in Namecheap is <code>bounce.notify</code>,
+not the full domain with the root accidentally duplicated.</li>
+</ul>
+<hr />
+<h1 id="part-d-aws-cli-setup-option">Part D: AWS CLI Setup Option</h1>
+<p>You can do the setup through the console, but these commands are
+helpful for verification and repeatability.</p>
+<h2 id="configure-shell-variables">19. Configure Shell Variables</h2>
+<p>Linux, macOS, or WSL:</p>
+<div class="sourceCode" id="cb34"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a><span class="bu">export</span> <span class="va">AWS_PROFILE</span><span class="op">=</span>glow-admin</span>
+<span id="cb34-2"><a href="#cb34-2" aria-hidden="true" tabindex="-1"></a><span class="bu">export</span> <span class="va">AWS_REGION</span><span class="op">=</span>us-east-1</span>
+<span id="cb34-3"><a href="#cb34-3" aria-hidden="true" tabindex="-1"></a><span class="bu">export</span> <span class="va">SES_IDENTITY</span><span class="op">=</span>notify.letitglow.app</span>
+<span id="cb34-4"><a href="#cb34-4" aria-hidden="true" tabindex="-1"></a><span class="bu">export</span> <span class="va">MAIL_FROM_DOMAIN</span><span class="op">=</span>bounce.notify.letitglow.app</span>
+<span id="cb34-5"><a href="#cb34-5" aria-hidden="true" tabindex="-1"></a><span class="bu">export</span> <span class="va">CONFIG_SET</span><span class="op">=</span>glow-transactional-production</span></code></pre></div>
+<p>PowerShell:</p>
+<div class="sourceCode" id="cb35"><pre
+class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a><span class="va">$env</span><span class="op">:</span><span class="va">AWS_PROFILE</span> <span class="op">=</span> <span class="st">&quot;glow-admin&quot;</span></span>
+<span id="cb35-2"><a href="#cb35-2" aria-hidden="true" tabindex="-1"></a><span class="va">$env</span><span class="op">:</span><span class="va">AWS_REGION</span> <span class="op">=</span> <span class="st">&quot;us-east-1&quot;</span></span>
+<span id="cb35-3"><a href="#cb35-3" aria-hidden="true" tabindex="-1"></a><span class="va">$env</span><span class="op">:</span><span class="va">SES_IDENTITY</span> <span class="op">=</span> <span class="st">&quot;notify.letitglow.app&quot;</span></span>
+<span id="cb35-4"><a href="#cb35-4" aria-hidden="true" tabindex="-1"></a><span class="va">$env</span><span class="op">:</span><span class="va">MAIL_FROM_DOMAIN</span> <span class="op">=</span> <span class="st">&quot;bounce.notify.letitglow.app&quot;</span></span>
+<span id="cb35-5"><a href="#cb35-5" aria-hidden="true" tabindex="-1"></a><span class="va">$env</span><span class="op">:</span><span class="va">CONFIG_SET</span> <span class="op">=</span> <span class="st">&quot;glow-transactional-production&quot;</span></span></code></pre></div>
+<hr />
+<h2 id="create-the-configuration-set-with-aws-cli">20. Create the
+Configuration Set with AWS CLI</h2>
+<div class="sourceCode" id="cb36"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a><span class="ex">aws</span> sesv2 create-configuration-set <span class="dt">\</span></span>
+<span id="cb36-2"><a href="#cb36-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">--configuration-set-name</span> <span class="st">&quot;</span><span class="va">$CONFIG_SET</span><span class="st">&quot;</span> <span class="dt">\</span></span>
+<span id="cb36-3"><a href="#cb36-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">--region</span> <span class="st">&quot;</span><span class="va">$AWS_REGION</span><span class="st">&quot;</span></span></code></pre></div>
+<p>If it already exists, AWS will return an error. That is fine; do not
+create a duplicate.</p>
+<hr />
+<h2 id="create-the-email-identity-with-aws-cli">21. Create the Email
+Identity with AWS CLI</h2>
+<div class="sourceCode" id="cb37"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a><span class="ex">aws</span> sesv2 create-email-identity <span class="dt">\</span></span>
+<span id="cb37-2"><a href="#cb37-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">--email-identity</span> <span class="st">&quot;</span><span class="va">$SES_IDENTITY</span><span class="st">&quot;</span> <span class="dt">\</span></span>
+<span id="cb37-3"><a href="#cb37-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">--region</span> <span class="st">&quot;</span><span class="va">$AWS_REGION</span><span class="st">&quot;</span></span></code></pre></div>
+<p>Then retrieve its status and DKIM details:</p>
+<div class="sourceCode" id="cb38"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a><span class="ex">aws</span> sesv2 get-email-identity <span class="dt">\</span></span>
+<span id="cb38-2"><a href="#cb38-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">--email-identity</span> <span class="st">&quot;</span><span class="va">$SES_IDENTITY</span><span class="st">&quot;</span> <span class="dt">\</span></span>
+<span id="cb38-3"><a href="#cb38-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">--region</span> <span class="st">&quot;</span><span class="va">$AWS_REGION</span><span class="st">&quot;</span></span></code></pre></div>
+<p>Use the DKIM tokens from the output or from the SES console to create
+the Namecheap CNAME records.</p>
+<hr />
+<h2 id="associate-the-default-configuration-set-with-the-identity">22.
+Associate the Default Configuration Set with the Identity</h2>
+<p>This is especially important for Keycloak, because Keycloak may not
+let you add SES-specific message headers.</p>
+<div class="sourceCode" id="cb39"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a><span class="ex">aws</span> sesv2 put-email-identity-configuration-set-attributes <span class="dt">\</span></span>
+<span id="cb39-2"><a href="#cb39-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">--email-identity</span> <span class="st">&quot;</span><span class="va">$SES_IDENTITY</span><span class="st">&quot;</span> <span class="dt">\</span></span>
+<span id="cb39-3"><a href="#cb39-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">--configuration-set-name</span> <span class="st">&quot;</span><span class="va">$CONFIG_SET</span><span class="st">&quot;</span> <span class="dt">\</span></span>
+<span id="cb39-4"><a href="#cb39-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">--region</span> <span class="st">&quot;</span><span class="va">$AWS_REGION</span><span class="st">&quot;</span></span></code></pre></div>
+<p>This makes the configuration set apply by default when no other
+configuration set is specified.</p>
+<hr />
+<h2 id="configure-custom-mail-from-with-aws-cli">23. Configure Custom
+MAIL FROM with AWS CLI</h2>
+<div class="sourceCode" id="cb40"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a><span class="ex">aws</span> sesv2 put-email-identity-mail-from-attributes <span class="dt">\</span></span>
+<span id="cb40-2"><a href="#cb40-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">--email-identity</span> <span class="st">&quot;</span><span class="va">$SES_IDENTITY</span><span class="st">&quot;</span> <span class="dt">\</span></span>
+<span id="cb40-3"><a href="#cb40-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">--mail-from-domain</span> <span class="st">&quot;</span><span class="va">$MAIL_FROM_DOMAIN</span><span class="st">&quot;</span> <span class="dt">\</span></span>
+<span id="cb40-4"><a href="#cb40-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">--behavior-on-mx-failure</span> REJECT_MESSAGE <span class="dt">\</span></span>
+<span id="cb40-5"><a href="#cb40-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">--region</span> <span class="st">&quot;</span><span class="va">$AWS_REGION</span><span class="st">&quot;</span></span></code></pre></div>
+<p>Then check the identity again:</p>
+<div class="sourceCode" id="cb41"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb41-1"><a href="#cb41-1" aria-hidden="true" tabindex="-1"></a><span class="ex">aws</span> sesv2 get-email-identity <span class="dt">\</span></span>
+<span id="cb41-2"><a href="#cb41-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">--email-identity</span> <span class="st">&quot;</span><span class="va">$SES_IDENTITY</span><span class="st">&quot;</span> <span class="dt">\</span></span>
+<span id="cb41-3"><a href="#cb41-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">--region</span> <span class="st">&quot;</span><span class="va">$AWS_REGION</span><span class="st">&quot;</span></span></code></pre></div>
+<hr />
+<h2 id="enable-account-level-suppression">24. Enable Account-Level
+Suppression</h2>
+<div class="sourceCode" id="cb42"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb42-1"><a href="#cb42-1" aria-hidden="true" tabindex="-1"></a><span class="ex">aws</span> sesv2 put-account-suppression-attributes <span class="dt">\</span></span>
+<span id="cb42-2"><a href="#cb42-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">--suppressed-reasons</span> BOUNCE COMPLAINT <span class="dt">\</span></span>
+<span id="cb42-3"><a href="#cb42-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">--region</span> <span class="st">&quot;</span><span class="va">$AWS_REGION</span><span class="st">&quot;</span></span></code></pre></div>
+<p>This tells SES to automatically suppress addresses that hard bounce
+or complain.</p>
+<hr />
+<h2 id="enable-configuration-set-suppression">25. Enable Configuration
+Set Suppression</h2>
+<div class="sourceCode" id="cb43"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb43-1"><a href="#cb43-1" aria-hidden="true" tabindex="-1"></a><span class="ex">aws</span> sesv2 put-configuration-set-suppression-options <span class="dt">\</span></span>
+<span id="cb43-2"><a href="#cb43-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">--configuration-set-name</span> <span class="st">&quot;</span><span class="va">$CONFIG_SET</span><span class="st">&quot;</span> <span class="dt">\</span></span>
+<span id="cb43-3"><a href="#cb43-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">--suppressed-reasons</span> BOUNCE COMPLAINT <span class="dt">\</span></span>
+<span id="cb43-4"><a href="#cb43-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">--region</span> <span class="st">&quot;</span><span class="va">$AWS_REGION</span><span class="st">&quot;</span></span></code></pre></div>
+<p>This keeps the GLOW transactional configuration set aligned with
+account-level suppression.</p>
+<hr />
+<h1 id="part-e-event-publishing-for-bounces-and-complaints">Part E:
+Event Publishing for Bounces and Complaints</h1>
+<h2 id="why-this-matters">26. Why This Matters</h2>
+<p>Amazon SES expects you to monitor and handle bounces and complaints.
+This is not optional for a healthy production setup.</p>
+<p>GLOW should know when:</p>
+<pre class="text"><code>- An address hard bounced.
+- A recipient complained.
+- SES rejected a message.
+- A message failed to render.
+- A message was delivered.</code></pre>
+<p>At a minimum, hard bounces and complaints should suppress future
+sending.</p>
+<hr />
+<h2 id="simple-first-version-event-design">27. Simple First-Version
+Event Design</h2>
+<p>For a first implementation, use this flow:</p>
+<pre class="text"><code>Amazon SES configuration set
+  -&gt; SNS topic
+  -&gt; HTTPS webhook or Lambda
+  -&gt; GLOW email event table
+  -&gt; GLOW suppression table</code></pre>
+<p>Create one SNS topic:</p>
+<pre class="text"><code>glow-ses-events</code></pre>
+<p>Subscribe either:</p>
+<pre class="text"><code>- A Lambda function, or
+- A secure HTTPS endpoint on the GLOW server</code></pre>
+<p>Recommended event types:</p>
+<pre class="text"><code>SEND
+DELIVERY
+BOUNCE
+COMPLAINT
+REJECT
+RENDERING_FAILURE
+DELIVERY_DELAY</code></pre>
+<p>Avoid open/click tracking initially.</p>
+<hr />
+<h2 id="minimum-suppression-logic">28. Minimum Suppression Logic</h2>
+<p>GLOW should implement local suppression in addition to SES
+suppression.</p>
+<p>When a hard bounce occurs:</p>
+<pre class="text"><code>1. Record the SES event.
+2. Mark the message as bounced.
+3. Add the recipient to local suppression with reason = bounce.
+4. Do not send future non-critical email to that address.</code></pre>
+<p>When a complaint occurs:</p>
+<pre class="text"><code>1. Record the SES event.
+2. Mark the message as complained.
+3. Add the recipient to local suppression with reason = complaint.
+4. Do not send future email to that address unless a human-reviewed policy exception exists.</code></pre>
+<p>For temporary bounces:</p>
+<pre class="text"><code>1. Record the event.
+2. Do not immediately suppress.
+3. Retry only if the message type is still relevant.
+4. Suppress after a configured threshold if repeated failures occur.</code></pre>
+<hr />
+<h1 id="part-f-create-ses-smtp-credentials-for-keycloak">Part F: Create
+SES SMTP Credentials for Keycloak</h1>
+<h2 id="why-keycloak-uses-smtp">29. Why Keycloak Uses SMTP</h2>
+<p>Keycloak’s email settings are SMTP-based. Keycloak should send
+identity email through SES SMTP.</p>
+<p>Keycloak handles:</p>
+<pre class="text"><code>- Email verification
+- Forgotten password
+- Required actions
+- Admin-initiated account email</code></pre>
+<p>GLOW should not duplicate these identity email features in
+application code.</p>
+<hr />
+<h2 id="create-ses-smtp-credentials">30. Create SES SMTP
+Credentials</h2>
+<p>In Amazon SES:</p>
+<ol type="1">
+<li>Open SES in <code>us-east-1</code>.</li>
+<li>Go to <strong>SMTP settings</strong>.</li>
+<li>Choose <strong>Create SMTP credentials</strong>.</li>
+<li>Name the SMTP user something clear, such as:</li>
+</ol>
+<pre class="text"><code>glow-keycloak-ses-smtp</code></pre>
+<ol start="5" type="1">
+<li>Create the user.</li>
+<li>Download the credentials CSV immediately.</li>
+</ol>
+<p>Important:</p>
+<ul>
+<li>SES SMTP credentials are Region-specific.</li>
+<li>SES SMTP credentials are not the same as ordinary AWS access
+keys.</li>
+<li>You cannot view the SMTP password again after leaving the creation
+screen.</li>
+<li>Store the credentials securely.</li>
+<li>Do not commit them to GitHub.</li>
+<li>Do not paste them into documentation or tickets.</li>
+</ul>
+<hr />
+<h1 id="part-g-configure-keycloak-email">Part G: Configure Keycloak
+Email</h1>
+<h2 id="open-keycloak-realm-email-settings">31. Open Keycloak Realm
+Email Settings</h2>
+<p>In the Keycloak admin console:</p>
+<ol type="1">
+<li>Sign in as a Keycloak administrator.</li>
+<li>Select the GLOW realm.</li>
+<li>Go to <strong>Realm settings</strong>.</li>
+<li>Open the <strong>Email</strong> tab.</li>
+</ol>
+<hr />
+<h2 id="enter-keycloak-smtp-settings">32. Enter Keycloak SMTP
+Settings</h2>
+<p>Use these values:</p>
+<pre class="text"><code>From:
+no-reply@notify.letitglow.app
+
+From display name:
+GLOW
+
+Reply-To:
+support@letitglow.app
+
+Reply-To display name:
+GLOW Support
+
+Envelope From:
+bounces@bounce.notify.letitglow.app
+
+Host:
+email-smtp.us-east-1.amazonaws.com
+
+Port:
+587
+
+Encryption:
+STARTTLS
+
+Authentication:
+Enabled
+
+Authentication type:
+Password
+
+Username:
+[SES SMTP username from downloaded CSV]
+
+Password:
+[SES SMTP password from downloaded CSV]</code></pre>
+<p>Notes:</p>
+<ul>
+<li>Only use <code>support@letitglow.app</code> if that mailbox actually
+exists and is monitored.</li>
+<li>The <strong>Envelope From</strong> should be an email address at the
+MAIL FROM domain, such as
+<code>bounces@bounce.notify.letitglow.app</code>.</li>
+<li>Do not put the SMTP username or password in the visible GLOW
+repository.</li>
+<li>If port 587 fails because of a network/firewall issue, try SES TLS
+Wrapper on port 465 if Keycloak and your server environment support
+it.</li>
+</ul>
+<hr />
+<h2 id="send-a-keycloak-test-email">33. Send a Keycloak Test Email</h2>
+<p>In Keycloak’s Email tab:</p>
+<ol type="1">
+<li>Save the SMTP settings.</li>
+<li>Use <strong>Test connection</strong> or <strong>Send test
+email</strong>, depending on your Keycloak version.</li>
+<li>Send to a verified address if SES is still in sandbox.</li>
+<li>Check whether the email arrives.</li>
+<li>Inspect the headers.</li>
+</ol>
+<p>Look for:</p>
+<pre class="text"><code>DKIM: pass
+SPF: pass
+DMARC: pass
+Return-Path: bounces@bounce.notify.letitglow.app or another address under bounce.notify.letitglow.app
+From: no-reply@notify.letitglow.app</code></pre>
+<p>If SES is still in sandbox, the recipient must be verified in SES
+unless you are sending to the SES mailbox simulator.</p>
+<hr />
+<h1 id="part-h-configure-glow-application-sending">Part H: Configure
+GLOW Application Sending</h1>
+<h2 id="use-ses-api-v2-for-glow-application-email">34. Use SES API v2
+for GLOW Application Email</h2>
+<p>For GLOW application email, prefer the SES API v2 over SMTP.</p>
+<p>This gives better control over:</p>
+<pre class="text"><code>- Configuration set
+- Message tags
+- Logging
+- Retry behavior
+- Template selection
+- Event correlation</code></pre>
+<p>Example application-level message types:</p>
+<pre class="text"><code>feedback_confirmation
+feedback_admin_notice
+system_error_alert
+security_notice
+optional_job_completion_notice</code></pre>
+<p>Do not let random parts of the GLOW codebase send email directly.</p>
+<p>Create a central email service module.</p>
+<hr />
+<h2 id="required-application-controls">35. Required Application
+Controls</h2>
+<p>Before GLOW sends any application email, it should check:</p>
+<pre class="text"><code>1. Is this email type allowed?
+2. Is the recipient suppressed?
+3. Is the recipient allowed for this message type?
+4. Has the recipient exceeded rate limits?
+5. Does the template have a plain-text version?
+6. Does the message contain prohibited content?</code></pre>
+<p>Prohibited content:</p>
+<pre class="text"><code>- Uploaded files
+- Converted files
+- Extracted text
+- Full accessibility reports
+- API keys
+- Internal file paths
+- Stack traces with user data
+- Long-lived download links</code></pre>
+<hr />
+<h2 id="recommended-glow-email-module-structure">36. Recommended GLOW
+Email Module Structure</h2>
+<pre class="text"><code>glow_email/
+  __init__.py
+  client.py
+  queue.py
+  templates.py
+  suppression.py
+  events.py
+  audit.py
+  rate_limit.py</code></pre>
+<p>Everything goes through one function:</p>
+<div class="sourceCode" id="cb61"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb61-1"><a href="#cb61-1" aria-hidden="true" tabindex="-1"></a>send_transactional_email(</span>
+<span id="cb61-2"><a href="#cb61-2" aria-hidden="true" tabindex="-1"></a>    recipient_email,</span>
+<span id="cb61-3"><a href="#cb61-3" aria-hidden="true" tabindex="-1"></a>    email_type,</span>
+<span id="cb61-4"><a href="#cb61-4" aria-hidden="true" tabindex="-1"></a>    template_name,</span>
+<span id="cb61-5"><a href="#cb61-5" aria-hidden="true" tabindex="-1"></a>    template_context,</span>
+<span id="cb61-6"><a href="#cb61-6" aria-hidden="true" tabindex="-1"></a>    triggering_event,</span>
+<span id="cb61-7"><a href="#cb61-7" aria-hidden="true" tabindex="-1"></a>    related_object_type<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb61-8"><a href="#cb61-8" aria-hidden="true" tabindex="-1"></a>    related_object_id<span class="op">=</span><span class="va">None</span></span>
+<span id="cb61-9"><a href="#cb61-9" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div>
+<hr />
+<h1 id="part-i-testing-before-production-access">Part I: Testing Before
+Production Access</h1>
+<h2 id="understand-the-ses-sandbox">37. Understand the SES Sandbox</h2>
+<p>Before production access, SES is in sandbox mode.</p>
+<p>In sandbox mode:</p>
+<pre class="text"><code>- You can send only to verified recipient addresses or simulator addresses.
+- You can send only from verified identities.
+- You have low sending limits.</code></pre>
+<p>Production access lets you send to unverified recipients, but you
+still must verify the identities you send from.</p>
+<hr />
+<h2 id="use-ses-mailbox-simulator">38. Use SES Mailbox Simulator</h2>
+<p>Use the SES mailbox simulator to test without damaging reputation
+metrics.</p>
+<p>Common simulator addresses:</p>
+<pre class="text"><code>success@simulator.amazonses.com
+bounce@simulator.amazonses.com
+complaint@simulator.amazonses.com
+ooto@simulator.amazonses.com
+suppressionlist@simulator.amazonses.com</code></pre>
+<p>Suggested tests:</p>
+<pre class="text"><code>1. Send a success test.
+2. Send a bounce test.
+3. Confirm bounce event reaches SNS/webhook.
+4. Confirm local suppression table updates.
+5. Send a complaint test.
+6. Confirm complaint event reaches SNS/webhook.
+7. Confirm complaint suppression happens.</code></pre>
+<p>Do not test bounces by emailing fake addresses. Use the
+simulator.</p>
+<hr />
+<h2 id="test-dns-authentication">39. Test DNS Authentication</h2>
+<p>After receiving a real test email, inspect headers.</p>
+<p>You want:</p>
+<pre class="text"><code>SPF: PASS
+DKIM: PASS
+DMARC: PASS</code></pre>
+<p>If you use Gmail to inspect:</p>
+<ol type="1">
+<li>Open the message.</li>
+<li>Choose <strong>Show original</strong>.</li>
+<li>Look for SPF, DKIM, and DMARC results.</li>
+</ol>
+<p>If results fail:</p>
+<ul>
+<li>Recheck DKIM CNAMEs.</li>
+<li>Recheck MAIL FROM MX and SPF.</li>
+<li>Recheck DMARC host and policy.</li>
+<li>Confirm the From address is under
+<code>notify.letitglow.app</code>.</li>
+<li>Confirm the Return-Path is under
+<code>bounce.notify.letitglow.app</code>.</li>
+<li>Confirm you are using the same SES Region.</li>
+</ul>
+<hr />
+<h1 id="part-j-request-ses-production-access">Part J: Request SES
+Production Access</h1>
+<h2 id="prerequisites-before-requesting-production-access">40.
+Prerequisites Before Requesting Production Access</h2>
+<p>Do not request production access until these are complete:</p>
+<pre class="text"><code>[ ] SES identity notify.letitglow.app is verified.
+[ ] DKIM is successful.
+[ ] Custom MAIL FROM is successful.
+[ ] SPF record exists for bounce.notify.letitglow.app.
+[ ] DMARC exists for notify.letitglow.app.
+[ ] Configuration set exists.
+[ ] Default configuration set is attached to the SES identity.
+[ ] Account-level suppression is enabled.
+[ ] Configuration-set suppression is enabled.
+[ ] Keycloak test email works.
+[ ] GLOW application test email works or is ready.
+[ ] Bounce/complaint event processing is planned or implemented.
+[ ] Website has privacy/contact information.
+[ ] GLOW email policy language is published or ready to publish.</code></pre>
+<hr />
+<h2 id="recommended-production-access-request">41. Recommended
+Production Access Request</h2>
+<p>In Amazon SES:</p>
+<ol type="1">
+<li>Go to <strong>Account dashboard</strong>.</li>
+<li>Choose <strong>Request production access</strong>.</li>
+<li>Choose:</li>
+</ol>
+<pre class="text"><code>Mail type: Transactional</code></pre>
+<ol start="4" type="1">
+<li>Website URL:</li>
+</ol>
+<pre class="text"><code>https://letitglow.app</code></pre>
+<ol start="5" type="1">
+<li>Use case description:</li>
+</ol>
+<pre class="text"><code>GLOW, Guided Layout &amp; Output Workflow, is an accessibility workflow platform under the letitglow.app umbrella domain. It helps users and organizations work with accessibility-focused document, audio, and workflow tools.
+
+We are requesting Amazon SES production access for low-volume transactional email only. GLOW uses Keycloak as its identity and access management provider. Keycloak generates identity-related transactional email such as account verification, password reset, required-action email, and administrator-triggered account notices. GLOW’s application code sends only limited application-specific transactional messages, such as feedback confirmations, feedback routing to administrators, operational alerts, security notices, and future optional job-completion notices requested by users.
+
+This SES configuration will not be used for newsletters, promotional campaigns, convention announcements, fundraising blasts, cold outreach, or unsolicited bulk email. We do not use purchased, rented, scraped, or third-party mailing lists.
+
+Uploaded files, converted files, extracted document text, private accessibility findings, generated reports, and user API keys are not sent by email. Transactional emails contain only minimal service information needed for the specific user-triggered or administrator-triggered action.
+
+Recipients are users who initiated an action on the site, administrators of the service, or individuals who submitted feedback and provided an email address for confirmation. We have configured or are configuring a dedicated transactional sending identity, DKIM, SPF, DMARC, a custom MAIL FROM domain, a configuration set, bounce and complaint handling, monitoring, and suppression for bounces and complaints.
+
+Initial expected volume is modest: approximately 50 to 300 messages per day, with occasional peaks during workshops, testing events, or public demonstrations. We are requesting a conservative initial quota and will request increases only after establishing healthy sending history.</code></pre>
+<p>Recommended initial quota request:</p>
+<pre class="text"><code>1,000 messages per day
+1 to 5 messages per second</code></pre>
+<p>If AWS asks for more detail, provide exact message types and the
+bounce/complaint handling workflow.</p>
+<hr />
+<h2 id="what-not-to-say-in-the-aws-request">42. What Not to Say in the
+AWS Request</h2>
+<p>Avoid wording like:</p>
+<pre class="text"><code>- We need bulk email.
+- We will email BITS members.
+- We will send announcements.
+- We may import lists.
+- We want unrestricted sending.
+- We want to email documents to users.
+- We are still figuring out bounce handling.</code></pre>
+<p>Use wording like:</p>
+<pre class="text"><code>- Low-volume transactional email.
+- User-triggered identity and service messages.
+- Keycloak-generated account email.
+- GLOW-generated service email.
+- No marketing.
+- No bulk lists.
+- No uploaded files or private results by email.
+- Automatic suppression for bounces and complaints.</code></pre>
+<hr />
+<h1 id="part-k-after-production-approval">Part K: After Production
+Approval</h1>
+<h2 id="roll-out-slowly">43. Roll Out Slowly</h2>
+<p>Do not enable every message type at once.</p>
+<h3 id="week-1">Week 1</h3>
+<p>Enable only:</p>
+<pre class="text"><code>- Keycloak verification email
+- Keycloak password reset
+- Keycloak required-action email
+- Admin security notices</code></pre>
+<h3 id="week-2">Week 2</h3>
+<p>Enable:</p>
+<pre class="text"><code>- Feedback confirmation
+- Feedback admin routing
+- System error alerts</code></pre>
+<h3 id="later">Later</h3>
+<p>Consider:</p>
+<pre class="text"><code>- Optional job-completion notice</code></pre>
+<p>Only enable job-completion notices if:</p>
+<pre class="text"><code>- User explicitly opts in.
+- No files are attached.
+- No extracted text is included.
+- No full report is included.
+- Any link is short-lived and privacy-reviewed.</code></pre>
+<hr />
+<h2 id="daily-monitoring-during-first-month">44. Daily Monitoring During
+First Month</h2>
+<p>Check every day for the first month:</p>
+<pre class="text"><code>- Sends
+- Deliveries
+- Bounces
+- Complaints
+- Rejects
+- Rendering failures
+- Suppressed recipients
+- Unexpected volume spikes
+- Keycloak test failures
+- DNS authentication failures</code></pre>
+<p>Investigate immediately if:</p>
+<pre class="text"><code>- Any complaint appears.
+- Bounce rate rises unexpectedly.
+- SES rejects messages.
+- Custom MAIL FROM fails.
+- DKIM status changes.
+- Keycloak cannot send.
+- Volume spikes beyond expected use.</code></pre>
+<hr />
+<h2 id="bounce-and-complaint-targets">45. Bounce and Complaint
+Targets</h2>
+<p>Keep bounce and complaint rates extremely low.</p>
+<p>Operational rule:</p>
+<pre class="text"><code>Hard bounce: suppress immediately.
+Complaint: suppress immediately.
+Repeated temporary failure: suppress after threshold.
+Unknown recipient source: investigate before further sending.</code></pre>
+<p>Amazon indicates that bounce rates below 2% are best; higher rates
+can trigger review, and severe bounce rates can lead to sending
+pauses.</p>
+<hr />
+<h1 id="part-l-troubleshooting">Part L: Troubleshooting</h1>
+<h2 id="ses-identity-not-verified">46. SES Identity Not Verified</h2>
+<p>Likely causes:</p>
+<pre class="text"><code>- DKIM CNAME host was entered incorrectly in Namecheap.
+- Full domain was pasted and duplicated.
+- CNAME value has a typo.
+- DNS has not propagated yet.
+- You are checking the wrong AWS Region.</code></pre>
+<p>Fix:</p>
+<pre class="text"><code>1. Compare each SES DKIM record with Namecheap.
+2. Use relative Host names.
+3. Wait for DNS propagation.
+4. Recheck the SES identity status.</code></pre>
+<hr />
+<h2 id="custom-mail-from-failed">47. Custom MAIL FROM Failed</h2>
+<p>Likely causes:</p>
+<pre class="text"><code>- MX record missing.
+- MX record has wrong host.
+- MX record points to wrong SES Region.
+- SPF TXT record missing.
+- Host was entered as full domain and duplicated.
+- CNAME exists at the same host.</code></pre>
+<p>Correct Namecheap records:</p>
+<pre class="text"><code>MX host:
+bounce.notify
+
+MX value:
+feedback-smtp.us-east-1.amazonses.com
+
+TXT host:
+bounce.notify
+
+TXT value:
+v=spf1 include:amazonses.com -all</code></pre>
+<hr />
+<h2 id="keycloak-test-email-fails">48. Keycloak Test Email Fails</h2>
+<p>Check:</p>
+<pre class="text"><code>- SES SMTP username and password are correct.
+- SMTP credentials were created in us-east-1.
+- Host is email-smtp.us-east-1.amazonaws.com.
+- Port is 587 with STARTTLS.
+- Server firewall allows outbound TCP 587.
+- From address is no-reply@notify.letitglow.app.
+- SES identity is verified.
+- Recipient is verified if SES is still in sandbox.</code></pre>
+<p>If 587 fails:</p>
+<pre class="text"><code>Try port 465 with TLS Wrapper if supported by your Keycloak version and server environment.</code></pre>
+<hr />
+<h2 id="spf-passes-but-dmarc-fails">49. SPF Passes but DMARC Fails</h2>
+<p>Check:</p>
+<pre class="text"><code>- DKIM is signing with notify.letitglow.app.
+- From address is under notify.letitglow.app.
+- DMARC record is at _dmarc.notify.letitglow.app.
+- MAIL FROM domain is bounce.notify.letitglow.app.
+- aspf is relaxed, not strict.</code></pre>
+<p>For this setup, DKIM should be the strongest DMARC alignment
+path.</p>
+<hr />
+<h2 id="dkim-fails">50. DKIM Fails</h2>
+<p>Check:</p>
+<pre class="text"><code>- The three SES DKIM CNAME records exist.
+- CNAME Host values use [token]._domainkey.notify.
+- CNAME Values point to [token].dkim.amazonses.com.
+- No TXT record was accidentally created instead of CNAME.
+- No quotes were added around CNAME values.
+- You are sending from the same SES identity.</code></pre>
+<hr />
+<h2 id="emails-go-to-spam">51. Emails Go to Spam</h2>
+<p>Check:</p>
+<pre class="text"><code>- Is DKIM passing?
+- Is SPF passing?
+- Is DMARC passing?
+- Is the content too promotional?
+- Is the From address recognizable?
+- Are you sending to people who expect the message?
+- Are you sending too many test messages to the same provider?
+- Are bounces and complaints being suppressed?</code></pre>
+<p>Improve:</p>
+<pre class="text"><code>- Keep subject lines simple.
+- Avoid marketing language.
+- Include plain-text versions.
+- Include a clear reason for the message.
+- Use consistent From names.
+- Avoid attachments.</code></pre>
+<hr />
+<h1 id="part-m-glow-privacy-language-to-publish">Part M: GLOW Privacy
+Language to Publish</h1>
+<p>Add a short email section to GLOW’s privacy or help page:</p>
+<pre class="text"><code>GLOW sends limited transactional email related to use or administration of the service. Examples include account verification, password reset, security notices, feedback confirmations, administrator notifications, and optional user-requested job-completion notices.
+
+GLOW does not use this notification system for newsletters, marketing, campaign messages, fundraising blasts, or unsolicited bulk email.
+
+GLOW does not send uploaded files, converted files, extracted document text, private accessibility findings, generated reports, or user API keys by email. Transactional emails contain only the minimum information needed for the requested service or administrative action.</code></pre>
+<hr />
+<h1 id="part-n-agentmail-boundary">Part N: AgentMail Boundary</h1>
+<p>AgentMail is out of scope for the Amazon SES implementation.</p>
+<p>If used later, keep it separate:</p>
+<pre class="text"><code>agents.letitglow.app</code></pre>
+<p>Use AgentMail only for future agent inboxes, such as:</p>
+<pre class="text"><code>- Support triage agents
+- Feedback classification agents
+- Accessibility issue intake agents
+- Workshop intake agents</code></pre>
+<p>Do not use AgentMail for:</p>
+<pre class="text"><code>- Keycloak account verification
+- Password reset
+- Security email
+- Core transactional email
+- SES production access justification
+- Bulk sending</code></pre>
+<p>Do not mention AgentMail in the initial SES production-access request
+unless AWS specifically asks about other mail systems.</p>
+<hr />
+<h1 id="part-o-final-checklist">Part O: Final Checklist</h1>
+<h2 id="o.1-aws-ses">O.1 AWS SES</h2>
+<pre class="text"><code>[ ] Region selected: us-east-1.
+[ ] Configuration set created: glow-transactional-production.
+[ ] Domain identity created: notify.letitglow.app.
+[ ] Easy DKIM enabled.
+[ ] DKIM CNAMEs copied from SES.
+[ ] Default configuration set attached to identity.
+[ ] Custom MAIL FROM configured: bounce.notify.letitglow.app.
+[ ] Account-level suppression enabled for BOUNCE and COMPLAINT.
+[ ] Configuration-set suppression enabled for BOUNCE and COMPLAINT.
+[ ] SMTP credentials created for Keycloak.
+[ ] SES production-access request prepared.</code></pre>
+<h2 id="o.2-namecheap-dns">O.2 Namecheap DNS</h2>
+<pre class="text"><code>[ ] Three SES DKIM CNAME records added.
+[ ] MAIL FROM MX record added at bounce.notify.
+[ ] MAIL FROM SPF TXT record added at bounce.notify.
+[ ] DMARC TXT record added at _dmarc.notify.
+[ ] Optional root DMARC record reviewed.
+[ ] No conflicting CNAME records exist.
+[ ] DNS propagation verified.</code></pre>
+<h2 id="o.3-keycloak">O.3 Keycloak</h2>
+<pre class="text"><code>[ ] From address set to no-reply@notify.letitglow.app.
+[ ] Reply-To set to monitored support mailbox.
+[ ] Envelope From set to bounces@bounce.notify.letitglow.app.
+[ ] SMTP host set to email-smtp.us-east-1.amazonaws.com.
+[ ] Port set to 587.
+[ ] STARTTLS enabled.
+[ ] SES SMTP username entered.
+[ ] SES SMTP password entered.
+[ ] Test email succeeds.
+[ ] Headers show SPF, DKIM, and DMARC pass.</code></pre>
+<h2 id="o.4-glow-application">O.4 GLOW Application</h2>
+<pre class="text"><code>[ ] Central email module exists.
+[ ] No direct SES calls outside the email module.
+[ ] Allowed message types are defined.
+[ ] Local suppression table exists.
+[ ] Bounce/complaint event handling exists or is scheduled.
+[ ] Plain-text email templates exist.
+[ ] No private files or results are emailed.
+[ ] Optional job-completion notices are disabled until production metrics are stable.</code></pre>
+<h2 id="o.5-production-access">O.5 Production Access</h2>
+<pre class="text"><code>[ ] Website URL ready: https://letitglow.app.
+[ ] Privacy/email policy published or ready.
+[ ] Use case description says transactional only.
+[ ] No marketing or bulk sending described.
+[ ] Initial quota request is conservative.
+[ ] Bounce and complaint handling is clearly described.</code></pre>
+<hr />
+<h1 id="part-p-reference-links">Part P: Reference Links</h1>
+<p>These are the primary references used to build this guide.</p>
+<h2 id="aws-ses">AWS SES</h2>
+<ul>
+<li><p>Request production access / move out of sandbox:<br />
+https://docs.aws.amazon.com/ses/latest/dg/request-production-access.html</p></li>
+<li><p>Creating and verifying identities:<br />
+https://docs.aws.amazon.com/ses/latest/dg/creating-identities.html</p></li>
+<li><p>Custom MAIL FROM domain:<br />
+https://docs.aws.amazon.com/ses/latest/dg/mail-from.html</p></li>
+<li><p>DMARC with Amazon SES:<br />
+https://docs.aws.amazon.com/ses/latest/dg/send-email-authentication-dmarc.html</p></li>
+<li><p>Connecting to an SES SMTP endpoint:<br />
+https://docs.aws.amazon.com/ses/latest/dg/smtp-connect.html</p></li>
+<li><p>Obtaining SES SMTP credentials:<br />
+https://docs.aws.amazon.com/ses/latest/dg/smtp-credentials.html</p></li>
+<li><p>Configuration sets:<br />
+https://docs.aws.amazon.com/ses/latest/dg/creating-configuration-sets.html</p></li>
+<li><p>Account-level suppression list:<br />
+https://docs.aws.amazon.com/ses/latest/dg/sending-email-suppression-list.html</p></li>
+<li><p>SES mailbox simulator:<br />
+https://docs.aws.amazon.com/ses/latest/dg/send-an-email-from-console.html</p></li>
+<li><p>SES sending review process and bounce guidance:<br />
+https://docs.aws.amazon.com/ses/latest/dg/faqs-enforcement.html</p></li>
+</ul>
+<h2 id="keycloak">Keycloak</h2>
+<ul>
+<li>Keycloak Server Administration Guide, realm email
+configuration:<br />
+https://www.keycloak.org/docs/latest/server_admin/index.html</li>
+</ul>
+<h2 id="namecheap-dns">Namecheap DNS</h2>
+<ul>
+<li><p>How to set up host records:<br />
+https://www.namecheap.com/support/knowledgebase/article.aspx/434/2237/how-do-i-set-up-host-records-for-a-domain/</p></li>
+<li><p>How to add TXT, SPF, DKIM, and DMARC records:<br />
+https://www.namecheap.com/support/knowledgebase/article.aspx/317/2237/how-do-i-add-txtspfdkimdmarc-records-for-my-domain/</p></li>
+<li><p>How to set up MX records:<br />
+https://www.namecheap.com/support/knowledgebase/article.aspx/322/2237/how-can-i-set-up-mx-records-required-for-mail-service/</p></li>
+</ul>
+<hr />
+<h1 id="part-q-one-page-operational-summary">Part Q: One-Page
+Operational Summary</h1>
+<p>Use this when you need the short version.</p>
+<pre class="text"><code>1. In SES us-east-1, create configuration set:
+   glow-transactional-production
+
+2. In SES us-east-1, create domain identity:
+   notify.letitglow.app
+
+3. Copy the three SES DKIM CNAME records.
+
+4. In Namecheap Advanced DNS for letitglow.app, add the three CNAME records.
+   Host format:
+   [token]._domainkey.notify
+
+5. In SES, configure custom MAIL FROM:
+   bounce.notify.letitglow.app
+
+6. In Namecheap, add:
+   MX bounce.notify -&gt; feedback-smtp.us-east-1.amazonses.com priority 10
+   TXT bounce.notify -&gt; v=spf1 include:amazonses.com -all
+
+7. In Namecheap, add DMARC:
+   TXT _dmarc.notify -&gt; v=DMARC1; p=none; rua=mailto:dmarc@letitglow.app; adkim=s; aspf=r
+
+8. In SES, attach default configuration set to notify.letitglow.app.
+
+9. In SES, enable suppression for BOUNCE and COMPLAINT.
+
+10. Create SES SMTP credentials for Keycloak.
+
+11. Configure Keycloak:
+    From: no-reply@notify.letitglow.app
+    Envelope From: bounces@bounce.notify.letitglow.app
+    Host: email-smtp.us-east-1.amazonaws.com
+    Port: 587
+    STARTTLS: enabled
+    Auth: SES SMTP username/password
+
+12. Test Keycloak email.
+
+13. Use SES mailbox simulator to test delivery, bounce, and complaint flows.
+
+14. Request SES production access as transactional only.
+
+15. Roll out slowly and monitor daily.</code></pre>
+</body>
+</html>

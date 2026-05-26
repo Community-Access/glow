@@ -70,7 +70,7 @@
           {% if v.installed %}
           <form method="post" action="{{ url_for('admin.admin_speech_remove', voice_id=v.id) }}" class="inline-form">
             <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-            <button type="submit" class="btn-secondary" onclick="return confirm('Remove this Piper voice pack?');">Remove</button>
+            <button type="submit" class="btn-secondary" data-confirm="Remove this Piper voice pack?">Remove</button>
           </form>
           {% else %}
           <form method="post" action="{{ url_for('admin.admin_speech_install', voice_id=v.id) }}" class="inline-form">

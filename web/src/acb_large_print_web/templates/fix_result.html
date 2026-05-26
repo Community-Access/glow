@@ -127,7 +127,7 @@
     <li><a href="{{ url_for('guidelines.guidelines_page') }}">Review ACB guidelines</a></li>
   </ul>
 </section>
-<script>
+<script nonce="{{ csp_nonce }}">
 (function () {
   'use strict';
   var form = document.querySelector('form[action*="fix_download"]');

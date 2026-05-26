@@ -263,7 +263,7 @@
 {# ------------------------------------------------------------------ Jump-to-top #}
 <p class="jump-top"><a href="#rules-filters">Back to filters</a></p>
 
-<style>
+<style nonce="{{ csp_nonce }}">
 /* ------------------------------------------------------------------ Filters */
 .rules-filter-bar {
   display: flex;
@@ -551,7 +551,7 @@ details[open] > .rule-summary::before { content: "▼"; }
 .rule-card[hidden] { display: none; }
 </style>
 
-<script>
+<script nonce="{{ csp_nonce }}">
 document.addEventListener('DOMContentLoaded', function () {
   'use strict';
 

@@ -11,7 +11,7 @@
 {% endif %}
 
 <p>
-  <button type="button" class="btn-secondary" onclick="history.back();">Go Back</button>
+  <button type="button" class="btn-secondary" data-action="history-back">Go Back</button>
   <noscript><span class="help-text"> (JavaScript is required for Go Back. Use your browser's back button instead.)</span></noscript>
 </p>
 <p><a href="{{ url_for('main.index') }}">Return to the home page</a></p>

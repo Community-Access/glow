@@ -3063,8 +3063,8 @@ pre code {
 
 /* Keep markdown fenced-code text in guide/changelog at AA contrast.
    Some syntax-classed code blocks can inherit low-contrast token colors. */
-pre > code[class^="language-"],
-pre > code[class*=" language-"] {
+pre>code[class^="language-"],
+pre>code[class*=" language-"] {
   background-color: #ffffff;
   color: #1a1a1a;
 }

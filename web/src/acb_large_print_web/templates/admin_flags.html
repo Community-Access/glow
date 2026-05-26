@@ -202,11 +202,11 @@
 {% if flags_backend == 'json' %}
 <form method="post" action="{{ url_for('admin.admin_flags_migrate') }}" style="margin-top:0.5rem;">
   <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-  <button type="submit" class="btn-secondary" onclick="return confirm('Migrate JSON flags into SQLite? This is idempotent.');">Migrate JSON → SQLite</button>
+  <button type="submit" class="btn-secondary" data-confirm="Migrate JSON flags into SQLite? This is idempotent.">Migrate JSON → SQLite</button>
 </form>
 {% endif %}
 
-<style>
+<style nonce="{{ csp_nonce }}">
 .tabs { display:flex; gap:0.5rem; margin-bottom:0.75rem; }
 .tabs button[aria-selected="true"]{ font-weight:600; }
 .tab-panel{ border:1px solid #e6e6e6; padding:0.75rem; border-radius:4px; }
@@ -220,7 +220,7 @@
 input[type="checkbox"]:focus-visible{ outline:3px solid #6ca0ff; outline-offset:2px }
 </style>
 
-<script>
+<script nonce="{{ csp_nonce }}">
 // Tab switching
 document.querySelectorAll('.tabs button').forEach(function(btn){
   btn.addEventListener('click', function(){

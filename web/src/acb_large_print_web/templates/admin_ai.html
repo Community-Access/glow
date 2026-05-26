@@ -116,7 +116,7 @@
   <p id="projection-result" aria-live="polite" class="field-hint">Projected monthly spend: ${{ projection }}</p>
 </section>
 
-<script>
+<script nonce="{{ csp_nonce }}">
 (function () {
   'use strict';
   var modelEl = document.getElementById('default_model');

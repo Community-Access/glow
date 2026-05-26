@@ -31,7 +31,7 @@
   <button type="submit" class="btn-primary" id="access-request-btn">Submit Request</button>
   <p id="access-request-status" class="field-hint" aria-live="polite" aria-atomic="true"></p>
 </form>
-<script>
+<script nonce="{{ csp_nonce }}">
 (function () {
   'use strict';
   var form = document.querySelector('form[method="post"]');

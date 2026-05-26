@@ -1,0 +1,303 @@
+<h1 id="glow-domain-migration-plan">GLOW Domain Migration Plan</h1>
+<h2 id="migrating-to-letitglow.app">Migrating to
+<code>letitglow.app</code></h2>
+<p><strong>Goal:</strong> Make <code>letitglow.app</code> the canonical
+URL for GLOW. All historical domains (<code>lp.csedesigns.com</code>,
+<code>glow.bits-acb.org</code>) should issue permanent <code>301</code>
+redirects to <code>letitglow.app</code>, preserving paths and query
+strings so no existing links break.</p>
+<hr />
+<h2 id="current-domain-landscape">Current Domain Landscape</h2>
+<table>
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+</colgroup>
+<thead>
+<tr>
+<th>Domain</th>
+<th>Purpose</th>
+<th>Action</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>letitglow.app</code></td>
+<td>🆕 New canonical GLOW URL</td>
+<td>Serve the app here</td>
+</tr>
+<tr>
+<td><code>lp.csedesigns.com</code></td>
+<td>Old primary GLOW URL</td>
+<td>301 → <code>letitglow.app</code></td>
+</tr>
+<tr>
+<td><code>glow.bits-acb.org</code></td>
+<td>Old secondary GLOW URL</td>
+<td>301 → <code>letitglow.app</code></td>
+</tr>
+<tr>
+<td><code>csedesigns.com</code> / <code>www.csedesigns.com</code></td>
+<td>CSE Designs static site</td>
+<td>No change</td>
+</tr>
+<tr>
+<td><code>ggg.csedesigns.com</code></td>
+<td>GGG podcast site</td>
+<td>No change</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="todo-checklist">Todo Checklist</h2>
+<h3 id="phase-1-dns">Phase 1 — DNS</h3>
+<ul class="task-list">
+<li><label><input type="checkbox" /><strong>1.1</strong> Add an
+<strong>A record</strong> for <code>letitglow.app</code> → server’s
+public IP at your domain registrar</label></li>
+<li><label><input type="checkbox" /><strong>1.2</strong> Add an
+<strong>A record</strong> for <code>www.letitglow.app</code> → same IP
+(optional but recommended)</label></li>
+<li><label><input type="checkbox" /><strong>1.3</strong> Wait for DNS
+propagation (5–60 min). Verify with: <code>dig letitglow.app</code> or
+<code>nslookup letitglow.app</code></label></li>
+</ul>
+<hr />
+<h3 id="phase-2-caddyfile-appwebcaddyfile">Phase 2 — Caddyfile
+(<code>app/web/Caddyfile</code>)</h3>
+<ul class="task-list">
+<li><p><label><input type="checkbox" /><strong>2.1</strong> Rename the
+existing GLOW server block to lead with <code>letitglow.app</code> as
+the primary domain, keeping <code>lp.csedesigns.com</code> and
+<code>glow.bits-acb.org</code> in the same block temporarily during
+cutover</label></p></li>
+<li><p><label><input type="checkbox" /><strong>2.2</strong> After
+confirming the new domain works, replace the old domain entries in the
+GLOW block with a <strong>separate redirect block</strong>:</label></p>
+<pre><code>lp.csedesigns.com, www.letitglow.app, glow.bits-acb.org {
+    redir https://letitglow.app{uri} permanent
+}</code></pre></li>
+<li><p><label><input type="checkbox" /><strong>2.3</strong> Reload Caddy
+(<code>docker compose -f docker-compose.prod.yml exec caddy caddy reload --config /etc/caddy/Caddyfile</code>)
+— Caddy will auto-provision a TLS cert for <code>letitglow.app</code>
+via Let’s Encrypt on first request</label></p></li>
+</ul>
+<hr />
+<h3 id="phase-3-keycloak-oauth-most-critical">Phase 3 — Keycloak OAuth
+(most critical)</h3>
+<blockquote>
+<p>⚠️ Keycloak must be updated <strong>together</strong> with the
+Caddyfile change or logins will break.</p>
+</blockquote>
+<ul class="task-list">
+<li><label><input type="checkbox" /><strong>3.1</strong> Update
+<code>app/web/.env</code>:</label>
+<ul>
+<li><code>KEYCLOAK_BASE_URL</code> →
+<code>https://letitglow.app/auth</code></li>
+<li><code>KEYCLOAK_REDIRECT_URI</code> →
+<code>https://letitglow.app/authorize</code></li>
+<li><code>KEYCLOAK_HOSTNAME</code> → <code>letitglow.app</code></li>
+</ul></li>
+<li><label><input type="checkbox" /><strong>3.2</strong> Update
+<code>app/web/docker-compose.prod.yml</code>:</label>
+<ul>
+<li><code>KC_HOSTNAME</code> env var → <code>letitglow.app</code></li>
+</ul></li>
+<li><label><input type="checkbox" /><strong>3.3</strong> In the
+<strong>Keycloak Admin Console</strong>
+(<code>https://lp.csedesigns.com/auth</code> → Admin → <code>glow</code>
+realm → Clients → <code>glow-web</code> → Settings):</label>
+<ul>
+<li>Add <code>https://letitglow.app/*</code> to <strong>Valid Redirect
+URIs</strong></li>
+<li>Add <code>https://letitglow.app</code> to <strong>Web
+Origins</strong></li>
+<li><em>(Keep old entries for now — remove in Phase 6 cleanup)</em></li>
+</ul></li>
+<li><label><input type="checkbox" /><strong>3.4</strong> Rebuild and
+restart containers:
+<code>docker compose -f docker-compose.prod.yml up -d --build</code></label></li>
+</ul>
+<hr />
+<h3 id="phase-4-firebase-auth">Phase 4 — Firebase Auth</h3>
+<ul class="task-list">
+<li><label><input type="checkbox" /><strong>4.1</strong> In
+<strong>Firebase Console</strong> → Authentication → Settings →
+<strong>Authorized domains</strong>: add
+<code>letitglow.app</code></label>
+<ul>
+<li>URL:
+<code>https://console.firebase.google.com/project/glow-754e6/authentication/settings</code></li>
+<li><em>(Keep old domains for now)</em></li>
+</ul></li>
+</ul>
+<hr />
+<h3 id="phase-5-github-oauth-app">Phase 5 — GitHub OAuth App</h3>
+<ul class="task-list">
+<li><label><input type="checkbox" /><strong>5.1</strong> In
+<strong>GitHub → Settings → Developer settings → OAuth Apps</strong>:
+find the app using
+<code>GITHUB_CLIENT_ID=Ov23li7l5O1nwh1dw9vG</code></label></li>
+<li><label><input type="checkbox" /><strong>5.2</strong> Add
+<code>https://letitglow.app/authorize</code> as an authorized callback
+URL</label>
+<ul>
+<li><em>(Keep old callback for now)</em></li>
+</ul></li>
+</ul>
+<hr />
+<h3 id="phase-6-application-code">Phase 6 — Application Code</h3>
+<ul class="task-list">
+<li><label><input type="checkbox" /><strong>6.1</strong> Update
+<code>app/web/src/acb_large_print_web/app.py</code> (line ~966):</label>
+<ul>
+<li>Change <code>"HTTP-Referer": "https://glow.bits-acb.org"</code> →
+<code>"https://letitglow.app"</code></li>
+</ul></li>
+<li><label><input type="checkbox" /><strong>6.2</strong> Decide on email
+sender address for Postmark reports:</label>
+<ul>
+<li><strong>Option A:</strong> Keep
+<code>reports@glow.bits-acb.org</code> (no Postmark changes needed)</li>
+<li><strong>Option B:</strong> Switch to
+<code>reports@letitglow.app</code> — requires adding
+<code>letitglow.app</code> as a verified Sender Domain in Postmark
+first, then update <code>_DEFAULT_FROM</code> in
+<code>app/web/src/acb_large_print_web/email.py</code> or set
+<code>POSTMARK_FROM_EMAIL</code> in <code>.env</code></li>
+</ul></li>
+</ul>
+<hr />
+<h3 id="phase-7-smoke-testing">Phase 7 — Smoke Testing</h3>
+<ul class="task-list">
+<li><label><input type="checkbox" /><strong>7.1</strong>
+<code>https://letitglow.app</code> loads the GLOW app
+correctly</label></li>
+<li><label><input type="checkbox" /><strong>7.2</strong>
+<code>https://letitglow.app/health</code> returns
+<code>200 OK</code></label></li>
+<li><label><input type="checkbox" /><strong>7.3</strong> Full login flow
+works on <code>letitglow.app</code> (Keycloak + GitHub
+OAuth)</label></li>
+<li><label><input type="checkbox" /><strong>7.4</strong>
+<code>https://lp.csedesigns.com</code> → <code>301</code> redirects to
+<code>https://letitglow.app</code> (path preserved)</label></li>
+<li><label><input type="checkbox" /><strong>7.5</strong>
+<code>https://glow.bits-acb.org</code> → <code>301</code> redirects to
+<code>https://letitglow.app</code> (path preserved)</label></li>
+<li><label><input type="checkbox" /><strong>7.6</strong> Test a deep
+link: <code>https://lp.csedesigns.com/some/path?query=1</code> → lands
+on <code>https://letitglow.app/some/path?query=1</code></label></li>
+<li><label><input type="checkbox" /><strong>7.7</strong> TLS cert for
+<code>letitglow.app</code> is valid (green padlock / no browser
+warnings)</label></li>
+</ul>
+<hr />
+<h3 id="phase-8-cleanup-wait-24-weeks-after-go-live">Phase 8 — Cleanup
+(wait 2–4 weeks after go-live)</h3>
+<ul class="task-list">
+<li><label><input type="checkbox" /><strong>8.1</strong> Remove
+<code>lp.csedesigns.com</code> and <code>glow.bits-acb.org</code> from
+Keycloak Valid Redirect URIs and Web Origins</label></li>
+<li><label><input type="checkbox" /><strong>8.2</strong> Remove old
+domains from Firebase Authorized Domains (optional — low risk to
+keep)</label></li>
+<li><label><input type="checkbox" /><strong>8.3</strong> Remove old
+GitHub OAuth callback URLs</label></li>
+<li><label><input type="checkbox" /><strong>8.4</strong> Decide whether
+to keep renewing <code>glow.bits-acb.org</code> DNS (recommended: keep
+for 1 year as a courtesy redirect)</label></li>
+<li><label><input type="checkbox" /><strong>8.5</strong> Update any
+public documentation, README files, or links pointing to the old
+domains</label></li>
+</ul>
+<hr />
+<h2 id="key-files-reference">Key Files Reference</h2>
+<table>
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
+<thead>
+<tr>
+<th>File</th>
+<th>What to Change</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>~/app/web/Caddyfile</code></td>
+<td>Add <code>letitglow.app</code>, convert old domains to redirect
+block</td>
+</tr>
+<tr>
+<td><code>~/app/web/.env</code></td>
+<td><code>KEYCLOAK_BASE_URL</code>, <code>KEYCLOAK_REDIRECT_URI</code>,
+<code>KEYCLOAK_HOSTNAME</code></td>
+</tr>
+<tr>
+<td><code>~/app/web/docker-compose.prod.yml</code></td>
+<td><code>KC_HOSTNAME</code> env var</td>
+</tr>
+<tr>
+<td><code>~/app/web/src/acb_large_print_web/app.py</code></td>
+<td><code>HTTP-Referer</code> header (~line 966)</td>
+</tr>
+<tr>
+<td><code>~/app/web/src/acb_large_print_web/email.py</code></td>
+<td><code>_DEFAULT_FROM</code> (if switching email domain)</td>
+</tr>
+</tbody>
+</table>
+<h2 id="external-services-reference">External Services Reference</h2>
+<table>
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
+<thead>
+<tr>
+<th>Service</th>
+<th>Where to Update</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Domain registrar</td>
+<td>DNS A record for <code>letitglow.app</code></td>
+</tr>
+<tr>
+<td>Keycloak Admin UI</td>
+<td><code>glow</code> realm → Clients → <code>glow-web</code> → Valid
+Redirect URIs + Web Origins</td>
+</tr>
+<tr>
+<td>Firebase Console</td>
+<td>Authentication → Settings → Authorized Domains</td>
+</tr>
+<tr>
+<td>GitHub OAuth App</td>
+<td>Developer Settings → OAuth Apps → Callback URLs</td>
+</tr>
+<tr>
+<td>Postmark (optional)</td>
+<td>Sender Signatures / Domains (only if changing From email)</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="important-notes">⚠️ Important Notes</h2>
+<ul>
+<li><strong>Do Phase 3 (Keycloak) and Phase 2 (Caddy) in the same
+deployment window</strong> — if Caddy serves <code>letitglow.app</code>
+but Keycloak still expects <code>lp.csedesigns.com</code>, logins will
+fail with a redirect URI mismatch error.</li>
+<li><strong>Keep old domains redirecting</strong> as long as you keep
+paying for them. Users’ bookmarks and shared links will continue to
+work.</li>
+<li><strong>DNS must propagate before Caddy can obtain a TLS
+cert</strong> — don’t trigger the Caddy reload until
+<code>dig letitglow.app</code> resolves to your server.</li>
+</ul>
