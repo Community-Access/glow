@@ -4,11 +4,15 @@
 {% block heading %}Thank You{% endblock %}
 
 {% block content %}
-<p>Your feedback has been recorded. We appreciate you taking the time to help improve the tool.</p>
+<p>Your feedback for {{ source_app or 'this tool' }} has been recorded. We appreciate you taking the time to help improve the experience.</p>
 
 {% if issue_url %}
-<p>Your feedback is now tracked as a work item: <a href="{{ issue_url }}">{{ issue_url }}</a></p>
+<p>Your feedback is now tracked in the Community Access support hub: <a href="{{ issue_url }}">{{ issue_url }}</a></p>
+{% else %}
+<p class="help-text">If GitHub sync is not enabled, your feedback remains stored locally until an administrator reviews or syncs it.</p>
 {% endif %}
+
+<p class="help-text">Support hub repository: <code>{{ support_repo }}</code></p>
 
 <p>
   <button type="button" class="btn-secondary" data-action="history-back">Go Back</button>

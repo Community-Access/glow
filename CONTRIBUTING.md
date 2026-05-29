@@ -8,7 +8,7 @@ Thank you for your interest in contributing to the GLOW. We welcome contribution
 
 **Found a bug?** Use [GitHub Issues](https://github.com/Community-Access/glow/issues) to report it.
 
-**Have feedback or a feature request?** Use the [Feedback form](https://glow.bits-acb.org/feedback) on the web app. When GitHub sync is configured, your feedback is automatically converted into a tracked GitHub issue.
+**Have feedback or a feature request?** Use the [Feedback form](https://glow.bits-acb.org/feedback) on the web app. When support-hub sync is configured, your feedback is automatically converted into a tracked issue in [Community-Access/support](https://github.com/Community-Access/support/issues).
 
 ### 2. Set Up Your Development Environment
 
@@ -35,10 +35,11 @@ Create a `.env` file in the `web/` directory for local development:
 ```bash
 SECRET_KEY=dev-key-change-in-production
 FEEDBACK_PASSWORD=dev-password-for-feedback-review
-FEEDBACK_GITHUB_TOKEN=your-github-pat-here
-FEEDBACK_GITHUB_REPO=Community-Access/glow
-FEEDBACK_GITHUB_ASSIGNEE=accesswatch
-FEEDBACK_GITHUB_LABELS=feedback,user-feedback
+SUPPORT_HUB_GITHUB_TOKEN=your-github-pat-here
+SUPPORT_HUB_GITHUB_REPO=Community-Access/support
+SUPPORT_HUB_GITHUB_ASSIGNEE=
+SUPPORT_HUB_GITHUB_LABELS=needs-triage
+SUPPORT_HUB_API_TOKEN=replace-with-shared-secret
 LOG_LEVEL=DEBUG
 ```
 
@@ -47,7 +48,7 @@ To generate a secure `SECRET_KEY`:
 python3 -c "import secrets; print(secrets.token_hex(32))"
 ```
 
-### 3. GitHub Token Setup (for Feedback-to-Issue Sync)
+### 3. GitHub Token Setup (for Support-Hub Sync)
 
 If you're working on feedback features or testing the full workflow:
 
@@ -62,16 +63,16 @@ If you're working on feedback features or testing the full workflow:
 
 2. **Set it in your environment:**
    ```bash
-   export FEEDBACK_GITHUB_TOKEN=ghp_YOUR_TOKEN_HERE
+   export SUPPORT_HUB_GITHUB_TOKEN=ghp_YOUR_TOKEN_HERE
    ```
    Or add it to your `.env` file (do NOT commit `.env` to git).
 
-3. **Test the feedback-to-issue workflow:**
+3. **Test the feedback-to-support-hub workflow:**
    ```bash
    cd web
    python3 -m flask --app src.acb_large_print_web.app run
    # Visit http://localhost:5000/feedback and submit test feedback
-   # Check GitHub Issues to see the created issue
+   # Check Community-Access/support issues to see the created issue
    ```
 
 ### 4. Backfill Existing Feedback
@@ -79,7 +80,7 @@ If you're working on feedback features or testing the full workflow:
 If you have historical feedback in your local `feedback.db`, sync it to GitHub issues:
 
 ```bash
-export FEEDBACK_GITHUB_TOKEN=ghp_YOUR_TOKEN_HERE
+export SUPPORT_HUB_GITHUB_TOKEN=ghp_YOUR_TOKEN_HERE
 python3 scripts/sync-feedback-to-github.py
 ```
 

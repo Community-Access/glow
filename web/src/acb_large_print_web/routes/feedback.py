@@ -1,18 +1,20 @@
-"""Feedback route -- collect and review user feedback (SQLite-backed)."""
+"""Feedback routes - human form plus generic support-hub API intake."""
 
-import json
+from __future__ import annotations
+
 import hmac
+import json
 import logging
 import os
 import sqlite3
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
-from urllib import error as urlerror
-from urllib import request as urlrequest
 
-from flask import Blueprint, abort, current_app, render_template, request
+from flask import Blueprint, abort, current_app, jsonify, render_template, request
 
-from ..app import limiter
+from ..app import csrf, limiter
+from ..support_hub import create_support_issue, load_support_hub_config
+from ..version import get_version
 
 feedback_bp = Blueprint("feedback", __name__)
 
@@ -37,9 +39,16 @@ def _get_db() -> sqlite3.Connection:
         "  timestamp TEXT NOT NULL,"
         "  name TEXT,"
         "  email TEXT,"
+        "  source_app TEXT,"
+        "  source_channel TEXT,"
+        "  source_version TEXT,"
+        "  platform TEXT,"
+        "  category TEXT,"
         "  rating TEXT NOT NULL,"
         "  task TEXT,"
+        "  summary TEXT,"
         "  message TEXT NOT NULL,"
+        "  metadata_json TEXT,"
         "  github_issue_number INTEGER,"
         "  github_issue_url TEXT,"
         "  github_sync_status TEXT,"
@@ -61,6 +70,13 @@ def _ensure_feedback_schema(conn: sqlite3.Connection) -> None:
     required = {
         "name": "TEXT",
         "email": "TEXT",
+        "source_app": "TEXT",
+        "source_channel": "TEXT",
+        "source_version": "TEXT",
+        "platform": "TEXT",
+        "category": "TEXT",
+        "summary": "TEXT",
+        "metadata_json": "TEXT",
         "github_issue_number": "INTEGER",
         "github_issue_url": "TEXT",
         "github_sync_status": "TEXT",
@@ -72,173 +88,208 @@ def _ensure_feedback_schema(conn: sqlite3.Connection) -> None:
             conn.execute(f"ALTER TABLE feedback ADD COLUMN {col} {col_type}")
 
 
-def _feedback_github_config() -> dict:
-    """Return GitHub sync settings from environment variables."""
-    token = os.environ.get("FEEDBACK_GITHUB_TOKEN", "").strip()
-    repo = os.environ.get("FEEDBACK_GITHUB_REPO", "Community-Access/glow").strip()
-    assignee = os.environ.get("FEEDBACK_GITHUB_ASSIGNEE", "accesswatch").strip()
-    labels_raw = os.environ.get("FEEDBACK_GITHUB_LABELS", "feedback,user-feedback").strip()
-    labels = [x.strip() for x in labels_raw.split(",") if x.strip()]
-    return {
-        "token": token,
-        "repo": repo,
-        "assignee": assignee,
-        "labels": labels,
-    }
-
-
-def _create_feedback_issue(entry: dict) -> tuple[int | None, str | None, str | None]:
-    """Create a GitHub issue for a feedback entry.
-
-    Returns (issue_number, issue_url, error_message).
-    """
-    cfg = _feedback_github_config()
-    if not cfg["token"]:
-        return None, None, "FEEDBACK_GITHUB_TOKEN not configured"
-
-    repo = cfg["repo"]
-    now_date = datetime.now(timezone.utc).strftime("%Y-%m-%d")
-    title = f"[Feedback] {entry['rating'].capitalize()} | {entry['task'] or 'general'} | {now_date}"
-    
-    body_parts = [
-        "## User Feedback Submission\n",
-        f"- Feedback ID: `{entry['id']}`\n",
-        f"- Submitted at (UTC): `{entry['timestamp']}`\n",
-        f"- Rating: `{entry['rating']}`\n",
-        f"- Task: `{entry['task'] or 'not specified'}`\n",
-    ]
-    
-    if entry.get("name") or entry.get("email"):
-        body_parts.append("- **Contributor contact:**\n")
-        if entry.get("name"):
-            body_parts.append(f"  - Name: {entry['name']}\n")
-        if entry.get("email"):
-            body_parts.append(f"  - Email: {entry['email']}\n")
-    
-    body_parts.extend([
-        "\n### Message\n",
-        f"{entry['message']}\n",
-        "\n---\n",
-        "Source: GLOW web feedback form.",
-    ])
-    
-    body = "".join(body_parts)
-    
-    payload = {
-        "title": title,
-        "body": body,
-        "labels": cfg["labels"],
-    }
-    if cfg["assignee"]:
-        payload["assignees"] = [cfg["assignee"]]
-
-    req = urlrequest.Request(
-        f"https://api.github.com/repos/{repo}/issues",
-        data=json.dumps(payload).encode("utf-8"),
-        method="POST",
-        headers={
-            "Accept": "application/vnd.github+json",
-            "Authorization": f"Bearer {cfg['token']}",
-            "X-GitHub-Api-Version": "2022-11-28",
-            "Content-Type": "application/json",
-            "User-Agent": "glow-feedback-sync",
-        },
+def _save_feedback_entry(entry: dict[str, str]) -> tuple[int, str | None, str | None, str | None]:
+    conn = _get_db()
+    cur = conn.execute(
+        "INSERT INTO feedback ("
+        "timestamp, name, email, source_app, source_channel, source_version, platform, "
+        "category, rating, task, summary, message, metadata_json"
+        ") VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+        (
+            entry["timestamp"],
+            entry["name"],
+            entry["email"],
+            entry["source_app"],
+            entry["source_channel"],
+            entry["source_version"],
+            entry["platform"],
+            entry["category"],
+            entry["rating"],
+            entry["task"],
+            entry["summary"],
+            entry["message"],
+            entry["metadata_json"],
+        ),
     )
-    try:
-        with urlrequest.urlopen(req, timeout=20) as resp:
-            data = json.loads(resp.read().decode("utf-8"))
-            return data.get("number"), data.get("html_url"), None
-    except urlerror.HTTPError as exc:
-        details = ""
-        try:
-            details = exc.read().decode("utf-8")
-        except Exception:
-            details = str(exc)
-        return None, None, f"GitHub API error: {exc.code} {details}"
-    except Exception as exc:
-        return None, None, f"GitHub sync failed: {exc}"
+    feedback_id = int(cur.lastrowid)
+    stored_entry = dict(entry)
+    stored_entry["id"] = feedback_id
+    issue_number, issue_url, sync_error = create_support_issue(stored_entry)
+    if issue_number and issue_url:
+        conn.execute(
+            "UPDATE feedback SET github_issue_number=?, github_issue_url=?, github_sync_status=?, github_sync_error=?, github_synced_at=? WHERE id=?",
+            (
+                issue_number,
+                issue_url,
+                "synced",
+                None,
+                datetime.now(UTC).isoformat(),
+                feedback_id,
+            ),
+        )
+    else:
+        conn.execute(
+            "UPDATE feedback SET github_sync_status=?, github_sync_error=? WHERE id=?",
+            ("failed", sync_error, feedback_id),
+        )
+        if sync_error:
+            log.warning("Support-hub GitHub sync failed for id=%s: %s", feedback_id, sync_error)
+    conn.commit()
+    conn.close()
+    return feedback_id, issue_url, sync_error, stored_entry["source_app"]
+
+
+def _feedback_defaults() -> dict[str, str]:
+    return {
+        "name": "",
+        "email": "",
+        "summary": "",
+        "rating": "",
+        "task": "",
+        "message": "",
+        "source_app": "GLOW",
+        "source_channel": "web",
+        "source_version": get_version(),
+        "platform": "browser",
+        "category": "feedback",
+        "metadata_json": "",
+    }
+
+
+def _render_feedback_form(error: str = "", **values: str):
+    merged = _feedback_defaults()
+    merged.update(values)
+    merged["error"] = error
+    merged["support_repo"] = load_support_hub_config().repo
+    return render_template("feedback_form.html", **merged)
+
+
+def _validate_feedback_entry(entry: dict[str, str]) -> list[str]:
+    errors: list[str] = []
+    if not entry["message"]:
+        errors.append("Please enter your feedback.")
+    if len(entry["message"]) > 5000:
+        errors.append("Feedback is limited to 5,000 characters.")
+    if entry["rating"] and entry["rating"] not in ("excellent", "good", "fair", "poor"):
+        errors.append("Invalid rating value.")
+    if entry["email"] and "@" not in entry["email"]:
+        errors.append("Please provide a valid email address.")
+    if len(entry["summary"]) > 240:
+        errors.append("Short summary is limited to 240 characters.")
+    if not entry["source_app"]:
+        errors.append("Source application is required.")
+    return errors
+
+
+def _entry_from_form() -> dict[str, str]:
+    entry = _feedback_defaults()
+    entry.update(
+        {
+            "name": request.form.get("name", "").strip(),
+            "email": request.form.get("email", "").strip(),
+            "summary": request.form.get("summary", "").strip(),
+            "rating": request.form.get("rating", "").strip(),
+            "task": request.form.get("task", "").strip(),
+            "message": request.form.get("message", "").strip(),
+            "source_app": request.form.get("source_app", "GLOW").strip() or "GLOW",
+            "source_channel": request.form.get("source_channel", "web").strip() or "web",
+            "source_version": request.form.get("source_version", get_version()).strip() or get_version(),
+            "platform": request.form.get("platform", "browser").strip() or "browser",
+            "category": request.form.get("category", "feedback").strip() or "feedback",
+            "metadata_json": request.form.get("metadata_json", "").strip(),
+            "timestamp": datetime.now(UTC).isoformat(),
+        }
+    )
+    return entry
+
+
+def _entry_from_json(payload: dict[str, object]) -> dict[str, str]:
+    metadata = payload.get("metadata")
+    metadata_json = ""
+    if isinstance(metadata, dict):
+        metadata_json = json.dumps(metadata, indent=2, sort_keys=True)
+    entry = {
+        "timestamp": datetime.now(UTC).isoformat(),
+        "name": str(payload.get("name", "") or "").strip(),
+        "email": str(payload.get("email", "") or "").strip(),
+        "summary": str(payload.get("summary", "") or "").strip(),
+        "rating": str(payload.get("rating", "") or "").strip(),
+        "task": str(payload.get("task", "") or "").strip(),
+        "message": str(payload.get("message", "") or "").strip(),
+        "source_app": str(payload.get("source_app", "") or "").strip(),
+        "source_channel": str(payload.get("source_channel", "api") or "api").strip(),
+        "source_version": str(payload.get("source_version", "") or "").strip(),
+        "platform": str(payload.get("platform", "") or "").strip(),
+        "category": str(payload.get("category", "feedback") or "feedback").strip(),
+        "metadata_json": metadata_json,
+    }
+    return entry
 
 
 @feedback_bp.route("/", methods=["GET"])
 def feedback_form():
-    return render_template("feedback_form.html")
+    return _render_feedback_form()
 
 
 @feedback_bp.route("/", methods=["POST"])
 @limiter.limit("10 per hour", error_message="Too many feedback submissions. Please try again later.")
 def feedback_submit():
-    name = request.form.get("name", "").strip()
-    email = request.form.get("email", "").strip()
-    rating = request.form.get("rating", "").strip()
-    task = request.form.get("task", "").strip()
-    message = request.form.get("message", "").strip()
-
-    errors = []
-    if not rating:
-        errors.append("Please select a rating.")
-    if not message:
-        errors.append("Please enter your feedback.")
-    if len(message) > 5000:
-        errors.append("Feedback is limited to 5,000 characters.")
-    if rating and rating not in ("excellent", "good", "fair", "poor"):
-        errors.append("Invalid rating value.")
-    if email and "@" not in email:
-        errors.append("Please provide a valid email address.")
-
+    entry = _entry_from_form()
+    if not entry["rating"]:
+        return _render_feedback_form("Please select a rating.", **entry), 400
+    errors = _validate_feedback_entry(entry)
     if errors:
-        return (
-            render_template(
-                "feedback_form.html",
-                error=" ".join(errors),
-                name=name,
-                email=email,
-                rating=rating,
-                task=task,
-                message=message,
-            ),
-            400,
-        )
-
-    timestamp = datetime.now(timezone.utc).isoformat()
+        return _render_feedback_form(" ".join(errors), **entry), 400
 
     issue_url = None
     try:
-        conn = _get_db()
-        cur = conn.execute(
-            "INSERT INTO feedback (timestamp, name, email, rating, task, message) VALUES (?, ?, ?, ?, ?, ?)",
-            (timestamp, name, email, rating, task, message),
-        )
-        feedback_id = cur.lastrowid
-
-        entry = {
-            "id": feedback_id,
-            "timestamp": timestamp,
-            "name": name,
-            "email": email,
-            "rating": rating,
-            "task": task,
-            "message": message,
-        }
-        issue_number, issue_url, sync_error = _create_feedback_issue(entry)
-        if issue_number and issue_url:
-            conn.execute(
-                "UPDATE feedback SET github_issue_number=?, github_issue_url=?, github_sync_status=?, github_sync_error=?, github_synced_at=? WHERE id=?",
-                (issue_number, issue_url, "synced", None, datetime.now(timezone.utc).isoformat(), feedback_id),
-            )
-        else:
-            conn.execute(
-                "UPDATE feedback SET github_sync_status=?, github_sync_error=? WHERE id=?",
-                ("failed", sync_error, feedback_id),
-            )
-            if sync_error:
-                log.warning("Feedback GitHub sync failed for id=%s: %s", feedback_id, sync_error)
-
-        conn.commit()
-        conn.close()
+        _feedback_id, issue_url, _sync_error, source_app = _save_feedback_entry(entry)
     except (sqlite3.Error, OSError):
         log.exception("Failed to save feedback")
+        source_app = entry["source_app"]
 
-    return render_template("feedback_thanks.html", issue_url=issue_url)
+    return render_template(
+        "feedback_thanks.html",
+        issue_url=issue_url,
+        source_app=source_app,
+        support_repo=load_support_hub_config().repo,
+    )
+
+
+@feedback_bp.route("/api", methods=["POST"])
+@csrf.exempt
+@limiter.limit("30 per hour", error_message="Too many API feedback submissions. Please try again later.")
+def feedback_submit_api():
+    cfg = load_support_hub_config()
+    if not cfg.api_token:
+        abort(404)
+    authorization = request.headers.get("Authorization", "")
+    expected = f"Bearer {cfg.api_token}"
+    if not authorization or not hmac.compare_digest(authorization, expected):
+        return jsonify({"error": "Unauthorized"}), 403
+    payload = request.get_json(silent=True)
+    if not isinstance(payload, dict):
+        return jsonify({"error": "JSON object required"}), 400
+    entry = _entry_from_json(payload)
+    errors = _validate_feedback_entry(entry)
+    if errors:
+        return jsonify({"error": " ".join(errors)}), 400
+    try:
+        feedback_id, issue_url, sync_error, source_app = _save_feedback_entry(entry)
+    except (sqlite3.Error, OSError):
+        log.exception("Failed to save API feedback")
+        return jsonify({"error": "Feedback could not be stored"}), 500
+    return jsonify(
+        {
+            "status": "accepted",
+            "id": feedback_id,
+            "source_app": source_app,
+            "support_repo": cfg.repo,
+            "issue_url": issue_url,
+            "github_sync_status": "synced" if issue_url else "failed",
+            "github_sync_error": sync_error,
+        }
+    ), 202
 
 
 @feedback_bp.route("/review")
@@ -255,7 +306,7 @@ def feedback_review():
     try:
         conn = _get_db()
         cursor = conn.execute(
-            "SELECT id, timestamp, name, email, rating, task, message, github_issue_number, github_issue_url, github_sync_status, github_sync_error "
+            "SELECT id, timestamp, name, email, source_app, source_channel, source_version, platform, category, rating, task, summary, message, metadata_json, github_issue_number, github_issue_url, github_sync_status, github_sync_error "
             "FROM feedback ORDER BY id DESC"
         )
         rows = [
@@ -264,13 +315,20 @@ def feedback_review():
                 "timestamp": r[1],
                 "name": r[2],
                 "email": r[3],
-                "rating": r[4],
-                "task": r[5],
-                "message": r[6],
-                "github_issue_number": r[7],
-                "github_issue_url": r[8],
-                "github_sync_status": r[9],
-                "github_sync_error": r[10],
+                "source_app": r[4],
+                "source_channel": r[5],
+                "source_version": r[6],
+                "platform": r[7],
+                "category": r[8],
+                "rating": r[9],
+                "task": r[10],
+                "summary": r[11],
+                "message": r[12],
+                "metadata_json": r[13],
+                "github_issue_number": r[14],
+                "github_issue_url": r[15],
+                "github_sync_status": r[16],
+                "github_sync_error": r[17],
             }
             for r in cursor.fetchall()
         ]

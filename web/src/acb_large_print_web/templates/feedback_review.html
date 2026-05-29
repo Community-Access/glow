@@ -13,10 +13,13 @@
     <tr>
       <th scope="col">No.</th>
       <th scope="col">Date</th>
+      <th scope="col">Source</th>
       <th scope="col">Name</th>
       <th scope="col">Email</th>
+      <th scope="col">Category</th>
       <th scope="col">Rating</th>
       <th scope="col">Task</th>
+      <th scope="col">Summary</th>
       <th scope="col">Message</th>
       <th scope="col">GitHub</th>
     </tr>
@@ -26,10 +29,17 @@
     <tr>
       <td>{{ entry.id }}</td>
       <td>{{ entry.timestamp[:10] }}</td>
+      <td>
+        {{ entry.source_app or "---" }}
+        {% if entry.source_version %}<br><span class="help-text">{{ entry.source_version }}</span>{% endif %}
+        {% if entry.source_channel %}<br><span class="help-text">{{ entry.source_channel }}</span>{% endif %}
+      </td>
       <td>{{ entry.name or "---" }}</td>
       <td>{{ entry.email or "---" }}</td>
+      <td>{{ entry.category or "---" }}</td>
       <td>{{ entry.rating | capitalize }}</td>
       <td>{{ entry.task or "---" }}</td>
+      <td>{{ entry.summary or "---" }}</td>
       <td>{{ entry.message }}</td>
       <td>
         {% if entry.github_issue_url %}

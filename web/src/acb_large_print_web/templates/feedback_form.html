@@ -4,7 +4,9 @@
 {% block heading %}Share Your Feedback{% endblock %}
 
 {% block content %}
-<p>Help us improve the GLOW. Feedback is stored locally and, when GitHub sync is enabled, is filed as a tracked issue for the development team.</p>
+<p>Help us improve the GLOW. Feedback is stored locally and, when support-hub sync is enabled, is filed into the Community Access support workflow so the team can triage it without asking you to use GitHub directly.</p>
+
+<p class="help-text">Support target: <code>{{ support_repo }}</code></p>
 
 {% if error %}
 <div class="error-box" role="alert">
@@ -14,10 +16,15 @@
 
 <form method="post" action="{{ url_for('feedback.feedback_submit') }}" novalidate>
   <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+  <input type="hidden" name="source_app" value="{{ source_app }}">
+  <input type="hidden" name="source_channel" value="{{ source_channel }}">
+  <input type="hidden" name="source_version" value="{{ source_version }}">
+  <input type="hidden" name="platform" value="{{ platform }}">
+  <input type="hidden" name="category" value="{{ category }}">
 
   <fieldset>
     <legend>Your Information (Optional)</legend>
-    <p class="help-text">If you'd like us to reach out about your feedback, share your name and email. This information is included in the tracked issue and helps us follow up on bugs or feature requests.</p>
+    <p class="help-text">If you'd like us to reach out about your feedback, share your name and email. This information is included in the support ticket and helps us follow up on bugs or feature requests.</p>
     <div class="form-group">
       <label for="name">Name</label>
       <input type="text" id="name" name="name" class="form-input" maxlength="200" value="{{ name if name else '' }}">
@@ -25,6 +32,15 @@
     <div class="form-group">
       <label for="email">Email</label>
       <input type="email" id="email" name="email" class="form-input" maxlength="254" value="{{ email if email else '' }}">
+    </div>
+  </fieldset>
+
+  <fieldset>
+    <legend>Quick Summary</legend>
+    <div class="form-group">
+      <label for="summary">Short summary</label>
+      <input type="text" id="summary" name="summary" class="form-input" maxlength="240" value="{{ summary if summary else '' }}" aria-describedby="summary-help">
+      <p class="help-text" id="summary-help">A short plain-language title helps support triage. Example: EPUB export worked, but headings were missing in the result.</p>
     </div>
   </fieldset>
 
@@ -97,7 +113,7 @@
     <div class="form-group">
       <label for="message">Message</label>
       <textarea id="message" name="message" rows="6" class="form-textarea" maxlength="5000" required aria-describedby="message-help">{{ message if message else '' }}</textarea>
-      <p class="help-text" id="message-help">Describe what worked, what did not, or what you would like to see improved. Maximum 5,000 characters.</p>
+      <p class="help-text" id="message-help">Describe what worked, what did not, what you expected, and what would make the experience better. Maximum 5,000 characters.</p>
     </div>
   </fieldset>
 

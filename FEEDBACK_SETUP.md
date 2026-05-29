@@ -1,23 +1,23 @@
-# GLOW Feedback-to-Issue Automation Setup
+# GLOW Feedback-to-Support-Hub Automation Setup
 
 ## Quick Answer
 
 - **Is PAT in the repo?** NO - for security, it must be configured manually
-- **Are issues created?** YES - but only when `FEEDBACK_GITHUB_TOKEN` is set in the environment
+- **Are issues created?** YES - but only when `SUPPORT_HUB_GITHUB_TOKEN` is set in the environment
 
 ## Three-Minute Setup
 
 ### 1. Generate GitHub PAT
 ```
 https://github.com/settings/tokens → Generate new token (classic)
-Name: glow-feedback-sync-dev
+Name: community-access-support-sync-dev
 Scopes: repo, read:user
 Copy token immediately
 ```
 
 ### 2. Set Environment Variable
 ```bash
-export FEEDBACK_GITHUB_TOKEN=ghp_YOUR_TOKEN_HERE
+export SUPPORT_HUB_GITHUB_TOKEN=ghp_YOUR_TOKEN_HERE
 ```
 
 ### 3. Test Locally
@@ -26,7 +26,7 @@ cd s:\code\glow\web
 python3 -m flask --app src.acb_large_print_web.app run
 # Visit http://localhost:5000/feedback
 # Submit feedback with name/email
-# Check GitHub Issues - it should appear automatically
+# Check Community-Access/support issues - it should appear automatically
 ```
 
 ## How It Works
@@ -34,11 +34,11 @@ python3 -m flask --app src.acb_large_print_web.app run
 ### When PAT is Configured ✅
 1. User submits feedback form with optional name/email
 2. Feedback saved to SQLite immediately
-3. GitHub issue created automatically:
+3. GitHub issue created automatically in the Community Access support hub:
    - Title: `[Feedback] Rating | Task | Date`
    - Body includes name, email (if provided), rating, task, message
-   - Assigned to `accesswatch`
-   - Labeled with `feedback,user-feedback`
+   - Routed to `Community-Access/support`
+   - Labeled with the configured support-hub labels
    - User gets link to issue
 
 ### When PAT is NOT Configured (No Error) ✅
@@ -52,12 +52,15 @@ python3 -m flask --app src.acb_large_print_web.app run
 
 ```bash
 # Required for issue creation
-export FEEDBACK_GITHUB_TOKEN=ghp_YOUR_TOKEN_HERE
+export SUPPORT_HUB_GITHUB_TOKEN=ghp_YOUR_TOKEN_HERE
 
 # Optional (defaults shown)
-export FEEDBACK_GITHUB_REPO=Community-Access/glow
-export FEEDBACK_GITHUB_ASSIGNEE=accesswatch
-export FEEDBACK_GITHUB_LABELS=feedback,user-feedback
+export SUPPORT_HUB_GITHUB_REPO=Community-Access/support
+export SUPPORT_HUB_GITHUB_ASSIGNEE=
+export SUPPORT_HUB_GITHUB_LABELS=needs-triage
+
+# Optional for machine-to-machine app feedback submissions
+export SUPPORT_HUB_API_TOKEN=replace-with-shared-secret
 
 # Optional (for feedback review dashboard)
 export FEEDBACK_PASSWORD=your-secure-password-here
@@ -69,10 +72,11 @@ Create `web/.env`:
 ```
 SECRET_KEY=dev-key-12345
 FEEDBACK_PASSWORD=dev-password
-FEEDBACK_GITHUB_TOKEN=ghp_YOUR_TOKEN_HERE
-FEEDBACK_GITHUB_REPO=Community-Access/glow
-FEEDBACK_GITHUB_ASSIGNEE=accesswatch
-FEEDBACK_GITHUB_LABELS=feedback,user-feedback
+SUPPORT_HUB_GITHUB_TOKEN=ghp_YOUR_TOKEN_HERE
+SUPPORT_HUB_GITHUB_REPO=Community-Access/support
+SUPPORT_HUB_GITHUB_ASSIGNEE=
+SUPPORT_HUB_GITHUB_LABELS=needs-triage
+SUPPORT_HUB_API_TOKEN=replace-with-shared-secret
 LOG_LEVEL=DEBUG
 ```
 
@@ -83,15 +87,16 @@ LOG_LEVEL=DEBUG
 Set in `docker-compose.yml`:
 ```yaml
 environment:
-  FEEDBACK_GITHUB_TOKEN: ${FEEDBACK_GITHUB_TOKEN}
-  FEEDBACK_GITHUB_REPO: Community-Access/glow
-  FEEDBACK_GITHUB_ASSIGNEE: accesswatch
-  FEEDBACK_GITHUB_LABELS: feedback,user-feedback
+   SUPPORT_HUB_GITHUB_TOKEN: ${SUPPORT_HUB_GITHUB_TOKEN}
+   SUPPORT_HUB_GITHUB_REPO: Community-Access/support
+   SUPPORT_HUB_GITHUB_ASSIGNEE: ${SUPPORT_HUB_GITHUB_ASSIGNEE}
+   SUPPORT_HUB_GITHUB_LABELS: needs-triage
+   SUPPORT_HUB_API_TOKEN: ${SUPPORT_HUB_API_TOKEN}
 ```
 
 Then deploy:
 ```bash
-export FEEDBACK_GITHUB_TOKEN=ghp_YOUR_TOKEN_HERE
+export SUPPORT_HUB_GITHUB_TOKEN=ghp_YOUR_TOKEN_HERE
 docker-compose up
 ```
 
@@ -100,7 +105,7 @@ docker-compose up
 If you have historical feedback that wasn't synced:
 
 ```bash
-export FEEDBACK_GITHUB_TOKEN=ghp_YOUR_TOKEN_HERE
+export SUPPORT_HUB_GITHUB_TOKEN=ghp_YOUR_TOKEN_HERE
 python3 scripts/sync-feedback-to-github.py
 ```
 
@@ -109,7 +114,7 @@ This creates issues for all unssynced rows with name/email included.
 ## Verify Issue Creation
 
 ### Check GitHub
-Visit [Community-Access/glow Issues](https://github.com/Community-Access/glow/issues) after submitting feedback.
+Visit [Community-Access/support Issues](https://github.com/Community-Access/support/issues) after submitting feedback.
 
 ### Check Feedback Database
 ```bash
@@ -130,7 +135,7 @@ Fields to check:
 
 1. **Check token is set:**
    ```bash
-   echo $FEEDBACK_GITHUB_TOKEN  # Should print ghp_xxx...
+   echo $SUPPORT_HUB_GITHUB_TOKEN  # Should print ghp_xxx...
    ```
 
 2. **Check token has permissions:**
@@ -151,7 +156,7 @@ Fields to check:
 Generate a new token:
 ```bash
 # https://github.com/settings/tokens
-export FEEDBACK_GITHUB_TOKEN=ghp_NEW_TOKEN_HERE
+export SUPPORT_HUB_GITHUB_TOKEN=ghp_NEW_TOKEN_HERE
 ```
 
 ### Rate Limited

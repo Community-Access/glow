@@ -11,7 +11,7 @@ A Flask web application that provides browser-based access to the GLOW. Upload a
 - **Convert** -- transform documents between formats via six conversion directions: Markdown (MarkItDown), HTML (Pandoc), Word (Pandoc), EPUB 3 (Pandoc), PDF (Pandoc + WeasyPrint), and EPUB/DAISY (DAISY Pipeline)
 - **Guidelines** -- browse the full ACB Large Print specification and WCAG 2.2 supplement
 - **About** -- project mission, organizations, standards, open source dependencies, and acknowledgments
-- **Feedback** -- collect user feedback with SQLite storage and password-protected review
+- **Feedback** -- collect user feedback with SQLite storage, optional automatic sync into `Community-Access/support`, and a shared authenticated API path other apps can use for support intake
 
 ### Queue-First Heavy Operations
 
@@ -78,7 +78,7 @@ web/
         convert.py        GET/POST /convert
         guidelines.py     GET /guidelines
         about.py          GET /about
-        feedback.py       GET/POST /feedback, GET /feedback/review
+        feedback.py       GET/POST /feedback, POST /feedback/api, GET /feedback/review
       templates/          Jinja2 HTML templates
       static/             CSS and favicon
   tests/
@@ -100,6 +100,16 @@ flask --app acb_large_print_web.app:create_app run --debug
 ```
 
 Open [http://127.0.0.1:5000](http://127.0.0.1:5000).
+
+## Shared Support Hub
+
+GLOW can act as a generic support-intake front end for Community Access apps.
+
+- Human submissions use `/feedback`
+- Review uses `/feedback/review`
+- Machine-to-machine app submissions use `/feedback/api` with a shared bearer token
+
+By default, support issues are created in `Community-Access/support` when `SUPPORT_HUB_GITHUB_TOKEN` is configured.
 
 ## Running Tests
 
