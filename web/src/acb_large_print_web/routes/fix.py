@@ -126,107 +126,36 @@ def _fix_by_extension(
 
     Returns (output_path, total_fixes, fix_records, post_audit, warnings).
     """
-    ext = saved_path.suffix.lower()
-    if ext == ".xlsx":
-        from acb_large_print.xlsx_auditor import audit_workbook
+    from acb_large_print_core.services import fix_by_extension
 
-        post_audit = audit_workbook(saved_path)
-        return (
-            saved_path,
-            0,
-            [],
-            post_audit,
-            [
-                "Excel workbooks cannot be auto-fixed yet. "
-                "Review the audit findings and fix them manually in Excel."
-            ],
-        )
-    elif ext == ".pptx":
-        from acb_large_print.pptx_auditor import audit_presentation
+    ai_provider = None
+    if detect_headings and use_ai:
+        try:
+            from acb_large_print.ai_provider import get_provider
 
-        post_audit = audit_presentation(saved_path)
-        return (
-            saved_path,
-            0,
-            [],
-            post_audit,
-            [
-                "PowerPoint presentations cannot be auto-fixed yet. "
-                "Review the audit findings and fix them manually in PowerPoint."
-            ],
-        )
-    elif ext == ".md":
-        from acb_large_print.md_auditor import audit_markdown
+            ai_provider = get_provider()
+        except Exception:
+            pass  # Fall back to heuristic-only
 
-        post_audit = audit_markdown(saved_path)
-        return (
-            saved_path,
-            0,
-            [],
-            post_audit,
-            [
-                "Markdown auto-fix is coming soon. "
-                "Review the audit findings and fix them in your text editor."
-            ],
-        )
-    elif ext == ".pdf":
-        from acb_large_print.pdf_auditor import audit_pdf
-
-        post_audit = audit_pdf(saved_path)
-        return (
-            saved_path,
-            0,
-            [],
-            post_audit,
-            [
-                "PDF files cannot be auto-fixed. "
-                "Use Adobe Acrobat Pro or re-export from the source application."
-            ],
-        )
-    elif ext == ".epub":
-        from acb_large_print.epub_auditor import audit_epub
-
-        post_audit = audit_epub(saved_path)
-        return (
-            saved_path,
-            0,
-            [],
-            post_audit,
-            [
-                "ePub files cannot be auto-fixed yet. "
-                "Review the audit findings and fix them in your ePub editor."
-            ],
-        )
-    else:
-        from acb_large_print.fixer import fix_document
-
-        ai_provider = None
-        if detect_headings and use_ai:
-            try:
-                from acb_large_print.ai_provider import get_provider
-
-                ai_provider = get_provider()
-            except Exception:
-                pass  # Fall back to heuristic-only
-        result = fix_document(
-            saved_path,
-            output_path,
-            bound=bound,
-            list_indent_in=list_indent_in,
-            list_hanging_in=list_hanging_in,
-            list_level_indents=list_level_indents,
-            para_indent_in=para_indent_in,
-            first_line_indent_in=first_line_indent_in,
-            preserve_heading_alignment=preserve_heading_alignment,
-            detect_headings=detect_headings,
-            ai_provider=ai_provider,
-            heading_threshold=heading_threshold,
-            confirmed_headings=confirmed_headings,
-            heading_accuracy_level=heading_accuracy,
-            style_size_overrides=style_size_overrides,
-        )
-        # Tag whether AI was actually used (ai_provider set and invoked)
-        return result[:5] + ({"ai_used": ai_provider is not None},) if len(result) == 5 else result
+    result = fix_by_extension(
+        saved_path,
+        output_path,
+        bound=bound,
+        list_indent_in=list_indent_in,
+        list_hanging_in=list_hanging_in,
+        list_level_indents=list_level_indents,
+        para_indent_in=para_indent_in,
+        first_line_indent_in=first_line_indent_in,
+        preserve_heading_alignment=preserve_heading_alignment,
+        detect_headings=detect_headings,
+        ai_provider=ai_provider,
+        heading_threshold=heading_threshold,
+        confirmed_headings=confirmed_headings,
+        heading_accuracy_level=heading_accuracy,
+        style_size_overrides=style_size_overrides,
+    )
+    # Tag whether AI was actually used (ai_provider set and invoked)
+    return result[:5] + ({"ai_used": ai_provider is not None},) if len(result) == 5 else result
 
 
 def _audit_by_extension(
@@ -239,38 +168,16 @@ def _audit_by_extension(
     style_size_overrides: dict[str, float] | None = None,
 ):
     """Dispatch to the correct auditor based on file extension."""
-    ext = saved_path.suffix.lower()
-    if ext == ".xlsx":
-        from acb_large_print.xlsx_auditor import audit_workbook
+    from acb_large_print_core.services import audit_by_extension
 
-        return audit_workbook(saved_path)
-    elif ext == ".pptx":
-        from acb_large_print.pptx_auditor import audit_presentation
-
-        return audit_presentation(saved_path)
-    elif ext == ".md":
-        from acb_large_print.md_auditor import audit_markdown
-
-        return audit_markdown(saved_path)
-    elif ext == ".pdf":
-        from acb_large_print.pdf_auditor import audit_pdf
-
-        return audit_pdf(saved_path)
-    elif ext == ".epub":
-        from acb_large_print.epub_auditor import audit_epub
-
-        return audit_epub(saved_path)
-    else:
-        from acb_large_print.auditor import audit_document
-
-        return audit_document(
-            saved_path,
-            list_indent_in=list_indent_in,
-            list_level_indents=list_level_indents,
-            para_indent_in=para_indent_in,
-            first_line_indent_in=first_line_indent_in,
-            style_size_overrides=style_size_overrides,
-        )
+    return audit_by_extension(
+        saved_path,
+        list_indent_in=list_indent_in,
+        list_level_indents=list_level_indents,
+        para_indent_in=para_indent_in,
+        first_line_indent_in=first_line_indent_in,
+        style_size_overrides=style_size_overrides,
+    )
 
 
 def _format_from_path(saved_path: Path) -> str:

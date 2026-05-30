@@ -713,28 +713,14 @@ def _build_parser() -> argparse.ArgumentParser:
 
 
 # ── Supported file extensions ─────────────────────────────────────────
-SUPPORTED_EXTENSIONS = {".docx", ".xlsx", ".pptx", ".epub"}
+SUPPORTED_EXTENSIONS = {".docx", ".xlsx", ".pptx", ".md", ".pdf", ".epub"}
 
 
 def _audit_by_extension(file_path: Path):
     """Dispatch to the correct auditor based on file extension."""
-    ext = file_path.suffix.lower()
-    if ext == ".xlsx":
-        from .xlsx_auditor import audit_workbook
+    from acb_large_print_core.services import audit_by_extension
 
-        return audit_workbook(file_path)
-    elif ext == ".pptx":
-        from .pptx_auditor import audit_presentation
-
-        return audit_presentation(file_path)
-    elif ext == ".epub":
-        from .epub_auditor import audit_epub
-
-        return audit_epub(file_path)
-    else:
-        from .auditor import audit_document
-
-        return audit_document(file_path)
+    return audit_by_extension(file_path)
 
 
 def _resolve_list_indent(args: argparse.Namespace) -> tuple[float, float]:
@@ -819,61 +805,17 @@ def _fix_by_extension(
 
     Returns (output_path, total_fixes, fix_records, post_audit, warnings).
     """
-    ext = file_path.suffix.lower()
-    if ext == ".xlsx":
-        from .xlsx_auditor import audit_workbook
+    from acb_large_print_core.services import fix_by_extension
 
-        post_audit = audit_workbook(file_path)
-        return (
-            file_path,
-            0,
-            [],
-            post_audit,
-            [
-                "Excel workbooks cannot be auto-fixed yet. "
-                "Review the audit findings and fix them manually in Excel."
-            ],
-        )
-    elif ext == ".pptx":
-        from .pptx_auditor import audit_presentation
-
-        post_audit = audit_presentation(file_path)
-        return (
-            file_path,
-            0,
-            [],
-            post_audit,
-            [
-                "PowerPoint presentations cannot be auto-fixed yet. "
-                "Review the audit findings and fix them manually in PowerPoint."
-            ],
-        )
-    elif ext == ".epub":
-        from .epub_auditor import audit_epub
-
-        post_audit = audit_epub(file_path)
-        return (
-            file_path,
-            0,
-            [],
-            post_audit,
-            [
-                "ePub files cannot be auto-fixed yet. "
-                "Review the audit findings and fix them in your ePub editor."
-            ],
-        )
-    else:
-        from .fixer import fix_document
-
-        return fix_document(
-            file_path,
-            output_path=output_path,
-            bound=bound,
-            list_indent_in=list_indent_in,
-            list_hanging_in=list_hanging_in,
-            para_indent_in=para_indent_in,
-            first_line_indent_in=first_line_indent_in,
-        )
+    return fix_by_extension(
+        file_path,
+        output_path=output_path,
+        bound=bound,
+        list_indent_in=list_indent_in,
+        list_hanging_in=list_hanging_in,
+        para_indent_in=para_indent_in,
+        first_line_indent_in=first_line_indent_in,
+    )
 
 
 def _cmd_audit(args: argparse.Namespace) -> int:
@@ -885,9 +827,10 @@ def _cmd_audit(args: argparse.Namespace) -> int:
         return 1
 
     ext = args.file.suffix.lower()
-    if ext not in (".docx", ".xlsx", ".pptx", ".epub"):
+    if ext not in SUPPORTED_EXTENSIONS:
         print(
-            f"Error: Unsupported file type '{ext}'. Use .docx, .xlsx, .pptx, or .epub.",
+            "Error: Unsupported file type "
+            f"'{ext}'. Use .docx, .xlsx, .pptx, .md, .pdf, or .epub.",
             file=sys.stderr,
         )
         return 1
@@ -927,7 +870,8 @@ def _cmd_fix(args: argparse.Namespace) -> int:
     ext = args.file.suffix.lower()
     if ext not in SUPPORTED_EXTENSIONS:
         print(
-            f"Error: Unsupported file type '{ext}'. Use .docx, .xlsx, .pptx, or .epub.",
+            "Error: Unsupported file type "
+            f"'{ext}'. Use .docx, .xlsx, .pptx, .md, .pdf, or .epub.",
             file=sys.stderr,
         )
         return 1
@@ -1291,7 +1235,7 @@ def _print_wcag_language_report(report) -> None:
 
 def _cmd_convert(args: argparse.Namespace) -> int:
     """Execute the convert command."""
-    from .converter import CONVERTIBLE_EXTENSIONS, convert_to_markdown
+    from acb_large_print_core.services import CONVERTIBLE_EXTENSIONS, convert_to_markdown
     from .wcag_language import analyze_text_for_wcag_language
 
     if not args.file.exists():

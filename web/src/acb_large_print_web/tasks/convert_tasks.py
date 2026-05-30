@@ -377,7 +377,7 @@ def _dispatch_conversion(
 ) -> str:
     """Run the conversion and return the absolute path of the result file."""
     from ..upload import get_temp_dir
-    from acb_large_print.converter import CONVERTIBLE_EXTENSIONS, convert_to_markdown
+    from acb_large_print_core.services import CONVERTIBLE_EXTENSIONS, convert_to_markdown
     from acb_large_print.pandoc_converter import (
         PANDOC_INPUT_EXTENSIONS,
         LIBREOFFICE_CONVERSIONS,
@@ -480,7 +480,7 @@ def _run_pipeline(job_id, source, out_dir, options):
 
 
 def _run_to_markdown(job_id, source, out_dir, options):
-    from acb_large_print.converter import convert_to_markdown
+    from acb_large_print_core.services import convert_to_markdown
     _progress(job_id, 40, "Extracting content to Markdown…")
     dest = out_dir / (source.stem + ".md")
     output_path, _ = convert_to_markdown(source, output_path=dest)
@@ -897,27 +897,8 @@ def run_audit_job(
     options: dict[str, Any],
 ) -> dict[str, Any]:
     from ..upload import get_temp_dir
-    from acb_large_print.auditor import audit_document
-    from acb_large_print.md_auditor import audit_markdown
-    from acb_large_print.pptx_auditor import audit_presentation
-    from acb_large_print.pdf_auditor import audit_pdf
-    from acb_large_print.epub_auditor import audit_epub
-    from acb_large_print.xlsx_auditor import audit_workbook
+    from acb_large_print_core.services import audit_by_extension
     from acb_large_print.constants import AUDIT_RULES
-
-    def _audit_by_ext(path: Path):
-        ext = path.suffix.lower()
-        if ext == ".xlsx":
-            return audit_workbook(path)
-        if ext == ".pptx":
-            return audit_presentation(path)
-        if ext == ".md":
-            return audit_markdown(path)
-        if ext == ".pdf":
-            return audit_pdf(path)
-        if ext == ".epub":
-            return audit_epub(path)
-        return audit_document(path)
 
     status = read_status(job_id)
     max_attempts = max(1, int(status.get("max_attempts", 1)))
@@ -934,7 +915,7 @@ def run_audit_job(
             if not src.exists():
                 raise FileNotFoundError(f"Source file not found: {src}")
             write_status(job_id, state="PROGRESS", progress=25, message="Running audit…", retryable=True)
-            result = _audit_by_ext(src)
+            result = audit_by_extension(src)
             findings = _serialize_findings(getattr(result, "findings", []))
             summary = {
                 "filename": input_filename,

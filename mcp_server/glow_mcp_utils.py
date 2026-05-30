@@ -6,14 +6,10 @@ based on file format. It is used by the FastAPI endpoints in main.py.
 """
 from pathlib import Path
 import tempfile
-import shutil
 import sys
 
 
-from acb_large_print.auditor import audit_document
-from acb_large_print.md_auditor import audit_markdown
-from acb_large_print.fixer import fix_document
-from acb_large_print.converter import convert_to_markdown
+from acb_large_print_core.services import audit_by_extension, convert_to_markdown, fix_by_extension
 from acb_large_print.pandoc_converter import convert_to_html, convert_to_docx
 from acb_large_print.reporter import generate_json_report, generate_text_report, generate_html_report
 
@@ -67,10 +63,8 @@ def run_page_flow_extract(source_url: str, *, max_pages: int = 5, follow_paginat
 def run_audit(file_path: Path, fmt: str):
     """Dispatch to the correct audit function based on format."""
     fmt = fmt.lower()
-    if fmt in ("markdown", "md"):
-        return audit_markdown(file_path)
-    if fmt == "docx":
-        return audit_document(file_path)
+    if fmt in ("markdown", "md", "docx"):
+        return audit_by_extension(file_path)
     raise ValueError(f"Unsupported format for audit: {fmt}")
 
 
@@ -78,7 +72,7 @@ def run_fix(file_path: Path, fmt: str, output_path: Path = None):
     """Dispatch to the correct fix function based on format."""
     fmt = fmt.lower()
     if fmt == "docx":
-        return fix_document(file_path, output_path)
+        return fix_by_extension(file_path, output_path=output_path)
     raise ValueError(f"Unsupported format for fix: {fmt}")
 
 

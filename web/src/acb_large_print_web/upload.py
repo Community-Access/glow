@@ -9,8 +9,10 @@ import uuid
 from datetime import datetime
 from pathlib import Path
 
-from acb_large_print.converter import CONVERTIBLE_EXTENSIONS as MARKITDOWN_CONVERTIBLE_EXTENSIONS
-from acb_large_print.converter import MARKITDOWN_AUDIO_EXTENSIONS
+from acb_large_print_core.services import (
+    CONVERTIBLE_EXTENSIONS as MARKITDOWN_CONVERTIBLE_EXTENSIONS,
+    MARKITDOWN_AUDIO_EXTENSIONS,
+)
 
 from werkzeug.datastructures import FileStorage
 from werkzeug.utils import secure_filename

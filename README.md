@@ -124,6 +124,27 @@ Current rules are intentionally low-noise and focus on:
 - Produces PowerShell scripts for configuring Word document styles
 - Detects and uses external tools (markdownlint, Pandoc) when available
 
+## Shared core architecture (retrofit baseline)
+
+GLOW now includes a shared service package at:
+
+- `desktop/src/acb_large_print_core/`
+
+This package is the canonical dispatch layer for **audit**, **fix**, and **MarkItDown conversion** across CLI, desktop, and web surfaces.
+
+Current shared entry points:
+
+- `acb_large_print_core.services.audit_by_extension(...)`
+- `acb_large_print_core.services.fix_by_extension(...)`
+- `acb_large_print_core.services.convert_to_markdown(...)`
+- `acb_large_print_core.versions.get_component_versions()`
+
+Design intent:
+
+- Keep UX-specific behavior in each interface (web routes, GUI dialogs, CLI output formatting).
+- Keep business logic dispatch and component-version provenance in shared core APIs.
+- Enable future extraction to an external reusable package without changing app-layer behavior.
+
 ## Recent Fix Workflow Updates (April 2026)
 
 - Fix Results now suppresses `ACB-FAUX-HEADING` from post-fix scoring when heading detection is explicitly disabled, and shows a "Suppressed by your settings" note for transparency.
@@ -169,6 +190,7 @@ lp/
     announcement.md                      Press release / announcement
     prd.md                               Canonical web app product requirements document
     deployment.md                        Step-by-step server deployment guide
+    shared-core-retrofit.md              Shared service-core architecture and migration status
   samples/
     *.md                                 Example Markdown source files
     *.html                               Converted HTML output files
@@ -181,7 +203,8 @@ lp/
     Dockerfile                           Production container image
     docker-compose.yml                   Compose file for deployment
   desktop/                               Desktop CLI + GUI (Python)
-    src/acb_large_print/                 Core library (canonical source of truth)
+    src/acb_large_print_core/            Shared service core (canonical dispatch layer)
+    src/acb_large_print/                 App-layer CLI/GUI + format engines
   office-addin/                          Office.js Word Add-in (TypeScript)
     src/                                 TypeScript port of audit/fix/template
   vendor/                                Vendored third-party source
