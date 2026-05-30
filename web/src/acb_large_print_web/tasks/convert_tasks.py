@@ -376,14 +376,15 @@ def _dispatch_conversion(
     options: dict[str, Any],
 ) -> str:
     """Run the conversion and return the absolute path of the result file."""
-    from ..upload import get_temp_dir
     from acb_large_print.converter import CONVERTIBLE_EXTENSIONS
-    from quill_glow_core import convert_to_markdown
     from acb_large_print.pandoc_converter import (
-        PANDOC_INPUT_EXTENSIONS,
         LIBREOFFICE_CONVERSIONS,
+        PANDOC_INPUT_EXTENSIONS,
         preconvert_via_libreoffice,
     )
+    from quill_glow_core import convert_to_markdown
+
+    from ..upload import get_temp_dir
 
     _progress(job_id, 10, "Locating source file…")
     temp_dir = get_temp_dir(upload_token)
@@ -461,8 +462,7 @@ def _dispatch_conversion(
 
 
 def _run_pipeline(job_id, source, out_dir, options):
-    from acb_large_print.pipeline_converter import convert_with_pipeline
-    from acb_large_print.pipeline_converter import get_available_conversions
+    from acb_large_print.pipeline_converter import convert_with_pipeline, get_available_conversions
     _progress(job_id, 30, "Sending to DAISY Pipeline…")
     conversion_key = options.get("pipeline_conversion", "")
     available = get_available_conversions()
@@ -490,6 +490,7 @@ def _run_to_markdown(job_id, source, out_dir, options):
 
 def _run_to_html(job_id, source, out_dir, options):
     import re
+
     from acb_large_print.pandoc_converter import convert_to_html
     _progress(job_id, 40, "Converting to HTML…")
     css_path = None if options.get("acb_format", True) else Path("__no_acb_css__")
@@ -693,14 +694,14 @@ def _run_speech(
     output_format: str,
 ) -> str:
     """Run full-document speech synthesis and return the output file path."""
-    from ..upload import get_temp_dir
     from acb_large_print_web.speech import (
         SpeechError,
         normalize_document_text,
         synthesize_document_text,
         wav_bytes_to_mp3,
-        wav_duration_seconds,
     )
+
+    from ..upload import get_temp_dir
 
     _progress(job_id, 10, "Locating extracted document text…")
 
@@ -728,8 +729,8 @@ def _run_speech(
 
     # Optionally apply pronunciation dictionary if enabled
     try:
-        from acb_large_print_web.magic_features import apply_pronunciation_dictionary
         from acb_large_print_web import feature_flags as _ff
+        from acb_large_print_web.magic_features import apply_pronunciation_dictionary
         if _ff.get_all_flags().get("GLOW_ENABLE_SPEECH_PRONUNCIATION_DICTIONARY", True):
             text = apply_pronunciation_dictionary(text)
     except Exception:
@@ -841,9 +842,11 @@ def run_export_job(
     token: str,
     options: dict[str, Any],
 ) -> dict[str, Any]:
-    from ..upload import get_temp_dir
-    from acb_large_print.exporter import export_cms_fragment, export_standalone_html
     import zipfile
+
+    from acb_large_print.exporter import export_cms_fragment, export_standalone_html
+
+    from ..upload import get_temp_dir
 
     status = read_status(job_id)
     max_attempts = max(1, int(status.get("max_attempts", 1)))
@@ -897,9 +900,10 @@ def run_audit_job(
     input_filename: str,
     options: dict[str, Any],
 ) -> dict[str, Any]:
-    from ..upload import get_temp_dir
-    from acb_large_print_core.services import audit_by_extension
     from acb_large_print.constants import AUDIT_RULES
+    from quill_glow_core import audit_by_extension
+
+    from ..upload import get_temp_dir
 
     status = read_status(job_id)
     max_attempts = max(1, int(status.get("max_attempts", 1)))
@@ -951,8 +955,9 @@ def run_fix_job(
     input_filename: str,
     options: dict[str, Any],
 ) -> dict[str, Any]:
+    from acb_large_print_web.routes.fix import _fix_by_extension
+
     from ..upload import get_temp_dir
-    from acb_large_print_web.routes.fix import _fix_by_extension, _audit_by_extension
 
     status = read_status(job_id)
     max_attempts = max(1, int(status.get("max_attempts", 1)))
@@ -1028,14 +1033,15 @@ def run_speech_prepare_job(
     input_filename: str,
     speed: float,
 ) -> dict[str, Any]:
-    from ..upload import get_temp_dir
+    from acb_large_print_web.routes.speech import _DOC_EXTRACT_NAME, _DOC_RENDERED_NAME, _extract_document_text
     from acb_large_print_web.speech import (
-        normalize_document_text,
         estimate_audio_seconds_from_text,
         estimate_processing_seconds_from_text,
         first_sentences,
+        normalize_document_text,
     )
-    from acb_large_print_web.routes.speech import _extract_document_text, _DOC_EXTRACT_NAME, _DOC_RENDERED_NAME
+
+    from ..upload import get_temp_dir
 
     status = read_status(job_id)
     max_attempts = max(1, int(status.get("max_attempts", 1)))
