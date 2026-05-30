@@ -488,7 +488,7 @@ class ToolRegistry:
         if self.context.doc_path is None:
             return self._heuristic_compliance_summary()
         try:
-            from acb_large_print_core.services import audit_by_extension
+            from quill_glow_core import audit_by_extension
 
             result = audit_by_extension(str(self.context.doc_path))
             self.context._audit_cache = {
