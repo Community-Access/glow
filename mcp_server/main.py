@@ -18,7 +18,6 @@ See README.md and openapi.yaml for full documentation.
 from fastapi import FastAPI, UploadFile, File, Form
 from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
-from typing import Optional
 import tempfile
 from pathlib import Path
 try:
