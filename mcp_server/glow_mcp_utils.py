@@ -8,8 +8,10 @@ from pathlib import Path
 import tempfile
 import sys
 
-
-from acb_large_print_core.services import audit_by_extension, convert_to_markdown, fix_by_extension
+try:
+    from quill_glow_core import audit_by_extension, convert_to_markdown, fix_by_extension
+except Exception:
+    from acb_large_print_core.services import audit_by_extension, convert_to_markdown, fix_by_extension
 from acb_large_print.pandoc_converter import convert_to_html, convert_to_docx
 from acb_large_print.reporter import generate_json_report, generate_text_report, generate_html_report
 

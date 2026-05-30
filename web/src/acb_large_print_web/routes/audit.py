@@ -264,7 +264,10 @@ def _compute_audit_diff(
 
 def _audit_by_extension(saved_path: Path):
     """Dispatch to the correct auditor based on file extension."""
-    from acb_large_print_core.services import audit_by_extension
+    try:
+        from quill_glow_core import audit_by_extension
+    except Exception:
+        from acb_large_print_core.services import audit_by_extension
 
     return audit_by_extension(saved_path)
 
