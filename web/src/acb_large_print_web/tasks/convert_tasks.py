@@ -377,7 +377,11 @@ def _dispatch_conversion(
 ) -> str:
     """Run the conversion and return the absolute path of the result file."""
     from ..upload import get_temp_dir
-    from acb_large_print_core.services import CONVERTIBLE_EXTENSIONS, convert_to_markdown
+    from acb_large_print.converter import CONVERTIBLE_EXTENSIONS
+    try:
+        from quill_glow_core import convert_to_markdown
+    except Exception:
+        from acb_large_print_core.services import convert_to_markdown
     from acb_large_print.pandoc_converter import (
         PANDOC_INPUT_EXTENSIONS,
         LIBREOFFICE_CONVERSIONS,
@@ -480,7 +484,10 @@ def _run_pipeline(job_id, source, out_dir, options):
 
 
 def _run_to_markdown(job_id, source, out_dir, options):
-    from acb_large_print_core.services import convert_to_markdown
+    try:
+        from quill_glow_core import convert_to_markdown
+    except Exception:
+        from acb_large_print_core.services import convert_to_markdown
     _progress(job_id, 40, "Extracting content to Markdown…")
     dest = out_dir / (source.stem + ".md")
     output_path, _ = convert_to_markdown(source, output_path=dest)
