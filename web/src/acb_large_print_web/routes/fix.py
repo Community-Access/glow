@@ -126,10 +126,7 @@ def _fix_by_extension(
 
     Returns (output_path, total_fixes, fix_records, post_audit, warnings).
     """
-    try:
-        from quill_glow_core import fix_by_extension
-    except Exception:
-        from acb_large_print_core.services import fix_by_extension
+    from quill_glow_core import fix_by_extension
 
     ai_provider = None
     if detect_headings and use_ai:
@@ -171,10 +168,7 @@ def _audit_by_extension(
     style_size_overrides: dict[str, float] | None = None,
 ):
     """Dispatch to the correct auditor based on file extension."""
-    try:
-        from quill_glow_core import audit_by_extension
-    except Exception:
-        from acb_large_print_core.services import audit_by_extension
+    from quill_glow_core import audit_by_extension
 
     return audit_by_extension(
         saved_path,

@@ -167,10 +167,7 @@ def create_app(config: dict | None = None) -> Flask:
     @app.context_processor
     def inject_rules():
         from flask import g as _g
-        try:
-            from quill_glow_core import get_component_versions as _get_component_versions
-        except Exception:
-            from acb_large_print_core.versions import get_component_versions as _get_component_versions
+        from quill_glow_core import get_component_versions as _get_component_versions
         from .ai_features import get_all_flags as _get_ai_flags
         from .branding import get_branding_context as _get_branding_context
         from .version import get_version as _get_release_version

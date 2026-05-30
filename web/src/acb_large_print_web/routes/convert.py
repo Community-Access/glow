@@ -30,10 +30,7 @@ from werkzeug.utils import secure_filename as _secure_filename
 
 from acb_large_print.converter import CONVERTIBLE_EXTENSIONS, MARKITDOWN_AUDIO_EXTENSIONS
 
-try:
-    from quill_glow_core import convert_to_markdown
-except Exception:
-    from acb_large_print_core.services import convert_to_markdown
+from quill_glow_core import convert_to_markdown
 from acb_large_print.wcag_language import (
     analyze_text_for_wcag_language,
 )

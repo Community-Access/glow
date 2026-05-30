@@ -718,10 +718,7 @@ SUPPORTED_EXTENSIONS = {".docx", ".xlsx", ".pptx", ".md", ".pdf", ".epub"}
 
 def _audit_by_extension(file_path: Path):
     """Dispatch to the correct auditor based on file extension."""
-    try:
-        from quill_glow_core import audit_by_extension
-    except Exception:
-        from acb_large_print_core.services import audit_by_extension
+    from quill_glow_core import audit_by_extension
 
     return audit_by_extension(file_path)
 
@@ -808,10 +805,7 @@ def _fix_by_extension(
 
     Returns (output_path, total_fixes, fix_records, post_audit, warnings).
     """
-    try:
-        from quill_glow_core import fix_by_extension
-    except Exception:
-        from acb_large_print_core.services import fix_by_extension
+    from quill_glow_core import fix_by_extension
 
     return fix_by_extension(
         file_path,
@@ -1242,10 +1236,7 @@ def _print_wcag_language_report(report) -> None:
 def _cmd_convert(args: argparse.Namespace) -> int:
     """Execute the convert command."""
     from .converter import CONVERTIBLE_EXTENSIONS
-    try:
-        from quill_glow_core import convert_to_markdown
-    except Exception:
-        from acb_large_print_core.services import convert_to_markdown
+    from quill_glow_core import convert_to_markdown
     from .wcag_language import analyze_text_for_wcag_language
 
     if not args.file.exists():
