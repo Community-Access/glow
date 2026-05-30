@@ -55,3 +55,40 @@ When ready to externalize for QUILL integration:
 2. Preserve function signatures and return types.
 3. Keep thin adapter modules in GLOW (`acb_large_print`) to prevent breaking consumers.
 4. Add semver and compatibility matrix (`glow_min`, `quill_min`) to version manifest.
+
+## Server deployment readiness checklist (for PR review and rollout)
+
+Use this checklist before promoting `feature/shared-core-retrofit` to production:
+
+1. **Branch + PR readiness**
+   - Confirm PR #81 is approved and mergeable.
+   - Confirm deployment target references the merged commit SHA (not a stale image/revision).
+
+2. **Build/runtime alignment**
+   - Rebuild application image/environment from the merged commit.
+   - Verify runtime imports resolve to repository source used in deployment (avoid stale site-packages path drift).
+
+3. **Automated verification gates**
+   - Desktop targeted checks:
+     - `python -m pytest tests/test_conversion_format_support.py tests/test_pdf_table_extraction.py -q`
+   - Web targeted checks:
+     - `python -m pytest tests/test_upload.py tests/test_fix_routes.py -q`
+   - Version surface checks (from repo root with source paths):
+     - `PYTHONPATH=desktop/src;web/src python -m pytest web/tests/test_app.py -k release_from_version_file -q`
+
+4. **Runtime smoke tests (staging first)**
+   - Audit flow works for `.docx`, `.md`, `.pdf`.
+   - Fix flow works for `.docx`; advisory/manual paths remain correct for unsupported auto-fix formats.
+   - Convert flow produces markdown via shared service dispatch.
+   - Chat audit summary still functions.
+   - MCP utility endpoints still run docx/markdown audit/fix/convert paths.
+
+5. **Observability + metadata**
+   - About page renders component versions (`release`, `markitdown`, `pymupdf`, core package).
+   - Logs show no import-dispatch errors for `acb_large_print_core`.
+
+6. **Rollout strategy**
+   - Deploy to staging.
+   - Run smoke checks above.
+   - Promote to production.
+   - Monitor first 24h for audit/fix/convert error-rate regressions.
