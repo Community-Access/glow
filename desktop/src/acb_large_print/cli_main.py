@@ -6,6 +6,13 @@ import sys
 
 
 def main() -> None:
+    try:
+        from quill_glow_core import configure_default_services as _configure_shared_core_default
+
+        _configure_shared_core_default()
+    except Exception:
+        pass
+
     from acb_large_print.cli import main as cli_main
 
     sys.exit(cli_main(force_cli=True))

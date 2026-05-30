@@ -17,6 +17,15 @@ from flask_wtf.csrf import CSRFError, CSRFProtect
 
 from .rules import get_help_urls_map, get_rules_by_category, get_rules_by_severity
 
+try:
+    from quill_glow_core import (
+        configure_default_services as _configure_shared_core_default,
+        get_startup_telemetry_dict as _get_shared_core_startup_telemetry,
+    )
+except Exception:
+    _configure_shared_core_default = None
+    _get_shared_core_startup_telemetry = None
+
 csrf = CSRFProtect()
 limiter = Limiter(
     key_func=get_remote_address,
@@ -59,6 +68,13 @@ def create_app(config: dict | None = None) -> Flask:
 
     if config:
         app.config.update(config)
+
+    # Initialize shared-core wiring once at process startup when available.
+    if _configure_shared_core_default is not None:
+        try:
+            _configure_shared_core_default()
+        except Exception:
+            app.logger.exception("Failed to initialize quill-glow-core shared services")
 
     # Extensions
     csrf.init_app(app)
@@ -151,7 +167,10 @@ def create_app(config: dict | None = None) -> Flask:
     @app.context_processor
     def inject_rules():
         from flask import g as _g
-        from acb_large_print_core.versions import get_component_versions as _get_component_versions
+        try:
+            from quill_glow_core import get_component_versions as _get_component_versions
+        except Exception:
+            from acb_large_print_core.versions import get_component_versions as _get_component_versions
         from .ai_features import get_all_flags as _get_ai_flags
         from .branding import get_branding_context as _get_branding_context
         from .version import get_version as _get_release_version
@@ -803,6 +822,15 @@ def create_app(config: dict | None = None) -> Flask:
             "timestamp_utc": datetime.now(UTC).isoformat(),
             "duration_ms": _hduration_ms,
         }
+        if _get_shared_core_startup_telemetry is not None:
+            try:
+                payload["shared_core"] = _get_shared_core_startup_telemetry()
+            except Exception:
+                payload["shared_core"] = {
+                    "backend": "unknown",
+                    "configured_by": "unknown",
+                    "auto_selected": None,
+                }
         return payload, all_ok
 
     # Health check

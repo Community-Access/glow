@@ -22,6 +22,7 @@ classifiers = [
     "Topic :: Adaptive Technologies",
 ]
 dependencies = [
+    "quill-glow-core>=0.1.0",
     "flask>=3.1",
     "flask-wtf>=1.2",
     "flask-limiter>=4.0",
