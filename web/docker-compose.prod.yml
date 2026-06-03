@@ -129,6 +129,7 @@ services:
     volumes:
       - feedback-data:/app/instance
       - speech-models:/app/instance/speech_models
+      - upload-temp:/tmp/acb_lp_web
     depends_on:
       pipeline:
         condition: service_healthy
@@ -227,6 +228,7 @@ services:
     volumes:
       - feedback-data:/app/instance
       - speech-models:/app/instance/speech_models
+      - upload-temp:/tmp/acb_lp_web
     depends_on:
       pipeline:
         condition: service_healthy
@@ -255,6 +257,7 @@ services:
 volumes:
   feedback-data:
   speech-models:
+  upload-temp:
   redis-data:
   caddy_data:
   caddy_config:

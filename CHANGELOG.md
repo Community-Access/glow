@@ -25,6 +25,7 @@ Releases are tagged in the [GitHub repository](https://github.com/Community-Acce
 - **Deploy workflow MCP test restored for markdown audits.** Updated [mcp_server/glow_mcp_utils.py](mcp_server/glow_mcp_utils.py) to resolve core services from `quill_glow_core` with fallback to `acb_large_print_core`, so `/audit` markdown requests no longer fail with HTTP 400 when only the fallback core package is installed in CI.
 - **About page now shows the shared core library version explicitly.** The global template context now guarantees `component_versions.shared_core_library` (preferring `quill-glow-core`, then `acb-large-print-core`) and [web/src/acb_large_print_web/templates/about.html](web/src/acb_large_print_web/templates/about.html) displays that value for the "Shared service core package" field.
 - **Production image builds now install shared core explicitly.** Added a `pip install` of the `quill-glow-core` source archive in [web/Dockerfile](web/Dockerfile) and [mcp_server/Dockerfile](mcp_server/Dockerfile) before installing `./desktop`, preventing deploy-time build failures when `quill-glow-core` is not resolvable from PyPI.
+- **Queued uploads now persist across web and worker containers.** Added a shared `upload-temp` volume mounted at `/tmp/acb_lp_web` for both `web` and `worker` in [web/docker-compose.prod.yml](web/docker-compose.prod.yml), fixing audit/convert/fix/export/template queue jobs that could fail with `Upload token ... not found or expired` after a successful upload.
 
 ### Changed
 
