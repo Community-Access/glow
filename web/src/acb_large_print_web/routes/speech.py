@@ -146,10 +146,24 @@ def speech_form():
     if prefill_token:
         temp_dir = get_temp_dir(prefill_token)
         if temp_dir is not None:
-            for f in sorted(temp_dir.iterdir()):
-                if f.is_file() and f.suffix.lower() in _DOC_ALLOWED_EXTENSIONS:
-                    prefill_filename = f.name
-                    break
+            # Look for any file in the directory, even if it's not a supported type yet
+            all_files = sorted([f for f in temp_dir.iterdir() if f.is_file()])
+            if all_files:
+                # Check if any file matches supported extensions
+                for f in all_files:
+                    if f.suffix.lower() in _DOC_ALLOWED_EXTENSIONS:
+                        prefill_filename = f.name
+                        break
+                # If no supported file found, still note that files exist
+                if prefill_filename is None and all_files:
+                    current_app.logger.warning(
+                        f"Prefilled token {prefill_token} has files but none match "
+                        f"supported Speech Studio extensions. Files: {[f.name for f in all_files]}"
+                    )
+            else:
+                current_app.logger.info(f"Prefilled token {prefill_token} has empty temp directory")
+        else:
+            current_app.logger.info(f"Prefilled token {prefill_token} not found or expired")
         if prefill_filename is None:
             prefill_token = ""
 
@@ -694,11 +708,30 @@ def _resolve_document_source() -> tuple[str, Path, str]:
     if token and prefill:
         temp_dir = get_temp_dir(token)
         if temp_dir is None:
+            current_app.logger.warning(
+                f"Prefill attempt with token {token} but temp_dir not found or expired. "
+                f"Request has files: {list(request.files.keys())}"
+            )
             raise UploadError("Upload session expired. Please upload the file again.")
-        for f in sorted(temp_dir.iterdir()):
-            if f.is_file() and f.suffix.lower() in _DOC_ALLOWED_EXTENSIONS:
+        all_files = sorted([f for f in temp_dir.iterdir() if f.is_file()])
+        current_app.logger.info(
+            f"Prefill attempt: token={token}, temp_dir_files={[f.name for f in all_files]}, "
+            f"allowed_ext={_DOC_ALLOWED_EXTENSIONS}"
+        )
+        for f in all_files:
+            if f.suffix.lower() in _DOC_ALLOWED_EXTENSIONS:
+                current_app.logger.info(f"Using prefilled file: {f.name}")
                 return token, f, f.name
-        raise UploadError("No supported document found for this session.")
+        if all_files:
+            unsupported = [f.name for f in all_files]
+            current_app.logger.warning(
+                f"Prefill token {token} has files {unsupported} but none match "
+                f"allowed extensions {_DOC_ALLOWED_EXTENSIONS}"
+            )
+            raise UploadError(
+                f"Prefilled file(s) not supported for Speech Studio: {', '.join(unsupported)}"
+            )
+        raise UploadError("No files found in upload session. Please upload the file again.")
 
     upload = request.files.get("document")
     token, saved_path = validate_upload(upload, allowed_extensions=_DOC_ALLOWED_EXTENSIONS)
