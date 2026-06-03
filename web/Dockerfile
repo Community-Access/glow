@@ -46,6 +46,7 @@ RUN npm install -g @daisy/ace --no-fund --no-audit \
 
 # Install the core library (audit, fix, convert, export -- no CLI/GUI)
 # The .dockerignore excludes desktop-only files (cli.py, gui.py, __main__.py)
+RUN pip install --no-cache-dir https://github.com/Community-Access/quill-glow-core/archive/refs/heads/main.zip
 COPY desktop/pyproject.toml desktop/
 COPY desktop/src/ desktop/src/
 RUN pip install --no-cache-dir ./desktop
