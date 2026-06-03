@@ -487,7 +487,7 @@ def speech_document_preview():
         text = _load_extracted_text(token)
         preview_text = first_sentences(text, count=2, max_chars=500)
         preview_text = _apply_pronunciation_dictionary_if_enabled(preview_text)
-        if not preview_text:
+        if not preview_text or not preview_text.strip():
             return jsonify({"error": "No preview text available."}), 400
         wav_bytes, _ = synthesize(voice_id, preview_text, speed=speed, pitch=pitch)
     except UploadError as exc:

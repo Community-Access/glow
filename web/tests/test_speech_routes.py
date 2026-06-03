@@ -286,3 +286,28 @@ def test_speech_download_falls_back_to_sync_when_queue_fails(client, monkeypatch
     )
     assert res.status_code == 200
     assert res.headers.get("Content-Type", "").startswith("audio/mpeg")
+
+
+def test_speech_document_preview_rejects_whitespace_only_text(client, monkeypatch: pytest.MonkeyPatch):
+    """Verify that document-preview rejects whitespace-only preview text (issue #83)."""
+    # Mock _load_extracted_text to return whitespace-only content
+    monkeypatch.setattr(speech_route, "_load_extracted_text", lambda token: "   \n  \t  ")
+    
+    # Mock first_sentences to return whitespace (edge case where preview is all whitespace)
+    monkeypatch.setattr(speech_route, "first_sentences", lambda text, **kwargs: "   \n  \t  ")
+    
+    # Try to preview with whitespace-only text
+    res = client.post(
+        "/speech/document-preview",
+        data={
+            "token": "some-token",
+            "voice": "kokoro:af_bella",
+            "speed": "1.0",
+            "pitch": "0",
+        },
+    )
+    
+    # Should return "No preview text available." instead of trying to synthesize
+    assert res.status_code == 400
+    data = res.get_json()
+    assert data.get("error") == "No preview text available."
