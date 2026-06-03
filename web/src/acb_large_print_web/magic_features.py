@@ -320,7 +320,7 @@ def extract_text_for_compare(path: Path) -> str:
         return path.read_text(encoding="utf-8", errors="replace")
 
     # Use existing MarkItDown extractor for binary docs.
-    from quill_glow_core import convert_to_markdown
+    from .core_services import convert_to_markdown
 
     out_path = path.with_suffix(path.suffix + ".cmp.md")
     md_path, _ = convert_to_markdown(path, output_path=out_path)

@@ -20,10 +20,12 @@ from .rules import get_help_urls_map, get_rules_by_category, get_rules_by_severi
 try:
     from quill_glow_core import (
         configure_default_services as _configure_shared_core_default,
+        get_component_versions as _get_shared_core_component_versions,
         get_startup_telemetry_dict as _get_shared_core_startup_telemetry,
     )
 except Exception:
     _configure_shared_core_default = None
+    _get_shared_core_component_versions = None
     _get_shared_core_startup_telemetry = None
 
 csrf = CSRFProtect()
@@ -167,7 +169,6 @@ def create_app(config: dict | None = None) -> Flask:
     @app.context_processor
     def inject_rules():
         from flask import g as _g
-        from quill_glow_core import get_component_versions as _get_component_versions
         from .ai_features import get_all_flags as _get_ai_flags
         from .branding import get_branding_context as _get_branding_context
         from .version import get_version as _get_release_version
@@ -181,6 +182,22 @@ def create_app(config: dict | None = None) -> Flask:
             except Exception:
                 release_ver = "unknown"
 
+        component_versions = {}
+        if _get_shared_core_component_versions is not None:
+            try:
+                component_versions = _get_shared_core_component_versions()
+            except Exception:
+                component_versions = {}
+        else:
+            try:
+                from acb_large_print_core import (
+                    get_component_versions as _get_fallback_component_versions,
+                )
+
+                component_versions = _get_fallback_component_versions()
+            except Exception:
+                component_versions = {}
+
         web_ver = release_ver
         desktop_ver = release_ver
         ctx = {
@@ -190,7 +207,7 @@ def create_app(config: dict | None = None) -> Flask:
             "web_version": web_ver,
             "desktop_version": desktop_ver,
             "release_version": release_ver,
-            "component_versions": _get_component_versions(),
+            "component_versions": component_versions,
             "csp_nonce": getattr(_g, "csp_nonce", ""),
         }
         # Inject AI flags (from ai_features)

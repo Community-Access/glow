@@ -382,7 +382,7 @@ def _dispatch_conversion(
         PANDOC_INPUT_EXTENSIONS,
         preconvert_via_libreoffice,
     )
-    from quill_glow_core import convert_to_markdown
+    from ..core_services import convert_to_markdown
 
     from ..upload import get_temp_dir
 
@@ -481,7 +481,7 @@ def _run_pipeline(job_id, source, out_dir, options):
 
 
 def _run_to_markdown(job_id, source, out_dir, options):
-    from quill_glow_core import convert_to_markdown
+    from ..core_services import convert_to_markdown
     _progress(job_id, 40, "Extracting content to Markdown…")
     dest = out_dir / (source.stem + ".md")
     output_path, _ = convert_to_markdown(source, output_path=dest)
@@ -901,7 +901,7 @@ def run_audit_job(
     options: dict[str, Any],
 ) -> dict[str, Any]:
     from acb_large_print.constants import AUDIT_RULES
-    from quill_glow_core import audit_by_extension
+    from ..core_services import audit_by_extension
 
     from ..upload import get_temp_dir
 

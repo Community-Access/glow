@@ -30,7 +30,7 @@ from flask import (
     url_for,
 )
 
-from quill_glow_core import convert_to_markdown
+from ..core_services import convert_to_markdown
 from acb_large_print.pandoc_converter import pandoc_available
 
 from ..app import limiter
