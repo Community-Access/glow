@@ -190,6 +190,8 @@ def speech_preview():
         return jsonify({"error": "Text must not be empty."}), 400
 
     text = _apply_pronunciation_dictionary_if_enabled(text)
+    if not text or not text.strip():
+        return jsonify({"error": "Text must not be empty."}), 400
 
     try:
         wav_bytes, _ = synthesize(voice_id, text, speed=speed, pitch=pitch)
@@ -278,6 +280,8 @@ def speech_download():
         return jsonify({"error": "Text must not be empty."}), 400
 
     text = _apply_pronunciation_dictionary_if_enabled(text)
+    if not text or not text.strip():
+        return jsonify({"error": "Text must not be empty."}), 400
 
     if _ASYNC_SPEECH_ENABLED:
         try:
@@ -534,6 +538,9 @@ def speech_document_download():
         text = _apply_pronunciation_dictionary_if_enabled(_load_extracted_text(token))
     except UploadError as exc:
         return jsonify({"error": str(exc)}), 400
+
+    if not text or not text.strip():
+        return jsonify({"error": "No content available for speech synthesis."}), 400
 
     if _ASYNC_SPEECH_ENABLED:
         try:

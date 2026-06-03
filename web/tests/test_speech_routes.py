@@ -311,3 +311,79 @@ def test_speech_document_preview_rejects_whitespace_only_text(client, monkeypatc
     assert res.status_code == 400
     data = res.get_json()
     assert data.get("error") == "No preview text available."
+
+
+def test_speech_preview_rejects_whitespace_after_pronunciation(client, monkeypatch: pytest.MonkeyPatch):
+    """Verify that /preview rejects text that becomes whitespace-only after pronunciation dict (issue #83)."""
+    # Mock pronunciation dictionary to return whitespace-only result
+    monkeypatch.setattr(
+        speech_route,
+        "_apply_pronunciation_dictionary_if_enabled",
+        lambda text: "   \n  \t  ",
+    )
+    
+    res = client.post(
+        "/speech/preview",
+        data={
+            "voice": "kokoro:af_bella",
+            "text": "valid input text",
+            "speed": "1.0",
+            "pitch": "0",
+        },
+    )
+    
+    # Should reject whitespace-only result and not try to synthesize
+    assert res.status_code == 400
+    data = res.get_json()
+    assert data.get("error") == "Text must not be empty."
+
+
+def test_speech_download_rejects_whitespace_after_pronunciation(client, monkeypatch: pytest.MonkeyPatch):
+    """Verify that /download rejects text that becomes whitespace-only after pronunciation dict (issue #83)."""
+    # Mock pronunciation dictionary to return whitespace-only result
+    monkeypatch.setattr(
+        speech_route,
+        "_apply_pronunciation_dictionary_if_enabled",
+        lambda text: "   \n  \t  ",
+    )
+    
+    res = client.post(
+        "/speech/download",
+        data={
+            "voice": "kokoro:af_bella",
+            "text": "valid input text",
+            "speed": "1.0",
+            "pitch": "0",
+        },
+    )
+    
+    # Should reject whitespace-only result and not try to synthesize
+    assert res.status_code == 400
+    data = res.get_json()
+    assert data.get("error") == "Text must not be empty."
+
+
+def test_speech_document_download_rejects_empty_content(client, monkeypatch: pytest.MonkeyPatch):
+    """Verify that /document-download rejects extracted text that becomes empty (issue #83)."""
+    # Mock _load_extracted_text and pronunciation to return whitespace
+    monkeypatch.setattr(speech_route, "_load_extracted_text", lambda token: "   \n  \t  ")
+    monkeypatch.setattr(
+        speech_route,
+        "_apply_pronunciation_dictionary_if_enabled",
+        lambda text: "   \n  \t  ",
+    )
+    
+    res = client.post(
+        "/speech/document-download",
+        data={
+            "token": "some-token",
+            "voice": "kokoro:af_bella",
+            "speed": "1.0",
+            "pitch": "0",
+        },
+    )
+    
+    # Should reject empty content with proper error message
+    assert res.status_code == 400
+    data = res.get_json()
+    assert data.get("error") == "No content available for speech synthesis."
