@@ -868,6 +868,7 @@ def _audit_single():
             token, saved_path = validate_upload(request.files.get("document"))
 
         if _ASYNC_HEAVY_ENABLED and not current_app.config.get("TESTING", False):
+            upload_token = token
             job_id = str(uuid.uuid4())
             create_job(
                 job_id,
@@ -875,7 +876,7 @@ def _audit_single():
                 saved_path.name,
                 meta={
                     "op": "audit",
-                    "upload_token": token,
+                    "upload_token": upload_token,
                     "input_filename": saved_path.name,
                     "options": {
                         "standards_profile": request.form.get("standards_profile", "acb_2025"),
@@ -887,7 +888,7 @@ def _audit_single():
             )
             run_audit_job.delay(
                 job_id,
-                token,
+                upload_token,
                 saved_path.name,
                 {
                     "standards_profile": request.form.get("standards_profile", "acb_2025"),
@@ -896,6 +897,9 @@ def _audit_single():
                     "suppress_rule": request.form.getlist("suppress_rule"),
                 },
             )
+            # Queue workers consume the uploaded file from the token path.
+            # Do not clean it up in this request-finally path.
+            token = None
             return redirect(url_for("jobs.job_progress", job_id=job_id))
 
         standards_profile = request.form.get("standards_profile", "acb_2025")
