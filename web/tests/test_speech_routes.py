@@ -387,3 +387,75 @@ def test_speech_document_download_rejects_empty_content(client, monkeypatch: pyt
     assert res.status_code == 400
     data = res.get_json()
     assert data.get("error") == "No content available for speech synthesis."
+
+
+def test_speech_prefill_flow_quick_start_to_speech(client, tmp_path: Path, monkeypatch):
+    """Test the Quick Start → Speech prefill workflow."""
+    from acb_large_print_web.upload import validate_upload
+    from werkzeug.datastructures import FileStorage
+    
+    # Mock speech synthesis to avoid needing actual Kokoro models
+    monkeypatch.setattr(
+        "acb_large_print_web.speech.synthesize_document_text",
+        lambda voice_id, text, **kw: (b"\x00\x01\x02\x03", "test.wav")
+    )
+    
+    # Step 1: Simulate Quick Start upload
+    txt_content = b"This is a test document for speech conversion.\n\nIt has multiple paragraphs."
+    txt_file = FileStorage(
+        stream=io.BytesIO(txt_content),
+        filename="test.txt",
+        content_type="text/plain",
+    )
+    
+    # Upload the file (simulating Quick Start upload)
+    with client.session_transaction() as sess:
+        app = client.application
+        token, saved_path = validate_upload(txt_file, allowed_extensions={".txt"})
+        assert saved_path.exists()
+        assert token  # Should generate a UUID token
+    
+    # Step 2: Simulate arriving at Speech Studio with token from Quick Start
+    speech_form_resp = client.get(f"/speech/?token={token}")
+    assert speech_form_resp.status_code == 200
+    body = speech_form_resp.get_data(as_text=True)
+    # Should show the prefilled filename
+    assert "Ready from Quick Start" in body
+    assert "test.txt" in body
+    assert f'value="{token}"' in body  # token should be in hidden input
+    assert 'value="1"' in body  # prefill flag should be 1
+    
+    # Step 3: Prepare the document (without uploading a new file, using prefill)
+    prepare_resp = client.post(
+        "/speech/prepare",
+        data={
+            "token": token,
+            "prefill": "1",
+            "voice": "kokoro:af_bella",
+            "speed": "1.0",
+        },
+    )
+    # Should succeed
+    assert prepare_resp.status_code == 200
+    prep_data = prepare_resp.get_json()
+    assert prep_data.get("ok")
+    assert "preview_text" in prep_data
+    assert "char_count" in prep_data
+    assert prep_data["char_count"] > 0
+    assert "This is a test" in prep_data.get("preview_text", "")
+    
+    # Step 4: Download should work with the prepared token
+    download_resp = client.post(
+        "/speech/document-download",
+        data={
+            "token": token,
+            "voice": "kokoro:af_bella",
+            "speed": "1.0",
+            "pitch": "0",
+        },
+    )
+    # This might be 202 (queued) or 200 with audio, but NOT 400 (empty text error) or 503 (service error)
+    assert download_resp.status_code in (200, 202)
+    if download_resp.status_code == 200:
+        # Should have audio content-type
+        assert "audio" in download_resp.content_type or download_resp.data

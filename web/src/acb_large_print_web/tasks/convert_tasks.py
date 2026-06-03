@@ -745,7 +745,6 @@ def _run_speech(
             text,
             speed=speed,
             pitch=pitch,
-            progress_callback=lambda pct, msg: _progress(job_id, 20 + int(pct * 0.75), msg),
         )
     except SpeechError as exc:
         raise RuntimeError(str(exc)) from exc
