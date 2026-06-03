@@ -28,11 +28,9 @@ from flask import Blueprint, abort, current_app, redirect, render_template, requ
 
 from werkzeug.utils import secure_filename as _secure_filename
 
-from acb_large_print.converter import (
-    CONVERTIBLE_EXTENSIONS,
-    MARKITDOWN_AUDIO_EXTENSIONS,
-    convert_to_markdown,
-)
+from acb_large_print.converter import CONVERTIBLE_EXTENSIONS, MARKITDOWN_AUDIO_EXTENSIONS
+
+from ..core_services import convert_to_markdown
 from acb_large_print.wcag_language import (
     analyze_text_for_wcag_language,
 )

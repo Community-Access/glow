@@ -435,6 +435,15 @@
     <dt>Web application version</dt>
     <dd>{{ web_version }}</dd>
 
+    <dt>MarkItDown version</dt>
+    <dd>{{ component_versions.markitdown if component_versions else "unknown" }}</dd>
+
+    <dt>PyMuPDF version</dt>
+    <dd>{{ component_versions.pymupdf if component_versions else "unknown" }}</dd>
+
+    <dt>Shared service core package</dt>
+    <dd>{{ component_versions.desktop_package if component_versions else "unknown" }}</dd>
+
     <dt>Python version</dt>
     <dd>3.13+</dd>
   </dl>

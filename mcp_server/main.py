@@ -18,13 +18,33 @@ See README.md and openapi.yaml for full documentation.
 from fastapi import FastAPI, UploadFile, File, Form
 from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
-from typing import Optional
 import tempfile
 from pathlib import Path
 try:
     from .glow_mcp_utils import run_audit, run_report, run_page_flow_extract
 except ImportError:  # Support direct module execution in tests.
     from glow_mcp_utils import run_audit, run_report, run_page_flow_extract
+
+try:
+    from quill_glow_core import (
+        configure_default_services as _configure_shared_core_default,
+        get_startup_telemetry_dict as _get_shared_core_startup_telemetry,
+    )
+except Exception:
+    _configure_shared_core_default = None
+
+    def _get_shared_core_startup_telemetry() -> dict:
+        return {
+            "backend": "unknown",
+            "configured_by": "unknown",
+            "auto_selected": None,
+        }
+
+if _configure_shared_core_default is not None:
+    try:
+        _configure_shared_core_default()
+    except Exception:
+        pass
 
 app = FastAPI(title="GLOW MCP Server", description="Accessibility audit/fix/convert/report API for agent integration.", version="7.2.0")
 
@@ -39,7 +59,10 @@ app.add_middleware(
 @app.get("/health")
 def health():
     """Health check endpoint."""
-    return {"status": "ok"}
+    return {
+        "status": "ok",
+        "shared_core": _get_shared_core_startup_telemetry(),
+    }
 
 
 @app.post("/audit")

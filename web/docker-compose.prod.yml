@@ -103,6 +103,9 @@ services:
     # env_file loads: SECRET_KEY, FEEDBACK_PASSWORD, FEEDBACK_GITHUB_TOKEN, FEEDBACK_GITHUB_*
     environment:
       - FLASK_DEBUG=0
+      # Runtime maintenance gate consumed by app.py check_maintenance_mode().
+      # Deploy scripts toggle this variable per compose invocation.
+      - MAINTENANCE_MODE=${MAINTENANCE_MODE:-0}
       - PIPELINE_URL=http://pipeline:8181/ws
       - CELERY_BROKER_URL=${CELERY_BROKER_URL:-redis://redis:6379/0}
       - CELERY_RESULT_BACKEND=${CELERY_RESULT_BACKEND:-redis://redis:6379/0}

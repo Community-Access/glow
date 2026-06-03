@@ -6,18 +6,28 @@ based on file format. It is used by the FastAPI endpoints in main.py.
 """
 from pathlib import Path
 import tempfile
-import shutil
 import sys
 
-
-from acb_large_print.auditor import audit_document
-from acb_large_print.md_auditor import audit_markdown
-from acb_large_print.fixer import fix_document
-from acb_large_print.converter import convert_to_markdown
 from acb_large_print.pandoc_converter import convert_to_html, convert_to_docx
 from acb_large_print.reporter import generate_json_report, generate_text_report, generate_html_report
 
 SUPPORTED_FORMATS = {"markdown", "md", "docx", "html"}
+
+
+def _resolve_core_services():
+    """Return (audit_by_extension, convert_to_markdown, fix_by_extension).
+
+    Import lazily so module import does not fail in environments where shared
+    core packages are not installed but endpoints that need them are not used.
+    """
+    try:
+        from quill_glow_core import audit_by_extension, convert_to_markdown, fix_by_extension
+
+        return audit_by_extension, convert_to_markdown, fix_by_extension
+    except Exception as exc:
+        raise RuntimeError(
+            "Shared core services unavailable. Install quill-glow-core for MCP operations."
+        ) from exc
 
 
 def run_page_flow_extract(source_url: str, *, max_pages: int = 5, follow_pagination: bool = True):
@@ -66,24 +76,25 @@ def run_page_flow_extract(source_url: str, *, max_pages: int = 5, follow_paginat
 
 def run_audit(file_path: Path, fmt: str):
     """Dispatch to the correct audit function based on format."""
+    audit_by_extension, _convert_to_markdown, _fix_by_extension = _resolve_core_services()
     fmt = fmt.lower()
-    if fmt in ("markdown", "md"):
-        return audit_markdown(file_path)
-    if fmt == "docx":
-        return audit_document(file_path)
+    if fmt in ("markdown", "md", "docx"):
+        return audit_by_extension(file_path)
     raise ValueError(f"Unsupported format for audit: {fmt}")
 
 
 def run_fix(file_path: Path, fmt: str, output_path: Path = None):
     """Dispatch to the correct fix function based on format."""
+    _audit_by_extension, _convert_to_markdown, fix_by_extension = _resolve_core_services()
     fmt = fmt.lower()
     if fmt == "docx":
-        return fix_document(file_path, output_path)
+        return fix_by_extension(file_path, output_path=output_path)
     raise ValueError(f"Unsupported format for fix: {fmt}")
 
 
 def run_convert(file_path: Path, from_fmt: str, to_fmt: str, output_path: Path = None):
     """Dispatch to the correct convert function based on formats."""
+    _audit_by_extension, convert_to_markdown, _fix_by_extension = _resolve_core_services()
     from_fmt = from_fmt.lower()
     to_fmt = to_fmt.lower()
     if from_fmt == "docx" and to_fmt in ("markdown", "md"):
