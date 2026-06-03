@@ -24,10 +24,19 @@ def _resolve_core_services():
         from quill_glow_core import audit_by_extension, convert_to_markdown, fix_by_extension
 
         return audit_by_extension, convert_to_markdown, fix_by_extension
-    except Exception as exc:
-        raise RuntimeError(
-            "Shared core services unavailable. Install quill-glow-core for MCP operations."
-        ) from exc
+    except Exception:
+        try:
+            from acb_large_print_core import (
+                audit_by_extension,
+                convert_to_markdown,
+                fix_by_extension,
+            )
+
+            return audit_by_extension, convert_to_markdown, fix_by_extension
+        except Exception as exc:
+            raise RuntimeError(
+                "Shared core services unavailable. Install quill-glow-core[glow] or acb-large-print-core."
+            ) from exc
 
 
 def run_page_flow_extract(source_url: str, *, max_pages: int = 5, follow_pagination: bool = True):

@@ -198,6 +198,21 @@ def create_app(config: dict | None = None) -> Flask:
             except Exception:
                 component_versions = {}
 
+        # Ensure About page always has an explicit shared-core library version.
+        if "shared_core_library" not in component_versions:
+            try:
+                from importlib.metadata import PackageNotFoundError, version as _pkg_version
+
+                try:
+                    component_versions["shared_core_library"] = _pkg_version("quill-glow-core")
+                except PackageNotFoundError:
+                    component_versions["shared_core_library"] = _pkg_version("acb-large-print-core")
+            except Exception:
+                component_versions["shared_core_library"] = (
+                    component_versions.get("desktop_package")
+                    or "unknown"
+                )
+
         web_ver = release_ver
         desktop_ver = release_ver
         ctx = {

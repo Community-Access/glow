@@ -147,6 +147,11 @@ class TestPageLoads:
         assert b"GLOW MCP Server API (" in resp.data
         assert expected in resp.data
 
+    def test_about_shows_shared_core_library_version(self, client):
+        resp = client.get("/about/")
+        assert resp.status_code == 200
+        assert b"Shared service core package" in resp.data
+
     def test_anthem_download_route(self, client):
         resp = client.get("/anthem/download")
         assert resp.status_code == 200
