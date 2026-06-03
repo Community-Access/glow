@@ -6,6 +6,7 @@ import re
 import shutil
 import tempfile
 import uuid
+import os
 from datetime import datetime
 from pathlib import Path
 
@@ -74,8 +75,10 @@ _FORMAT_LABELS = {
 }
 _UUID_RE = re.compile(r"^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$")
 
-# Base temp directory for all uploads -- set by create_app or default to system temp
-UPLOAD_TEMP_BASE = Path(tempfile.gettempdir()) / "acb_lp_web"
+# Base temp directory for all uploads. In production this is set via
+# GLOW_UPLOAD_TEMP_BASE so web + worker share the same writable path.
+_UPLOAD_TEMP_BASE_OVERRIDE = (os.environ.get("GLOW_UPLOAD_TEMP_BASE") or "").strip()
+UPLOAD_TEMP_BASE = Path(_UPLOAD_TEMP_BASE_OVERRIDE) if _UPLOAD_TEMP_BASE_OVERRIDE else Path(tempfile.gettempdir()) / "acb_lp_web"
 
 
 class UploadError(Exception):

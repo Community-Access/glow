@@ -109,6 +109,7 @@ services:
       - PIPELINE_URL=http://pipeline:8181/ws
       - CELERY_BROKER_URL=${CELERY_BROKER_URL:-redis://redis:6379/0}
       - CELERY_RESULT_BACKEND=${CELERY_RESULT_BACKEND:-redis://redis:6379/0}
+      - GLOW_UPLOAD_TEMP_BASE=/app/instance/upload_temp
       # AI rollout defaults: Ollama-first setup.
       # Users can bring their own Ollama key from /ai without requiring
       # server-side OpenRouter configuration.
@@ -129,7 +130,6 @@ services:
     volumes:
       - feedback-data:/app/instance
       - speech-models:/app/instance/speech_models
-      - upload-temp:/tmp/acb_lp_web
     depends_on:
       pipeline:
         condition: service_healthy
@@ -225,10 +225,10 @@ services:
       - PIPELINE_URL=http://pipeline:8181/ws
       - CELERY_BROKER_URL=${CELERY_BROKER_URL:-redis://redis:6379/0}
       - CELERY_RESULT_BACKEND=${CELERY_RESULT_BACKEND:-redis://redis:6379/0}
+      - GLOW_UPLOAD_TEMP_BASE=/app/instance/upload_temp
     volumes:
       - feedback-data:/app/instance
       - speech-models:/app/instance/speech_models
-      - upload-temp:/tmp/acb_lp_web
     depends_on:
       pipeline:
         condition: service_healthy
@@ -257,7 +257,6 @@ services:
 volumes:
   feedback-data:
   speech-models:
-  upload-temp:
   redis-data:
   caddy_data:
   caddy_config:
