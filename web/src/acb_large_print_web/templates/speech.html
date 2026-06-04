@@ -34,6 +34,9 @@
     <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
     <input type="hidden" id="speech-document-token" name="token" value="{{ prefill_token or '' }}">
     <input type="hidden" id="speech-document-prefill" name="prefill" value="{{ '1' if prefill_token else '0' }}">
+    {% if prepared_summary %}
+    <script id="speech-prepared-data" type="application/json">{{ prepared_summary | tojson }}</script>
+    {% endif %}
 
     {# Voice selector #}
     <fieldset>

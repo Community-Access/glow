@@ -459,3 +459,80 @@ def test_speech_prefill_flow_quick_start_to_speech(client, tmp_path: Path, monke
     if download_resp.status_code == 200:
         # Should have audio content-type
         assert "audio" in download_resp.content_type or download_resp.data
+
+
+def test_speech_restores_prepared_state_after_async_prepare(client):
+    """Returning to /speech/?token=... after an async prepare restores state.
+
+    Regression for issue #84: the async preparation job redirects back to
+    /speech/?token=..., so the GET handler must re-read speech_prepare.json and
+    surface the estimate + preview/download actions instead of looking like an
+    un-prepared upload (which created an apparent upload loop).
+    """
+    import json as _json
+
+    from acb_large_print_web.upload import validate_upload
+    from werkzeug.datastructures import FileStorage
+
+    txt_file = FileStorage(
+        stream=io.BytesIO(b"Sentence one. Sentence two. Sentence three."),
+        filename="report.txt",
+        content_type="text/plain",
+    )
+    token, saved_path = validate_upload(txt_file, allowed_extensions={".txt"})
+    temp_dir = saved_path.parent
+
+    # Simulate what run_speech_prepare_job persists on success.
+    (temp_dir / speech_route._DOC_EXTRACT_NAME).write_text(
+        "Sentence one. Sentence two. Sentence three.", encoding="utf-8"
+    )
+    summary = {
+        "token": token,
+        "filename": "report.txt",
+        "preview_text": "Sentence one. Sentence two.",
+        "char_count": 43,
+        "word_count": 6,
+        "estimate_audio_seconds": 3.2,
+        "estimate_processing_seconds": 4.5,
+        "continue_url": f"/speech/?token={token}",
+    }
+    (temp_dir / speech_route._DOC_PREPARE_NAME).write_text(
+        _json.dumps(summary), encoding="utf-8"
+    )
+
+    resp = client.get(f"/speech/?token={token}")
+    assert resp.status_code == 200
+    body = resp.get_data(as_text=True)
+    # Prepared summary is embedded for the JS to restore.
+    assert 'id="speech-prepared-data"' in body
+    assert "Sentence one. Sentence two." in body
+    # The original upload, not an internal generated file, is shown as ready.
+    assert "report.txt" in body
+    assert speech_route._DOC_EXTRACT_NAME not in body
+    assert speech_route._DOC_PREPARE_NAME not in body
+
+
+def test_speech_ignores_mismatched_prepared_summary(client):
+    """A speech_prepare.json from a different token must not be restored."""
+    import json as _json
+
+    from acb_large_print_web.upload import validate_upload
+    from werkzeug.datastructures import FileStorage
+
+    txt_file = FileStorage(
+        stream=io.BytesIO(b"Hello world."),
+        filename="doc.txt",
+        content_type="text/plain",
+    )
+    token, saved_path = validate_upload(txt_file, allowed_extensions={".txt"})
+    temp_dir = saved_path.parent
+    (temp_dir / speech_route._DOC_EXTRACT_NAME).write_text("Hello world.", encoding="utf-8")
+    (temp_dir / speech_route._DOC_PREPARE_NAME).write_text(
+        _json.dumps({"token": "some-other-token", "filename": "doc.txt"}),
+        encoding="utf-8",
+    )
+
+    resp = client.get(f"/speech/?token={token}")
+    assert resp.status_code == 200
+    body = resp.get_data(as_text=True)
+    assert 'id="speech-prepared-data"' not in body

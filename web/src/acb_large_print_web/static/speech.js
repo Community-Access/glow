@@ -716,5 +716,36 @@
     });
   }
 
+  function restorePreparedDocument() {
+    var dataEl = byId("speech-prepared-data");
+    if (!dataEl) {
+      return;
+    }
+    var data;
+    try {
+      data = JSON.parse(dataEl.textContent || "null");
+    } catch (e) {
+      return;
+    }
+    if (!data || !data.token) {
+      return;
+    }
+    preparedDocument = data;
+    if (documentTokenInput) {
+      documentTokenInput.value = data.token;
+    }
+    if (documentPrefillInput) {
+      documentPrefillInput.value = "1";
+    }
+    showEstimate(data);
+    if (textarea && data.preview_text) {
+      textarea.value = data.preview_text;
+      renderCharCount();
+      persistState();
+    }
+    showDocumentStatus("Document prepared. Review the estimate, then preview first sentences or download full audio.");
+  }
+
+  restorePreparedDocument();
   updateDocumentActionState(false);
 })();
