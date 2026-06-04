@@ -536,3 +536,59 @@ def test_speech_ignores_mismatched_prepared_summary(client):
     assert resp.status_code == 200
     body = resp.get_data(as_text=True)
     assert 'id="speech-prepared-data"' not in body
+
+
+def test_async_prepare_job_then_continue_url_breaks_the_loop(app, client, monkeypatch):
+    """End-to-end regression for issue #84 using the real async job body.
+
+    Under ``TESTING`` the /speech/prepare route runs synchronously, which hides
+    the production bug. This test instead drives the actual Celery task body
+    (``run_speech_prepare_job``) exactly as production does, then follows the
+    ``continue_url`` it returns and asserts the page is restored to the prepared
+    state (no upload loop) and that the document download path works.
+    """
+    from acb_large_print_web.tasks.convert_tasks import create_job, run_speech_prepare_job
+    from acb_large_print_web.upload import validate_upload
+    from werkzeug.datastructures import FileStorage
+
+    # Avoid needing real speech models for the download leg.
+    monkeypatch.setattr(
+        "acb_large_print_web.speech.synthesize_document_text",
+        lambda voice_id, text, **kw: (b"\x00\x01\x02\x03", "out.wav"),
+    )
+
+    with app.app_context():
+        # Step 1: Quick Start upload.
+        txt_file = FileStorage(
+            stream=io.BytesIO(b"Alpha one. Beta two. Gamma three. Delta four."),
+            filename="story.txt",
+            content_type="text/plain",
+        )
+        token, saved_path = validate_upload(txt_file, allowed_extensions={".txt"})
+
+        # Step 2: Run the real async preparation job body (as the worker would).
+        job_id = "regress-84-job"
+        create_job(job_id, "speech_prepare", saved_path.name, meta={"upload_token": token})
+        result = run_speech_prepare_job(job_id, token, saved_path.name, 1.0)
+
+    # The job points the user back to the speech page -- the spot that used to loop.
+    assert result["state"] == "SUCCESS"
+    continue_url = result["continue_url"]
+    assert continue_url == f"/speech/?token={token}"
+
+    # Step 3: Follow the continue_url. With the fix, the page restores state.
+    resp = client.get(continue_url)
+    assert resp.status_code == 200
+    body = resp.get_data(as_text=True)
+    assert 'id="speech-prepared-data"' in body, "prepared state not restored -- the #84 loop is back"
+    assert "story.txt" in body
+    # Internal pipeline artefacts must not be presented as the source file.
+    assert speech_route._DOC_EXTRACT_NAME not in body
+    assert speech_route._DOC_RENDERED_NAME not in body
+
+    # Step 4: The document download path works from the restored token.
+    download_resp = client.post(
+        "/speech/document-download",
+        data={"token": token, "voice": "kokoro:af_bella", "speed": "1.0", "pitch": "0"},
+    )
+    assert download_resp.status_code in (200, 202)
