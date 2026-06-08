@@ -185,7 +185,9 @@ def create_app(config: dict | None = None) -> Flask:
         component_versions = {}
         if _get_shared_core_component_versions is not None:
             try:
-                component_versions = _get_shared_core_component_versions()
+                _cv = _get_shared_core_component_versions()
+                # Ensure component_versions is a dict, not a VersionManifest object
+                component_versions = dict(_cv) if _cv else {}
             except Exception:
                 component_versions = {}
         else:
@@ -194,7 +196,9 @@ def create_app(config: dict | None = None) -> Flask:
                     get_component_versions as _get_fallback_component_versions,
                 )
 
-                component_versions = _get_fallback_component_versions()
+                _cv = _get_fallback_component_versions()
+                # Ensure component_versions is a dict, not a VersionManifest object
+                component_versions = dict(_cv) if _cv else {}
             except Exception:
                 component_versions = {}
 
