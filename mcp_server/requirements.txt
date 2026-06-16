@@ -2,5 +2,5 @@
 quill-glow-core>=0.1.0
 fastapi==0.110.2
 uvicorn==0.29.0
-python-multipart==0.0.28
+python-multipart==0.0.31
 # Add GLOW core dependencies as needed
