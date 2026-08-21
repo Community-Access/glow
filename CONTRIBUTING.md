@@ -28,6 +28,13 @@ pip install -e ".[dev]"
 pytest
 ```
 
+Note: before installing, run `pip show acb-large-print` and check the
+`Location`/`Editable project location` fields. A stale editable install from
+an old checkout silently shadows the current code (an editable 7.5.0 once
+masked the 8.0.0 wheel and broke the MCP server on a dev machine). If the
+path points at a checkout you no longer use, `pip uninstall acb-large-print`
+first, and consider deleting the dead checkout.
+
 #### Set Environment Variables
 
 Create a `.env` file in the `web/` directory for local development:

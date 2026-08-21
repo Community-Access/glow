@@ -9,6 +9,12 @@ This guide walks you through deploying GLOW with Keycloak SSO (Google & GitHub) 
 - `keycloak-users.json`: User/role batch config
 - `glow-oidc-client.json`: OIDC client config for GLOW
 
+Warning: `keycloak-users.json` and `glow-oidc-client.json` are tracked in
+git. They must contain placeholders only. Before committing any edit to
+them, re-scan for real values in `secret`, `password`, `clientSecret`, or
+`credential` fields -- realm exports from a live Keycloak instance include
+secrets by default.
+
 ---
 
 ## 2. Prepare Your Local Machine

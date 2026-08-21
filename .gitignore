@@ -70,6 +70,12 @@ web/instance/firebase-service-account.json
 
 # Local scratch exports/reports
 web/post_findings.json
+/post_findings.json
+/log.txt
+/key.txt
+/pdf.md
+/pdf.html
+/plan5.md
 
 # Temporary migration and diagnostics workspace
 tmp/**
