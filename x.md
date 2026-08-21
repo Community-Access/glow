@@ -104,12 +104,46 @@ Both would have shown up in the room and nowhere else.
   stylesheet and several scripts. Limits are now per participant, and static
   is exempt.
 
-### 1.3 Verification as of 21 August
+### 1.3 Three more found by the deploy, all production-breaking
+
+The deploy pipeline is what surfaced these, and none of them could be seen in
+a source checkout: they only appear when quill-glow-core is installed, which
+is true in the image and false in a bare clone.
+
+- **Every audit returned HTTP 500.** The audit routes filtered findings in
+  place, and the post-split `AuditResult` is a frozen, slotted dataclass.
+- **Every fix request returned HTTP 500.** The fix route expected a 5-tuple;
+  the shared core returns a `FixResult` object, so `len(result)` raised.
+- **`_fix_page_numbers` indexed `doc.sections[0]` unguarded**, so a document
+  with no section properties took the request down.
+
+Fixed in `c6f5d93`, with stand-in tests for both result shapes so the guard
+holds whether or not the shared core is installed in the environment running
+them. This is the same "works from source, breaks deployed" shape the MCP
+server hit after the 8.0.0 split -- this time in the two workspaces the site
+is named for.
+
+### 1.4 The support tracker was full of our own test runs
+
+Sixteen open GLOW issues in `Community-Access/support`, every one "Works
+great!" or "Love it", filed in audit/fix pairs. `tests/test_app.py::TestFeedback`
+posts feedback without stubbing the sender, so on any machine whose
+environment carries `FEEDBACK_GITHUB_TOKEN` -- a developer shell, a deploy
+shell -- running the web suite filed two live issues in a public tracker.
+
+Fixed in `2080537`: tests can no longer reach the tracker, only categories
+that need a person (bug, accessibility, regression, support) open an issue,
+and identical submissions inside 24 hours open one. All sixteen closed with an
+explanation.
+
+### 1.5 Verification as of 21 August
 
 | Check | Result |
 |---|---|
-| Full web test suite | 743 passed, 31 skipped, 5 pre-existing failures also present on `main` |
+| Full web test suite | **792 passed, 0 failed**, 31 skipped -- run with quill-glow-core installed, which is the deployed configuration |
 | Workshop suites alone | 253 tests |
+| Production after deploy | post-deploy verification passed, every URL check OK, all eight containers healthy |
+| Live MCP | `/mcp/health` reports `backend: "glow"` |
 | axe-core, WCAG 2.2 AA | **37 pages, 0 violations, 1009 passing rules** |
 | Ruff on every file touched | clean |
 | MCP endpoint tests against installed wheels | 8 passed |
@@ -154,12 +188,24 @@ This is the whole remaining risk. None of it is code.
 
 ### 2.3 Loose ends worth clearing before November
 
-- **Five failing tests on `main`.** Three in `TestSettingsIntegration` resolve
-  `scripts/deploy-app.sh` relative to the working directory; two in
-  `test_feedback_support_hub.py` fail only in a full-suite run because an
-  earlier test leaks configuration. Not regressions — but a suite that is
-  never green teaches everyone to ignore it, and this project now depends on
-  people trusting it.
+- ~~Five failing tests on `main`.~~ Fixed. The three
+  `TestSettingsIntegration` failures read repo files relative to the working
+  directory and now resolve from the repository root; the two feedback
+  failures were reading the developer's real support-hub configuration and are
+  now isolated. The suite is 792 passed, 0 failed.
+- **Dependency alerts.** 77 open on the default branch (2 critical, 31 high),
+  nearly all npm packages under `office-addin`, with eight Dependabot pull
+  requests waiting. `office-addin` has not been touched since 23 May --
+  decide whether it still ships, because retiring it clears most of the list
+  at once.
+- **The AI feature flags are off in production.** `GLOW_ENABLE_AI_CHAT`,
+  `GLOW_ENABLE_AI_ALT_TEXT` and `GLOW_ENABLE_AI_WHISPERER` are all `0`, and
+  `OPENROUTER_API_KEY` is absent from the container -- `docker-compose.prod.yml`
+  never references it, so it has to reach the container through
+  `~/app/web/.env`. Setting the key alone is not enough; the three flags have
+  to be turned on with it. Meanwhile `GLOW_ENABLE_AI_HEADING_FIX` and
+  `GLOW_ENABLE_AI_MARKITDOWN_LLM` default to `1`, so those paths are enabled
+  and keyless -- trying and failing rather than cleanly off.
 - **Tracked Keycloak fixtures.** `keycloak-users.json` and
   `glow-oidc-client.json` hold placeholders today; realm exports drift and
   include secrets by default. Generate them at setup instead.
@@ -167,6 +213,20 @@ This is the whole remaining risk. None of it is code.
   edits to `pii_guardrails.py` and `routes/convert.py`. Its editable install
   has been removed, so it can no longer shadow this repo, but it should be
   diffed and deleted.
+- ~~The accessibility gate was switched off.~~ Restored in `e148e96`.
+  Commit `c788b27`, titled "Make CodeQL workflow manual-only", had left
+  `accessibility-regression.yml` as `workflow_dispatch:` only, so axe had not
+  run on a pull request or a push since 2 August.
+- ~~The deploy checker cried wolf on every deploy.~~ Fixed in `e148e96` and
+  `dcd1c4e`: the readiness parser read from stdin, which the heredoc had
+  already consumed, so it never saw the payload; three URL checks failed
+  documents that redirect by design; and model readiness now reports rather
+  than gates (`REQUIRE_MODEL_READINESS=1` restores gating).
+- **`review.md` is untracked at the repository root.** Commit it, move it into
+  `docs/`, or delete it -- but decide, because root clutter is what it warns
+  about itself.
+- **The merged `workshop-ahg-readiness` branch** can be deleted from the
+  remote once it has been reviewed. Everything on it is in `main`.
 - **Whatever is deleting things on this machine.** The Playwright browser
   binaries vanished mid-session on 21 August, and `review.md` records two
   broken virtualenvs earlier. Worth identifying before it eats something on
@@ -254,6 +314,9 @@ have to be true on a bad wifi day.
 | `WORKSHOP_CONFERENCE_CODES_JSON` | Access code → session mapping | set for the AHG code |
 | `POSTMARK_SERVER_TOKEN` | Return links, artifact email, nudge | required — without it those features hide themselves |
 | `OPENROUTER_API_KEY` | Tier 1: alt-text generation, document chat, transcription | **not set in production as of 21 August**; Lab 2 depends on it |
+| `GLOW_ENABLE_AI_ALT_TEXT` | Lab 2's one-click alt text | `0` in production; set to `1` with the key |
+| `GLOW_ENABLE_AI_CHAT` | Document chat | `0` in production |
+| `GLOW_ENABLE_AI_WHISPERER` | Transcription | `0` in production |
 | `GLOW_WORKSHOP_RETURN_LINK_TTL_DAYS` | Return link lifetime | default 45 |
 | `GLOW_WORKSHOP_AI_PARTICIPANT_CAP` | Per-person AI calls | default 40; set from the spend estimate |
 | `GLOW_WORKSHOP_AI_SESSION_CAP` | Whole-room AI calls | default 600; likewise |
