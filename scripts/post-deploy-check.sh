@@ -315,18 +315,21 @@ check_url "${APP_DOMAIN}/" "https://${APP_DOMAIN}/" false true || true
 if compose_has_service "mcp"; then
     check_url "${APP_DOMAIN}/mcp/health" "https://${APP_DOMAIN}/mcp/health" true || URL_FAIL=1
 fi
-check_url "${APP_DOMAIN}/speech/" "https://${APP_DOMAIN}/speech/" false || true
+# The consent gate redirects an anonymous visitor, so a 3xx here is the
+# correct answer rather than a problem.
+check_url "${APP_DOMAIN}/speech/" "https://${APP_DOMAIN}/speech/" false true || true
 check_url "${APP_DOMAIN}/ggg/" "https://${APP_DOMAIN}/ggg/" false || true
 check_header_contains "${APP_DOMAIN} CSP media-src" "https://${APP_DOMAIN}/static/let-it-glow.mp3" "Content-Security-Policy" "media-src 'self'" true || URL_FAIL=1
 if [[ -n "$APP_ALIAS_DOMAIN" ]]; then
     check_url "${APP_ALIAS_DOMAIN}/health" "https://${APP_ALIAS_DOMAIN}/health" false true || true
     check_url "${APP_ALIAS_DOMAIN}/" "https://${APP_ALIAS_DOMAIN}/" false true true || true
-    check_url "${APP_ALIAS_DOMAIN}/ggg/" "https://${APP_ALIAS_DOMAIN}/ggg/" false || true
+    # Alias domains redirect to the canonical host by design.
+    check_url "${APP_ALIAS_DOMAIN}/ggg/" "https://${APP_ALIAS_DOMAIN}/ggg/" false true || true
 fi
 if [[ -n "$APP_LEGACY_DOMAIN" ]]; then
     check_url "${APP_LEGACY_DOMAIN}/health" "https://${APP_LEGACY_DOMAIN}/health" false true || true
     check_url "${APP_LEGACY_DOMAIN}/" "https://${APP_LEGACY_DOMAIN}/" false true true || true
-    check_url "${APP_LEGACY_DOMAIN}/ggg/" "https://${APP_LEGACY_DOMAIN}/ggg/" false || true
+    check_url "${APP_LEGACY_DOMAIN}/ggg/" "https://${APP_LEGACY_DOMAIN}/ggg/" false true || true
 fi
 check_url "csedesigns.com/" "https://csedesigns.com/" false true || true
 
@@ -367,13 +370,17 @@ HEALTH_JSON="$(compose exec -T web python -c \
     "import urllib.request, json; r=urllib.request.urlopen('http://localhost:8000/health',timeout=5); print(r.read().decode())" \
     2>/dev/null || echo '{}')"
 if command -v python3 &>/dev/null; then
-    python3 - <<'PYEOF'
+    # The script itself arrives on stdin from the heredoc, so the JSON has to
+    # travel in the environment. Reading stdin here always saw an empty
+    # string, which is why every deploy reported "could not parse".
+    HEALTH_JSON="$HEALTH_JSON" python3 - <<'PYEOF'
 import json, sys, os
-raw = sys.stdin.read()
+raw = os.environ.get("HEALTH_JSON", "")
 try:
     data = json.loads(raw)
 except Exception:
-    print("  WARN: could not parse /health response")
+    preview = raw.strip()[:120] or "(empty response)"
+    print(f"  WARN: could not parse /health response: {preview}")
     sys.exit(0)
 readiness = data.get("readiness", {})
 models    = data.get("models", {})

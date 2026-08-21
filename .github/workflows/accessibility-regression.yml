@@ -1,6 +1,25 @@
 name: Accessibility Regression Gate
 
+# Restored after commit c788b27 ("Make CodeQL workflow manual-only") left this
+# gate workflow_dispatch-only. It is the hard gate the workshop work depends
+# on -- axe over every page, including the thirty-seven workshop routes -- and
+# a gate nobody runs is not a gate.
 on:
+  pull_request:
+    paths:
+      - "web/**"
+      - ".github/workflows/accessibility-regression.yml"
+      - "scripts/pre-commit-check.py"
+      - ".githooks/pre-commit"
+  push:
+    branches: [main]
+    paths:
+      - "web/**"
+      - ".github/workflows/accessibility-regression.yml"
+      - "scripts/pre-commit-check.py"
+      - ".githooks/pre-commit"
+  schedule:
+    - cron: "0 9 * * 1"
   workflow_dispatch:
 permissions:
   contents: read
