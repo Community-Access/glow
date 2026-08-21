@@ -48,10 +48,80 @@
   <p>{{ prompt_text }}</p>
 </section>
 
+{% if scenario_cards %}
+<section class="workshop-panel" id="scenario">
+  <h2>Scenario</h2>
+  {% if scenario %}
+  <h3>{{ scenario.title }}</h3>
+  <p class="workshop-scenario-sector">{{ scenario.sector }}</p>
+  {% for paragraph in scenario.brief %}
+  <p>{{ paragraph }}</p>
+  {% endfor %}
+
+  <h4>What to notice</h4>
+  <ul>
+    {% for point in scenario.what_to_notice %}
+    <li>{{ point }}</li>
+    {% endfor %}
+  </ul>
+
+  {% if scenario.sample_slug %}
+  <p>
+    <a href="{{ url_for('workshop.workshop_sample_download', session_code=session_code, slug=scenario.sample_slug) }}">
+      Download the starting document for this scenario ({{ scenario.sample_name }})</a>
+  </p>
+  {% endif %}
+
+  {% if scenario.action_links %}
+  <h4>Tools for this scenario</h4>
+  <ul>
+    {% for link in scenario.action_links %}
+    <li><a href="{{ link.href }}">Open {{ link.label }}</a></li>
+    {% endfor %}
+  </ul>
+  {% endif %}
+
+  {% if scenario.stretch %}
+  <p><strong>If you finish early:</strong> {{ scenario.stretch }}</p>
+  {% endif %}
+
+  <details>
+    <summary>Use a different scenario</summary>
+    <ul>
+      {% for card in scenario_cards %}
+      {% if not card.selected %}
+      <li><a href="{{ card.href }}">{{ card.title }} — {{ card.sector }}</a></li>
+      {% endif %}
+      {% endfor %}
+      <li><a href="{{ scenario_surprise_href }}">Surprise me with one</a></li>
+    </ul>
+  </details>
+  {% else %}
+  <p>
+    Pick a scenario to work from, or ignore these and use a real document of
+    your own. Your own work is always the better choice when you have it.
+  </p>
+  <ul>
+    {% for card in scenario_cards %}
+    <li>
+      <a href="{{ card.href }}">{{ card.title }}</a>
+      <p>{{ card.sector }}. {{ card.summary }}</p>
+    </li>
+    {% endfor %}
+    <li><a href="{{ scenario_surprise_href }}">Surprise me with one</a></li>
+  </ul>
+  {% endif %}
+</section>
+{% endif %}
+
 <section class="workshop-panel">
   <h2 id="interactive-form">Your response</h2>
   <form method="post" action="{{ url_for('workshop.workshop_activity', session_code=session_code, activity_key=activity_key) }}">
     <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    {# Carries the chosen scenario through the save so the export says which
+       brief the answer responds to, and so a validation re-render does not
+       silently drop it. #}
+    <input type="hidden" name="scenario_id" value="{{ scenario_id }}">
 
     <details{% if missing_fields or anonymity_mode %} open{% endif %}>
       <summary>Display name and anonymous sharing</summary>

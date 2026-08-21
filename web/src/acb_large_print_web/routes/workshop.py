@@ -26,6 +26,7 @@ from markupsafe import Markup, escape
 from ..app import limiter
 from ..email import email_configured, send_workshop_return_link_email
 from ..feature_flags import get_flag
+from ..workshop_scenarios import get_scenario, pick_scenario, scenarios_for
 from ..workshop_skills import (
     build_copy_prompt,
     build_skill_markdown,
@@ -510,10 +511,20 @@ def _render_tokenized_workflow_text(text: str, session_code: str, *, return_to: 
     return Markup(rendered)
 
 
-def _serialize_activity_submission(activity_key: str, fields: list[dict], values: dict[str, str], bonus_note: str) -> str:
+def _serialize_activity_submission(
+    activity_key: str,
+    fields: list[dict],
+    values: dict[str, str],
+    bonus_note: str,
+    scenario_title: str = "",
+) -> str:
     lines: list[str] = []
     lines.append(f"Activity: {_activity_title(activity_key)}")
     lines.append(f"Activity key: {activity_key}")
+    if scenario_title.strip():
+        # Which brief the answer responds to. Without this an exported
+        # remediation plan reads as advice about nothing in particular.
+        lines.append(f"Scenario: {scenario_title.strip()}")
     lines.append("")
     for field in fields:
         label = field.get("label", field.get("name", "Field"))
@@ -716,6 +727,51 @@ def workshop_home():
     )
 
 
+def _scenario_cards(activity_key: str, session_code: str, *, selected_id: str) -> list[dict]:
+    """The scenario menu for one activity, ready to render."""
+    cards = []
+    for scenario in scenarios_for(activity_key):
+        cards.append(
+            {
+                "id": scenario.id,
+                "title": scenario.title,
+                "sector": scenario.sector,
+                "summary": scenario.summary,
+                "selected": scenario.id == selected_id,
+                "href": url_for(
+                    "workshop.workshop_activity",
+                    session_code=session_code,
+                    activity_key=activity_key,
+                    scenario=scenario.id,
+                    _anchor="scenario",
+                ),
+            }
+        )
+    return cards
+
+
+def _scenario_detail(scenario, session_code: str, *, activity_key: str) -> dict:
+    """Expand one scenario into brief, tool links and starting material."""
+    return_to = _workshop_return_target(session_code, activity_key=activity_key)
+    action_links = []
+    for token in scenario.tools:
+        if token in WORKSHOP_ACTION_TOKENS:
+            label, href = _action_link_for_token(token, session_code, return_to=return_to)
+            action_links.append({"token": token, "label": label, "href": href})
+    return {
+        "id": scenario.id,
+        "title": scenario.title,
+        "sector": scenario.sector,
+        "summary": scenario.summary,
+        "brief": list(scenario.brief),
+        "what_to_notice": list(scenario.what_to_notice),
+        "stretch": scenario.stretch,
+        "action_links": action_links,
+        "sample_slug": scenario.sample_slug,
+        "sample_name": WORKSHOP_SAMPLE_FILES.get(scenario.sample_slug, ""),
+    }
+
+
 @workshop_bp.route("/session/<session_code>/activity/<activity_key>", methods=["GET", "POST"])
 def workshop_activity(session_code: str, activity_key: str):
     if not _workshop_enabled() or not _lab_hub_enabled():
@@ -747,9 +803,14 @@ def workshop_activity(session_code: str, activity_key: str):
     message = ""
     message_is_error = False
 
+    scenario_id = ""
+
     if request.method == "POST":
         display_name = (request.form.get("display_name") or participant_name).strip() or participant_name
         anonymity_mode = bool(request.form.get("anonymity_mode"))
+        scenario_id = (request.form.get("scenario_id") or "").strip()
+        if not get_scenario(activity_key, scenario_id):
+            scenario_id = ""
         submit_action = (request.form.get("submit_action") or "save").strip().lower()
         for field in activity_fields:
             key = field.get("name", "")
@@ -780,7 +841,14 @@ def workshop_activity(session_code: str, activity_key: str):
             message = "Please complete these answers before saving: " + "; ".join(labels) + "."
             message_is_error = True
         else:
-            content_text = _serialize_activity_submission(activity_key, activity_fields, field_values, bonus_note)
+            chosen = get_scenario(activity_key, scenario_id)
+            content_text = _serialize_activity_submission(
+                activity_key,
+                activity_fields,
+                field_values,
+                bonus_note,
+                scenario_title=chosen.title if chosen else "",
+            )
             participant_row = create_or_update_participant(
                 code,
                 display_name,
@@ -791,6 +859,8 @@ def workshop_activity(session_code: str, activity_key: str):
             participant_name = str(participant_row.get("display_name", display_name)).strip() or display_name
             stored_values = dict(field_values)
             stored_values["bonus_note"] = bonus_note
+            if scenario_id:
+                stored_values["scenario_id"] = scenario_id
             save_submission(
                 code,
                 activity_key,
@@ -859,6 +929,24 @@ def workshop_activity(session_code: str, activity_key: str):
         if prior:
             anonymity_mode = bool(int(prior[0].get("anonymity_mode", 0) or 0))
 
+    # Scenario selection. A query parameter wins over the stored choice so a
+    # participant can switch briefs; "surprise" picks one deterministically
+    # from their own key, which spreads briefs across the room without
+    # reshuffling on every page load.
+    scenario_bank = scenarios_for(activity_key)
+    scenario = None
+    if scenario_bank:
+        requested = (
+            scenario_id if request.method == "POST" else (request.args.get("scenario") or "").strip()
+        )
+        if requested == "surprise":
+            seed = str(participant.get("participant_key", "")) if participant else code
+            scenario = pick_scenario(activity_key, seed)
+        else:
+            stored_choice = decode_field_values(existing).get("scenario_id", "") if existing else ""
+            scenario = get_scenario(activity_key, requested) or get_scenario(activity_key, stored_choice)
+        scenario_id = scenario.id if scenario else ""
+
     return_to = _workshop_return_target(code, activity_key=activity_key)
 
     idx = ACTIVITY_ORDER.index(activity_key)
@@ -900,6 +988,20 @@ def workshop_activity(session_code: str, activity_key: str):
         activity_fields=activity_fields,
         field_values=field_values,
         bonus_note=bonus_note,
+        scenario_cards=_scenario_cards(activity_key, code, selected_id=scenario_id),
+        scenario=_scenario_detail(scenario, code, activity_key=activity_key) if scenario else None,
+        scenario_id=scenario_id,
+        scenario_surprise_href=(
+            url_for(
+                "workshop.workshop_activity",
+                session_code=code,
+                activity_key=activity_key,
+                scenario="surprise",
+                _anchor="scenario",
+            )
+            if scenario_bank
+            else ""
+        ),
         anonymity_mode=anonymity_mode,
         is_draft_state=is_draft_state,
         missing_fields=missing_fields,
