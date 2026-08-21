@@ -16,6 +16,7 @@ from flask_limiter.util import get_remote_address
 from flask_wtf.csrf import CSRFError, CSRFProtect
 
 from .rules import get_help_urls_map, get_rules_by_category, get_rules_by_severity
+from .workshop_ai_budget import AI_BLUEPRINTS
 
 try:
     from quill_glow_core import (
@@ -60,6 +61,59 @@ limiter = Limiter(
     default_limits=["120 per minute"],
     storage_uri="memory://",
 )
+
+
+def _register_workshop_ai_budget(app: Flask) -> None:
+    """Stop one participant spending the room's AI allowance.
+
+    Thirty people on one house key for seven hours is a spend profile this
+    app has never seen, and the failure mode -- somebody in a retry loop at
+    2 PM taking the room's AI down -- is invisible until it happens.
+
+    Only POSTs to the AI blueprints are counted, and only for callers
+    carrying a workshop participant cookie: nobody outside a workshop is
+    affected, and reading a page costs nothing. Reaching the cap routes to
+    the Tier 2 page rather than an error, because the workshop never depends
+    on the built-in AI in the first place.
+    """
+
+    @app.before_request
+    def _enforce_workshop_ai_budget():  # type: ignore[misc]
+        if request.method != "POST" or request.blueprint not in AI_BLUEPRINTS:
+            return None
+        participant_key = (request.cookies.get(_WORKSHOP_PARTICIPANT_COOKIE) or "").strip()
+        if not participant_key:
+            return None
+
+        try:
+            from .routes.workshop import _current_activity_hint
+            from .workshop_ai_budget import over_budget, record_call
+            from .workshop_store import get_participant
+
+            participant = get_participant(participant_key)
+            if not participant:
+                return None
+            session_code = str(participant.get("session_code", ""))
+            if not session_code:
+                return None
+
+            reason = over_budget(session_code, participant_key)
+            if reason:
+                return (
+                    render_template(
+                        "workshop/ai_budget_reached.html",
+                        reason=reason,
+                        session_code=session_code,
+                        activity_key=_current_activity_hint(),
+                    ),
+                    429,
+                )
+            record_call(session_code, participant_key, now=datetime.now(UTC).isoformat())
+        except Exception:
+            # Fail open. A budget that breaks the tools it is protecting is
+            # worse than one that occasionally lets a call through.
+            app.logger.exception("Workshop AI budget check failed")
+        return None
 
 
 def create_app(config: dict | None = None) -> Flask:
@@ -125,6 +179,8 @@ def create_app(config: dict | None = None) -> Flask:
         _make_celery(app)
     except Exception:
         app.logger.exception("Failed to initialize Celery queue wiring")
+
+    _register_workshop_ai_budget(app)
 
     # Request timing (set before each request so after_request can compute duration)
     import time as _time

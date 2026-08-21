@@ -27,7 +27,15 @@
 
 <section class="workshop-panel">
   <h2 id="magic-progress">Your progress passport</h2>
+  {% if is_optional %}
+  <p>
+    This activity is optional and sits outside the agenda. It does not count
+    towards your progress, and skipping it means missing nothing the workshop
+    promised. Suggested length: {{ activity_time }}. Badge: {{ activity_badge }}.
+  </p>
+  {% else %}
   <p>Activity {{ idx + 1 }} of {{ total_activities }}. Suggested length: {{ activity_time }}. Badge: {{ activity_badge }}.</p>
+  {% endif %}
   <p>
     <progress class="workshop-progress" id="workshop-progress"
               value="{{ completed_activities }}" max="{{ total_activities }}"
@@ -199,6 +207,34 @@
     <li><a href="{{ url_for('workshop.workshop_launchpad', session_code=session_code, activity=activity_key) }}">Exercise launchpad for this activity</a></li>
   </ul>
 </nav>
+
+{% if copy_prompt %}
+<section class="workshop-panel" id="copy-prompt-panel">
+  <h2>Use the assistant you already have</h2>
+  <p>
+    This prompt is built from what you have written above. Paste it into
+    ChatGPT, Copilot, Gemini, Claude, or anything else you already use, on any
+    device. Nothing to install, no account to create, and no key to enter.
+  </p>
+  <p>
+    It tells the assistant to build on your thinking rather than replace it,
+    and it carries your own human-review step as an instruction.
+  </p>
+  <p>
+    <button type="button"
+            data-copy-target="activity-copy-prompt"
+            data-copy-status="activity-copy-status">Copy this prompt</button>
+    <span id="activity-copy-status" role="status"></span>
+  </p>
+  <label for="activity-copy-prompt">Prompt for any assistant</label>
+  <textarea id="activity-copy-prompt" rows="14" readonly
+            aria-describedby="activity-copy-help">{{ copy_prompt }}</textarea>
+  <p id="activity-copy-help">
+    This box is read-only. You can also select the text and copy it yourself.
+    Save your answers first if you want them included.
+  </p>
+</section>
+{% endif %}
 
 {% include "workshop/_session_nav.html" %}
 {% endblock %}

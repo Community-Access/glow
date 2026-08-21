@@ -77,5 +77,20 @@
   <li><a href="{{ url_for('workshop.workshop_follow_through_export', session_code=session_code) }}">Export follow-through log (Markdown, .md file)</a></li>
 </ul>
 
+<section class="workshop-panel">
+  <h2>Built-in AI usage</h2>
+  <p>
+    The room shares one AI allowance. When someone reaches a cap they are sent
+    to the copy-a-prompt path rather than an error, so the day continues
+    either way — but it is worth knowing before the afternoon.
+  </p>
+  <ul>
+    <li>Calls used by this room: {{ ai_usage.total_calls }}{% if ai_usage.session_cap %} of {{ ai_usage.session_cap }}{% else %} (no room cap set){% endif %}</li>
+    <li>Participants who have used it: {{ ai_usage.participants }}</li>
+    <li>Busiest participant: {{ ai_usage.busiest }} call{{ '' if ai_usage.busiest == 1 else 's' }}{% if ai_usage.participant_cap %} of {{ ai_usage.participant_cap }} each{% endif %}</li>
+    <li>Participants at their cap: {{ ai_usage.at_cap }}</li>
+  </ul>
+</section>
+
 {% include "workshop/_session_nav.html" %}
 {% endblock %}

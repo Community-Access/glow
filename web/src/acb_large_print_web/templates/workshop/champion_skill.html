@@ -31,6 +31,12 @@
 </p>
 
 <p>
+  <p>
+    <button type="button"
+            data-copy-target="copy-prompt"
+            data-copy-status="copy-prompt-status">Copy this prompt</button>
+    <span id="copy-prompt-status" role="status"></span>
+  </p>
   <label for="copy-prompt">Prompt for any assistant</label>
 </p>
 <textarea id="copy-prompt" rows="16" readonly
@@ -79,6 +85,16 @@
   The <strong>Verification truth</strong> section carries the human-review step
   you wrote. It is what stops this agent from claiming work is finished when a
   person still needs to check it. If you edit this file, keep that section.
+</p>
+
+<h2>Optional: try it on something real</h2>
+<p>
+  If you would like to run your agent and record how it went, there is an
+  optional lab for that. It is not part of the agenda and it does not count
+  towards your progress -- take it or leave it.
+</p>
+<p>
+  <a href="{{ url_for('workshop.workshop_activity', session_code=session_code, activity_key='lab_run_your_agent') }}">Open the optional lab: Run Your Agent</a>
 </p>
 
 {% include "workshop/_session_nav.html" %}

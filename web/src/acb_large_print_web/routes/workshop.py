@@ -27,14 +27,10 @@ from markupsafe import Markup, escape
 from ..app import limiter
 from ..email import email_configured, send_workshop_return_link_email
 from ..feature_flags import get_flag
+from ..workshop_ai_budget import session_usage
 from ..workshop_scenarios import get_scenario, pick_scenario, scenarios_for
-from ..workshop_worksheets import (
-    Worksheet,
-    WorksheetField,
-    build_worksheet_docx_bytes,
-    build_worksheet_html,
-)
 from ..workshop_skills import (
+    build_activity_prompt,
     build_copy_prompt,
     build_skill_markdown,
     build_skill_zip_bytes,
@@ -70,6 +66,12 @@ from ..workshop_store import (
     save_submission,
     update_follow_through_status,
 )
+from ..workshop_worksheets import (
+    Worksheet,
+    WorksheetField,
+    build_worksheet_docx_bytes,
+    build_worksheet_html,
+)
 from .admin import is_authenticated_admin
 
 workshop_bp = Blueprint("workshop", __name__)
@@ -89,6 +91,14 @@ ACTIVITY_ORDER = [
     "action_plan_30_day",
 ]
 
+# Optional extras. Deliberately *not* in ACTIVITY_ORDER: they must not appear
+# in the progress passport or the completion percentage, because a participant
+# who never opens one has missed nothing the workshop promised. The packet
+# calls this the technical extension path -- a door, not a corridor.
+OPTIONAL_ACTIVITY_ORDER = [
+    "lab_run_your_agent",
+]
+
 ACTIVITY_PROMPTS = {
     "journey_check_in": "What accessibility work do you do? Where do partners get stuck? What would change if more of them became accessibility champions?",
     "problem_statement": "Start with the problem you can see today. Then name the deeper problem behind it. Who needs to learn this work or own part of it? What would success look like if it happened again and again, without you?",
@@ -101,6 +111,7 @@ ACTIVITY_PROMPTS = {
     "champion_studio": "Design a workflow you can use again and again. It should teach your partners to own the work. Say who does each step. Name the point where a person must review the result before it goes out.",
     "capstone_shareout": "Sum up your workflow in a few sentences. Say who it helps and what they learn. Then explain how it keeps accessibility work going after today.",
     "action_plan_30_day": "Choose one workflow to try in the next 30 days. Choose one partner or team to help. Choose one safeguard you will use every time. Then name the first step you will take.",
+    "lab_run_your_agent": "Take the agent you designed and run it, either by pasting your prompt into an assistant you already use or by loading your downloaded skill into a client that supports them. Give it one real piece of work. Then write down what it got right, what it got wrong, and what you would change about your own design.",
 }
 
 ACTIVITY_META = {
@@ -115,6 +126,23 @@ ACTIVITY_META = {
     "champion_studio": {"title": "Accessibility Champion Studio", "time": "45 minutes", "badge": "Champion Designer"},
     "capstone_shareout": {"title": "Capstone Share-Out", "time": "25 minutes", "badge": "Story Sharer"},
     "action_plan_30_day": {"title": "30-Day Action Plan", "time": "15 minutes", "badge": "Momentum Builder"},
+    "lab_run_your_agent": {
+        "title": "Optional Lab: Run Your Agent",
+        "time": "20 minutes, optional",
+        "badge": "Agent Runner",
+    },
+}
+
+# Activities where an assistant can genuinely help. Each names the field
+# holding the participant's own human-review step, which is written into the
+# generated prompt as an instruction rather than left as a closing remark.
+AI_ASSISTED_ACTIVITIES = {
+    "agent_formula": "human_review",
+    "lab_run_your_agent": "review_step",
+    "lab_accessible_communication": "review_checklist",
+    "lab_alt_text_decision": "verification_questions",
+    "lab_remediation_plan": "human_inspection",
+    "champion_studio": "human_safeguard",
 }
 
 ACTIVITY_FIELDS = {
@@ -161,6 +189,14 @@ ACTIVITY_FIELDS = {
         {"name": "omit_info", "label": "What you can leave out", "rows": 2, "required": True},
         {"name": "draft_alt", "label": "Your draft alt text, or notes for a longer description", "rows": 3, "required": True},
         {"name": "verification_questions", "label": "What a person must check before this goes live", "rows": 2, "required": True},
+    ],
+    "lab_run_your_agent": [
+        {"name": "where_you_ran_it", "label": "Where you ran it (an assistant you already use, or an agent client)", "rows": 2, "required": True},
+        {"name": "what_you_gave_it", "label": "The real piece of work you gave it", "rows": 2, "required": True},
+        {"name": "what_it_got_right", "label": "What it got right", "rows": 3, "required": True},
+        {"name": "what_it_got_wrong", "label": "What it got wrong, or could not check", "rows": 3, "required": True},
+        {"name": "design_change", "label": "What you would change about your own design", "rows": 3, "required": True},
+        {"name": "review_step", "label": "What a person still has to check before this output is used", "rows": 2, "required": True},
     ],
     "lab_remediation_plan": [
         {"name": "content_track", "label": "What is this content, and who uses it?", "rows": 2, "required": True},
@@ -301,6 +337,19 @@ MAGIC_SCENARIOS = [
         "workflow_text": "Start with [[GLOW:AUDIT]] for evidence, summarize action tracks in [[GLOW:CONVERT]], and use [[GLOW:MAGIC]] for advanced advisory checks.",
     },
 ]
+
+
+# Where a generated skill should look for GLOW's deterministic tools. Set to
+# an empty string to generate skills with no tool layer at all -- the skill is
+# still valid and still works, which is the point of the degradation story.
+DEFAULT_MCP_BASE_URL = "https://letitglow.app/mcp"
+
+
+def _mcp_base_url() -> str:
+    configured = os.environ.get("GLOW_MCP_BASE_URL")
+    if configured is None:
+        return DEFAULT_MCP_BASE_URL
+    return configured.strip()
 
 
 FACILITATOR_SESSION_PREFIX = "workshop_facilitator:"
@@ -484,6 +533,23 @@ def _decorate_submissions(rows: list[dict]) -> list[dict]:
         item["updated_display"] = _format_timestamp(str(item.get("updated_at_utc", "")))
         decorated.append(item)
     return decorated
+
+
+def _current_activity_hint() -> str:
+    """Which activity a workshop deep link came from, if it said so.
+
+    Used only to offer a way back; anything unrecognised is dropped rather
+    than reflected.
+    """
+    for candidate in (request.args.get("activity"), request.form.get("activity")):
+        value = (candidate or "").strip()
+        if value in ACTIVITY_PROMPTS:
+            return value
+    referrer = request.referrer or ""
+    for key in ACTIVITY_PROMPTS:
+        if f"/activity/{key}" in referrer:
+            return key
+    return ""
 
 
 def _workshop_return_target(session_code: str, *, activity_key: str | None = None) -> str:
@@ -878,8 +944,14 @@ def workshop_activity(session_code: str, activity_key: str):
                 field_values=stored_values,
                 is_draft=is_draft,
             )
-            idx_now = ACTIVITY_ORDER.index(activity_key)
-            next_now = ACTIVITY_ORDER[idx_now + 1] if idx_now < len(ACTIVITY_ORDER) - 1 else None
+            # Optional activities have no place in the agenda, so there is no
+            # "save and continue" target for them.
+            idx_now = ACTIVITY_ORDER.index(activity_key) if activity_key in ACTIVITY_ORDER else None
+            next_now = (
+                ACTIVITY_ORDER[idx_now + 1]
+                if idx_now is not None and idx_now < len(ACTIVITY_ORDER) - 1
+                else None
+            )
             if submit_action == "save_next" and next_now:
                 target = url_for(
                     "workshop.workshop_activity",
@@ -954,11 +1026,36 @@ def workshop_activity(session_code: str, activity_key: str):
             scenario = get_scenario(activity_key, requested) or get_scenario(activity_key, stored_choice)
         scenario_id = scenario.id if scenario else ""
 
+    # Tier 2. Every AI-assisted activity carries a prompt the participant can
+    # paste into whatever assistant they already have -- no key, no install,
+    # no account, and it still works when the house AI budget is spent.
+    copy_prompt = ""
+    if activity_key in AI_ASSISTED_ACTIVITIES:
+        review_field = AI_ASSISTED_ACTIVITIES[activity_key]
+        copy_prompt = build_activity_prompt(
+            activity_title=ACTIVITY_META.get(activity_key, {}).get("title", activity_key),
+            task=ACTIVITY_PROMPTS.get(activity_key, ""),
+            answers=[
+                (str(field.get("label", field.get("name", ""))), field_values.get(str(field.get("name", "")), ""))
+                for field in activity_fields
+            ],
+            scenario_title=scenario.title if scenario else "",
+            scenario_brief=list(scenario.brief) if scenario else [],
+            human_review=field_values.get(review_field, ""),
+        )
+
     return_to = _workshop_return_target(code, activity_key=activity_key)
 
-    idx = ACTIVITY_ORDER.index(activity_key)
-    prev_key = ACTIVITY_ORDER[idx - 1] if idx > 0 else None
-    next_key = ACTIVITY_ORDER[idx + 1] if idx < len(ACTIVITY_ORDER) - 1 else None
+    # Optional activities sit outside the numbered agenda: no position, no
+    # previous/next, and no effect on the completion percentage below.
+    is_optional = activity_key not in ACTIVITY_ORDER
+    idx = None if is_optional else ACTIVITY_ORDER.index(activity_key)
+    prev_key = None if is_optional or idx == 0 else ACTIVITY_ORDER[idx - 1]
+    next_key = (
+        None
+        if is_optional or idx >= len(ACTIVITY_ORDER) - 1
+        else ACTIVITY_ORDER[idx + 1]
+    )
     count = count_submissions(code, activity_key=activity_key)
 
     # The passport reports the individual participant's own progress. Using the
@@ -989,12 +1086,14 @@ def workshop_activity(session_code: str, activity_key: str):
         status_prefix=("Not saved" if message_is_error else ("Saved" if message else "")),
         skill_ready=(activity_key == "champion_studio" and _champion_skill_context(code) is not None),
         activity_key=activity_key,
+        is_optional=is_optional,
         activity_title=activity_meta.get("title", activity_key),
         activity_time=activity_meta.get("time", "Varies"),
         activity_badge=activity_meta.get("badge", "Workshop Champion"),
         activity_fields=activity_fields,
         field_values=field_values,
         bonus_note=bonus_note,
+        copy_prompt=copy_prompt,
         scenario_cards=_scenario_cards(activity_key, code, selected_id=scenario_id),
         scenario=_scenario_detail(scenario, code, activity_key=activity_key) if scenario else None,
         scenario_id=scenario_id,
@@ -1312,7 +1411,11 @@ def workshop_champion_skill(session_code: str):
         session_code=code,
         workflow_name=values.get("workflow_name", "").strip() or "Your accessibility workflow",
         skill_markdown=build_skill_markdown(
-            values, author=author, event_name=event_name, trusted_guidance=trusted_guidance
+            values,
+            author=author,
+            event_name=event_name,
+            trusted_guidance=trusted_guidance,
+            mcp_base_url=_mcp_base_url(),
         ),
         copy_prompt=build_copy_prompt(values, trusted_guidance=trusted_guidance),
         has_guidance=bool(trusted_guidance.strip()),
@@ -1337,6 +1440,7 @@ def workshop_champion_skill_download(session_code: str):
         author=author,
         event_name=str(session_meta.get("event_name", "")).strip(),
         trusted_guidance=trusted_guidance,
+        mcp_base_url=_mcp_base_url(),
     )
     return Response(
         payload,
@@ -1718,6 +1822,7 @@ def workshop_facilitator(session_code: str):
 
     return render_template(
         "workshop/facilitator.html",
+        ai_usage=session_usage(code),
         session_code=code,
         session_title=session_meta.get("title", "GLOW Workshop Session"),
         activity_rows=activity_rows,

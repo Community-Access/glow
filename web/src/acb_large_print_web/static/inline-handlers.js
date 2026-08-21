@@ -17,6 +17,14 @@
  *                                    data-char-count-max="N" the text is
  *                                    "(N - length) characters remaining";
  *                                    otherwise it is the length as a number.
+ *   data-copy-target="<id>"          on <button>: copy the value (or text) of
+ *                                    the element with that id to the
+ *                                    clipboard and report the outcome in the
+ *                                    element named by data-copy-status. The
+ *                                    copied field stays on the page and stays
+ *                                    selectable, so the button is an
+ *                                    accelerator rather than the only way to
+ *                                    get the text.
  */
 (function () {
   "use strict";
@@ -50,6 +58,50 @@
           } catch (e) {
             /* ignore */
           }
+        }
+        return;
+      }
+
+      // data-copy-target="<id>" -- copy a field to the clipboard.
+      var copyEl = t.closest("[data-copy-target]");
+      if (copyEl) {
+        ev.preventDefault();
+        var src = document.getElementById(copyEl.getAttribute("data-copy-target"));
+        var statusId = copyEl.getAttribute("data-copy-status");
+        var status = statusId ? document.getElementById(statusId) : null;
+        var text = src ? (src.value != null ? src.value : src.textContent) : "";
+
+        var report = function (message) {
+          // Announced by the status region, never by moving focus: the
+          // person pressing this button is mid-task and should stay there.
+          if (status) status.textContent = message;
+        };
+
+        if (!src) {
+          report("Nothing to copy.");
+          return;
+        }
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(text).then(
+            function () {
+              report("Copied to the clipboard.");
+            },
+            function () {
+              report("Could not copy automatically. Select the text and copy it.");
+            }
+          );
+          return;
+        }
+        try {
+          if (src.select) {
+            src.select();
+            document.execCommand("copy");
+            report("Copied to the clipboard.");
+          } else {
+            report("Select the text and copy it.");
+          }
+        } catch (e) {
+          report("Could not copy automatically. Select the text and copy it.");
         }
         return;
       }

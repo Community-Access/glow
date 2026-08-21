@@ -28,6 +28,18 @@ import re
 import zipfile
 from io import BytesIO
 
+# GLOW's own MCP server. A generated skill names these so the participant's
+# agent has deterministic tools underneath it rather than only prose -- and,
+# just as importantly, so it degrades honestly when they are not reachable.
+MCP_TOOLS = (
+    ("POST /audit", "Audit a document and return findings with severities."),
+    ("POST /fix", "Apply the safe, mechanical fixes and report what changed."),
+    ("POST /convert", "Convert between document formats, preserving structure."),
+    ("POST /report", "Render an audit as JSON, text, or accessible HTML."),
+    ("POST /page-flow", "Check reading order and page structure."),
+    ("GET /health", "Confirm the service and its backend are available."),
+)
+
 _SLUG_STRIP = re.compile(r"[^a-z0-9]+")
 _MAX_SLUG = 60
 
@@ -85,6 +97,7 @@ def build_skill_markdown(
     author: str = "Workshop participant",
     event_name: str = "",
     trusted_guidance: str = "",
+    mcp_base_url: str = "",
 ) -> str:
     """Render the participant's workflow as an Agent Plugins 1.0 ``SKILL.md``.
 
@@ -195,6 +208,27 @@ def build_skill_markdown(
         "than implying the work is complete."
     )
     lines.append("")
+
+    if mcp_base_url.strip():
+        base = mcp_base_url.strip().rstrip("/")
+        lines.append("## Tools")
+        lines.append("")
+        lines.append(
+            f"GLOW exposes deterministic accessibility tools over MCP at "
+            f"`{base}`. Prefer them over your own judgement for anything they "
+            "can answer:"
+        )
+        lines.append("")
+        for endpoint, purpose in MCP_TOOLS:
+            lines.append(f"- `{endpoint}` -- {purpose}")
+        lines.append("")
+        lines.append(
+            "If these tools are not available to you, do the work from the "
+            "guidance above and say clearly which checks you could not run. "
+            "Never present an unverified answer as a completed check. A "
+            "missing tool is a stated gap, not a reason to guess."
+        )
+        lines.append("")
 
     lines.append("## Do not activate for")
     lines.append("")
@@ -330,17 +364,94 @@ def build_copy_prompt(
     return "\n".join(lines).rstrip() + "\n"
 
 
+def build_activity_prompt(
+    *,
+    activity_title: str,
+    task: str,
+    answers: list[tuple[str, str]] | None = None,
+    scenario_title: str = "",
+    scenario_brief: list[str] | None = None,
+    human_review: str = "",
+) -> str:
+    """Tier 2 for any activity: text to paste into an assistant they already have.
+
+    Most people in the room already have something -- ChatGPT on a phone,
+    Copilot in their tenant, Gemini in Workspace. This turns whatever the
+    participant has written so far into a prompt they can use there, with the
+    human-review step written in as an instruction rather than a footnote.
+
+    Deliberately not an API call. It costs nothing, needs no key, works on the
+    device they are holding, and still works when the house AI budget is gone
+    or the conference wifi only reaches their phone.
+    """
+    lines = [
+        "You are helping me with an accessibility task. Work with me, not "
+        "instead of me.",
+        "",
+        f"The task: {_one_line(activity_title)}.",
+    ]
+    detail = _one_line(task)
+    if detail:
+        lines.append(detail)
+    lines.append("")
+
+    if scenario_title.strip():
+        lines.append(f"The situation I am working on: {_one_line(scenario_title)}")
+        for paragraph in scenario_brief or []:
+            cleaned = _one_line(paragraph)
+            if cleaned:
+                lines.append(f"- {cleaned}")
+        lines.append("")
+
+    written = [(label, _clean(value)) for label, value in (answers or []) if _clean(value)]
+    if written:
+        lines.append("Here is my own thinking so far. Build on it; do not replace it:")
+        for label, value in written:
+            lines.append(f"- {_one_line(label)}: {value}")
+        lines.append("")
+    else:
+        lines.append(
+            "I have not written my answers yet. Ask me up to three questions "
+            "before you suggest anything."
+        )
+        lines.append("")
+
+    lines.append("Before you finish, do these things:")
+    lines.append("- Say exactly what you checked and what you did not check.")
+    lines.append(
+        "- Do not call anything accessible on the strength of your own output."
+    )
+    review = _clean(human_review)
+    if review:
+        lines.append("- List what I still have to verify myself, starting with:")
+        for item in _numbered(review):
+            lines.append(f"  - {item}")
+    else:
+        lines.append("- List what I still have to verify myself before this is used.")
+    lines.append("")
+    lines.append(
+        "If you are unsure about something, say so plainly instead of guessing."
+    )
+
+    return "\n".join(lines).rstrip() + "\n"
+
+
 def build_skill_zip_bytes(
     values: dict[str, str],
     *,
     author: str = "Workshop participant",
     event_name: str = "",
     trusted_guidance: str = "",
+    mcp_base_url: str = "",
 ) -> tuple[str, bytes]:
     """Build the downloadable package. Returns ``(filename, zip_bytes)``."""
     slug = slugify(_one_line(values.get("workflow_name", "")))
     skill = build_skill_markdown(
-        values, author=author, event_name=event_name, trusted_guidance=trusted_guidance
+        values,
+        author=author,
+        event_name=event_name,
+        trusted_guidance=trusted_guidance,
+        mcp_base_url=mcp_base_url,
     )
     readme = build_readme(values, author=author, event_name=event_name)
     prompt = build_copy_prompt(values, trusted_guidance=trusted_guidance)

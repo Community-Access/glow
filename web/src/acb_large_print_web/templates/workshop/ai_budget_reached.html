@@ -1,0 +1,39 @@
+{% extends "workshop/_shell.html" %}
+
+{% block title %}AI limit reached — use any assistant instead{% endblock %}
+{% block heading %}AI limit reached{% endblock %}
+
+{% block content %}
+<p role="status">
+  {% if reason == 'session' %}
+  This room has used its shared AI allowance for the day.
+  {% else %}
+  You have used your share of the room's AI allowance.
+  {% endif %}
+</p>
+
+<p>
+  Nothing is lost and nothing is broken. The workshop is designed so that the
+  built-in AI is a convenience, not a requirement — every activity can be
+  completed without it.
+</p>
+
+<h2>What to do instead</h2>
+<p>
+  Each AI-assisted activity carries a ready-made prompt, built from what you
+  have already written. Copy it and paste it into whatever assistant you
+  already use: ChatGPT, Copilot, Gemini, Claude, on a laptop or a phone. It
+  needs no key, no install, and no account with us.
+</p>
+<ul>
+  <li><a href="{{ url_for('workshop.workshop_my_content', session_code=session_code) }}">Go to my workshop content</a></li>
+  {% if activity_key %}
+  <li><a href="{{ url_for('workshop.workshop_activity', session_code=session_code, activity_key=activity_key) }}">Back to the activity I was working on</a></li>
+  {% endif %}
+</ul>
+
+<p>
+  If you would rather keep using the built-in tools, tell your facilitator.
+  They can raise the limit for the room.
+</p>
+{% endblock %}

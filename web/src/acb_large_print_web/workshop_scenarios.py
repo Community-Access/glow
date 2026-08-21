@@ -450,7 +450,7 @@ def pick_scenario(activity_key: str, seed: str) -> Scenario | None:
     options = scenarios_for(activity_key)
     if not options:
         return None
-    digest = hashlib.sha256(f"{activity_key}:{seed}".encode("utf-8")).digest()
+    digest = hashlib.sha256(f"{activity_key}:{seed}".encode()).digest()
     return options[digest[0] % len(options)]
 
 
