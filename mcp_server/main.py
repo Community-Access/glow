@@ -46,12 +46,16 @@ if _configure_shared_core_default is not None:
     except Exception:
         pass
 
-app = FastAPI(title="GLOW MCP Server", description="Accessibility audit/fix/convert/report API for agent integration.", version="7.2.0")
+app = FastAPI(title="GLOW MCP Server", description="Accessibility audit/fix/convert/report API for agent integration.", version="8.0.0")
 
+# Wildcard origins with allow_credentials=True is an invalid (and unsafe) CORS
+# combination — browsers reject it and it invites credential leakage if a
+# future endpoint ever sets cookies. The MCP API is token/credential-free, so
+# credentials stay off.
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
-    allow_credentials=True,
+    allow_credentials=False,
     allow_methods=["*"],
     allow_headers=["*"],
 )
@@ -76,7 +80,10 @@ async def audit(file: UploadFile = File(...), format: str = Form(...)):
     try:
         audit_result = run_audit(tmp_path, format)
         report_json = run_report(audit_result, report_type="json")
-        return JSONResponse(content=report_json)
+        # run_report returns a JSON string; deliver a real JSON object so
+        # clients are not forced to double-decode.
+        import json as _json
+        return JSONResponse(content=_json.loads(report_json))
     except Exception as e:
         return JSONResponse({"error": str(e)}, status_code=400)
     finally:
@@ -97,14 +104,12 @@ async def fix(file: UploadFile = File(...), format: str = Form(...)):
         tmp.write(contents)
         tmp_path = Path(tmp.name)
     try:
-        fixed_path, total_fixes, fix_records, post_fix_audit, warnings = run_fix(tmp_path, format)
-        return JSONResponse({
-            "fixed_file": str(fixed_path),
-            "total_fixes": total_fixes,
-            "fix_records": [r.__dict__ for r in fix_records],
-            "post_fix_audit": post_fix_audit.__dict__,
-            "warnings": warnings
-        })
+        # run_fix normalizes legacy tuples and shared-core FixResult objects
+        # into one JSON-safe dict (slotted contract dataclasses have no
+        # __dict__, so serialization happens inside glow_mcp_utils). The
+        # repaired document ships inline as fixed_file_base64; the server-side
+        # temp artifact is deleted there.
+        return JSONResponse(run_fix(tmp_path, format))
     except Exception as e:
         return JSONResponse({"error": str(e)}, status_code=400)
     finally:

@@ -18,10 +18,10 @@ This document describes how the GLOW MCP server integrates with the existing GLO
 1. Scaffold FastAPI server (done)
 2. Integrate GLOW audit/fix/convert/report logic from desktop/src/acb_large_print/
 3. Integrate GLOW PageFlow URL extraction from web/src/acb_large_print_web/listen_later.py
-3. Implement endpoint logic and error handling
-4. Write OpenAPI spec and usage docs (done)
-5. Test with Accessibility Agents (markdown-a11y-assistant, etc.)
-6. Update CHANGELOG.md and release as 7.2.0+
+4. Implement endpoint logic and error handling
+5. Write OpenAPI spec and usage docs (done)
+6. Test with Accessibility Agents (markdown-a11y-assistant, etc.)
+7. Update CHANGELOG.md and release as 7.2.0+
 
 ## Notes
 - Only features that make sense for agent integration are exposed

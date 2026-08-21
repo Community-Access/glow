@@ -1,6 +1,13 @@
 # requirements.txt for GLOW MCP Server
-quill-glow-core>=0.1.0
+#
+# The [glow] extra is required: without it quill-glow-core installs only the
+# service contracts and every functional endpoint fails with
+# "Shared core services unavailable". acb-large-print >= 8.0.0 is pinned
+# explicitly because the shared-core split (acb_large_print_core) shipped in
+# 8.0.0 and the contract wheel's own extra floor (>=3.0.0) is loose enough to
+# accept a pre-split backend that cannot serve the MCP endpoints.
+quill-glow-core[glow]>=0.1.1
+acb-large-print>=8.0.0
 fastapi==0.110.2
 uvicorn==0.29.0
 python-multipart==0.0.28
-# Add GLOW core dependencies as needed

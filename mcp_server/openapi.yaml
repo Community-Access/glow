@@ -1,7 +1,7 @@
 openapi: 3.0.3
 info:
   title: GLOW MCP Server
-  version: 7.2.0
+  version: 8.0.0
   description: |
     Exposes GLOW's accessibility audit, fix, convert, and reporting features via a Model Context Protocol (MCP) API for agent integration.
     
@@ -30,6 +30,17 @@ paths:
                 properties:
                   status:
                     type: string
+                  shared_core:
+                    type: object
+                    description: Startup telemetry from quill-glow-core (backend, configured_by, auto_selected); backend is "unknown" when the shared core is absent.
+                    properties:
+                      backend:
+                        type: string
+                      configured_by:
+                        type: string
+                      auto_selected:
+                        type: boolean
+                        nullable: true
   /audit:
     post:
       summary: Audit a document for accessibility issues
@@ -79,6 +90,10 @@ paths:
                 properties:
                   fixed_file:
                     type: string
+                    description: File name of the repaired document (no server path).
+                  fixed_file_base64:
+                    type: string
+                    description: Base64-encoded bytes of the repaired document; empty if no artifact was produced.
                   total_fixes:
                     type: integer
                   fix_records:
