@@ -10,7 +10,7 @@ import uuid
 from datetime import UTC, datetime
 from pathlib import Path
 
-from flask import Flask, jsonify, render_template
+from flask import Flask, jsonify, render_template, request
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
 from flask_wtf.csrf import CSRFError, CSRFProtect
@@ -29,8 +29,34 @@ except Exception:
     _get_shared_core_startup_telemetry = None
 
 csrf = CSRFProtect()
+
+# Kept in sync with routes.workshop.PARTICIPANT_COOKIE, which owns the name.
+# app.py cannot import it without a circular import, so a test asserts the two
+# stay equal.
+_WORKSHOP_PARTICIPANT_COOKIE = "glow_workshop_participant"
+
+
+def rate_limit_key() -> str:
+    """Rate-limit per person rather than per building.
+
+    A conference room shares one NAT address. Keying only on the remote
+    address gives thirty workshop participants a single budget between them,
+    and the room throttles itself during the first activity -- the failure
+    mode is a wall of 429s that looks like the site is down. Workshop
+    participants carry their own cookie, so use it when it is there.
+
+    This is abuse protection, not authentication: a forged cookie buys its
+    owner a separate bucket, which is exactly what a real participant gets
+    anyway.
+    """
+    participant = (request.cookies.get(_WORKSHOP_PARTICIPANT_COOKIE) or "").strip()
+    if participant:
+        return f"workshop:{participant[:64]}"
+    return get_remote_address()
+
+
 limiter = Limiter(
-    key_func=get_remote_address,
+    key_func=rate_limit_key,
     default_limits=["120 per minute"],
     storage_uri="memory://",
 )
@@ -81,6 +107,14 @@ def create_app(config: dict | None = None) -> Flask:
     # Extensions
     csrf.init_app(app)
     limiter.init_app(app)
+
+    # Static assets must not spend the request budget. One workshop page pulls
+    # a stylesheet and several scripts, so counting them turns a page load
+    # into a dozen billable requests and puts a busy room minutes away from
+    # its own limit.
+    _static_view = app.view_functions.get("static")
+    if _static_view is not None:
+        limiter.exempt(_static_view)
 
     # Logging
     _configure_logging(app)

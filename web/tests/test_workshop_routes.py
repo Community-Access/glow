@@ -1250,3 +1250,72 @@ def test_return_token_is_not_stored_in_the_clear(client, app: Flask, mailbox: _M
     assert len(rows) == 1
     assert rows[0]["token_hash"] != token
     assert rows[0]["token_hash"] == hashlib.sha256(token.encode("utf-8")).hexdigest()
+
+
+# ---------------------------------------------------------------------------
+# Rate limiting in a room that shares one address
+# ---------------------------------------------------------------------------
+
+
+def test_return_link_requests_are_capped_per_participant(client, app: Flask, mailbox: _MailBox):
+    code = _seed_workshop(app, "returncap")
+    _join_and_save(client, code)
+
+    codes = [
+        client.post(
+            f"/workshop/session/{code}/return-link",
+            data={"return_email": "rowan@example.edu"},
+        ).status_code
+        for _ in range(6)
+    ]
+
+    assert codes[:5] == [302] * 5
+    assert codes[5] == 429
+    assert len(mailbox.sent) == 5
+
+
+def test_one_participants_cap_does_not_spend_anothers(client, app: Flask, mailbox: _MailBox):
+    """Thirty people behind one conference NAT address must not share a budget."""
+    code = _seed_workshop(app, "returnshared")
+    _join_and_save(client, code, name="Rowan")
+    for _ in range(6):
+        client.post(f"/workshop/session/{code}/return-link", data={"return_email": "rowan@example.edu"})
+
+    neighbour = app.test_client()
+    neighbour.set_cookie("glow_consent_v1", "1", domain="localhost")
+    _join_and_save(neighbour, code, name="Sam")
+
+    resp = neighbour.post(
+        f"/workshop/session/{code}/return-link",
+        data={"return_email": "sam@example.edu"},
+    )
+
+    assert resp.status_code == 302
+    assert mailbox.sent[-1]["to"] == "sam@example.edu"
+
+
+def test_static_assets_do_not_spend_the_request_budget(client, app: Flask):
+    """A workshop page pulls a stylesheet and several scripts on every load."""
+    codes = {client.get("/static/acb-large-print.css").status_code for _ in range(130)}
+
+    assert codes == {200}
+
+
+def test_rate_limit_key_tracks_the_workshop_cookie_name(app: Flask):
+    """app.py cannot import the constant, so assert the copies stay equal."""
+    from acb_large_print_web import app as app_module
+
+    assert app_module._WORKSHOP_PARTICIPANT_COOKIE == workshop_routes.PARTICIPANT_COOKIE
+
+
+def test_rate_limit_key_prefers_the_participant_over_the_address(app: Flask):
+    from acb_large_print_web.app import rate_limit_key
+
+    with app.test_request_context("/workshop/"):
+        assert rate_limit_key() == "127.0.0.1"
+
+    with app.test_request_context(
+        "/workshop/",
+        headers={"Cookie": f"{workshop_routes.PARTICIPANT_COOKIE}=abc123"},
+    ):
+        assert rate_limit_key() == "workshop:abc123"

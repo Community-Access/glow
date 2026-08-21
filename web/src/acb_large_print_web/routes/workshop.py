@@ -23,6 +23,7 @@ from flask import (
 )
 from markupsafe import Markup, escape
 
+from ..app import limiter
 from ..email import email_configured, send_workshop_return_link_email
 from ..feature_flags import get_flag
 from ..workshop_skills import (
@@ -1120,6 +1121,7 @@ def _looks_like_email(value: str) -> bool:
 
 
 @workshop_bp.route("/session/<session_code>/return-link", methods=["POST"])
+@limiter.limit("5 per hour")
 def workshop_return_link_request(session_code: str):
     """Email this participant a link that restores their identity elsewhere."""
     if not _workshop_enabled() or not _lab_hub_enabled():
