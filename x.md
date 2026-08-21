@@ -118,15 +118,25 @@ Both would have shown up in the room and nowhere else.
 
 ## 2. What remains
 
-### 2.1 Ship what exists (nothing depends on more code)
+### 2.1 Ship what exists
 
-1. **Merge the branch.** `git checkout main && git merge --ff-only workshop-ahg-readiness`
-2. **Deploy web.** All of the above is live only on the branch.
-3. **Rebuild and deploy the MCP image.** `letitglow.app/mcp` still reports
-   `shared_core.backend = "unknown"`; it predates the pinned Dockerfile and
-   the endpoint fixes. Generated agent skills now point participants at those
-   endpoints, so they have to be real.
-4. **Set the event configuration** (section 5).
+Done on 21 August: merged to main, deployed to production by hand, and the
+MCP container rebuilt in the same deploy (`/mcp/health` now reports
+`backend: "glow"` rather than `"unknown"`). What is left here is
+configuration and one credential.
+
+1. ~~Merge the branch.~~ Done.
+2. ~~Deploy web.~~ Done, by hand over SSH.
+3. ~~Rebuild the MCP image.~~ Done.
+4. **Fix the CI deploy key.** GitHub Actions cannot deploy: the runner's key
+   is not in the server's `authorized_keys`, so every push to main builds,
+   tests, and then fails at the last step. Deploys are manual until this is
+   fixed.
+5. **Set the AI key in production.** `OPENROUTER_API_KEY` is unset --
+   `/health` reports `key_set: false` for chat, vision and whisperer -- so
+   Tier 1, the built-in AI a participant uses with no key of their own, does
+   not work on the live site. Lab 2 is built around it.
+6. **Set the rest of the event configuration** (section 5).
 
 ### 2.2 Phase 5 — hardening and rehearsal
 
@@ -243,6 +253,7 @@ have to be true on a bad wifi day.
 | `GLOW_WORKSHOP_FACILITATOR_KEY` | Unlocks the dashboard and session exports | set, and keep off the slides |
 | `WORKSHOP_CONFERENCE_CODES_JSON` | Access code → session mapping | set for the AHG code |
 | `POSTMARK_SERVER_TOKEN` | Return links, artifact email, nudge | required — without it those features hide themselves |
+| `OPENROUTER_API_KEY` | Tier 1: alt-text generation, document chat, transcription | **not set in production as of 21 August**; Lab 2 depends on it |
 | `GLOW_WORKSHOP_RETURN_LINK_TTL_DAYS` | Return link lifetime | default 45 |
 | `GLOW_WORKSHOP_AI_PARTICIPANT_CAP` | Per-person AI calls | default 40; set from the spend estimate |
 | `GLOW_WORKSHOP_AI_SESSION_CAP` | Whole-room AI calls | default 600; likewise |
