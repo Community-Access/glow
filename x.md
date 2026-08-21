@@ -1,0 +1,310 @@
+# GLOW Workshop Mode — Readiness Plan and Path to Golden
+
+**For:** Accessibility Agents in Action — A Hands-On GLOW Workshop, Accessing Higher Ground
+**First written:** 18 August 2026
+**Last updated:** 21 August 2026
+**GLOW version:** 8.0.0 (Workshop Mode introduced 7.3.0)
+**Status:** Phases 1–4 built and verified. Phase 5 — hardening and rehearsal — is what remains.
+
+---
+
+## 1. Where this stands
+
+Three days ago this document said the workshop's design was strong, its
+curriculum complete, and its delivery layer newly repaired — and then listed
+four phases of work that would take it from "a good conference session" to
+"the session people remember".
+
+Phases 1 through 4 are now built, tested, and committed on the branch
+`workshop-ahg-readiness`.
+
+### 1.1 What shipped
+
+**Phase 1 — Foundations.**
+
+- **Return links.** A participant can give an email address and receive a
+  single-use link that restores their identity on any device. Tokens are
+  stored hashed, expire after 45 days (outliving the 30-day plan), and the
+  address never appears in the gallery, on the facilitator dashboard, or in
+  any export.
+- **Scenario bank.** Twelve scenarios, four per GLOW lab, each from a
+  different institutional sector. Real briefs rather than one-line prompts:
+  the situation, what is wrong with the artifact, what to notice, the tools
+  that fit, a stretch task, and for three of them a starting document GLOW
+  can actually audit. "Surprise me" is deterministic per participant, so it
+  spreads briefs across a room and can be reproduced when a facilitator walks
+  someone back through what they were given. Choosing is optional and the page
+  says so — a participant with a real document of their own should use it.
+- **Blank worksheet packs**, HTML and Word, generated from the live activity
+  definitions so they cannot drift from the on-screen form. Word is Arial
+  18pt with ruled lines; the HTML pack has aria-labelled writing spaces, so
+  it is usable with a screen reader and not merely printable.
+- **Short URLs, QR codes and printable room signage.** `/w/<code>` joins;
+  `/w/<code>/7` opens the seventh activity, numbered the way a facilitator
+  says it out loud. The signage page prints a card per activity with the
+  address in large type and a QR code beside it.
+
+**Phase 2 — The four-tier AI model.**
+
+- **Tier 2 on every AI-assisted activity**: a prompt built from the
+  participant's own answers, their chosen scenario and their own human-review
+  step, ready to paste into whatever assistant they already have. A copy
+  button that works under the site CSP, announcing through a status region and
+  never moving focus, with the text still selectable if the clipboard fails.
+- **Tier 1 gets a budget.** Per-participant and per-room caps on the house AI
+  key. Hitting a cap routes to the Tier 2 path rather than an error, and the
+  check fails open. The facilitator dashboard shows room usage.
+- **Tier 3 gets a tool layer.** Generated skills name GLOW's six MCP
+  endpoints and state what to do when they are unreachable — work from the
+  guidance, name the gap, never present an unverified answer as a check.
+- **Optional Lab: Run Your Agent**, deliberately outside the agenda so it
+  never touches the progress passport. A door, not a corridor.
+
+**Phase 3 — The living room.**
+
+- **Live gallery and facilitator pulse** over SSE, counts only. The gallery
+  announces new work politely and offers a "Show new submissions" control the
+  reader activates; nothing is inserted underneath anyone and focus is never
+  moved. The dashboard updates per-activity counts and bars in place and is
+  safe to project.
+- **"Start from this workflow"** on shared Champion Studio submissions. It
+  fills the borrower's form only when they have nothing of their own saved;
+  otherwise the borrowed workflow is shown beside their work rather than over
+  it. Anonymous submitters stay anonymous.
+- **Badge collection page.** The badges already existed and were announced
+  once in a flash message; now they have somewhere to live.
+
+**Phase 4 — The finish.**
+
+- **Take-home artifact.** One designed page — workflow, who it helps, the
+  human-review gate, the 30-day commitment — self-contained, large print, and
+  printable, so it opens correctly from an email attachment years later.
+- **End-of-day artifact email**, carrying the artifact, the generated agent
+  package, and a single-use link back to everything else. The plain text of
+  the artifact is in the body too, because institutional mail gateways strip
+  attachments.
+- **Commitment wall** for the close of the day: every 30-day commitment on one
+  screen, anonymous by design.
+- **30-day nudge**, as a command rather than a scheduled job: it quotes each
+  participant's own words back and links to their follow-through log. Dry run
+  is the default, nobody is emailed twice, and nobody who never gave an
+  address is in the list.
+
+### 1.2 Two problems found along the way
+
+Both would have shown up in the room and nowhere else.
+
+- **The site was not applying its own type scale.** `body { … }` in
+  `acb-large-print.css` was left unclosed, so the ACB 18pt size, line height,
+  letter spacing and centred max-width were stranded after an unrelated
+  closing brace and discarded by every browser, on every page.
+- **The room would have rate-limited itself.** Every limit was keyed on IP
+  with a 120/minute default, and static assets counted. Thirty people behind
+  one conference NAT address share that budget; one workshop page pulls a
+  stylesheet and several scripts. Limits are now per participant, and static
+  is exempt.
+
+### 1.3 Verification as of 21 August
+
+| Check | Result |
+|---|---|
+| Full web test suite | 743 passed, 31 skipped, 5 pre-existing failures also present on `main` |
+| Workshop suites alone | 253 tests |
+| axe-core, WCAG 2.2 AA | **37 pages, 0 violations, 1009 passing rules** |
+| Ruff on every file touched | clean |
+| MCP endpoint tests against installed wheels | 8 passed |
+
+---
+
+## 2. What remains
+
+### 2.1 Ship what exists (nothing depends on more code)
+
+1. **Merge the branch.** `git checkout main && git merge --ff-only workshop-ahg-readiness`
+2. **Deploy web.** All of the above is live only on the branch.
+3. **Rebuild and deploy the MCP image.** `letitglow.app/mcp` still reports
+   `shared_core.backend = "unknown"`; it predates the pinned Dockerfile and
+   the endpoint fixes. Generated agent skills now point participants at those
+   endpoints, so they have to be real.
+4. **Set the event configuration** (section 5).
+
+### 2.2 Phase 5 — hardening and rehearsal
+
+This is the whole remaining risk. None of it is code.
+
+| Item | Why it matters | Done when |
+|---|---|---|
+| Load rehearsal, 30 simulated participants | Nothing here has been tested at room scale. The rate-limit fix makes it survivable in theory; nobody has measured it | A 30-client run completes with no 429s and no request over 2s |
+| Screen reader run-through: NVDA, JAWS, VoiceOver | axe passing is necessary, not sufficient. The live gallery, the copy buttons and the scenario picker are where automated and lived results diverge most | Each of the eleven activities completed end to end by ear |
+| AI spend estimate, approved | The caps exist; the numbers behind them are guesses | A figure written down and agreed, and caps set to match |
+| Full rehearsal with Tier 1 AI switched off | The day must run on Tiers 0 and 2 alone | A complete activity run with `OPENROUTER_API_KEY` unset |
+| Offline / degraded-network rehearsal | Conference wifi is a real risk | Worksheet packs printed; the day demonstrably runs from paper |
+| Facilitator dry run against the real agenda | Find the pacing problems before the room does | A timed run-through, with the room pulse open |
+| Freeze | Ship nothing new in the final week | Branch tagged, no merges |
+
+### 2.3 Loose ends worth clearing before November
+
+- **Five failing tests on `main`.** Three in `TestSettingsIntegration` resolve
+  `scripts/deploy-app.sh` relative to the working directory; two in
+  `test_feedback_support_hub.py` fail only in a full-suite run because an
+  earlier test leaks configuration. Not regressions — but a suite that is
+  never green teaches everyone to ignore it, and this project now depends on
+  people trusting it.
+- **Tracked Keycloak fixtures.** `keycloak-users.json` and
+  `glow-oidc-client.json` hold placeholders today; realm exports drift and
+  include secrets by default. Generate them at setup instead.
+- **The dead checkout at `C:\Users\jeffb\glow`**, which still has uncommitted
+  edits to `pii_guardrails.py` and `routes/convert.py`. Its editable install
+  has been removed, so it can no longer shadow this repo, but it should be
+  diffed and deleted.
+- **Whatever is deleting things on this machine.** The Playwright browser
+  binaries vanished mid-session on 21 August, and `review.md` records two
+  broken virtualenvs earlier. Worth identifying before it eats something on
+  the day.
+
+### 2.4 Deliberately not doing
+
+- **Full Keycloak accounts before November.** Magic links give ninety percent
+  of the benefit at five percent of the cost and none of the friction.
+- **A scheduled nudge job.** A command a person runs, having looked at the
+  list, is the right shape for mail sent a month after an event.
+- **Anything new in the final week.** See "freeze".
+
+---
+
+## 3. The path to golden
+
+Working back from a November conference. Weeks are counts from 21 August.
+
+**Weeks 1–2 (now): ship and configure.**
+Merge, deploy web, rebuild the MCP image, set the event configuration, and
+walk the whole day yourself once on the deployed site rather than locally.
+Fix what that turns up. Nothing else on this list is meaningful until the
+thing people will use is the thing that is running.
+
+**Weeks 3–4: content and rehearsal one.**
+Read all twelve scenarios aloud and cut or rewrite anything that sounds like
+software wrote it. Do the first screen reader pass — NVDA first, because it
+is the one most attendees will be running. Print the worksheet packs and the
+signage; look at them on paper rather than on screen.
+
+**Weeks 5–6: scale and money.**
+Load rehearsal at 30 participants. Cost the AI, set the caps to the agreed
+number, and rehearse hitting a cap so you have seen the message a participant
+will see. JAWS and VoiceOver passes.
+
+**Weeks 7–8: the degraded days.**
+Run a full session with the house AI switched off. Run one with the network
+throttled and one from paper alone. These are the rehearsals that decide
+whether a bad conference wifi day is an inconvenience or a disaster.
+
+**Weeks 9–10: the facilitator run.**
+A timed dry run against the real agenda, with the room pulse open and a
+second person playing an awkward participant: someone who joins late, someone
+who clears their cookies, someone whose institution blocks the tool, someone
+using only a screen reader.
+
+**Week 11: freeze.**
+Tag the release. Print everything. Write the one-page card for yourself with
+the session code, the facilitator key, the signage URL, and the wall URL on
+it.
+
+**Golden means:** a participant with no laptop, no account, no AI access and a
+screen reader can complete the entire day and leave with a printed artifact
+they are willing to show their director — and a participant with all of those
+things leaves with a working agent they designed themselves. Both of those
+have to be true on a bad wifi day.
+
+---
+
+## 4. Risks that remain
+
+| Risk | Mitigation | State |
+|---|---|---|
+| Conference wifi fails | Worksheet packs, offline artifact, no lab depends on cloud AI | Built; rehearsal outstanding |
+| Untested at room scale | 30-participant load rehearsal | Outstanding — the largest remaining unknown |
+| AI budget exhausted mid-session | Per-participant and per-room caps, exhaustion routes to Tier 2 | Built; the numbers are still guesses |
+| Live updates hurt screen reader users | Counts only, polite announcement, explicit "show new" control, focus never moved | Built and tested; needs a human ear |
+| AI output embarrasses the facilitator on a projector | Human-review framing throughout; the room pulse shows counts only | Built |
+| A lab accidentally requires an install or a key | Tier 3 is a download and a five-minute mention; a test asserts the Tier 2 prompt never mentions installing anything | Built |
+| Deployed MCP does not match the generated skills | Rebuild the image before the event | Outstanding |
+| Scope creep in the final weeks | Phases 1–4 are done; everything left is rehearsal | Manageable — hold the freeze |
+
+---
+
+## 5. Event configuration reference
+
+| Variable | What it does | For AHG |
+|---|---|---|
+| `GLOW_ENABLE_WORKSHOP_MODE` | Master switch | on |
+| `GLOW_ENABLE_WORKSHOP_LAB_HUB` | Activities, gallery, exports | on |
+| `GLOW_ENABLE_WORKSHOP_GALLERY` | Shared gallery | on |
+| `GLOW_ENABLE_WORKSHOP_PEER_REVIEW` | Peer feedback forms | on |
+| `GLOW_WORKSHOP_FACILITATOR_KEY` | Unlocks the dashboard and session exports | set, and keep off the slides |
+| `WORKSHOP_CONFERENCE_CODES_JSON` | Access code → session mapping | set for the AHG code |
+| `POSTMARK_SERVER_TOKEN` | Return links, artifact email, nudge | required — without it those features hide themselves |
+| `GLOW_WORKSHOP_RETURN_LINK_TTL_DAYS` | Return link lifetime | default 45 |
+| `GLOW_WORKSHOP_AI_PARTICIPANT_CAP` | Per-person AI calls | default 40; set from the spend estimate |
+| `GLOW_WORKSHOP_AI_SESSION_CAP` | Whole-room AI calls | default 600; likewise |
+| `GLOW_MCP_BASE_URL` | Tool layer named in generated skills | default `https://letitglow.app/mcp` |
+| `GLOW_WORKSHOP_ASSET_ROOT` | Where samples and front-facing docs live | only if the container layout changes |
+
+**On the day, one card in your pocket:**
+
+- Join: `letitglow.app/w/<code>`
+- Signage to print: `/workshop/session/<code>/signage`
+- Dashboard: `/workshop/session/<code>/facilitator`
+- Wall, for 4:25: `/workshop/session/<code>/wall`
+- Worksheets: `/workshop/worksheets.docx`
+
+**Thirty days later:**
+
+    flask --app acb_large_print_web.app:create_app workshop-nudge <code> --dry-run
+    flask --app acb_large_print_web.app:create_app workshop-nudge <code> --send
+
+---
+
+## Appendix A — Feature inventory
+
+**Participant surfaces:** workshop home and join, eleven activities plus one
+optional lab, scenario picker on each GLOW lab, exercise launchpad with
+tokenized deep links, my workshop content, personal Markdown export, take-home
+artifact (view, download, email), champion skill preview and package download,
+copy-a-prompt on every AI-assisted activity, badge collection, shared gallery
+with peer feedback and workflow borrowing, follow-through log, return links.
+
+**Facilitator surfaces:** gated dashboard with metrics, live room pulse, AI
+usage panel, recent submissions, session-wide export in four formats,
+follow-through export, printable room signage, commitment wall.
+
+**Offline surfaces:** blank worksheet packs in HTML and Word, downloadable
+sample documents, self-contained take-home artifact.
+
+**Platform:** four feature flags, SQLite session store, conference access
+codes, facilitator key access control, 90-day participant cookie, single-use
+return links, optional OIDC binding, per-participant AI budgets,
+per-participant rate limiting, short URLs, QR codes, SSE live counts,
+Postmark mail, a nudge command.
+
+## Appendix B — Key source locations
+
+| Concern | Path |
+|---|---|
+| Routes | `web/src/acb_large_print_web/routes/workshop.py` |
+| Short URLs | `web/src/acb_large_print_web/routes/shortlinks.py` |
+| Persistence | `web/src/acb_large_print_web/workshop_store.py` |
+| Scenario bank | `web/src/acb_large_print_web/workshop_scenarios.py` |
+| Agent skill compiler | `web/src/acb_large_print_web/workshop_skills.py` |
+| Worksheet packs | `web/src/acb_large_print_web/workshop_worksheets.py` |
+| Take-home artifact | `web/src/acb_large_print_web/workshop_artifact.py` |
+| AI budgets | `web/src/acb_large_print_web/workshop_ai_budget.py` |
+| Nudge command | `web/src/acb_large_print_web/workshop_nudge.py` |
+| Templates | `web/src/acb_large_print_web/templates/workshop/` |
+| Styles | `web/src/acb_large_print_web/static/workshop.css` |
+| Live updates | `web/src/acb_large_print_web/static/workshop-live.js` |
+| Tests | `web/tests/test_workshop_*.py` |
+| Accessibility CI | `web/e2e/tests/axe-audit.spec.mjs` |
+| Facilitator runbook | `docs/workshop-mode-facilitator-runbook.md` |
+| WCAG checklist | `docs/workshop-mode-wcag-checklist.md` |
+| Email | `web/src/acb_large_print_web/email.py` |
+| MCP server | `mcp_server/main.py` |
