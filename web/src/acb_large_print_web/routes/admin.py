@@ -231,6 +231,20 @@ def _require_admin() -> str:
     return email
 
 
+def is_authenticated_admin() -> bool:
+    """Public, non-aborting variant of :func:`_require_admin`.
+
+    Other blueprints need to ask "is this an approved admin?" without the
+    403 side effect so they can fall back to their own access path.
+    """
+    try:
+        _bootstrap_admins()
+        email = _current_admin_email()
+        return bool(email and _is_approved_admin(email))
+    except Exception:
+        return False
+
+
 def _provider_env(prefix: str, name: str) -> str:
     return os.environ.get(f"ADMIN_OAUTH_{prefix}_{name}", "").strip()
 

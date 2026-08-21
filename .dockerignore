@@ -18,7 +18,14 @@ docs/*.md
 docs/*.pdf
 docs/*.html
 docs/*.docx
-samples/
+
+# Workshop Mode serves these at runtime:
+#   samples/          -> /workshop/session/<code>/samples/<slug>
+#   front-facing docs -> /workshop/resources/<slug>
+# They must stay in the build context or those routes 404 in the container.
+!docs/workshop-frontfacing-guide.md
+!docs/workshop-frontfacing-exercises.md
+!docs/workshop-frontfacing-utilization.md
 reference/
 templates/
 styles/

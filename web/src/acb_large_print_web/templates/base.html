@@ -35,6 +35,7 @@
   </script>
   <link rel="stylesheet" href="{{ url_for('static', filename='acb-large-print.css') }}">
   <link rel="stylesheet" href="{{ url_for('static', filename='forms.css') }}">
+  {% block extra_css %}{% endblock %}
 </head>
 <body class="{{ brand_theme_class }}{% if feature_forced_colors_mode_enabled %} feature-forced-colors{% endif %}{% if feature_cognitive_profile_enabled %} feature-cognitive-profile{% endif %}">
   <a href="#main" class="skip-link">Skip to main content</a>
@@ -331,7 +332,7 @@
     <!-- ================================================================ -->
     <div class="content-area">
 
-      <main id="main">
+      <main id="main" tabindex="-1">
         {% block breadcrumb %}{% if request.blueprint in ['audit', 'site_audit'] %}<p class="page-breadcrumb"><span class="page-breadcrumb__label" data-group="assess">Assess</span></p>{% elif request.blueprint in ['fix', 'template'] %}<p class="page-breadcrumb"><span class="page-breadcrumb__label" data-group="fix">Fix and Build</span></p>{% elif request.blueprint in ['convert', 'export', 'braille'] %}<p class="page-breadcrumb"><span class="page-breadcrumb__label" data-group="transform">Transform</span></p>{% elif request.blueprint in ['speech', 'whisperer'] %}<p class="page-breadcrumb"><span class="page-breadcrumb__label" data-group="listen">Listen and Speak</span></p>{% elif request.blueprint in ['ai', 'chat', 'alt_text', 'magic', 'guidelines', 'rules_ref', 'guide', 'faq', 'settings', 'workshop'] %}<p class="page-breadcrumb"><span class="page-breadcrumb__label" data-group="explore">Explore and Learn</span></p>{% endif %}{% endblock %}
         <h1>{% block heading %}{{ brand_heading_label }}{% endblock %}</h1>
 
