@@ -462,6 +462,59 @@ def send_whisperer_status_email(
     return _send(payload, to_email)
 
 
+def send_workshop_return_link_email(
+    to_email: str,
+    *,
+    link: str,
+    ttl_days: int,
+    session_title: str = "",
+    participant_name: str = "",
+) -> tuple[bool, str]:
+    """Email a participant a single-use link back to their workshop work.
+
+    Workshop identity is a cookie on one device. This is how someone picks up
+    their morning's work on a phone at lunch, or opens their 30-day action
+    plan a month later. The address is given voluntarily and is never shown in
+    the gallery, the facilitator dashboard, or any export.
+    """
+    if not email_configured():
+        log.warning("POSTMARK_SERVER_TOKEN not set -- workshop return link email skipped")
+        return False, "Email is not configured on this server, so return links cannot be sent."
+
+    greeting = f"Hello {participant_name}," if participant_name.strip() else "Hello,"
+    where = f" for {session_title}" if session_title.strip() else ""
+    expiry = f"This link works once and expires in {ttl_days} days."
+
+    html_body = (
+        f"<p>{greeting}</p>"
+        f"<p>Here is your link back to your workshop work{where}. "
+        "Open it on any device to pick up where you left off.</p>"
+        f'<p><a href="{link}">Return to my workshop work</a></p>'
+        f"<p>{expiry} You can request another one at any time from your "
+        "workshop content page.</p>"
+        "<p>If you did not ask for this link, you can ignore this message.</p>"
+    )
+    text_body = (
+        f"{greeting}\n\n"
+        f"Here is your link back to your workshop work{where}. "
+        "Open it on any device to pick up where you left off.\n\n"
+        f"{link}\n\n"
+        f"{expiry} You can request another one at any time from your workshop "
+        "content page.\n\n"
+        "If you did not ask for this link, you can ignore this message."
+    )
+
+    payload = {
+        "From": _from_address(),
+        "To": to_email,
+        "Subject": "Your link back to your GLOW workshop work",
+        "HtmlBody": html_body,
+        "TextBody": text_body,
+        "MessageStream": _POSTMARK_STREAM,
+    }
+    return _send(payload, to_email)
+
+
 # ---------------------------------------------------------------------------
 # Internal send helper
 # ---------------------------------------------------------------------------

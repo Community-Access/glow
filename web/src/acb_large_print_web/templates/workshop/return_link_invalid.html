@@ -1,0 +1,30 @@
+{% extends "workshop/_shell.html" %}
+
+{% block title %}Return link cannot be used{% endblock %}
+{% block heading %}Return link cannot be used{% endblock %}
+
+{% block content %}
+{# Say which of the three things went wrong. "Already used" and "expired" are
+   different instructions for the person holding the link, and both are
+   recoverable -- neither should read as "your work is gone". #}
+<p role="alert">
+  {% if status == 'used' %}
+  This return link has already been used. Each link works once.
+  {% elif status == 'expired' %}
+  This return link has expired.
+  {% elif status == 'gone' %}
+  The workshop record this link points to is no longer available.
+  {% else %}
+  This return link is not valid. It may have been copied incompletely from
+  your email.
+  {% endif %}
+</p>
+
+<p>
+  Your saved work has not been affected. To get back to it, open the workshop
+  on the device you used before and send yourself a new link from your
+  workshop content page, or ask your facilitator for help.
+</p>
+
+<p><a href="{{ url_for('workshop.workshop_home') }}">Go to the workshop home page</a></p>
+{% endblock %}

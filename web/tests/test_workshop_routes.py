@@ -1,13 +1,17 @@
 from __future__ import annotations
 
+import hashlib
 import json
 import re
+from datetime import UTC, datetime, timedelta
 from pathlib import Path
 
 import pytest
 from flask import Flask
 
+from acb_large_print_web import workshop_store
 from acb_large_print_web.app import create_app
+from acb_large_print_web.routes import workshop as workshop_routes
 from acb_large_print_web.workshop_store import (
     add_feedback,
     count_submissions,
@@ -1048,3 +1052,201 @@ def test_another_participant_cannot_download_your_agent(client, app: Flask):
     other = app.test_client()
     other.set_cookie("glow_consent_v1", "1", domain="localhost")
     assert other.get(f"/workshop/session/{code}/champion-skill.zip").status_code == 404
+
+
+# ---------------------------------------------------------------------------
+# Return links -- identity that survives a closed laptop
+# ---------------------------------------------------------------------------
+
+
+class _MailBox:
+    """Captures return-link emails instead of calling Postmark."""
+
+    def __init__(self, *, succeed: bool = True) -> None:
+        self.succeed = succeed
+        self.sent: list[dict] = []
+
+    def __call__(self, to_email, *, link, ttl_days, session_title="", participant_name=""):
+        self.sent.append(
+            {
+                "to": to_email,
+                "link": link,
+                "ttl_days": ttl_days,
+                "session_title": session_title,
+                "participant_name": participant_name,
+            }
+        )
+        return (self.succeed, "queued" if self.succeed else "failed")
+
+
+@pytest.fixture()
+def mailbox(monkeypatch: pytest.MonkeyPatch) -> _MailBox:
+    box = _MailBox()
+    monkeypatch.setattr(workshop_routes, "email_configured", lambda: True)
+    monkeypatch.setattr(workshop_routes, "send_workshop_return_link_email", box)
+    return box
+
+
+def _join_and_save(client, code: str, *, name: str = "Rowan") -> None:
+    client.post("/workshop/", data={"action": "join", "session_code": code, "display_name": name})
+    client.post(
+        f"/workshop/session/{code}/activity/journey_check_in",
+        data={
+            "work_type": "Document remediation for a campus library.",
+            "partner_blockers": "Faculty send scanned PDFs with no structure.",
+            "champion_shift": "Departments would fix their own headings.",
+        },
+    )
+
+
+def test_return_link_form_appears_on_my_content(client, app: Flask, mailbox: _MailBox):
+    code = _seed_workshop(app, "returnform")
+    _join_and_save(client, code)
+
+    page = client.get(f"/workshop/session/{code}/me").get_data(as_text=True)
+
+    assert 'name="return_email"' in page
+    assert f"/workshop/session/{code}/return-link" in page
+
+
+def test_return_link_restores_the_participant_on_another_device(client, app: Flask, mailbox: _MailBox):
+    code = _seed_workshop(app, "returnhop")
+    _join_and_save(client, code, name="Rowan")
+
+    resp = client.post(
+        f"/workshop/session/{code}/return-link",
+        data={"return_email": "rowan@example.edu"},
+    )
+    assert resp.status_code in (302, 303)
+    assert resp.headers["Location"].endswith("link=sent")
+    assert len(mailbox.sent) == 1
+    assert mailbox.sent[0]["to"] == "rowan@example.edu"
+
+    # A second browser, with no participant cookie of its own.
+    other = app.test_client()
+    other.set_cookie("glow_consent_v1", "1", domain="localhost")
+    assert other.get(f"/workshop/session/{code}/me").status_code == 404
+
+    follow = other.get(mailbox.sent[0]["link"], follow_redirects=True)
+    body = follow.get_data(as_text=True)
+    assert follow.status_code == 200
+    assert "Rowan" in body
+    assert "Document remediation for a campus library." in body
+
+
+def test_return_link_is_single_use(client, app: Flask, mailbox: _MailBox):
+    code = _seed_workshop(app, "returnonce")
+    _join_and_save(client, code)
+    client.post(f"/workshop/session/{code}/return-link", data={"return_email": "rowan@example.edu"})
+    link = mailbox.sent[0]["link"]
+
+    first = app.test_client()
+    first.set_cookie("glow_consent_v1", "1", domain="localhost")
+    assert first.get(link).status_code in (302, 303)
+
+    second = app.test_client()
+    second.set_cookie("glow_consent_v1", "1", domain="localhost")
+    replay = second.get(link)
+    assert replay.status_code == 403
+    assert "already been used" in replay.get_data(as_text=True)
+    # The replay must not hand out an identity.
+    assert second.get(f"/workshop/session/{code}/me").status_code == 404
+
+
+def test_expired_return_link_is_refused_and_says_so(client, app: Flask, mailbox: _MailBox):
+    code = _seed_workshop(app, "returnstale")
+    _join_and_save(client, code)
+    client.post(f"/workshop/session/{code}/return-link", data={"return_email": "rowan@example.edu"})
+    link = mailbox.sent[0]["link"]
+
+    with app.app_context():
+        conn = workshop_store._conn()
+        conn.execute(
+            "UPDATE workshop_return_links SET expires_at_utc=?",
+            ((datetime.now(UTC) - timedelta(days=1)).isoformat(),),
+        )
+        conn.commit()
+        conn.close()
+
+    stale = app.test_client()
+    stale.set_cookie("glow_consent_v1", "1", domain="localhost")
+    resp = stale.get(link)
+    assert resp.status_code == 403
+    assert "expired" in resp.get_data(as_text=True)
+
+
+def test_unknown_return_token_is_refused(client, app: Flask, mailbox: _MailBox):
+    _seed_workshop(app, "returnbogus")
+    resp = client.get("/workshop/return/not-a-real-token")
+    assert resp.status_code == 403
+    assert "not valid" in resp.get_data(as_text=True)
+
+
+def test_return_link_rejects_a_malformed_address_without_sending(client, app: Flask, mailbox: _MailBox):
+    code = _seed_workshop(app, "returnbadmail")
+    _join_and_save(client, code)
+
+    resp = client.post(f"/workshop/session/{code}/return-link", data={"return_email": "rowan.example.edu"})
+
+    assert resp.headers["Location"].endswith("link=invalid-email")
+    assert mailbox.sent == []
+    page = client.get(f"/workshop/session/{code}/me?link=invalid-email").get_data(as_text=True)
+    assert "name@example.com" in page
+
+
+def test_return_link_requires_a_participant(client, app: Flask, mailbox: _MailBox):
+    code = _seed_workshop(app, "returnnoone")
+
+    resp = client.post(f"/workshop/session/{code}/return-link", data={"return_email": "rowan@example.edu"})
+
+    assert resp.status_code == 404
+    assert mailbox.sent == []
+
+
+def test_return_link_reports_a_failed_send(client, app: Flask, mailbox: _MailBox):
+    code = _seed_workshop(app, "returnfail")
+    _join_and_save(client, code)
+    mailbox.succeed = False
+
+    resp = client.post(f"/workshop/session/{code}/return-link", data={"return_email": "rowan@example.edu"})
+
+    assert resp.headers["Location"].endswith("link=send-failed")
+    page = client.get(f"/workshop/session/{code}/me?link=send-failed").get_data(as_text=True)
+    assert "could not send" in page
+
+
+def test_participant_email_never_reaches_facilitator_surfaces(client, app: Flask, mailbox: _MailBox):
+    code = _seed_workshop(app, "returnprivate")
+    _join_and_save(client, code)
+    client.post(f"/workshop/session/{code}/return-link", data={"return_email": "rowan@example.edu"})
+
+    facilitator = app.test_client()
+    facilitator.set_cookie("glow_consent_v1", "1", domain="localhost")
+    _unlock_facilitator(facilitator, code)
+
+    surfaces = [
+        f"/workshop/session/{code}/facilitator",
+        f"/workshop/session/{code}/gallery",
+        f"/workshop/session/{code}/export/json",
+        f"/workshop/session/{code}/export/markdown",
+        f"/workshop/session/{code}/export/html",
+    ]
+    for path in surfaces:
+        body = facilitator.get(path).get_data(as_text=True)
+        assert "rowan@example.edu" not in body, path
+
+
+def test_return_token_is_not_stored_in_the_clear(client, app: Flask, mailbox: _MailBox):
+    code = _seed_workshop(app, "returnhashed")
+    _join_and_save(client, code)
+    client.post(f"/workshop/session/{code}/return-link", data={"return_email": "rowan@example.edu"})
+    token = mailbox.sent[0]["link"].rsplit("/", 1)[-1]
+
+    with app.app_context():
+        conn = workshop_store._conn()
+        rows = conn.execute("SELECT token_hash FROM workshop_return_links").fetchall()
+        conn.close()
+
+    assert len(rows) == 1
+    assert rows[0]["token_hash"] != token
+    assert rows[0]["token_hash"] == hashlib.sha256(token.encode("utf-8")).hexdigest()

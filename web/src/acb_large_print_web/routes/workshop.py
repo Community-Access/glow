@@ -23,12 +23,20 @@ from flask import (
 )
 from markupsafe import Markup, escape
 
+from ..email import email_configured, send_workshop_return_link_email
 from ..feature_flags import get_flag
+from ..workshop_skills import (
+    build_copy_prompt,
+    build_skill_markdown,
+    build_skill_zip_bytes,
+)
 from ..workshop_store import (
     add_feedback,
     bind_participant_login,
+    consume_return_link,
     count_submissions,
     create_or_update_participant,
+    create_return_link,
     decode_field_values,
     ensure_session,
     export_follow_through_markdown,
@@ -48,14 +56,10 @@ from ..workshop_store import (
     load_conference_codes_from_env,
     load_conference_codes_from_file,
     normalize_session_code,
+    return_link_ttl_days,
     save_follow_through_item,
     save_submission,
     update_follow_through_status,
-)
-from ..workshop_skills import (
-    build_copy_prompt,
-    build_skill_markdown,
-    build_skill_zip_bytes,
 )
 from .admin import is_authenticated_admin
 
@@ -998,12 +1002,18 @@ def workshop_my_content(session_code: str):
     submissions = _decorate_submissions(
         list_submissions_for_participant(code, str(participant.get("participant_key", "")))
     )
+    message, message_is_error = _return_link_message()
     return render_template(
         "workshop/my_content.html",
         session_code=code,
         participant=participant,
         submissions=submissions,
         activity_titles=_activity_titles(),
+        status_prefix=("Not sent" if message_is_error else ("Sent" if message else "")),
+        return_link_available=email_configured(),
+        return_link_ttl_days=return_link_ttl_days(),
+        message=message,
+        message_is_error=message_is_error,
     )
 
 
@@ -1070,6 +1080,100 @@ def _champion_skill_context(code: str):
 
     author = str(participant.get("display_name", "Workshop participant")).strip() or "Workshop participant"
     return values, trusted_guidance, author
+
+
+# ---------------------------------------------------------------------------
+# Return links
+# ---------------------------------------------------------------------------
+
+_RETURN_LINK_MESSAGES = {
+    "sent": ("Check your email. Your return link is on its way.", False),
+    "invalid-email": ("Enter an email address in the form name@example.com.", True),
+    "unavailable": ("Return links are not available on this server right now.", True),
+    "send-failed": ("We could not send that email. Please try again, or ask your facilitator.", True),
+}
+
+
+def _return_link_message() -> tuple[str, bool]:
+    """Render the outcome of a return-link request carried in the redirect.
+
+    The request POSTs and redirects rather than rendering in place, so a
+    refresh cannot re-send the email. The outcome travels as a short key
+    instead of the address itself: an email address must not end up in a
+    URL, a bookmark, or a server access log.
+    """
+    key = (request.args.get("link") or "").strip()
+    return _RETURN_LINK_MESSAGES.get(key, ("", False))
+
+
+def _looks_like_email(value: str) -> bool:
+    """A deliberately loose check -- Postmark is the real validator.
+
+    The point is to catch an empty box or an obvious typo before promising
+    someone an email that will never arrive, not to police RFC 5322.
+    """
+    candidate = (value or "").strip()
+    if not candidate or len(candidate) > 254 or " " in candidate:
+        return False
+    local, at, domain = candidate.partition("@")
+    return bool(local and at and "." in domain and not domain.startswith(".") and not domain.endswith("."))
+
+
+@workshop_bp.route("/session/<session_code>/return-link", methods=["POST"])
+def workshop_return_link_request(session_code: str):
+    """Email this participant a link that restores their identity elsewhere."""
+    if not _workshop_enabled() or not _lab_hub_enabled():
+        abort(404)
+    code = _require_session(session_code)
+
+    participant = _current_participant(code)
+    if not participant:
+        return render_template("workshop/my_content_missing.html", session_code=code), 404
+
+    def _back(outcome: str):
+        return redirect(url_for("workshop.workshop_my_content", session_code=code, link=outcome))
+
+    email = (request.form.get("return_email") or "").strip()
+    if not _looks_like_email(email):
+        return _back("invalid-email")
+    if not email_configured():
+        return _back("unavailable")
+
+    key = str(participant.get("participant_key", ""))
+    # Remember the address so the end-of-day artifact and the 30-day nudge
+    # have somewhere to go. It is never rendered in the gallery, the
+    # facilitator dashboard, or any export.
+    bind_participant_login(key, email)
+
+    token = create_return_link(code, key)
+    link = url_for("workshop.workshop_return", token=token, _external=True)
+    session_meta = get_session(code) or {}
+    sent, _detail = send_workshop_return_link_email(
+        email,
+        link=link,
+        ttl_days=return_link_ttl_days(),
+        session_title=str(session_meta.get("title", "")).strip(),
+        participant_name=str(participant.get("display_name", "")).strip(),
+    )
+    return _back("sent" if sent else "send-failed")
+
+
+@workshop_bp.route("/return/<token>", methods=["GET"])
+def workshop_return(token: str):
+    """Spend a return token and re-attach this device to its participant."""
+    if not _workshop_enabled() or not _lab_hub_enabled():
+        abort(404)
+
+    status, participant = consume_return_link(token)
+    if status != "ok" or not participant:
+        return (
+            render_template("workshop/return_link_invalid.html", status=status),
+            403,
+        )
+
+    code = str(participant.get("session_code", ""))
+    resp = make_response(redirect(url_for("workshop.workshop_my_content", session_code=code)))
+    return _set_participant_cookie(resp, str(participant.get("participant_key", "")))
 
 
 @workshop_bp.route("/session/<session_code>/champion-skill", methods=["GET"])

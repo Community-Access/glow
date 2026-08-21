@@ -66,6 +66,32 @@ Submissions marked "share anonymously" are shown and exported as
 "Anonymous participant" in every format, including JSON. Exports never contain
 participant session tokens.
 
+Email addresses given for return links are held only to send that person their
+own work. They never appear in the gallery, on the facilitator dashboard, or in
+any export, and there is a regression test asserting exactly that.
+
+### Return links
+
+A participant's identity is a cookie on one device. Anyone who switches from
+laptop to phone, or whose browser clears cookies, loses access to their work
+unless they have emailed themselves a return link.
+
+Point people at this early -- ideally right after the first activity is saved,
+while there is still something worth keeping. The control is on the "My
+workshop content" page, under "Work on another device".
+
+- Giving an address is optional; the day works fully without it.
+- The link is single use and expires after 45 days, which outlives the 30-day
+  action plan. Override with `GLOW_WORKSHOP_RETURN_LINK_TTL_DAYS`.
+- Requesting another link is always available, so a used or expired link is a
+  recoverable inconvenience, not lost work.
+- Links are stored hashed. A copy of the workshop database yields no usable
+  links.
+
+Requires `POSTMARK_SERVER_TOKEN` on the server. Without it the form is replaced
+by a prompt to download work before leaving -- check this before the session,
+because it is invisible until someone looks for it.
+
 3. Accessibility validation
 - keyboard-only walkthrough complete
 - screen reader smoke test complete

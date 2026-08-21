@@ -1,9 +1,21 @@
 {% extends "workshop/_shell.html" %}
 
-{% block title %}My workshop content{% endblock %}
+{% block title %}{% if status_prefix %}{{ status_prefix }} — {% endif %}My workshop content{% endblock %}
 {% block heading %}My workshop content{% endblock %}
 
 {% block content %}
+{# Same status pattern as the activity pages: focusable, reflected in the
+   title, because a server-rendered live region never announces on load. #}
+<div id="my-content-status" tabindex="-1"{% if message_is_error %} autofocus{% endif %}>
+  {% if message %}
+    {% if message_is_error %}
+  <p class="flash-error" role="alert"><strong>Error:</strong> {{ message }}</p>
+    {% else %}
+  <p class="flash-success" role="status"><strong>Success:</strong> {{ message }}</p>
+    {% endif %}
+  {% endif %}
+</div>
+
 <p>Participant: {{ participant.display_name }}. Session: {{ session_code }}.</p>
 
 <ul>
@@ -24,6 +36,41 @@
   <p><a href="{{ url_for('workshop.workshop_activity', session_code=session_code, activity_key=item.activity_key) }}">Open {{ activity_titles.get(item.activity_key, item.activity_key) }} to revise</a></p>
 </article>
 {% endfor %}
+{% endif %}
+
+<h2>Work on another device</h2>
+<p>
+  Your work is tied to this browser. If you switch to a phone, use a different
+  computer, or clear your cookies, you will not find it again unless you send
+  yourself a return link.
+</p>
+{% if return_link_available %}
+<form method="post"
+      action="{{ url_for('workshop.workshop_return_link_request', session_code=session_code) }}"
+      class="workshop-return-link-form">
+  <div class="form-field">
+    <label for="return_email">Email address (optional)</label>
+    <input type="email"
+           id="return_email"
+           name="return_email"
+           autocomplete="email"
+           spellcheck="false"
+           aria-describedby="return-email-help">
+    <p id="return-email-help">
+      We email you one link that opens your workshop work on any device. The
+      link can be used once and expires in {{ return_link_ttl_days }} days; you
+      can request another at any time. Your address is used only to send you
+      your own work. It is never shown in the shared gallery, on the
+      facilitator dashboard, or in any export.
+    </p>
+  </div>
+  <button type="submit">Email me a return link</button>
+</form>
+{% else %}
+<p>
+  Return links are turned off on this server, so keep using this browser, or
+  download your work with the link above before you leave.
+</p>
 {% endif %}
 
 {% include "workshop/_session_nav.html" %}

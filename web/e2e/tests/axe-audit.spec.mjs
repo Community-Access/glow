@@ -210,6 +210,9 @@ const WORKSHOP_PAGES = [
   // Compiled from the seeded Champion Studio response above: the page that
   // hands each participant their generated agent skill.
   { label: 'workshop champion skill', path: `/workshop/session/${WORKSHOP_SESSION}/champion-skill` },
+  // The page a participant lands on when a return link is stale or mistyped.
+  // Rendered for any unknown token, so no seeding is needed.
+  { label: 'workshop return link refused', path: '/workshop/return/axe-not-a-real-token' },
   // Renders the facilitator unlock prompt for an unauthenticated visitor.
   { label: 'workshop facilitator gate', path: `/workshop/session/${WORKSHOP_SESSION}/facilitator` },
 ];

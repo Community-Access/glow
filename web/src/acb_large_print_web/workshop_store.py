@@ -7,12 +7,13 @@ environments without additional infrastructure.
 
 from __future__ import annotations
 
+import hashlib
 import json
 import os
 import re
 import secrets
 import sqlite3
-from datetime import UTC, datetime
+from datetime import UTC, datetime, timedelta
 from html import escape
 from io import BytesIO
 from pathlib import Path
@@ -86,6 +87,16 @@ def _ensure_schema(conn: sqlite3.Connection) -> None:
         " active INTEGER NOT NULL DEFAULT 1,"
         " created_at_utc TEXT NOT NULL,"
         " updated_at_utc TEXT NOT NULL"
+        ")"
+    )
+    conn.execute(
+        "CREATE TABLE IF NOT EXISTS workshop_return_links ("
+        " token_hash TEXT PRIMARY KEY,"
+        " session_code TEXT NOT NULL,"
+        " participant_key TEXT NOT NULL,"
+        " created_at_utc TEXT NOT NULL,"
+        " expires_at_utc TEXT NOT NULL,"
+        " used_at_utc TEXT"
         ")"
     )
     conn.execute(
@@ -481,6 +492,127 @@ def get_participant(participant_key: str) -> dict | None:
         conn.commit()
     conn.close()
     return dict(row) if row else None
+
+
+# ---------------------------------------------------------------------------
+# Return links
+# ---------------------------------------------------------------------------
+#
+# Participant identity is a cookie on one device. Close the laptop, switch to
+# a phone, or let the browser clear cookies, and a participant's whole day is
+# unreachable -- and the 30-day action plan, which is the point of the
+# workshop, has no delivery vehicle. A return link restores the same
+# participant_key on any device from an emailed, single-use, expiring token.
+#
+# The token is a bearer credential for one person's workshop work, so only its
+# SHA-256 hash is stored: a copy of the database does not yield working links.
+
+RETURN_LINK_TTL_DAYS = 45
+
+
+def return_link_ttl_days() -> int:
+    """Days a return link stays valid.
+
+    The default outlives the 30-day action plan, so the follow-up nudge can
+    link a participant straight back into their own commitments.
+    """
+    raw = (os.environ.get("GLOW_WORKSHOP_RETURN_LINK_TTL_DAYS") or "").strip()
+    if raw.isdigit() and int(raw) > 0:
+        return int(raw)
+    return RETURN_LINK_TTL_DAYS
+
+
+def _hash_return_token(token: str) -> str:
+    return hashlib.sha256(token.encode("utf-8")).hexdigest()
+
+
+def create_return_link(session_code: str, participant_key: str, *, ttl_days: int | None = None) -> str:
+    """Issue a single-use return token and give back the raw value to email.
+
+    The raw token is returned once and never stored; only its hash is kept.
+    """
+    code = normalize_session_code(session_code)
+    key = (participant_key or "").strip()
+    if not key:
+        raise ValueError("A participant key is required.")
+    days = ttl_days if ttl_days and ttl_days > 0 else return_link_ttl_days()
+    token = secrets.token_urlsafe(32)
+    now = datetime.now(UTC)
+    conn = _conn()
+    conn.execute(
+        "INSERT INTO workshop_return_links "
+        "(token_hash, session_code, participant_key, created_at_utc, expires_at_utc, used_at_utc) "
+        "VALUES (?, ?, ?, ?, ?, NULL)",
+        (
+            _hash_return_token(token),
+            code,
+            key,
+            now.isoformat(),
+            (now + timedelta(days=days)).isoformat(),
+        ),
+    )
+    conn.commit()
+    conn.close()
+    return token
+
+
+def consume_return_link(token: str) -> tuple[str, dict | None]:
+    """Spend a return token.
+
+    Returns ``(status, participant)`` where status is one of ``ok``,
+    ``invalid``, ``used``, ``expired`` or ``gone``. The caller needs the
+    distinction: "this link was already used" and "this link expired" are
+    different instructions for the person holding it, and neither should be
+    reported as a generic failure.
+    """
+    raw = (token or "").strip()
+    if not raw:
+        return "invalid", None
+
+    conn = _conn()
+    row = conn.execute(
+        "SELECT token_hash, session_code, participant_key, expires_at_utc, used_at_utc "
+        "FROM workshop_return_links WHERE token_hash=?",
+        (_hash_return_token(raw),),
+    ).fetchone()
+    if row is None:
+        conn.close()
+        return "invalid", None
+    if row["used_at_utc"]:
+        conn.close()
+        return "used", None
+    try:
+        expires = datetime.fromisoformat(str(row["expires_at_utc"]))
+    except ValueError:
+        expires = datetime.now(UTC) - timedelta(seconds=1)
+    if expires.tzinfo is None:
+        expires = expires.replace(tzinfo=UTC)
+    if expires < datetime.now(UTC):
+        conn.close()
+        return "expired", None
+
+    participant = conn.execute(
+        "SELECT participant_key, session_code, display_name, login_email, created_at_utc, updated_at_utc, last_seen_at_utc "
+        "FROM workshop_participants WHERE participant_key=?",
+        (str(row["participant_key"]),),
+    ).fetchone()
+    if participant is None:
+        # The participant record was removed after the link was issued.
+        conn.close()
+        return "gone", None
+
+    now = _utc_now()
+    conn.execute(
+        "UPDATE workshop_return_links SET used_at_utc=? WHERE token_hash=?",
+        (now, str(row["token_hash"])),
+    )
+    conn.execute(
+        "UPDATE workshop_participants SET last_seen_at_utc=?, updated_at_utc=? WHERE participant_key=?",
+        (now, now, str(row["participant_key"])),
+    )
+    conn.commit()
+    conn.close()
+    return "ok", dict(participant)
 
 
 def bind_participant_login(participant_key: str, login_email: str) -> None:

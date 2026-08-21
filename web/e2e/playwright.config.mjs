@@ -50,6 +50,10 @@ export default defineConfig({
       GLOW_BYPASS_CONSENT_FOR_AUTOMATION: process.env.GLOW_BYPASS_CONSENT_FOR_AUTOMATION || '1',
       GLOW_ENABLE_AUTOMATION_CONSENT_ENDPOINT: process.env.GLOW_ENABLE_AUTOMATION_CONSENT_ENDPOINT || '1',
       GLOW_AUTOMATION_CONSENT_TOKEN: automationConsentToken,
+      // Workshop return links are offered only when email is configured, so
+      // without a token the audit would scan the page with its form absent.
+      // No spec submits that form, so nothing is ever sent to Postmark.
+      POSTMARK_SERVER_TOKEN: process.env.POSTMARK_SERVER_TOKEN || 'e2e-placeholder-token',
     },
     reuseExistingServer: !process.env.CI,
     timeout: 120000,
