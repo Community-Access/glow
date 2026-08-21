@@ -64,6 +64,65 @@ async function ensureConsent(page) {
 }
 
 /**
+ * Create the Workshop Mode session used by the session-scoped audits and save
+ * one activity response, so the gallery, personal-content and follow-through
+ * pages are scanned with real content in them.
+ *
+ * Every step is tolerant of Workshop Mode being disabled by feature flag: in
+ * that case the routes 404 and the workshop audits simply report the 404 page.
+ */
+async function completeActivity(page, sessionCode, activityKey, answer) {
+  await page.goto(
+    `/workshop/session/${encodeURIComponent(sessionCode)}/activity/${activityKey}`,
+  );
+  await ensureConsent(page);
+  const textareas = page.locator('form textarea');
+  const count = await textareas.count();
+  for (let i = 0; i < count; i += 1) {
+    await textareas.nth(i).fill(answer);
+  }
+  // "Save activity response" finishes the activity; "Save draft" would leave
+  // it incomplete, and the champion-skill page only compiles finished work.
+  const save = page.getByRole('button', { name: /^Save activity response/i });
+  if (await save.count()) {
+    await save.click();
+    await page.waitForLoadState('networkidle');
+  }
+}
+
+async function seedWorkshop(page, sessionCode) {
+  await page.goto(`/workshop/?code=${encodeURIComponent(sessionCode)}`);
+  await ensureConsent(page);
+
+  const nameField = page.locator('#display_name');
+  if (await nameField.count()) {
+    await nameField.fill('Axe Participant');
+    const enter = page.getByRole('button', { name: /Enter workshop/i });
+    if (await enter.count()) {
+      await enter.click();
+      await page.waitForLoadState('networkidle');
+    }
+  }
+
+  await completeActivity(
+    page,
+    sessionCode,
+    'journey_check_in',
+    'Sample workshop response captured for the accessibility audit.',
+  );
+
+  // The Champion Studio is what the champion-skill page compiles. Without a
+  // finished response that route renders its 404 template and the audit would
+  // silently pass against the wrong page.
+  await completeActivity(
+    page,
+    sessionCode,
+    'champion_studio',
+    'Sample champion workflow captured for the accessibility audit. A human reviews every draft before it is sent.',
+  );
+}
+
+/**
  * Navigate to *url*, handle consent redirect if needed, then run axe.
  * Returns { url, violations, passes, incomplete } shaped like axe CLI output.
  */
@@ -127,14 +186,44 @@ const STATIC_PAGES = [
   { label: 'status', path: '/status/' },
 ];
 
+// Workshop Mode. These pages are the hands-on surface used to *teach*
+// accessibility in conference workshops, so they carry a higher bar than the
+// rest of the app -- yet until now they were the only routes absent from this
+// suite. Session-scoped pages need a session to exist first; seedWorkshop()
+// creates one and saves a response so the gallery and personal pages are
+// audited populated rather than in their empty state.
+const WORKSHOP_SESSION = process.env.E2E_WORKSHOP_SESSION || 'axe-workshop';
+
+const WORKSHOP_PAGES = [
+  { label: 'workshop home', path: '/workshop/' },
+  { label: 'workshop guide', path: '/workshop/guide' },
+  { label: 'workshop exercises', path: '/workshop/exercises' },
+  { label: 'workshop utilization guide', path: '/workshop/utilization' },
+  { label: 'workshop activity', path: `/workshop/session/${WORKSHOP_SESSION}/activity/journey_check_in` },
+  { label: 'workshop launchpad', path: `/workshop/session/${WORKSHOP_SESSION}/launchpad` },
+  { label: 'workshop my content', path: `/workshop/session/${WORKSHOP_SESSION}/me` },
+  { label: 'workshop gallery', path: `/workshop/session/${WORKSHOP_SESSION}/gallery` },
+  { label: 'workshop follow-through', path: `/workshop/session/${WORKSHOP_SESSION}/follow-through` },
+  { label: 'workshop coach mode', path: `/workshop/session/${WORKSHOP_SESSION}/coach` },
+  { label: 'workshop review mode', path: `/workshop/session/${WORKSHOP_SESSION}/review` },
+  { label: 'workshop share mode', path: `/workshop/session/${WORKSHOP_SESSION}/share` },
+  // Compiled from the seeded Champion Studio response above: the page that
+  // hands each participant their generated agent skill.
+  { label: 'workshop champion skill', path: `/workshop/session/${WORKSHOP_SESSION}/champion-skill` },
+  // Renders the facilitator unlock prompt for an unauthenticated visitor.
+  { label: 'workshop facilitator gate', path: `/workshop/session/${WORKSHOP_SESSION}/facilitator` },
+];
+
+const ALL_PAGES = [...STATIC_PAGES, ...WORKSHOP_PAGES];
+
 const AXE_PATH_FILTER = (process.env.E2E_AXE_PATHS || '')
   .split(',')
   .map((entry) => entry.trim())
   .filter(Boolean);
 
 const ACTIVE_PAGES = AXE_PATH_FILTER.length
-  ? STATIC_PAGES.filter((page) => AXE_PATH_FILTER.includes(page.path))
-  : STATIC_PAGES;
+  ? ALL_PAGES.filter((page) => AXE_PATH_FILTER.includes(page.path))
+  : ALL_PAGES;
 
 // ---------------------------------------------------------------------------
 // Accumulated results — written to artifact after all tests complete
@@ -201,6 +290,7 @@ test.describe('GLOW axe-core WCAG 2.2 AA audit', () => {
     // Grant consent once by visiting home and accepting
     await sharedPage.goto('/');
     await ensureConsent(sharedPage);
+    await seedWorkshop(sharedPage, WORKSHOP_SESSION);
   });
 
   test.afterAll(async () => {
