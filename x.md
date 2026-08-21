@@ -476,6 +476,144 @@ Still optional, in rough order of usefulness:
 
 ---
 
+## 7. Proposal for review: GLOW-wide email and returning users
+
+**Status: not built. Written for review, not started.**
+
+The short answer to "do we have rich email features across all of GLOW?" is
+no. Email today does six useful but disconnected jobs, and the one genuinely
+rich feature -- come back to your own work from any device -- exists only
+inside Workshop Mode, because that is where it was needed first.
+
+### 7.1 Where things actually stand
+
+| Concern | Today | Consequence |
+|---|---|---|
+| Display preferences (type scale, theme, cognitive profile, forced colours, motion) | `localStorage` in one browser (`static/preferences.js`) | Lost on a new device, a different browser, or a cookie clear |
+| Per-user AI provider and model settings | The Flask session, with a timeout (`user_ai.py`) | Gone when the session expires; never on a second device |
+| Tool defaults (audit profile, suppressed rules, fix options, voice) | Re-chosen on every visit | The same choices, made again, every time |
+| Long-job notification (Whisperer) | An address typed per job (`notify_email`) | Typed again each time, and only for Whisperer |
+| Identity | Three islands: admin (magic link + OAuth), workshop participant (cookie + return link), OIDC when Keycloak is on | Nothing carries across the product |
+| Audit history | Not kept | No "what did this document score last month?" |
+
+So GLOW has excellent *stateless* behaviour -- which is a real virtue, and the
+reason it works for someone on a locked-down library machine -- and no way at
+all for a person to be recognised again on their own terms.
+
+### 7.2 The proposal: a GLOW passport
+
+One optional, email-only identity for the whole product, built on the
+mechanism Workshop Mode already uses: a signed, single-use, expiring link;
+tokens stored only as hashes; no password, no account creation, no sign-up
+wall.
+
+**The interaction.** On `/settings`, under the existing controls: *"Keep these
+settings. We will email you one link that restores them on any device."*
+Enter an address, receive a link, click it anywhere, and the settings are
+yours again. No password to forget, nothing to install, and nothing changes
+for people who never use it.
+
+**What travels, in explicitly separate opt-ins:**
+
+1. **Display preferences.** Type scale, theme, contrast and forced-colours
+   mode, the cognitive-accessibility profile, reduced motion.
+2. **Tool defaults.** Standards profile, suppressed rules, fix options,
+   conversion targets, speech voice and rate, braille table.
+3. **Notification preferences.** "Email me when a long job finishes", with the
+   address already known so it is never typed again.
+4. **History pointers.** Recent audits and their scores, so a document can be
+   compared with its own past. Off by default, because it is the only one that
+   stores anything about the *content* someone worked on.
+
+**What it must never become:** an account system with passwords; a prerequisite
+for any feature; a way to identify someone who did not ask to be identified;
+or a marketing list. Every surface keeps working logged out, exactly as now.
+
+### 7.3 Why this matters more for GLOW than for most products
+
+The people most likely to have carefully tuned a type scale, a contrast mode,
+a reduced-motion setting and a screen-reader-friendly profile are precisely
+the people this tool exists for -- and today those settings evaporate when
+they pick up a phone or when a shared machine clears its cookies. Asking
+somebody to rebuild their own accessibility configuration on every device is
+a small, repeated, avoidable insult.
+
+That is the argument for building this, and it is a stronger one than
+convenience.
+
+### 7.4 What it unlocks, surface by surface
+
+- **Audit.** Your profile and rule suppressions are already set. Email
+  delivery already exists; with a known address it becomes one click.
+- **Fix and Convert.** Your defaults survive. Long conversions can tell you
+  when they are done instead of asking you to watch a progress bar.
+- **Speech and Whisperer.** Voice, rate and notification address are
+  remembered; the address is no longer retyped per job.
+- **Braille.** Table and formatting preferences persist.
+- **Workshop.** The participant return link becomes a special case of the
+  general mechanism rather than a parallel system, and a participant who
+  already has a passport is recognised on arrival.
+- **Admin.** Nothing changes; admin identity stays separate on purpose.
+
+### 7.5 Design constraints, learned from building the workshop version
+
+- Tokens: single use, hashed at rest, time-boxed, and landing only on an
+  allow-listed destination so a link in an email can never become an open
+  redirect. All four of these are already implemented and tested.
+- Rate limits per participant rather than per address, so a shared network
+  cannot lock a room out. Also already implemented.
+- A "forget me" control that deletes the stored settings and the address, and
+  says plainly what it deleted.
+- Retention stated on the form that asks for the address, not buried in a
+  policy page.
+- No address ever rendered in a shared surface, an export, or a log line.
+- The link email must carry a plain-text alternative and no colour-carried
+  meaning -- the house layout added in section 6.6 already does this.
+
+### 7.6 Suggested delivery, in three independent slices
+
+**Slice 1 -- settings that travel.** Server-side settings blob keyed by an
+opaque profile id, the passport cookie, the "email me a link" control on
+`/settings`, and the restore route. Reuses `workshop_store`'s return-link
+code almost verbatim. Roughly a day, plus tests.
+
+**Slice 2 -- notifications worth having.** "Tell me when it finishes" for
+Whisperer and long conversions, using the saved address; per-feature opt-in;
+one place to turn them all off. Half a day.
+
+**Slice 3 -- history and comparison.** Optional, off by default: keep audit
+scores over time so a document can be measured against its own past, and let
+someone email themselves that history. A day, and the slice most worth
+challenging on privacy grounds.
+
+Each slice ships on its own and each is optional at runtime. Nothing here
+should reach production before the conference; the workshop path is already
+built and tested, and freeze week is not the time.
+
+### 7.7 Other email ideas worth considering
+
+- **Email this fixed document to me** -- the fix workspace produces a file and
+  currently offers only a download.
+- **Share a report by email** -- send an audit to a colleague with a note,
+  rather than downloading and attaching it by hand.
+- **Bounce and complaint webhooks** so a mistyped address is visible on the
+  day rather than never (also in section 6.6).
+- **A facilitator digest** the morning after a workshop: what was submitted,
+  what was committed to, what to follow up.
+
+### 7.8 Questions for you, before any of this starts
+
+1. Should a passport and a workshop participant be the same object, or stay
+   separate with the workshop able to adopt a passport when one exists?
+2. What retention do you want stated on the form -- 90 days, a year, until
+   they ask to be forgotten?
+3. When Keycloak is enabled, should an OIDC sign-in silently carry the same
+   settings, or should the passport stay independent of it?
+4. Is history (slice 3) worth the privacy surface it adds, given it is the
+   only part that records what someone worked on?
+
+---
+
 ## Appendix A — Feature inventory
 
 **Participant surfaces:** workshop home and join, eleven activities plus one
