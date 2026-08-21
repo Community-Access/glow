@@ -529,6 +529,9 @@ for people who never use it.
 for any feature; a way to identify someone who did not ask to be identified;
 or a marketing list. Every surface keeps working logged out, exactly as now.
 
+**Decided:** one passport serves both GLOW and Workshop Mode, retention is 90
+days from last use, and history is opt-in only. Section 7.8 has the detail.
+
 ### 7.3 Why this matters more for GLOW than for most products
 
 The people most likely to have carefully tuned a type scale, a contrast mode,
@@ -601,16 +604,87 @@ built and tested, and freeze week is not the time.
 - **A facilitator digest** the morning after a workshop: what was submitted,
   what was committed to, what to follow up.
 
-### 7.8 Questions for you, before any of this starts
+### 7.8 Decisions taken
 
-1. Should a passport and a workshop participant be the same object, or stay
-   separate with the workshop able to adopt a passport when one exists?
-2. What retention do you want stated on the form -- 90 days, a year, until
-   they ask to be forgotten?
-3. When Keycloak is enabled, should an OIDC sign-in silently carry the same
-   settings, or should the passport stay independent of it?
-4. Is history (slice 3) worth the privacy surface it adds, given it is the
-   only part that records what someone worked on?
+Answered 21 August. These are settled; the design above is written to them.
+
+**1. One passport, used for both.** A passport and a workshop participant are
+the same object. Practically that means:
+
+- One identity record carries an optional email address, a settings blob, and
+  zero or more workshop-session memberships. `workshop_participants` becomes a
+  membership of a passport rather than a parallel identity.
+- The return links already built are passport links. The mechanism does not
+  change -- single use, hashed at rest, time-boxed, allow-listed destination.
+- Someone who arrives at a workshop already carrying a passport is recognised,
+  keeps their type scale and contrast profile, and does not fill in a display
+  name they have already given.
+- Anonymity in the gallery is untouched. The display name and the
+  share-anonymously choice stay per session, because "who I am to this room"
+  is a different question from "which browser is mine".
+- Migration is additive: existing participant cookies keep working, and a
+  passport is attached the first time someone asks for one.
+
+**2. Retention: 90 days.** From last use, sliding -- a returning visitor resets
+the clock. This matches the participant cookie's existing lifetime and the
+45-day return-link expiry sits comfortably inside it. Stated on the form that
+asks for the address, not buried in a policy page. A "forget me" control
+deletes the record immediately and says what it deleted.
+
+**3. Keycloak: yes, over SMTP.** See section 7.9.
+
+**4. History is opt-in only.** Off by default, never enabled as a side effect
+of saving settings, with its own checkbox and its own sentence explaining what
+gets stored. A passport with history switched off must store nothing about
+which documents someone worked on.
+
+### 7.9 Keycloak and Postmark
+
+Yes -- they work together, and they stay separate concerns.
+
+Keycloak sends its own mail (verify address, forgot password, required
+actions, admin invitations) over SMTP, and Postmark offers an SMTP endpoint
+alongside the HTTP API that GLOW itself uses. One Postmark server can serve
+both.
+
+**Realm Settings → Email, in Keycloak:**
+
+| Field | Value |
+|---|---|
+| From | `no-reply@notify.letitglow.app` (must be a verified sender or on a verified domain) |
+| From display name | GLOW |
+| Envelope-From | an address on the same verified domain, so Return-Path aligns |
+| Host | `smtp.postmarkapp.com` |
+| Port | 587 (25 and 2525 also work) |
+| Encryption | Enable StartTLS |
+| Authentication | On |
+| Username | the Server API token |
+| Password | the same Server API token |
+
+Postmark accepts the server token as both username and password, or an SMTP
+token's access key and secret key if you would rather keep the credentials
+separate. Without an `X-PM-Message-Stream` header, SMTP sends on the server's
+default transactional stream, which is what these messages are -- Keycloak
+cannot easily add headers, and broadcast mail would need a different host
+anyway.
+
+**Two things worth being clear about:**
+
+- **The passport does not run on Keycloak.** GLOW's magic links are
+  application-level: our token, our table, our expiry, and they work whether
+  or not Keycloak is deployed. Keycloak's SMTP settings only affect mail
+  Keycloak itself sends. Configuring one does not configure the other, and
+  either can exist without the other.
+- **The current Keycloak runs on `KC_DB: dev-file`.** That is a file-backed
+  development database. Social login through Google and GitHub needs no mail
+  and no durable user store, which is why this has not mattered. The moment
+  Keycloak holds real accounts with verified addresses, it needs a real
+  database and a backup story -- so if email-based Keycloak flows are ever
+  switched on, that migration comes first.
+
+Sources: [Postmark SMTP user guide](https://postmarkapp.com/developer/user-guide/send-email-with-smtp),
+[which SMTP details and API tokens to use](https://postmarkapp.com/support/article/811-what-are-the-smtp-details-api-tokens-i-should-be-using),
+[sending through message streams](https://postmarkapp.com/support/article/how-to-create-and-send-through-message-streams).
 
 ---
 
