@@ -69,6 +69,7 @@
 <h2>Session-wide exports</h2>
 <p>These contain every participant's submissions. Names are replaced with "Anonymous participant" wherever a participant chose to share anonymously.</p>
 <ul>
+  <li><a href="{{ url_for('workshop.workshop_signage', session_code=session_code) }}">Room signage: short addresses and QR codes to print or project</a></li>
   <li><a href="{{ url_for('workshop.workshop_export_markdown', session_code=session_code) }}">Export all artifacts (Markdown, .md file)</a></li>
   <li><a href="{{ url_for('workshop.workshop_export_json', session_code=session_code) }}">Export all artifacts (JSON, .json file)</a></li>
   <li><a href="{{ url_for('workshop.workshop_export_html', session_code=session_code) }}">Export all artifacts (HTML, .html file)</a></li>

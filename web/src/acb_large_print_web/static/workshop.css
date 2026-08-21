@@ -149,3 +149,27 @@ html[data-theme="dark"] {
 .workshop-table-wrap {
   overflow-x: auto;
 }
+
+/* --- Room signage --------------------------------------------------------- */
+/* The address is the artifact; the QR code is its companion. Type it large
+   enough to read from a seat, and never let it wrap mid-word into nonsense. */
+.workshop-signage-url {
+  font-size: 1.35em;
+  overflow-wrap: anywhere;
+}
+
+/* The QR keeps its own white quiet zone so it stays scannable in dark mode,
+   where the page behind it is not white. */
+.workshop-signage-qr {
+  background: #ffffff;
+  padding: 0.5rem;
+  max-width: 100%;
+  height: auto;
+}
+
+@media print {
+  .workshop-signage-card {
+    page-break-inside: avoid;
+    border: 2px solid #000000;
+  }
+}

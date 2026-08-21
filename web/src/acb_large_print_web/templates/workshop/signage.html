@@ -1,0 +1,31 @@
+{% extends "workshop/_shell.html" %}
+
+{% block title %}Room signage — session {{ session_code }}{% endblock %}
+{% block heading %}Room signage{% endblock %}
+
+{% block content %}
+<p>
+  Print these, or project the first one. Each card carries the short address
+  in large type with a QR code beside it. The address is the important part:
+  a QR code is no help to someone reading this on the phone they would have to
+  scan it with, or to anyone using a screen reader.
+</p>
+
+<p>Session: {{ session_code }}{% if session_event %} — {{ session_event }}{% endif %}</p>
+
+{% for target in targets %}
+<section class="workshop-panel workshop-signage-card">
+  <h2>{{ target.label }}</h2>
+  {% if target.detail %}<p>{{ target.detail }}</p>{% endif %}
+  <p class="workshop-signage-url"><strong>{{ target.url }}</strong></p>
+  <p>
+    <img class="workshop-signage-qr"
+         src="{{ url_for('workshop.workshop_qr', session_code=session_code, slug=target.slug) }}"
+         width="180" height="180"
+         alt="QR code for {{ target.url }}">
+  </p>
+</section>
+{% endfor %}
+
+{% include "workshop/_session_nav.html" %}
+{% endblock %}

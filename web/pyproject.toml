@@ -44,6 +44,9 @@ dependencies = [
     "numpy>=2.2.0",
     "presidio-analyzer>=2.2.359",
     "presidio-anonymizer>=2.2.359",
+    # QR codes for workshop room signage. Pure Python, no dependencies of
+    # its own, renders SVG inline so nothing has to be written to disk.
+    "segno>=1.6.1",
     # liblouis Python bindings are provided by python3-louis (apt) in the
     # Docker image; no PyPI package needed -- see web/Dockerfile.
 ]

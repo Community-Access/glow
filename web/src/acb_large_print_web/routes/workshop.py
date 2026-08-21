@@ -5,6 +5,7 @@ from __future__ import annotations
 import hmac
 import os
 from datetime import UTC, datetime
+from io import BytesIO
 from pathlib import Path
 
 from flask import (
@@ -1770,6 +1771,98 @@ def workshop_share(session_code: str):
         abort(404)
     code = _require_session(session_code)
     return render_template("workshop/share.html", session_code=code)
+
+
+# ---------------------------------------------------------------------------
+# Short URLs, QR codes, and printable signage
+# ---------------------------------------------------------------------------
+
+def _short_url(session_code: str, *, number: int | None = None) -> str:
+    """The short, sayable address for a session or one of its activities."""
+    if number is None:
+        return url_for("shortlinks.short_session", session_code=session_code, _external=True)
+    return url_for(
+        "shortlinks.short_activity", session_code=session_code, number=number, _external=True
+    )
+
+
+def _qr_targets(session_code: str) -> list[dict]:
+    """Everything a facilitator might put on a table card or a slide."""
+    targets = [
+        {
+            "slug": "join",
+            "label": "Join this workshop",
+            "detail": "Start here. This is the only address anyone needs.",
+            "url": _short_url(session_code),
+        }
+    ]
+    for index, key in enumerate(ACTIVITY_ORDER, start=1):
+        targets.append(
+            {
+                "slug": str(index),
+                "label": f"{index}. {_activity_title(key)}",
+                "detail": ACTIVITY_META.get(key, {}).get("time", ""),
+                "url": _short_url(session_code, number=index),
+            }
+        )
+    return targets
+
+
+@workshop_bp.route("/session/<session_code>/qr/<slug>.svg", methods=["GET"])
+def workshop_qr(session_code: str, slug: str):
+    """A QR code for one of this session's own short URLs.
+
+    Deliberately not a general "encode any text" endpoint: that would let
+    anyone host a QR code pointing anywhere under this domain's name. Only
+    addresses this app generated are encoded.
+    """
+    if not _workshop_enabled():
+        abort(404)
+    code = _require_session(session_code)
+
+    target = next((t for t in _qr_targets(code) if t["slug"] == slug), None)
+    if target is None:
+        abort(404)
+
+    try:
+        import segno
+    except ImportError:  # pragma: no cover - dependency is declared
+        current_app.logger.warning("segno is not installed; QR codes unavailable")
+        abort(503)
+
+    buffer = BytesIO()
+    # Error correction M survives a creased table card; the scale is chosen
+    # to be readable from across a round table, not from the back of a room.
+    segno.make(target["url"], error="m").save(
+        buffer, kind="svg", scale=6, border=4, dark="#000000", light="#ffffff"
+    )
+    return Response(
+        buffer.getvalue(),
+        mimetype="image/svg+xml",
+        headers={"Cache-Control": "public, max-age=3600"},
+    )
+
+
+@workshop_bp.route("/session/<session_code>/signage", methods=["GET"])
+def workshop_signage(session_code: str):
+    """Printable table cards: the short URL in large type, and a QR code.
+
+    The URL is the primary artifact and the QR code is the companion. A QR
+    code is no use at all to someone reading this page on the phone they
+    would have to scan it with, and no use to anyone using a screen reader.
+    """
+    if not _workshop_enabled():
+        abort(404)
+    code = _require_session(session_code)
+    session_meta = get_session(code) or {}
+
+    return render_template(
+        "workshop/signage.html",
+        session_code=code,
+        session_title=session_meta.get("title", "GLOW Workshop Session"),
+        session_event=str(session_meta.get("event_name", "")).strip(),
+        targets=_qr_targets(code),
+    )
 
 
 # ---------------------------------------------------------------------------
