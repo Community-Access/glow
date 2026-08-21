@@ -34,6 +34,9 @@ from ..email import (
     send_workshop_return_link_email,
 )
 from ..feature_flags import get_flag
+from ..passport_store import COOKIE_NAME as PASSPORT_COOKIE
+from ..passport_store import get_passport as _get_passport
+from ..passport_store import update_passport as _update_passport
 from ..workshop_ai_budget import session_usage
 from ..workshop_artifact import (
     Artifact,
@@ -76,6 +79,7 @@ from ..workshop_store import (
     list_submissions_for_participant,
     load_conference_codes_from_env,
     load_conference_codes_from_file,
+    link_participant_passport,
     normalize_session_code,
     return_link_ttl_days,
     save_follow_through_item,
@@ -766,6 +770,17 @@ def workshop_home():
                     participant_key=existing_key or None,
                     login_email=_active_login_email(),
                 )
+                # One passport serves both GLOW and Workshop Mode. When this
+                # browser carries one, the participant becomes a membership of
+                # it and the name they just gave is remembered for next time.
+                # Without a passport nothing changes: the column stays NULL.
+                passport_id = (request.cookies.get(PASSPORT_COOKIE) or "").strip()
+                if passport_id and _get_passport(passport_id, touch=False):
+                    link_participant_passport(
+                        str(participant_row.get("participant_key", "")), passport_id
+                    )
+                    _update_passport(passport_id, display_name=display_name)
+
                 resp = make_response(
                     redirect(
                         url_for(

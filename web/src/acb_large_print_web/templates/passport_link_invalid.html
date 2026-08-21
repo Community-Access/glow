@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+
+{% block title %}Settings link cannot be used{% endblock %}
+{% block heading %}Settings link cannot be used{% endblock %}
+
+{% block content %}
+{# Which of the three, in words. "Already used" and "expired" are different
+   instructions for the person holding the link, and neither means their
+   settings are gone. #}
+<p role="alert">
+  {% if status == 'used' %}
+  This link has already been used. Each link works once.
+  {% elif status == 'expired' %}
+  This link has expired.
+  {% elif status == 'gone' %}
+  The settings this link pointed to are no longer stored. They may have been
+  deleted, or passed the retention period.
+  {% else %}
+  This link is not valid. It may have been copied incompletely from your
+  email.
+  {% endif %}
+</p>
+
+<p>
+  {% if status == 'gone' %}
+  Nothing is broken — GLOW works without a passport, and you can create a new
+  one at any time.
+  {% else %}
+  Your settings have not been affected. Open GLOW on the device you used
+  before and send yourself a new link from your passport page.
+  {% endif %}
+</p>
+
+<ul>
+  <li><a href="{{ url_for('passport.passport_page') }}">Go to my passport</a></li>
+  <li><a href="{{ url_for('settings.settings_page') }}">Go to Settings</a></li>
+</ul>
+{% endblock %}

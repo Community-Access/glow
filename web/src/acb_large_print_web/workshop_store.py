@@ -150,6 +150,16 @@ def _ensure_schema(conn: sqlite3.Connection) -> None:
         conn.execute("ALTER TABLE workshop_submissions ADD COLUMN content_json TEXT")
     if "is_draft" not in cols:
         conn.execute("ALTER TABLE workshop_submissions ADD COLUMN is_draft INTEGER NOT NULL DEFAULT 0")
+    participant_cols = [
+        str(r["name"]) for r in conn.execute("PRAGMA table_info(workshop_participants)").fetchall()
+    ]
+    if "passport_id" not in participant_cols:
+        # Decided 21 August: one passport serves both GLOW and Workshop Mode.
+        # A participant becomes a membership of a passport rather than a
+        # separate identity -- but the column is nullable, because joining a
+        # workshop must never require one.
+        conn.execute("ALTER TABLE workshop_participants ADD COLUMN passport_id TEXT")
+
     session_cols = [str(r["name"]) for r in conn.execute("PRAGMA table_info(workshop_sessions)").fetchall()]
     if "facilitator_key" not in session_cols:
         conn.execute("ALTER TABLE workshop_sessions ADD COLUMN facilitator_key TEXT")
@@ -692,6 +702,40 @@ def consume_return_link(token: str) -> tuple[str, dict | None]:
     conn.commit()
     conn.close()
     return "ok", dict(participant)
+
+
+def link_participant_passport(participant_key: str, passport_id: str) -> None:
+    """Attach a participant to the passport this browser carries.
+
+    Called on join. Nothing about the workshop changes without one: the
+    column stays NULL and every surface behaves exactly as before.
+    """
+    key = (participant_key or "").strip()
+    passport = (passport_id or "").strip()
+    if not key or not passport:
+        return
+    conn = _conn()
+    conn.execute(
+        "UPDATE workshop_participants SET passport_id=?, updated_at_utc=? WHERE participant_key=?",
+        (passport, _utc_now(), key),
+    )
+    conn.commit()
+    conn.close()
+
+
+def participants_for_passport(passport_id: str) -> list[dict]:
+    """Which workshops this passport has joined, for the passport page."""
+    passport = (passport_id or "").strip()
+    if not passport:
+        return []
+    conn = _conn()
+    rows = conn.execute(
+        "SELECT participant_key, session_code, display_name, last_seen_at_utc "
+        "FROM workshop_participants WHERE passport_id=? ORDER BY last_seen_at_utc DESC",
+        (passport,),
+    ).fetchall()
+    conn.close()
+    return [dict(row) for row in rows]
 
 
 def bind_participant_login(participant_key: str, login_email: str) -> None:

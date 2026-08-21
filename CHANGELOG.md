@@ -8,6 +8,26 @@ Releases are tagged in the [GitHub repository](https://github.com/Community-Acce
 
 ## [Unreleased]
 
+### Added
+
+- **The GLOW passport** -- one optional identity for the whole product:
+  settings that follow a person to another device via a single-use emailed
+  link, with no password and no account. Preferences previously lived in one
+  browser's local storage and evaporated on a phone or after a cookie clear,
+  which fell hardest on the people who had most carefully tuned their type
+  scale, contrast mode and cognitive profile. Optional at every point; GLOW is
+  unchanged for anyone who never uses it. History is opt-in only, deleted when
+  switched off; retention is 90 days from last use; one control deletes
+  everything and says what it deleted. See `docs/PASSPORT.md`.
+- **Workshop Mode and the passport are one identity.** Joining a workshop
+  attaches the participant to the passport this browser carries, and the
+  display name is remembered. Gallery anonymity is untouched.
+- **Whisperer notification address is remembered** when notifications are on,
+  instead of being retyped for every job.
+- **Email status and a test send** on the admin queue page: what mail can do,
+  which sender and stream, and one message that proves the path without
+  waiting for a real event.
+
 ### Security
 
 - **Per-request CSP nonces, site-wide.** The production `Content-Security-Policy` was `script-src 'self'; style-src 'self'`, which silently blocked every inline `<script>` and `<style>` block in the templates and every inline `on*=` event handler. Most pages had subtle JS-feature breakage (the same class of bug that froze the job progress bar at 20%). Moved CSP emission from [web/Caddyfile](web/Caddyfile) into a Flask `after_request` hook in [web/src/acb_large_print_web/app.py](web/src/acb_large_print_web/app.py) so each response gets a fresh `secrets.token_urlsafe(16)` nonce stashed on `g.csp_nonce`, exposed to Jinja as `csp_nonce`, and injected into `script-src` and `style-src`. Added `nonce="{{ csp_nonce }}"` to all 20 inline `<script>` blocks and 3 inline `<style>` blocks across the templates (`base.html`, `audit_form.html`, `fix_form.html`, `settings.html`, `admin_*`, `chat_form.html`, `convert_form.html`, `rules_ref.html`, `maintenance.html`, etc.). External scripts continue to match `'self'` and need no nonce. Added `script-src-attr 'none'` as defense-in-depth against any future inline event handlers, and `style-src-attr 'unsafe-inline'` so style attributes (`style="display:none"`) used throughout the markup keep working without a churn-heavy refactor.

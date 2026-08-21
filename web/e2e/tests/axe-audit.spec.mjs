@@ -190,6 +190,9 @@ const STATIC_PAGES = [
   { label: 'feedback', path: '/feedback/' },
   { label: 'privacy policy', path: '/privacy/' },
   { label: 'status', path: '/status/' },
+  // The passport page in its no-passport state, which is what most
+  // visitors will ever see of it.
+  { label: 'passport', path: '/passport/' },
 ];
 
 // Workshop Mode. These pages are the hands-on surface used to *teach*

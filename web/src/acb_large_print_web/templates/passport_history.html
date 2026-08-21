@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+
+{% block title %}My audit history{% endblock %}
+{% block heading %}My audit history{% endblock %}
+
+{% block content %}
+{% if not enabled %}
+<p>
+  History is switched off, so nothing is being recorded. You can turn it on in
+  Settings, and turning it off again deletes whatever it collected.
+</p>
+{% elif not entries %}
+<p>No audits recorded yet. The next document you audit will appear here.</p>
+{% else %}
+<p>
+  The last {{ entries|length }} document{{ '' if entries|length == 1 else 's' }}
+  you audited, so you can measure one against its own past.
+</p>
+<div class="workshop-table-wrap" tabindex="0" role="region" aria-label="Audit history, scrollable">
+  <table>
+    <caption>Audit history, most recent first</caption>
+    <thead>
+      <tr><th scope="col">Document</th><th scope="col">Score</th><th scope="col">Grade</th><th scope="col">When (UTC)</th></tr>
+    </thead>
+    <tbody>
+      {% for entry in entries %}
+      <tr>
+        <th scope="row">{{ entry.label }}</th>
+        <td>{{ entry.score if entry.score is not none else '—' }}</td>
+        <td>{{ entry.grade or '—' }}</td>
+        <td>{{ entry.created_at_utc[:16].replace('T', ' ') }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endif %}
+
+<p><a href="{{ url_for('passport.passport_page') }}">Back to my passport</a></p>
+{% endblock %}

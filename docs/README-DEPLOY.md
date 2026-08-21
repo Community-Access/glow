@@ -15,6 +15,26 @@ them, re-scan for real values in `secret`, `password`, `clientSecret`, or
 `credential` fields -- realm exports from a live Keycloak instance include
 secrets by default.
 
+### Optional email and passport settings
+
+GLOW sends mail through Postmark. Nothing below is required; each feature
+hides itself or degrades in a stated way when its variable is unset.
+
+| Variable | Enables | Default |
+|---|---|---|
+| `POSTMARK_SERVER_TOKEN` | Audit report delivery, Whisperer notifications, admin sign-in links, workshop return links and artifact email, and the passport's settings link | unset |
+| `POSTMARK_FROM_EMAIL` | The sender address. Must match a verified Postmark sender or a verified domain | `no-reply@notify.letitglow.app` |
+| `GLOW_PASSPORT_RETENTION_DAYS` | How long a passport survives without use, then automatic deletion | 90 |
+| `GLOW_PASSPORT_LINK_TTL_DAYS` | Lifetime of one emailed settings link | 14 |
+
+Verify mail end to end from `/admin/queue`: the **Email** panel states whether
+Postmark is configured, which sender and stream are in use, and offers a test
+send that changes nothing.
+
+Full setup path, including DKIM and Return-Path records and leaving the
+Postmark sandbox: `x.md` section 6. Passport behaviour and privacy rules:
+`docs/PASSPORT.md`.
+
 ---
 
 ## 2. Prepare Your Local Machine

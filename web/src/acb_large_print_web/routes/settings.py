@@ -180,9 +180,16 @@ def _ai_session_payload() -> dict[str, object]:
 
 @settings_bp.route("/", methods=["GET"])
 def settings_page():
+    # The passport is optional: None here simply means this browser has not
+    # asked for one, and every control on the page still works.
+    from ..passport_store import retention_days
+    from .passport import current_passport
+
     return render_template(
         "settings.html",
         total_rules=len(get_all_rule_ids()),
+        passport=current_passport(),
+        passport_retention_days=retention_days(),
     )
 
 

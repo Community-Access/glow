@@ -981,6 +981,24 @@ def _audit_single():
             }
             _history.insert(0, _history_entry)
             session["glow_audit_history"] = _history[:5]
+
+            # The same entry, kept past the session, but only for a passport
+            # whose owner ticked the history box. record_history() re-checks
+            # that itself, so a future caller cannot forget to.
+            try:
+                from ..passport_store import COOKIE_NAME, record_history
+
+                _passport_id = (request.cookies.get(COOKIE_NAME) or "").strip()
+                if _passport_id:
+                    record_history(
+                        _passport_id,
+                        kind="audit",
+                        label=saved_path.name[:60],
+                        score=result.score,
+                        grade=str(result.grade or ""),
+                    )
+            except Exception:
+                pass
         except Exception:
             audit_diff = None  # session not available; degrade gracefully
 

@@ -1,0 +1,116 @@
+{% extends "base.html" %}
+
+{% block title %}{% if status_prefix %}{{ status_prefix }} — {% endif %}My GLOW passport{% endblock %}
+{% block heading %}My GLOW passport{% endblock %}
+
+{% block content %}
+<div id="passport-status" tabindex="-1"{% if message_is_error %} autofocus{% endif %}>
+  {% if message %}
+    {% if message_is_error %}
+  <p class="flash-error" role="alert"><strong>Error:</strong> {{ message }}</p>
+    {% else %}
+  <p class="flash-success" role="status"><strong>Success:</strong> {{ message }}</p>
+    {% endif %}
+  {% endif %}
+</div>
+
+<p>
+  A passport keeps your GLOW settings so they follow you to another device.
+  There is no password and no account: you get one link by email, and opening
+  it restores your settings wherever you are.
+</p>
+
+{% if not passport %}
+<h2>You do not have one</h2>
+<p>
+  Nothing about you is stored on this server. Your settings live in this
+  browser only, and clearing your browser data removes them.
+</p>
+<p>
+  <a href="{{ url_for('settings.settings_page') }}">Go to Settings</a> and use
+  “Keep these settings” to create a passport.
+</p>
+{% else %}
+
+<h2>What is stored</h2>
+<dl>
+  <dt>Settings</dt>
+  <dd>{{ settings_count }} preference{{ '' if settings_count == 1 else 's' }} — appearance, reading and tool defaults.</dd>
+  <dt>Email address</dt>
+  <dd>{% if passport.email %}Stored, so we can send you a link. It is never shown to anyone else.{% else %}None. Add one below if you want a link.{% endif %}</dd>
+  <dt>Job notifications</dt>
+  <dd>{{ 'On' if passport.notify_enabled else 'Off' }} — whether long jobs email you when they finish.</dd>
+  <dt>History</dt>
+  <dd>
+    {{ 'On' if passport.history_enabled else 'Off' }} —
+    {% if passport.history_enabled %}
+    the last {{ history|length }} document{{ '' if history|length == 1 else 's' }} you audited, with their scores.
+    {% else %}
+    nothing about the documents you work on is recorded.
+    {% endif %}
+  </dd>
+  <dt>Kept until</dt>
+  <dd>{{ retention_days }} days after you last use it, then deleted automatically.</dd>
+</dl>
+
+{% if passport.history_enabled and history %}
+<h2>Recent work</h2>
+<div class="workshop-table-wrap" tabindex="0" role="region" aria-label="Recent audits, scrollable">
+  <table>
+    <caption>Documents you audited, most recent first</caption>
+    <thead>
+      <tr><th scope="col">Document</th><th scope="col">Score</th><th scope="col">Grade</th><th scope="col">When</th></tr>
+    </thead>
+    <tbody>
+      {% for entry in history %}
+      <tr>
+        <th scope="row">{{ entry.label }}</th>
+        <td>{{ entry.score if entry.score is not none else '—' }}</td>
+        <td>{{ entry.grade or '—' }}</td>
+        <td>{{ entry.created_at_utc[:10] }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+<form method="post" action="{{ url_for('passport.passport_history_clear') }}">
+  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+  <button type="submit">Delete my history</button>
+</form>
+{% endif %}
+
+<h2>Email myself a link</h2>
+{% if email_available %}
+<form method="post" action="{{ url_for('passport.passport_link') }}">
+  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+  <div class="form-field">
+    <label for="passport_email">Email address</label>
+    <input type="email" id="passport_email" name="email" autocomplete="email"
+           spellcheck="false" value="{{ passport.email or '' }}"
+           aria-describedby="passport-email-help">
+    <p id="passport-email-help">
+      The link works once and expires in {{ link_ttl_days }} days. Your address
+      is used only to send you your own settings. It is never shown to anyone
+      else and never shared.
+    </p>
+  </div>
+  <button type="submit">Email me a link</button>
+</form>
+{% else %}
+<p>
+  Email is switched off on this server, so no link can be sent. Your settings
+  are still saved on this device.
+</p>
+{% endif %}
+
+<h2>Delete everything</h2>
+<p>
+  This removes your passport, your settings, your address and your history
+  from the server immediately. Your browser keeps its own local settings.
+</p>
+<form method="post" action="{{ url_for('passport.passport_forget') }}">
+  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+  <button type="submit" data-confirm="Delete your passport and everything in it? This cannot be undone.">Delete my passport</button>
+</form>
+{% endif %}
+{% endblock %}

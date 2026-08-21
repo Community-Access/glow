@@ -999,6 +999,28 @@ feature pack and exposed through explicit server-side feature flags.</p>
 <li><strong>CSRF protection added</strong> -- Flask-WTF CSRFProtect on all forms (originally not specified).</li>
 </ul>
 <hr />
+<h2 id="passport">The GLOW passport (shipped 8.0.0)</h2>
+<p><strong>Requirement.</strong> A person must be able to keep their GLOW
+settings across devices without creating an account, and must be able to
+delete everything about themselves in one action.</p>
+<p><strong>Rationale.</strong> Display preferences lived in one browser's
+local storage. The people most likely to have carefully tuned a type scale,
+contrast mode, reduced motion and the cognitive-accessibility profile are
+precisely the people GLOW exists for, and rebuilding that configuration on
+every device is a repeated, avoidable barrier.</p>
+<ul>
+  <li>Optional at every point. No passport is created by browsing, and every
+  surface works without one.</li>
+  <li>No password and no account: one single-use, time-boxed link by email,
+  hashed at rest, landing only on an allow-listed destination.</li>
+  <li>History of audited documents is opt-in only, never enabled as a side
+  effect, and deleted when switched off.</li>
+  <li>Retention is 90 days from last use, sliding, with automatic deletion.</li>
+  <li>One passport serves both GLOW and Workshop Mode; workshop gallery
+  anonymity is unaffected.</li>
+</ul>
+<p>Full documentation: <code>docs/PASSPORT.md</code>.</p>
+
 <h2 id="problem-statement">Problem Statement</h2>
 <p>The ACB Large Print Tool currently requires one of three things to use: VS Code with Copilot Chat (for the agent toolkit), a desktop Python install (for the CLI), or a PyInstaller executable (for the GUI wizard). All three assume local software installation. This means:</p>
 <ul>

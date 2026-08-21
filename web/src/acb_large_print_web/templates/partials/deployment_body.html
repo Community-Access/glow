@@ -1497,6 +1497,25 @@ docker compose -f docker-compose.prod.yml exec web python -c \
 <pre><code>https://glow.bits-acb.org/feedback/review?key=YOUR_PASSWORD
 </code></pre>
 <h3 id="syncing-feedback-to-github-issues">Syncing feedback to GitHub issues</h3>
+<h3 id="passport-env">Passport and email variables</h3>
+<p>All optional. Each feature hides itself or degrades in a stated way when
+its variable is unset.</p>
+<ul>
+  <li><code>POSTMARK_SERVER_TOKEN</code> — the Postmark <em>server</em> API
+  token, not the account token. Enables audit report delivery, Whisperer
+  notifications, admin sign-in links, workshop return links and artifact
+  email, and the passport's settings link.</li>
+  <li><code>POSTMARK_FROM_EMAIL</code> — must match a verified Postmark sender
+  or a verified domain. Defaults to <code>no-reply@notify.letitglow.app</code>.</li>
+  <li><code>GLOW_PASSPORT_RETENTION_DAYS</code> — days of inactivity before a
+  passport and everything in it is deleted. Defaults to 90.</li>
+  <li><code>GLOW_PASSPORT_LINK_TTL_DAYS</code> — lifetime of one emailed
+  settings link. Defaults to 14.</li>
+</ul>
+<p>Verify mail from the admin queue page: the Email panel reports whether
+Postmark is configured, which sender and stream are in use, what each feature
+would do, and offers a test send that changes nothing.</p>
+
 <p>When <code>FEEDBACK_GITHUB_TOKEN</code> is configured, each new feedback submission is automatically filed as an issue in <code>FEEDBACK_GITHUB_REPO</code>, assigned to <code>FEEDBACK_GITHUB_ASSIGNEE</code>, and labeled with <code>FEEDBACK_GITHUB_LABELS</code>.</p>
 <p>To backfill existing feedback rows from <code>feedback.db</code>, run:</p>
 <pre><code class="language-bash">cd ~/app

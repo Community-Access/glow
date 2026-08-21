@@ -578,6 +578,7 @@ def create_app(config: dict | None = None) -> Flask:
     from .routes.ai_usage import ai_usage_bp
     from .routes.alt_text import alt_text_bp
     from .routes.jobs import jobs_bp
+    from .routes.passport import passport_bp
     from .routes.shortlinks import short_bp
     from .routes.workshop import workshop_bp
 
@@ -615,6 +616,7 @@ def create_app(config: dict | None = None) -> Flask:
     app.register_blueprint(alt_text_bp, url_prefix="/alt-text")
     app.register_blueprint(jobs_bp, url_prefix="/job")
     app.register_blueprint(workshop_bp, url_prefix="/workshop")
+    app.register_blueprint(passport_bp, url_prefix="/passport")
     # No prefix: these are the short URLs a facilitator reads out loud.
     app.register_blueprint(short_bp)
 

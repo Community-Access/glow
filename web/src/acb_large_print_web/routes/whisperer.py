@@ -20,18 +20,19 @@ Route:
 
 from __future__ import annotations
 
+import hmac
 import os
+import re
+import secrets
+import subprocess
 import threading
 import uuid
-import secrets
-import hmac
-from dataclasses import dataclass
-from datetime import datetime, timedelta, UTC
-from pathlib import Path
 from collections import deque
-import re
-import subprocess
+from dataclasses import dataclass
+from datetime import UTC, datetime, timedelta
+from pathlib import Path
 
+from acb_large_print.pandoc_converter import convert_to_docx, pandoc_available
 from flask import (
     Blueprint,
     after_this_request,
@@ -45,13 +46,14 @@ from flask import (
 )
 from werkzeug.security import check_password_hash, generate_password_hash
 
-from acb_large_print.pandoc_converter import convert_to_docx, pandoc_available
-
-from ..ai_gateway import transcribe as gateway_transcribe, is_whisper_configured
-from ..ai_features import require_ai_feature, AIFeatureDisabled
-from ..gating import RETRY_AFTER_SECONDS, GatingError, audio_gate
-from ..upload import AUDIO_EXTENSIONS, UploadError, cleanup_token, get_temp_dir, validate_upload
+from ..ai_features import AIFeatureDisabled, require_ai_feature
+from ..ai_gateway import is_whisper_configured
+from ..ai_gateway import transcribe as gateway_transcribe
 from ..email import email_configured, send_whisperer_status_email
+from ..gating import RETRY_AFTER_SECONDS, GatingError, audio_gate
+from ..passport_store import COOKIE_NAME as PASSPORT_COOKIE
+from ..passport_store import get_passport as _get_passport
+from ..upload import AUDIO_EXTENSIONS, UploadError, cleanup_token, get_temp_dir, validate_upload
 
 whisperer_bp = Blueprint("whisperer", __name__)
 
@@ -137,12 +139,68 @@ _LANGUAGE_CHOICES: list[tuple[str, str]] = [
 ]
 
 
+def _remembered_notify_email() -> str:
+    """The address this browser's passport asked us to remember, if any.
+
+    Typing the same address into every long job is a small, repeated
+    annoyance, and the passport already holds it. Absent a passport, or with
+    notifications switched off, this returns "" and the field is empty --
+    exactly as before.
+    """
+    try:
+        from flask import request
+
+        passport = _get_passport((request.cookies.get(PASSPORT_COOKIE) or "").strip())
+        if passport and passport.get("notify_enabled"):
+            return str(passport.get("email") or "")
+    except Exception:
+        pass
+    return ""
+
+
+def _remembered_notify_email() -> str:
+    """The address this browser's passport asked us to remember, if any.
+
+    Typing the same address into every long job is a small, repeated
+    annoyance, and the passport already holds it. With no passport, or with
+    notifications switched off, this returns "" and the field is empty --
+    exactly as before.
+    """
+    try:
+        passport = _get_passport((request.cookies.get(PASSPORT_COOKIE) or "").strip())
+        if passport and passport.get("notify_enabled"):
+            return str(passport.get("email") or "")
+    except Exception:
+        pass
+    return ""
+
+
+def _remembered_notify_email() -> str:
+    """The address this browser's passport asked us to remember, if any.
+
+    Typing the same address into every long job is a small, repeated
+    annoyance, and the passport already holds it. Absent a passport, or with
+    notifications switched off, this returns "" and the field is empty --
+    exactly as before.
+    """
+    try:
+        from flask import request
+
+        passport = _get_passport((request.cookies.get(PASSPORT_COOKIE) or "").strip())
+        if passport and passport.get("notify_enabled"):
+            return str(passport.get("email") or "")
+    except Exception:
+        pass
+    return ""
+
+
 def _template_context(**extra):
     return dict(
         audio_accept=_AUDIO_ACCEPT,
         whisper_installed=is_whisper_configured(),
         pandoc_installed=pandoc_available(),
         email_enabled=email_configured(),
+        remembered_notify_email=_remembered_notify_email(),
         max_audio_mb=_MAX_AUDIO_MB,
         background_threshold_minutes=_BACKGROUND_THRESHOLD_MINUTES,
         language_choices=_LANGUAGE_CHOICES,

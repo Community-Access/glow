@@ -51,6 +51,72 @@
   </fieldset>
 
   <fieldset>
+    <h2 class="settings-group-heading">Keep these settings</h2>
+    <div id="passport-restore-offer" hidden
+         data-settings-url="{{ url_for('passport.passport_settings') }}">
+      <p>
+        This browser carries a GLOW passport whose saved settings differ from
+        the ones in use here.
+      </p>
+      <p>
+        <button type="button" id="passport-apply-settings">Apply my saved settings</button>
+        <span id="passport-apply-status" role="status"></span>
+      </p>
+    </div>
+    <p>
+      Your settings live in this browser. A passport keeps a copy so they
+      follow you to another device: no password, no account, one link by
+      email. Everything on this page keeps working without one.
+    </p>
+    <form method="post" id="passport-save-form"
+          action="{{ url_for('passport.passport_save') }}">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <input type="hidden" name="settings_json" id="passport-settings-json" value="{}">
+      <div class="form-field">
+        <label for="passport_save_email">Email address (optional)</label>
+        <input type="email" id="passport_save_email" name="email"
+               autocomplete="email" spellcheck="false"
+               value="{{ passport.email if passport and passport.email else '' }}"
+               aria-describedby="passport-save-help">
+        <p id="passport-save-help">
+          Only used to send you your own settings. Never shown to anyone else,
+          never shared, and deleted with everything else whenever you ask.
+          Settings are kept for {{ passport_retention_days }} days after you
+          last use them.
+        </p>
+      </div>
+      <p>
+        <label for="passport_send_link">
+          <input type="checkbox" id="passport_send_link" name="send_link" value="1" checked>
+          Email me a link that restores these settings elsewhere
+        </label>
+      </p>
+      <p>
+        <label for="passport_notify">
+          <input type="checkbox" id="passport_notify" name="notify_enabled" value="1"
+                 {% if passport and passport.notify_enabled %}checked{% endif %}>
+          Email me when a long job finishes
+        </label>
+      </p>
+      <p>
+        <label for="passport_history">
+          <input type="checkbox" id="passport_history" name="history_enabled" value="1"
+                 {% if passport and passport.history_enabled %}checked{% endif %}>
+          Remember the documents I audit and their scores, so I can compare one
+          against its own past
+        </label>
+      </p>
+      <p class="help-text">
+        History is the only option that records anything about the documents
+        you work on. It is off unless you tick it, and turning it off deletes
+        what it collected.
+      </p>
+      <button type="submit">Keep these settings</button>
+      {% if passport %}
+      <p><a href="{{ url_for('passport.passport_page') }}">See or delete what is stored</a></p>
+      {% endif %}
+    </form>
+
     <h2 class="settings-group-heading">Privacy and Storage</h2>
     <legend>Privacy and Storage</legend>
     <label>
@@ -468,4 +534,8 @@
   align-items: center;
 }
 </style>
+{% endblock %}
+
+{% block extra_js %}
+  <script src="{{ url_for('static', filename='passport.js') }}"></script>
 {% endblock %}

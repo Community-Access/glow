@@ -476,9 +476,16 @@ Still optional, in rough order of usefulness:
 
 ---
 
-## 7. Proposal for review: GLOW-wide email and returning users
+## 7. The GLOW passport: email-wide identity
 
-**Status: not built. Written for review, not started.**
+**Status: built and shipped, 21 August 2026.** Optional at every point.
+Full feature documentation: `docs/PASSPORT.md`.
+
+Answering the original question -- "do we have rich email features across all
+of GLOW?" -- the answer was no, and now it is yes. Email did six disconnected
+jobs and the one rich feature, come back to your own work from any device,
+existed only inside Workshop Mode. It is now a product-wide passport, and
+Workshop Mode is one of its consumers rather than a parallel system.
 
 The short answer to "do we have rich email features across all of GLOW?" is
 no. Email today does six useful but disconnected jobs, and the one genuinely
@@ -573,7 +580,43 @@ convenience.
 - The link email must carry a plain-text alternative and no colour-carried
   meaning -- the house layout added in section 6.6 already does this.
 
-### 7.6 Suggested delivery, in three independent slices
+### 7.6 What shipped, in the three slices proposed
+
+**Slice 1 -- settings that travel. Done.** `passport_store.py` and
+`routes/passport.py`: an opaque id in a cookie, an optional address, the
+settings blob the browser already keeps, single-use hashed links, an
+allow-listed return destination, and a delete control that reports what it
+deleted. The settings page gained a "Keep these settings" section and an
+offer to apply stored settings when they differ from the local ones -- offered,
+never applied automatically, because changing type size and contrast
+underneath somebody mid-task is what this tool exists to prevent.
+
+**Slice 2 -- notifications worth having. Done for Whisperer.** With
+notifications on, the address is prefilled from the passport rather than
+retyped per job. Long conversions do not yet have a completion notification of
+their own; that is the remaining piece of this slice.
+
+**Slice 3 -- history and comparison. Done, opt-in only.** Audits record
+filename, score and grade so a document can be measured against its own past.
+Off unless ticked, never switched on as a side effect of saving settings,
+deleted when switched off, and capped at the 25 most recent entries.
+
+### 7.6b Steps to run it
+
+1. **Nothing is required.** With no configuration at all, the passport works:
+   settings save, the cookie persists, and the page says no link can be sent.
+2. **To enable the emailed link**, configure Postmark (section 6). That is the
+   only dependency.
+3. **Optional tuning**: `GLOW_PASSPORT_RETENTION_DAYS` (default 90) and
+   `GLOW_PASSPORT_LINK_TTL_DAYS` (default 14).
+4. **Verify a deployment**:
+
+       docker compose -f docker-compose.prod.yml exec -T web python -c \
+         "from acb_large_print_web.passport_store import retention_days; print(retention_days())"
+
+5. **Back up `instance/passport.db`** with the other instance data.
+
+### 7.6c Original delivery plan, for reference
 
 **Slice 1 -- settings that travel.** Server-side settings blob keyed by an
 opaque profile id, the passport cookie, the "email me a link" control on
