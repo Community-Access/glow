@@ -27,6 +27,12 @@ from ..app import limiter
 from ..email import email_configured, send_workshop_return_link_email
 from ..feature_flags import get_flag
 from ..workshop_scenarios import get_scenario, pick_scenario, scenarios_for
+from ..workshop_worksheets import (
+    Worksheet,
+    WorksheetField,
+    build_worksheet_docx_bytes,
+    build_worksheet_html,
+)
 from ..workshop_skills import (
     build_copy_prompt,
     build_skill_markdown,
@@ -1764,6 +1770,83 @@ def workshop_share(session_code: str):
         abort(404)
     code = _require_session(session_code)
     return render_template("workshop/share.html", session_code=code)
+
+
+# ---------------------------------------------------------------------------
+# Blank worksheet pack
+# ---------------------------------------------------------------------------
+
+def _worksheet_pack() -> list[Worksheet]:
+    """Every activity as a blank worksheet, built from the live definitions.
+
+    Generated rather than written out, so a worksheet cannot drift away from
+    the form a participant sees on screen.
+    """
+    sheets: list[Worksheet] = []
+    for key in ACTIVITY_ORDER:
+        meta = ACTIVITY_META.get(key, {})
+        fields = ACTIVITY_FIELDS.get(
+            key, [{"name": "response", "label": "Response", "rows": 6}]
+        )
+        sheets.append(
+            Worksheet(
+                key=key,
+                title=str(meta.get("title", key)),
+                time=str(meta.get("time", "Varies")),
+                badge=str(meta.get("badge", "Workshop Champion")),
+                prompt=ACTIVITY_PROMPTS.get(key, ""),
+                fields=tuple(
+                    WorksheetField(
+                        label=str(field.get("label", field.get("name", "Response"))),
+                        rows=int(field.get("rows", 3) or 3),
+                    )
+                    for field in fields
+                ),
+                scenarios=tuple(
+                    (scenario.title, scenario.sector) for scenario in scenarios_for(key)
+                ),
+            )
+        )
+    return sheets
+
+
+@workshop_bp.route("/worksheets.html", methods=["GET"])
+def workshop_worksheets_html():
+    """The printable pack, for a table with no laptops on it.
+
+    Sent as a download rather than rendered in the app so it carries its own
+    large-print styles -- the site CSP drops inline styles, and this document
+    has to work when opened from a USB stick with no network at all.
+    """
+    if not _workshop_enabled():
+        abort(404)
+    html = build_worksheet_html(_worksheet_pack())
+    return Response(
+        html,
+        mimetype="text/html",
+        headers={
+            "Content-Disposition": 'attachment; filename="glow-workshop-worksheets.html"'
+        },
+    )
+
+
+@workshop_bp.route("/worksheets.docx", methods=["GET"])
+def workshop_worksheets_docx():
+    """The same pack as Word, in ACB large print."""
+    if not _workshop_enabled():
+        abort(404)
+    try:
+        payload = build_worksheet_docx_bytes(_worksheet_pack())
+    except Exception:
+        current_app.logger.exception("Worksheet DOCX generation failed")
+        abort(503)
+    return Response(
+        payload,
+        mimetype="application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+        headers={
+            "Content-Disposition": 'attachment; filename="glow-workshop-worksheets.docx"'
+        },
+    )
 
 
 @workshop_bp.route("/guide", methods=["GET"])

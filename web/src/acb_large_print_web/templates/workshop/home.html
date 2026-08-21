@@ -79,6 +79,19 @@
 </section>
 
 <section>
+  <h2>Prefer paper?</h2>
+  <p>
+    Every activity is available as a blank worksheet in large print. You can
+    complete the entire workshop without the web app, an account, or a network
+    connection.
+  </p>
+  <ul>
+    <li><a href="{{ url_for('workshop.workshop_worksheets_docx') }}">Download the blank worksheet pack (Word, .docx)</a></li>
+    <li><a href="{{ url_for('workshop.workshop_worksheets_html') }}">Download the blank worksheet pack (HTML)</a></li>
+  </ul>
+</section>
+
+<section>
   <h2 id="agenda-heading">One-day agenda</h2>
   <div class="workshop-table-wrap" tabindex="0" role="region" aria-label="One-day agenda, scrollable">
     <table>
