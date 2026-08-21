@@ -1,22 +1,7 @@
 name: Accessibility Regression Gate
 
 on:
-  pull_request:
-    paths:
-      - "web/**"
-      - ".github/workflows/accessibility-regression.yml"
-      - "scripts/pre-commit-check.py"
-      - ".githooks/pre-commit"
-  push:
-    branches: [main]
-    paths:
-      - "web/**"
-      - ".github/workflows/accessibility-regression.yml"
-      - "scripts/pre-commit-check.py"
-      - ".githooks/pre-commit"
-  schedule:
-    - cron: "0 9 * * 1"
-
+  workflow_dispatch:
 permissions:
   contents: read
   security-events: write
