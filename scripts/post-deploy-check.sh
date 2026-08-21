@@ -385,11 +385,19 @@ except Exception:
 readiness = data.get("readiness", {})
 models    = data.get("models", {})
 fail      = False
+# The provider is whatever /health reports -- these were labelled "Ollama"
+# from an earlier architecture and production has been on OpenRouter for
+# some time.
 labels = {
-    "chat":      "Ollama llama3 (chat)",
-    "vision":    "Ollama llava (vision)",
-    "whisperer": "Whisper model",
+    "chat":      "AI chat",
+    "vision":    "AI vision",
+    "whisperer": "Whisper transcription",
 }
+# Model readiness is reported, not gated, unless someone asks for it. These
+# features are optional and feature-flagged: a site that serves every page
+# correctly has not failed its deploy because a vision key is unset. Set
+# REQUIRE_MODEL_READINESS=1 to make them blocking again.
+required = os.environ.get("REQUIRE_MODEL_READINESS", "").strip() in ("1", "true", "yes")
 for key, label in labels.items():
     r = readiness.get(key, {})
     status        = r.get("status", "unknown")
@@ -400,12 +408,17 @@ for key, label in labels.items():
         parts.append(f"present={present}")
     if warm is not None:
         parts.append(f"warm={warm}")
+    provider = r.get("provider")
+    if provider:
+        parts.append(f"provider={provider}")
     detail = ", ".join(parts)
     if status in ("ready", "not-configured"):
         print(f"  {label}: OK ({detail})")
-    else:
+    elif required:
         print(f"  {label}: NOT READY ({detail})")
         fail = True
+    else:
+        print(f"  {label}: not ready, not required ({detail})")
 running = models.get("ollama_running", [])
 if running:
     print(f"  Ollama models loaded in memory: {', '.join(running)}")
