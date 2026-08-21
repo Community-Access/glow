@@ -16,6 +16,7 @@ from ..email import send_audit_report_email, send_batch_audit_report_email
 from ..app import limiter
 from ..csv_export import findings_to_csv_bytes, safe_filename_stem
 from ..rules import (
+    apply_rule_policy,
     build_rule_policy,
     filter_findings,
     get_all_rule_ids,
@@ -495,7 +496,7 @@ def audit_from_fix():
         suppressed_rules = sorted(policy.suppressed)
 
         result = _audit_by_extension(saved_path)
-        result.findings = filter_findings(result.findings, policy.selected - policy.suppressed)
+        result = apply_rule_policy(result, policy)
 
         # Compute a diff vs the audit that ran before the fix, when present.
         prev_score_raw = request.form.get("prev_score", "").strip()
@@ -636,7 +637,7 @@ def audit_from_convert():
         suppressed_rules = sorted(policy.suppressed)
 
         result = _audit_by_extension(saved_path)
-        result.findings = filter_findings(result.findings, policy.selected - policy.suppressed)
+        result = apply_rule_policy(result, policy)
 
         chat_token = token
 
@@ -916,7 +917,7 @@ def _audit_single():
         _session_prev_rule_ids: list[str] = _last.get("rule_ids") or []
 
         result = _audit_by_extension(saved_path)
-        result.findings = filter_findings(result.findings, policy.selected - policy.suppressed)
+        result = apply_rule_policy(result, policy)
 
         # Optional email delivery
         email_status = None
@@ -1132,7 +1133,7 @@ def _audit_batch():
             tokens_to_clean.append(token)
             doc_format = _format_from_path(saved_path)
             result = _audit_by_extension(saved_path)
-            result.findings = filter_findings(result.findings, policy.selected - policy.suppressed)
+            result = apply_rule_policy(result, policy)
             file_results.append(
                 {
                     "filename": saved_path.name,

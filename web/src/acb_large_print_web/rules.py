@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import copy
+import dataclasses
 import re
 
 from acb_large_print.constants import (
@@ -898,6 +900,57 @@ def get_profile_label(profile: str) -> str:
 def filter_findings(findings: list, rule_ids: set[str]) -> list:
     """Filter a findings list to include only the given rule IDs."""
     return [f for f in findings if f.rule_id in rule_ids]
+
+
+def with_findings(result, findings: list):
+    """Return *result* carrying *findings*, without mutating anything.
+
+    The legacy audit result allowed ``result.findings = ...``; the
+    post-split shared-core ``AuditResult`` is a frozen, slotted dataclass and
+    raises on that assignment. Because the shared core is installed in
+    deployment and absent from a bare source checkout, the in-place version
+    passed every local test and returned HTTP 500 from every audit on the
+    deployed site -- the same "works from source, breaks deployed" shape the
+    MCP server hit after the 8.0.0 split.
+    """
+    try:
+        result.findings = findings
+        return result
+    except Exception:
+        pass
+    try:
+        return dataclasses.replace(result, findings=findings)
+    except Exception:
+        pass
+    copied = copy.copy(result)
+    try:
+        object.__setattr__(copied, "findings", findings)
+    except Exception:
+        # Nothing worked: return the unfiltered result rather than failing
+        # the request. The report shows more than the user asked for, which
+        # is wrong but recoverable; a 500 is not.
+        return result
+    return copied
+
+
+def apply_rule_policy(result, policy):
+    """Return *result* with the user's rule policy applied to its findings.
+
+    Never mutates. The legacy audit result allowed ``result.findings = ...``;
+    the post-split shared-core ``AuditResult`` is a frozen, slotted dataclass
+    and raises ``FrozenInstanceError`` on that assignment. Because the shared
+    core is installed in deployment and not in a bare source checkout, the
+    in-place version passed every local test and returned HTTP 500 from every
+    audit on the deployed site -- the same "works from source, breaks
+    deployed" shape the MCP server hit after the 8.0.0 split.
+
+    Only the findings change. Score and grade are whatever the auditor
+    reported for the whole document, which is the behaviour the in-place
+    version had too.
+    """
+    return with_findings(
+        result, filter_findings(result.findings, policy.selected - policy.suppressed)
+    )
 
 
 def get_help_urls_map() -> dict[str, list[dict[str, str]]]:

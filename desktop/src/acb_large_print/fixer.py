@@ -516,6 +516,13 @@ def _fix_page_numbers(doc: Document, records: list[C.FixRecord]) -> int:
     if has_page_numbers:
         return 0
 
+    if not doc.sections:
+        # A document with no section properties has nowhere to put a footer.
+        # Rare in documents Word wrote, and normal in ones assembled by a
+        # script or a converter -- and a malformed upload must not take the
+        # whole fix request down with an IndexError.
+        return 0
+
     # Add page numbers to first section footer (others will link)
     section = doc.sections[0]
     footer = section.footer

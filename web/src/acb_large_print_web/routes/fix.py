@@ -9,6 +9,7 @@ from flask import Blueprint, Response, current_app, redirect, render_template, r
 from werkzeug.utils import secure_filename
 
 from ..rules import (
+    with_findings,
     build_rule_policy,
     filter_findings,
     get_all_rule_ids,
@@ -154,8 +155,27 @@ def _fix_by_extension(
         heading_accuracy_level=heading_accuracy,
         style_size_overrides=style_size_overrides,
     )
-    # Tag whether AI was actually used (ai_provider set and invoked)
-    return result[:5] + ({"ai_used": ai_provider is not None},) if len(result) == 5 else result
+    # Two backend shapes reach this line. The legacy fixer returns a 5-tuple
+    # of (output_path, total_fixes, fix_records, post_audit, warnings); the
+    # post-split shared core returns a FixResult object with no per-fix
+    # records at all. Normalize to the tuple the rest of this module expects,
+    # rather than letting `len(result)` raise a TypeError and turn every fix
+    # request into a 500 -- which is what happened once the shared core was
+    # the installed backend, and never in a bare source checkout.
+    meta = {"ai_used": ai_provider is not None}
+    if isinstance(result, tuple):
+        return result[:5] + (meta,) if len(result) == 5 else result
+
+    return (
+        Path(getattr(result, "output_path", output_path)),
+        int(getattr(result, "total_fixes", 0) or 0),
+        # The contract carries no per-fix records. An empty list means the
+        # "what changed" table renders empty rather than wrongly.
+        list(getattr(result, "fix_records", []) or []),
+        getattr(result, "audit_result", None),
+        list(getattr(result, "warnings", []) or []),
+        meta,
+    )
 
 
 def _audit_by_extension(
@@ -481,7 +501,7 @@ def _run_fix_and_render(
             continue
         filtered_findings.append(finding)
 
-    post_audit.findings = filtered_findings
+    post_audit = with_findings(post_audit, filtered_findings)
     if heading_alignment_suppressed:
         suppressed_rules.append("ACB-ALIGNMENT (headings)")
 
@@ -501,7 +521,7 @@ def _run_fix_and_render(
         ):
             continue
         pre_filtered.append(finding)
-    pre_audit.findings = pre_filtered
+    pre_audit = with_findings(pre_audit, pre_filtered)
 
     if pre_body_font_pt is not None and pre_body_font_pt < 17.5:
         warnings.insert(
