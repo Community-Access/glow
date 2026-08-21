@@ -515,6 +515,120 @@ def send_workshop_return_link_email(
     return _send(payload, to_email)
 
 
+def send_workshop_artifact_email(
+    to_email: str,
+    *,
+    participant_name: str,
+    event_name: str,
+    artifact_text: str,
+    return_link: str,
+    attachments: list[tuple[str, bytes, str]],
+) -> tuple[bool, str]:
+    """Send a participant their own day: the designed page, and their agent.
+
+    This is the delivery vehicle the 30-day plan never had. The workshop's
+    theory of change is that people leave and act; a plan that stays in a
+    conference bag does not survive the week.
+
+    The body carries the artifact as plain text as well as attaching it, so
+    the content is readable even where attachments are stripped by a mail
+    gateway -- which happens often on institutional mail.
+    """
+    if not email_configured():
+        log.warning("POSTMARK_SERVER_TOKEN not set -- workshop artifact email skipped")
+        return False, "Email is not configured on this server."
+
+    greeting = f"Hello {participant_name}," if participant_name.strip() else "Hello,"
+    where = f" at {event_name}" if event_name.strip() else ""
+    file_list = "".join(
+        f"<li>{name}</li>" for name, _payload, _content_type in attachments
+    )
+
+    html_body = (
+        f"<p>{greeting}</p>"
+        f"<p>Here is the work you did{where}, to keep.</p>"
+        f"<ul>{file_list}</ul>"
+        f'<p><a href="{return_link}">Open your workshop work</a> on any device. '
+        "That link works once; you can always ask for another from your "
+        "workshop content page.</p>"
+        "<p>The text of your page follows, in case attachments are stripped "
+        "before this reaches you.</p>"
+        f"<hr><pre>{artifact_text}</pre>"
+    )
+    text_body = (
+        f"{greeting}\n\n"
+        f"Here is the work you did{where}, to keep.\n\n"
+        f"Open your workshop work on any device: {return_link}\n"
+        f"That link works once; you can always ask for another.\n\n"
+        f"{artifact_text}"
+    )
+
+    payload = {
+        "From": _from_address(),
+        "To": to_email,
+        "Subject": "Your GLOW workshop artifacts",
+        "HtmlBody": html_body,
+        "TextBody": text_body,
+        "MessageStream": _POSTMARK_STREAM,
+        "Attachments": [
+            _base64_attachment(payload_bytes, name, content_type)
+            for name, payload_bytes, content_type in attachments
+        ],
+    }
+    return _send(payload, to_email)
+
+
+def send_workshop_nudge_email(
+    to_email: str,
+    *,
+    participant_name: str,
+    commitment: str,
+    return_link: str,
+    days: int = 30,
+) -> tuple[bool, str]:
+    """The follow-up that closes the loop the workshop is named after.
+
+    One question, their own words quoted back, and a way in. No dashboard to
+    log into and nothing to install.
+    """
+    if not email_configured():
+        log.warning("POSTMARK_SERVER_TOKEN not set -- workshop nudge email skipped")
+        return False, "Email is not configured on this server."
+
+    greeting = f"Hello {participant_name}," if participant_name.strip() else "Hello,"
+
+    html_body = (
+        f"<p>{greeting}</p>"
+        f"<p>{days} days ago, at the GLOW workshop, you wrote this down:</p>"
+        f"<blockquote>{commitment}</blockquote>"
+        "<p>How did it go?</p>"
+        f'<p><a href="{return_link}">Open your follow-through log</a> and add a '
+        "line. It takes a minute, and it is the only record of whether any of "
+        "this stuck.</p>"
+        "<p>If it did not happen, that is worth writing down too. That is data, "
+        "not failure.</p>"
+    )
+    text_body = (
+        f"{greeting}\n\n"
+        f"{days} days ago, at the GLOW workshop, you wrote this down:\n\n"
+        f"{commitment}\n\n"
+        f"How did it go? Open your follow-through log and add a line:\n"
+        f"{return_link}\n\n"
+        "If it did not happen, that is worth writing down too. That is data, "
+        "not failure."
+    )
+
+    payload = {
+        "From": _from_address(),
+        "To": to_email,
+        "Subject": "How did your 30-day accessibility commitment go?",
+        "HtmlBody": html_body,
+        "TextBody": text_body,
+        "MessageStream": _POSTMARK_STREAM,
+    }
+    return _send(payload, to_email)
+
+
 # ---------------------------------------------------------------------------
 # Internal send helper
 # ---------------------------------------------------------------------------

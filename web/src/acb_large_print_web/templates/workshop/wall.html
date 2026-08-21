@@ -1,0 +1,34 @@
+{% extends "workshop/_shell.html" %}
+
+{% block title %}Commitment wall — session {{ session_code }}{% endblock %}
+{% block heading %}The commitment wall{% endblock %}
+
+{% block content %}
+<p>
+  What this room is going to do next. Every commitment here is anonymous, on
+  purpose: a promise made in front of strangers should not carry a name unless
+  its author decides to say it out loud.
+</p>
+
+{% if not commitments %}
+<p>No commitments yet. They appear here as people finish the 30-Day Action Plan.</p>
+{% else %}
+<p>
+  {{ commitments|length }} commitment{{ '' if commitments|length == 1 else 's' }}
+  from {{ participants }} participant{{ '' if participants == 1 else 's' }}.
+</p>
+
+<ul class="workshop-wall" role="list">
+  {% for item in commitments %}
+  <li class="workshop-panel">
+    <p class="workshop-wall-promise">{{ item.promise }}</p>
+    {% if item.first_step %}
+    <p>First step: {{ item.first_step }}</p>
+    {% endif %}
+  </li>
+  {% endfor %}
+</ul>
+{% endif %}
+
+{% include "workshop/_session_nav.html" %}
+{% endblock %}

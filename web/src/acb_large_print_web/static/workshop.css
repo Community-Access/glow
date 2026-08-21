@@ -194,3 +194,18 @@ html[data-theme="dark"] {
 .workshop-badge.is-earned {
   border-width: 4px;
 }
+
+/* --- Commitment wall ------------------------------------------------------- */
+/* Projected at the close of the day, so the promise is set larger than body
+   text and the list does not become a wall of uniform grey. */
+.workshop-wall {
+  list-style: none;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(18rem, 1fr));
+  gap: 1rem;
+}
+
+.workshop-wall-promise {
+  font-size: 1.2em;
+}

@@ -21,6 +21,7 @@
 <ul>
   <li><a href="{{ url_for('workshop.workshop_my_export', session_code=session_code) }}">Download my workshop artifacts (Markdown, .md file)</a></li>
   <li><a href="{{ url_for('workshop.workshop_champion_skill', session_code=session_code) }}">See and use my accessibility agent</a></li>
+  <li><a href="{{ url_for('workshop.workshop_artifact', session_code=session_code) }}">My take-home artifact: print it, keep it, or email it to myself</a></li>
 </ul>
 
 <h2>My submissions{% if submissions %} ({{ submissions|length }}){% endif %}</h2>

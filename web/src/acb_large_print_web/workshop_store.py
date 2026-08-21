@@ -90,6 +90,14 @@ def _ensure_schema(conn: sqlite3.Connection) -> None:
         ")"
     )
     conn.execute(
+        "CREATE TABLE IF NOT EXISTS workshop_nudges ("
+        " session_code TEXT NOT NULL,"
+        " participant_key TEXT NOT NULL,"
+        " sent_at_utc TEXT NOT NULL,"
+        " PRIMARY KEY (session_code, participant_key)"
+        ")"
+    )
+    conn.execute(
         "CREATE TABLE IF NOT EXISTS workshop_return_links ("
         " token_hash TEXT PRIMARY KEY,"
         " session_code TEXT NOT NULL,"
@@ -486,6 +494,51 @@ def get_submission(session_code: str, submission_id: int) -> dict | None:
     ).fetchone()
     conn.close()
     return dict(row) if row else None
+
+
+def participants_due_for_nudge(session_code: str, *, days: int = 30) -> list[dict]:
+    """Participants whose 30-day commitment has come due.
+
+    A participant qualifies when they left an email address, finished the
+    30-Day Action Plan, saved it at least *days* ago, and have not been
+    nudged before. Nobody is emailed twice, and nobody who never gave an
+    address is emailed at all.
+    """
+    code = normalize_session_code(session_code)
+    cutoff = (datetime.now(UTC) - timedelta(days=int(days))).isoformat()
+    conn = _conn()
+    rows = conn.execute(
+        "SELECT p.participant_key, p.display_name, p.login_email, "
+        "       s.content_json, s.updated_at_utc "
+        "FROM workshop_participants p "
+        "JOIN workshop_submissions s "
+        "  ON s.participant_key = p.participant_key AND s.session_code = p.session_code "
+        "LEFT JOIN workshop_nudges n "
+        "  ON n.participant_key = p.participant_key AND n.session_code = p.session_code "
+        "WHERE p.session_code = ? "
+        "  AND s.activity_key = 'action_plan_30_day' "
+        "  AND COALESCE(s.is_draft, 0) = 0 "
+        "  AND s.updated_at_utc <= ? "
+        "  AND p.login_email IS NOT NULL AND TRIM(p.login_email) <> '' "
+        "  AND n.participant_key IS NULL "
+        "ORDER BY s.updated_at_utc",
+        (code, cutoff),
+    ).fetchall()
+    conn.close()
+    return [dict(row) for row in rows]
+
+
+def record_nudge(session_code: str, participant_key: str) -> None:
+    """Remember that this person has been asked, so they are asked once."""
+    code = normalize_session_code(session_code)
+    conn = _conn()
+    conn.execute(
+        "INSERT OR REPLACE INTO workshop_nudges (session_code, participant_key, sent_at_utc) "
+        "VALUES (?, ?, ?)",
+        (code, (participant_key or "").strip(), _utc_now()),
+    )
+    conn.commit()
+    conn.close()
 
 
 def count_participants(session_code: str) -> int:

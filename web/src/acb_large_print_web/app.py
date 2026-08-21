@@ -182,6 +182,10 @@ def create_app(config: dict | None = None) -> Flask:
 
     _register_workshop_ai_budget(app)
 
+    from .workshop_nudge import register_cli as _register_workshop_cli
+
+    _register_workshop_cli(app)
+
     # Request timing (set before each request so after_request can compute duration)
     import time as _time
 

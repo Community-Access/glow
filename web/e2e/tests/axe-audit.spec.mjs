@@ -215,6 +215,9 @@ const WORKSHOP_PAGES = [
   { label: 'workshop share mode', path: `/workshop/session/${WORKSHOP_SESSION}/share` },
   // The Tier 3 door: optional, outside the agenda, and still audited.
   { label: 'workshop optional lab', path: `/workshop/session/${WORKSHOP_SESSION}/activity/lab_run_your_agent` },
+  // What people leave with, and what the room sees at the close.
+  { label: 'workshop artifact', path: `/workshop/session/${WORKSHOP_SESSION}/artifact` },
+  { label: 'workshop commitment wall', path: `/workshop/session/${WORKSHOP_SESSION}/wall` },
   // Badge collection, and the printable room signage with its QR codes.
   { label: 'workshop badges', path: `/workshop/session/${WORKSHOP_SESSION}/badges` },
   { label: 'workshop signage', path: `/workshop/session/${WORKSHOP_SESSION}/signage` },

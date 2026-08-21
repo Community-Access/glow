@@ -167,6 +167,39 @@ there; if they already have their own answers, the borrowed workflow is shown
 beside their work instead of over it. Anonymous submitters stay anonymous in
 the attribution.
 
+### Closing the day
+
+At the capstone, send people to **My take-home artifact**
+(`/workshop/session/<code>/artifact`). It assembles what they finished into
+one designed page: their workflow, who it helps, the human-review gate they
+wrote, and their 30-day commitment. They can print it, download it as a single
+self-contained file, or email it to themselves along with their agent package
+and a link back to everything else.
+
+Make time for this. It is the thing that gets forwarded to a director on
+Monday, and it takes two minutes.
+
+At 4:25, project **the commitment wall** (`/workshop/session/<code>/wall`).
+Every 30-day commitment in the room on one screen, anonymous by design --
+a promise made in front of strangers should not carry a name unless its
+author decides to say it out loud. Read a few aloud. It is a good way to end.
+
+### Thirty days later
+
+    flask --app acb_large_print_web.app:create_app workshop-nudge <code> --dry-run
+    flask --app acb_large_print_web.app:create_app workshop-nudge <code> --send
+
+The command quotes each participant's own commitment back to them and links
+to their follow-through log. It is a command rather than a scheduled job on
+purpose: emailing thirty people a month after an event is a decision a person
+should make, having looked at what is about to go out. Dry run is the default.
+
+Only participants who gave an address, finished the 30-Day Action Plan, and
+have not been nudged before appear in the list. Nobody is emailed twice.
+
+The replies are the only evidence you will have about whether any of this
+stuck -- which is worth a great deal in the next conference proposal.
+
 ## Facilitation Rhythm
 1. Start with problem framing
 - ask participants what accessibility problem they need to solve

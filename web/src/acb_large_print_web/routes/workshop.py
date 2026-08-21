@@ -28,9 +28,20 @@ from flask import (
 from markupsafe import Markup, escape
 
 from ..app import limiter
-from ..email import email_configured, send_workshop_return_link_email
+from ..email import (
+    email_configured,
+    send_workshop_artifact_email,
+    send_workshop_return_link_email,
+)
 from ..feature_flags import get_flag
 from ..workshop_ai_budget import session_usage
+from ..workshop_artifact import (
+    Artifact,
+    ArtifactSection,
+    artifact_title,
+    build_artifact_html,
+    build_artifact_text,
+)
 from ..workshop_scenarios import get_scenario, pick_scenario, scenarios_for
 from ..workshop_skills import (
     build_activity_prompt,
@@ -1447,7 +1458,16 @@ def workshop_return(token: str):
         )
 
     code = str(participant.get("session_code", ""))
-    resp = make_response(redirect(url_for("workshop.workshop_my_content", session_code=code)))
+    # Where the link should land. An allow-list rather than a URL, so a link
+    # in an email can never be turned into an open redirect.
+    destinations = {
+        "me": "workshop.workshop_my_content",
+        "follow-through": "workshop.workshop_follow_through",
+        "artifact": "workshop.workshop_artifact",
+        "badges": "workshop.workshop_badges",
+    }
+    endpoint = destinations.get((request.args.get("next") or "").strip(), destinations["me"])
+    resp = make_response(redirect(url_for(endpoint, session_code=code)))
     return _set_participant_cookie(resp, str(participant.get("participant_key", "")))
 
 
@@ -1943,6 +1963,280 @@ def workshop_share(session_code: str):
         abort(404)
     code = _require_session(session_code)
     return render_template("workshop/share.html", session_code=code)
+
+
+# ---------------------------------------------------------------------------
+# The take-home artifact
+# ---------------------------------------------------------------------------
+
+def _artifact_for(code: str, participant: dict) -> Artifact:
+    """Assemble one participant's day into a single designed page.
+
+    Drafts are excluded: an artifact should carry what someone finished, not
+    what they were still thinking about.
+    """
+    key = str(participant.get("participant_key", ""))
+    rows = {
+        str(row.get("activity_key", "")): row
+        for row in list_submissions_for_participant(code, key, include_drafts=False)
+    }
+    session_meta = get_session(code) or {}
+
+    def values_for(activity_key: str) -> dict[str, str]:
+        row = rows.get(activity_key)
+        return decode_field_values(row) if row else {}
+
+    champion = values_for("champion_studio")
+    formula = values_for("agent_formula")
+    capstone = values_for("capstone_shareout")
+    plan = values_for("action_plan_30_day")
+
+    def labelled(activity_key: str, names: list[str]) -> tuple[tuple[str, str], ...]:
+        stored = values_for(activity_key)
+        labels = {
+            str(field.get("name", "")): str(field.get("label", field.get("name", "")))
+            for field in ACTIVITY_FIELDS.get(activity_key, [])
+        }
+        return tuple(
+            (labels.get(name, name), stored.get(name, "")) for name in names if stored.get(name, "")
+        )
+
+    sections: list[ArtifactSection] = []
+
+    workflow_items = labelled(
+        "champion_studio",
+        ["partner_group", "responsibility", "ai_support", "final_output"],
+    )
+    if workflow_items:
+        sections.append(
+            ArtifactSection(
+                heading="The workflow",
+                intro="What this does, and who it is for.",
+                items=workflow_items,
+            )
+        )
+
+    formula_items = labelled(
+        "agent_formula", ["role", "task", "trusted_guidance", "output_format"]
+    )
+    if formula_items:
+        sections.append(
+            ArtifactSection(
+                heading="The agent formula behind it",
+                intro="Role, task, trusted guidance, output format.",
+                items=formula_items,
+            )
+        )
+
+    capstone_items = labelled(
+        "capstone_shareout", ["workflow_summary", "who_it_helps", "reusability"]
+    )
+    if capstone_items:
+        sections.append(
+            ArtifactSection(heading="In my own summary", items=capstone_items)
+        )
+
+    plan_items = labelled(
+        "action_plan_30_day",
+        ["workflow_30", "partner_team_30", "safeguard_30", "first_step_30"],
+    )
+    if plan_items:
+        sections.append(
+            ArtifactSection(
+                heading="My next 30 days",
+                intro="Written on the day, by me.",
+                items=plan_items,
+            )
+        )
+
+    human_review = (
+        champion.get("human_safeguard", "")
+        or formula.get("human_review", "")
+        or capstone.get("safeguard", "")
+        or plan.get("safeguard_30", "")
+    )
+
+    return Artifact(
+        participant_name=str(participant.get("display_name", "")).strip(),
+        session_code=code,
+        event_name=str(session_meta.get("event_name", "")).strip(),
+        workflow_name=(
+            champion.get("workflow_name", "").strip()
+            or capstone.get("workflow_summary", "").strip()[:80]
+            or "My accessibility workflow"
+        ),
+        human_review=human_review,
+        badges_earned=sum(1 for key_ in ACTIVITY_ORDER if key_ in rows),
+        badges_total=len(ACTIVITY_ORDER),
+        sections=tuple(sections),
+        generated_on=datetime.now(UTC).strftime("%d %B %Y"),
+    )
+
+
+@workshop_bp.route("/session/<session_code>/artifact", methods=["GET"])
+def workshop_artifact(session_code: str):
+    """Preview the take-home page, with the ways to keep it."""
+    if not _workshop_enabled() or not _lab_hub_enabled():
+        abort(404)
+    code = _require_session(session_code)
+    participant = _current_participant(code)
+    if not participant:
+        return render_template("workshop/my_content_missing.html", session_code=code), 404
+
+    artifact = _artifact_for(code, participant)
+    message, message_is_error = _artifact_message()
+    return render_template(
+        "workshop/artifact.html",
+        session_code=code,
+        artifact=artifact,
+        artifact_title=artifact_title(artifact),
+        has_content=bool(artifact.sections),
+        email_available=email_configured(),
+        known_email=bool(str(participant.get("login_email", "") or "").strip()),
+        message=message,
+        message_is_error=message_is_error,
+        status_prefix=("Not sent" if message_is_error else ("Sent" if message else "")),
+    )
+
+
+@workshop_bp.route("/session/<session_code>/artifact.html", methods=["GET"])
+def workshop_artifact_download(session_code: str):
+    """The artifact itself: one self-contained file to keep, print or send on."""
+    if not _workshop_enabled() or not _lab_hub_enabled():
+        abort(404)
+    code = _require_session(session_code)
+    participant = _current_participant(code)
+    if not participant:
+        abort(404)
+
+    artifact = _artifact_for(code, participant)
+    return Response(
+        build_artifact_html(artifact),
+        mimetype="text/html",
+        headers={
+            "Content-Disposition": f'attachment; filename="{code}-my-glow-workflow.html"'
+        },
+    )
+
+
+_ARTIFACT_MESSAGES = {
+    "sent": ("Sent. Check your email -- your artifacts are on their way.", False),
+    "invalid-email": ("Enter an email address in the form name@example.com.", True),
+    "unavailable": ("Email is not available on this server right now.", True),
+    "send-failed": ("We could not send that email. Please try again, or ask your facilitator.", True),
+    "empty": ("Save at least one activity before sending yourself the artifact.", True),
+}
+
+
+def _artifact_message() -> tuple[str, bool]:
+    return _ARTIFACT_MESSAGES.get((request.args.get("sent") or "").strip(), ("", False))
+
+
+@workshop_bp.route("/session/<session_code>/artifact/email", methods=["POST"])
+@limiter.limit("5 per hour")
+def workshop_artifact_email(session_code: str):
+    """Send the day home before the participant leaves the room.
+
+    The address is optional and is only ever used to send someone their own
+    work. It is never shown in the gallery, on the facilitator dashboard, or
+    in any export.
+    """
+    if not _workshop_enabled() or not _lab_hub_enabled():
+        abort(404)
+    code = _require_session(session_code)
+    participant = _current_participant(code)
+    if not participant:
+        return render_template("workshop/my_content_missing.html", session_code=code), 404
+
+    def _back(outcome: str):
+        return redirect(url_for("workshop.workshop_artifact", session_code=code, sent=outcome))
+
+    email = (request.form.get("artifact_email") or "").strip()
+    if not email:
+        email = str(participant.get("login_email", "") or "").strip()
+    if not _looks_like_email(email):
+        return _back("invalid-email")
+    if not email_configured():
+        return _back("unavailable")
+
+    artifact = _artifact_for(code, participant)
+    if not artifact.sections:
+        return _back("empty")
+
+    key = str(participant.get("participant_key", ""))
+    bind_participant_login(key, email)
+
+    attachments: list[tuple[str, bytes, str]] = [
+        (
+            f"{code}-my-glow-workflow.html",
+            build_artifact_html(artifact).encode("utf-8"),
+            "text/html",
+        )
+    ]
+    # The agent package, when they built one. Tier 3 is optional, so its
+    # absence is not an error.
+    context = _champion_skill_context(code)
+    if context is not None:
+        values, trusted_guidance, author = context
+        filename, payload = build_skill_zip_bytes(
+            values,
+            author=author,
+            event_name=artifact.event_name,
+            trusted_guidance=trusted_guidance,
+            mcp_base_url=_mcp_base_url(),
+        )
+        attachments.append((filename, payload, "application/zip"))
+
+    # A single-use link back to everything else, so the email is a way in
+    # rather than only a snapshot.
+    return_link = url_for(
+        "workshop.workshop_return", token=create_return_link(code, key), _external=True
+    )
+
+    sent, _detail = send_workshop_artifact_email(
+        email,
+        participant_name=artifact.participant_name,
+        event_name=artifact.event_name,
+        artifact_text=build_artifact_text(artifact),
+        return_link=return_link,
+        attachments=attachments,
+    )
+    return _back("sent" if sent else "send-failed")
+
+
+# ---------------------------------------------------------------------------
+# Closing commitment wall
+# ---------------------------------------------------------------------------
+
+@workshop_bp.route("/session/<session_code>/wall", methods=["GET"])
+def workshop_wall(session_code: str):
+    """Every 30-day commitment in the room, on one screen, at 4:25 PM.
+
+    Anonymous by default and by design: this is projected, and a commitment
+    is a promise someone is making in front of strangers. Nobody's name goes
+    on the wall, whatever they chose for the gallery.
+    """
+    if not _workshop_enabled() or not _lab_hub_enabled():
+        abort(404)
+    code = _require_session(session_code)
+
+    commitments = []
+    for row in list_submissions(code, activity_key="action_plan_30_day"):
+        if int(row.get("is_draft", 0) or 0):
+            continue
+        values = decode_field_values(row)
+        promise = (values.get("workflow_30", "") or "").strip()
+        first_step = (values.get("first_step_30", "") or "").strip()
+        if not promise:
+            continue
+        commitments.append({"promise": promise, "first_step": first_step})
+
+    return render_template(
+        "workshop/wall.html",
+        session_code=code,
+        commitments=commitments,
+        participants=count_participants(code),
+    )
 
 
 # ---------------------------------------------------------------------------

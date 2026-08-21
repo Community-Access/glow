@@ -1,0 +1,98 @@
+{% extends "workshop/_shell.html" %}
+
+{% block title %}{% if status_prefix %}{{ status_prefix }} — {% endif %}My workshop artifact{% endblock %}
+{% block heading %}My workshop artifact{% endblock %}
+
+{% block content %}
+<div id="artifact-status" tabindex="-1"{% if message_is_error %} autofocus{% endif %}>
+  {% if message %}
+    {% if message_is_error %}
+  <p class="flash-error" role="alert"><strong>Error:</strong> {{ message }}</p>
+    {% else %}
+  <p class="flash-success" role="status"><strong>Success:</strong> {{ message }}</p>
+    {% endif %}
+  {% endif %}
+</div>
+
+<p>
+  One page with the work you did today: your workflow, who it helps, the
+  human-review step you wrote, and your 30-day commitment. Designed to be
+  printed, kept, and shown to someone who was not in the room.
+</p>
+
+{% if not has_content %}
+<p>
+  There is nothing on it yet. Save at least one activity and it will build
+  itself.
+</p>
+<p>
+  <a href="{{ url_for('workshop.workshop_activity', session_code=session_code, activity_key='champion_studio') }}">Open the Accessibility Champion Studio</a>
+</p>
+{% else %}
+
+<h2>{{ artifact_title }}</h2>
+{% if artifact.human_review %}
+<section class="workshop-panel">
+  <h3>Human review, required</h3>
+  <p>This workflow is not finished until a person has done this:</p>
+  <p>{{ artifact.human_review }}</p>
+</section>
+{% endif %}
+
+{% for section in artifact.sections %}
+<section class="workshop-panel">
+  <h3>{{ section.heading }}</h3>
+  {% if section.intro %}<p>{{ section.intro }}</p>{% endif %}
+  {% if section.items %}
+  <dl>
+    {% for label, value in section.items %}
+    <dt>{{ label }}</dt>
+    <dd>{{ value }}</dd>
+    {% endfor %}
+  </dl>
+  {% endif %}
+</section>
+{% endfor %}
+
+<h2>Keep it</h2>
+<ul>
+  <li><a href="{{ url_for('workshop.workshop_artifact_download', session_code=session_code) }}">Download my artifact (HTML, one self-contained file)</a></li>
+  <li><a href="{{ url_for('workshop.workshop_champion_skill', session_code=session_code) }}">See and download my accessibility agent</a></li>
+  <li><a href="{{ url_for('workshop.workshop_my_export', session_code=session_code) }}">Download everything I wrote (Markdown)</a></li>
+</ul>
+<p>
+  The downloaded file carries its own styling, so it opens and prints
+  correctly with no network connection.
+</p>
+
+<h2>Email it to myself</h2>
+{% if email_available %}
+<form method="post"
+      action="{{ url_for('workshop.workshop_artifact_email', session_code=session_code) }}">
+  <div class="form-field">
+    <label for="artifact_email">Email address{% if known_email %} (leave blank to use the address you gave earlier){% endif %}</label>
+    <input type="email"
+           id="artifact_email"
+           name="artifact_email"
+           autocomplete="email"
+           spellcheck="false"
+           aria-describedby="artifact-email-help">
+    <p id="artifact-email-help">
+      We send your artifact, your agent package if you built one, and a link
+      back to everything else. Your address is used only to send you your own
+      work. It is never shown in the shared gallery, on the facilitator
+      dashboard, or in any export.
+    </p>
+  </div>
+  <button type="submit">Email me my artifacts</button>
+</form>
+{% else %}
+<p>
+  Email is switched off on this server. Use the download links above before
+  you leave — they are the same content.
+</p>
+{% endif %}
+{% endif %}
+
+{% include "workshop/_session_nav.html" %}
+{% endblock %}
