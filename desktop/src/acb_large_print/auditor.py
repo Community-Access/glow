@@ -57,7 +57,13 @@ class AuditResult:
 
     @property
     def passed(self) -> bool:
-        return len(self.findings) == 0
+        """Pass when the score is at least 90 (grade A) with no critical findings.
+
+        Kept in sync with the MCP adapter fallback in
+        mcp_server/glow_mcp_utils.py; medium/low findings alone no longer
+        fail a document that grades A.
+        """
+        return self.score >= 90 and self.critical_count == 0
 
     @property
     def score(self) -> int:

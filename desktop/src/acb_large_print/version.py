@@ -16,4 +16,11 @@ def _resolve_version_file() -> Path:
 
 
 def get_version() -> str:
-    return _resolve_version_file().read_text(encoding="utf-8").strip()
+    try:
+        return _resolve_version_file().read_text(encoding="utf-8").strip()
+    except FileNotFoundError:
+        # Wheel installs (e.g. the MCP Docker image) do not carry the repo
+        # VERSION file; fall back to the installed distribution metadata.
+        from importlib.metadata import version
+
+        return version("acb-large-print")
