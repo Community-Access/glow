@@ -12,6 +12,40 @@ html {
 body {
   /* ACB: Arial, 18pt, not bold */
   font-family: Arial, sans-serif;
+  font-size: 1.5rem;            /* 24px -- ACB 18pt (18 × 1.333) */
+  font-weight: 400;
+  color: #1a1a1a;               /* near-black -- WCAG 7:1 on white */
+  background-color: #ffffff;
+
+  /* ACB: flush left, ragged right */
+  text-align: left;
+
+  /* WCAG 1.4.12: line-height >= 1.5x font size */
+  /* Note: ACB spec says 1.15; 1.5 is WCAG minimum for digital */
+  line-height: 1.5;
+
+  /* WCAG 1.4.12: letter-spacing >= 0.12em, word-spacing >= 0.16em */
+  letter-spacing: 0.12em;
+  word-spacing: 0.16em;
+
+  /* ACB: 1 inch margins (approximated for screen).
+     Center the page horizontally so wide viewports do not leave the
+     content flush left in a narrow column. The cap is wide enough to
+     accommodate nav, cards, tables, and form layouts; long-prose
+     blocks are constrained to a readable width below. */
+  margin: 0 auto;
+  padding: 1.25rem clamp(1rem, 3vw, 2.5rem);
+
+  max-width: min(82rem, 100%);
+  box-sizing: border-box;
+
+  /* Hyphenation off -- ACB: no hyphenated words */
+  hyphens: none;
+  -webkit-hyphens: none;
+
+  /* Single column by default */
+  columns: 1;
+}
 
 /* --- 7.3 Cognitive accessibility profile (plain & simple mode) --- */
 html[data-cognitive="on"] body {
@@ -62,40 +96,6 @@ html[data-cognitive="on"] details:not([data-keep-collapsed]) {
     outline: 3px solid Highlight;
     outline-offset: 2px;
   }
-}
-  font-size: 1.5rem;            /* 24px -- ACB 18pt (18 × 1.333) */
-  font-weight: 400;
-  color: #1a1a1a;               /* near-black -- WCAG 7:1 on white */
-  background-color: #ffffff;
-
-  /* ACB: flush left, ragged right */
-  text-align: left;
-
-  /* WCAG 1.4.12: line-height >= 1.5x font size */
-  /* Note: ACB spec says 1.15; 1.5 is WCAG minimum for digital */
-  line-height: 1.5;
-
-  /* WCAG 1.4.12: letter-spacing >= 0.12em, word-spacing >= 0.16em */
-  letter-spacing: 0.12em;
-  word-spacing: 0.16em;
-
-  /* ACB: 1 inch margins (approximated for screen).
-     Center the page horizontally so wide viewports do not leave the
-     content flush left in a narrow column. The cap is wide enough to
-     accommodate nav, cards, tables, and form layouts; long-prose
-     blocks are constrained to a readable width below. */
-  margin: 0 auto;
-  padding: 1.25rem clamp(1rem, 3vw, 2.5rem);
-
-  max-width: min(82rem, 100%);
-  box-sizing: border-box;
-
-  /* Hyphenation off -- ACB: no hyphenated words */
-  hyphens: none;
-  -webkit-hyphens: none;
-
-  /* Single column by default */
-  columns: 1;
 }
 
 /* --- Headings --- */
