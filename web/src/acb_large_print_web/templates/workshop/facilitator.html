@@ -1,0 +1,80 @@
+{% extends "workshop/_shell.html" %}
+
+{% block title %}Facilitator Dashboard{% endblock %}
+{% block heading %}Facilitator dashboard{% endblock %}
+
+{% block content %}
+<p>Session: {{ session_code }} — {{ session_title }}</p>
+
+<h2>Session metrics</h2>
+<dl class="workshop-metrics">
+  <div class="workshop-metric">
+    <dt>Total submissions</dt><dd>{{ total_submissions }}</dd>
+  </div>
+  <div class="workshop-metric">
+    <dt>Anonymous submissions</dt><dd>{{ anonymous_count }}</dd>
+  </div>
+  <div class="workshop-metric">
+    <dt>Submissions with peer feedback</dt><dd>{{ covered_feedback }}</dd>
+  </div>
+  <div class="workshop-metric">
+    <dt>Feedback coverage</dt><dd>{{ feedback_coverage_pct }}%</dd>
+  </div>
+</dl>
+
+<h2>Activity completion snapshot</h2>
+<div class="workshop-table-wrap" tabindex="0" role="region" aria-label="Activity completion snapshot, scrollable">
+  <table>
+    <caption>Number of submissions saved for each workshop activity</caption>
+    <thead>
+      <tr><th scope="col">Activity</th><th scope="col">Submission count</th></tr>
+    </thead>
+    <tbody>
+      {% for row in activity_rows %}
+      <tr><th scope="row">{{ row.title }}</th><td>{{ row.count }}</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+<h2>Recent submissions</h2>
+{% if recent_submissions %}
+<div class="workshop-table-wrap" tabindex="0" role="region" aria-label="Recent submissions, scrollable">
+  <table>
+    <caption>The {{ recent_submissions|length }} most recently updated submissions in this session</caption>
+    <thead>
+      <tr>
+        <th scope="col">Last updated</th>
+        <th scope="col">Activity</th>
+        <th scope="col">Submitter</th>
+        <th scope="col">Has peer feedback</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for s in recent_submissions %}
+      <tr>
+        <td>{{ s.updated_display or s.updated_at_utc }}</td>
+        <td>{{ activity_titles.get(s.activity_key, s.activity_key) }}</td>
+        <td>{% if s.anonymity_mode %}Anonymous participant{% else %}{{ s.display_name }}{% endif %}</td>
+        <td>{% if feedback.get(s.id) %}Yes{% else %}No{% endif %}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% else %}
+<p>No submissions captured yet.</p>
+{% endif %}
+
+<h2>Session-wide exports</h2>
+<p>These contain every participant's submissions. Names are replaced with "Anonymous participant" wherever a participant chose to share anonymously.</p>
+<ul>
+  <li><a href="{{ url_for('workshop.workshop_export_markdown', session_code=session_code) }}">Export all artifacts (Markdown, .md file)</a></li>
+  <li><a href="{{ url_for('workshop.workshop_export_json', session_code=session_code) }}">Export all artifacts (JSON, .json file)</a></li>
+  <li><a href="{{ url_for('workshop.workshop_export_html', session_code=session_code) }}">Export all artifacts (HTML, .html file)</a></li>
+  <li><a href="{{ url_for('workshop.workshop_export_docx', session_code=session_code) }}">Export all artifacts (Word, .docx file)</a></li>
+  <li><a href="{{ url_for('workshop.workshop_follow_through_export', session_code=session_code) }}">Export follow-through log (Markdown, .md file)</a></li>
+</ul>
+
+{% include "workshop/_session_nav.html" %}
+{% endblock %}

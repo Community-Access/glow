@@ -1,0 +1,105 @@
+{% extends "workshop/_shell.html" %}
+
+{% block title %}{% if error %}Code not recognised — {% endif %}Workshop Mode{% endblock %}
+{% block heading %}Accessibility Agents in Action{% endblock %}
+
+{% block content %}
+<p>
+  A hands-on GLOW workshop for human-centered accessibility workflows.
+  Participants are guided through practical labs and leave with reusable
+  artifacts that help partners become accessibility champions.
+</p>
+
+<p>
+  Throughout this workshop, <strong>partners</strong> means the people you
+  support: faculty, staff, content creators, and teams across your
+  organization.
+</p>
+
+<section class="workshop-panel">
+  <h2 id="frontfacing-docs">Front-facing workshop documentation</h2>
+  <p>Use these pages to run and scale the workshop in conference, onboarding, and institutional training environments.</p>
+  <ul>
+    <li><a href="{{ url_for('workshop.workshop_guide') }}">Workshop guide</a></li>
+    <li><a href="{{ url_for('workshop.workshop_exercises') }}">Exercises pack</a></li>
+    <li><a href="{{ url_for('workshop.workshop_utilization') }}">Utilization guide</a></li>
+    {% if join_mode %}
+    <li><a href="{{ url_for('workshop.workshop_follow_through', session_code=session_code) }}">Follow-through log</a></li>
+    {% endif %}
+  </ul>
+</section>
+
+<section class="workshop-panel">
+  <h2 id="join-heading">Join with a conference or workshop code</h2>
+
+  <div id="join-status" tabindex="-1"{% if error %} autofocus{% endif %}>
+    {% if error %}
+    <p class="flash-error" role="alert"><strong>Error:</strong> {{ error }}</p>
+    {% endif %}
+    {% if info %}
+    <p class="flash-info" role="status"><strong>Note:</strong> {{ info }}</p>
+    {% endif %}
+  </div>
+
+  <h3>Step 1: Find your workshop</h3>
+  <form method="post" action="{{ url_for('workshop.workshop_home') }}">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <input type="hidden" name="action" value="lookup">
+    <label for="access_code">Conference or workshop code</label>
+    <input id="access_code" name="access_code" type="text" required
+           autocomplete="off" value="{{ session_code }}"
+           aria-describedby="session-help">
+    <p id="session-help">Enter your conference invite code. Existing session codes also work.</p>
+    <p><button type="submit">Look up workshop</button></p>
+  </form>
+
+  {% if join_mode %}
+  <h3>Step 2: Confirm participant identity</h3>
+  <p>Workshop session: {{ session_code }} — {{ session_title }}{% if session_event %} ({{ session_event }}){% endif %}</p>
+  <p>Use your name once and we will remember your personal content on this device without requiring a login.</p>
+  <form method="post" action="{{ url_for('workshop.workshop_home') }}">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <input type="hidden" name="action" value="join">
+    <input type="hidden" name="session_code" value="{{ session_code }}">
+    <label for="display_name">Your display name</label>
+    <input id="display_name" name="display_name" type="text"
+           autocomplete="nickname" value="{{ participant_display_name }}" required>
+    <p><button type="submit">Enter workshop</button></p>
+  </form>
+  {% endif %}
+</section>
+
+<section>
+  <h2 id="outcomes-heading">Learning outcomes</h2>
+  <ul>
+    {% for outcome in outcomes %}
+    <li>{{ outcome }}</li>
+    {% endfor %}
+  </ul>
+</section>
+
+<section>
+  <h2 id="agenda-heading">One-day agenda</h2>
+  <div class="workshop-table-wrap" tabindex="0" role="region" aria-label="One-day agenda, scrollable">
+    <table>
+      <caption>Workshop timeline, session, and primary activity mode</caption>
+      <thead>
+        <tr>
+          <th scope="col">Time</th>
+          <th scope="col">Session</th>
+          <th scope="col">Primary mode</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for item in schedule %}
+        <tr>
+          <th scope="row">{{ item.time }}</th>
+          <td>{{ item.title }}</td>
+          <td>{{ item.mode }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</section>
+{% endblock %}

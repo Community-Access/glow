@@ -1,0 +1,151 @@
+/* ==========================================================================
+   GLOW Workshop Mode -- supplemental layout
+   Loaded only on /workshop/* pages, on top of acb-large-print.css + forms.css.
+   Colour, type scale, focus rings and controls all come from the shared design
+   system; nothing here restates them.
+   ========================================================================== */
+
+/* --- Theme-aware UI boundary colours (WCAG 1.4.11 Non-text Contrast) ------
+   Component borders must clear 3:1 against the surface behind them, and that
+   surface flips between #ffffff and #121212 with the theme. A single fixed
+   value cannot satisfy both: #555 measures 7.46:1 on white but only 2.51:1 on
+   the dark background, and the shared --color-fix green is 6.44:1 light and
+   2.91:1 dark. So each token is declared per theme.
+
+   base.html resolves the theme before first paint and always stamps
+   data-theme, so the light values below are the no-JS fallback on a light
+   background rather than a theme that never applies. */
+:root {
+  --workshop-border: #555555;        /* 7.46:1 on #ffffff */
+  --workshop-border-complete: #2e6b2e; /* 6.44:1 on #ffffff */
+}
+
+html[data-theme="dark"] {
+  --workshop-border: #8a8a8a;        /* 5.43:1 on #121212 */
+  --workshop-border-complete: #74c98a; /* 9.33:1 on #121212 */
+}
+
+/* --- Focus-target guard (WCAG 2.4.11 Focus Not Obscured) ------------------
+   base.html renders .mobile-header and .sidebar as position: sticky. Any
+   fragment jump (skip link, post-submit anchor) would otherwise scroll its
+   target to y=0, directly underneath the sticky header. Reserve the header's
+   height above every anchor we deliberately move focus to. */
+#main,
+#activity-status,
+#ft-status,
+#join-status,
+#unlock-status,
+#after-submissions,
+[id^="ft-item-"],
+[id^="submission-"],
+[id^="feedback-err-"] {
+  scroll-margin-top: 5rem;
+}
+
+/* --- Panels --------------------------------------------------------------
+   The pre-migration inline styles used #ccd here, which measured 1.59:1
+   against white and failed the 3:1 minimum for UI boundaries. */
+.workshop-panel {
+  border: 1px solid var(--workshop-border);
+  border-radius: 0.5rem;
+  padding: 1rem;
+  margin: 1rem 0;
+}
+
+.workshop-panel > :first-child {
+  margin-top: 0;
+}
+
+/* --- Progress passport ---------------------------------------------------
+   Completion is carried by the "Complete"/"Not started" text inside each item,
+   never by fill colour alone (1.4.1). */
+.workshop-passport {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  list-style: none;
+  padding: 0;
+}
+
+.workshop-passport li {
+  border: 1px solid var(--workshop-border);
+  border-radius: 999px;
+  padding: 0.25rem 0.75rem;
+}
+
+.workshop-passport li.is-complete {
+  border-color: var(--workshop-border-complete);
+  border-width: 2px;
+}
+
+.workshop-progress {
+  width: min(36rem, 100%);
+  height: 1rem;
+}
+
+/* --- Submission cards ---------------------------------------------------- */
+.workshop-card {
+  border: 1px solid var(--workshop-border);
+  border-radius: 0.5rem;
+  padding: 1rem;
+  margin: 1rem 0;
+}
+
+/* Serialized submission bodies must wrap: the block is not focusable, so any
+   horizontal overflow would be unreachable by keyboard (2.1.1). */
+.workshop-card pre,
+.workshop-submission-body {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  margin: 0;
+}
+
+.workshop-field-list {
+  margin: 0;
+}
+
+.workshop-field-list dt {
+  font-weight: 700;
+  margin-top: 0.75rem;
+}
+
+.workshop-field-list dd {
+  margin: 0.25rem 0 0 0;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+/* --- Metric list (facilitator) ------------------------------------------- */
+.workshop-metrics {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));
+  gap: 1rem;
+  margin: 0;
+}
+
+.workshop-metric {
+  border: 1px solid var(--workshop-border);
+  border-radius: 0.5rem;
+  padding: 1rem;
+}
+
+.workshop-metric dt {
+  font-weight: 700;
+}
+
+.workshop-metric dd {
+  margin: 0.25rem 0 0 0;
+  font-size: 1.75rem;
+}
+
+/* --- Scenario / outcome grids -------------------------------------------- */
+.workshop-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr));
+  gap: 1rem;
+}
+
+/* --- Tables scroll rather than forcing the page sideways (1.4.10) --------- */
+.workshop-table-wrap {
+  overflow-x: auto;
+}

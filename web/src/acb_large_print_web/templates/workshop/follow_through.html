@@ -1,0 +1,86 @@
+{% extends "workshop/_shell.html" %}
+
+{% block title %}{% if message %}{% if message_is_error %}Not saved — {% else %}Saved — {% endif %}{% endif %}Workshop Follow-Through{% endblock %}
+{% block heading %}Workshop follow-through{% endblock %}
+
+{% block content %}
+<div id="ft-status" tabindex="-1"{% if message_is_error %} autofocus{% endif %}>
+  {% if message %}
+    {% if message_is_error %}
+  <p class="flash-error" role="alert"><strong>Error:</strong> {{ message }}</p>
+    {% else %}
+  <p class="flash-success" role="status"><strong>Success:</strong> {{ message }}</p>
+    {% endif %}
+  {% endif %}
+</div>
+
+<p>Session: {{ session_code }} — {{ session_title }}</p>
+<p>This is where coaching outputs become reusable templates, checklists, and 30-day commitments.</p>
+
+<section class="workshop-panel">
+  <h2 id="save-item">Save a follow-through item</h2>
+  <form method="post" action="{{ url_for('workshop.workshop_follow_through', session_code=session_code) }}">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <label for="item_kind">Kind</label>
+    <select id="item_kind" name="item_kind">
+      <option value="action_commitment" {% if form_values.item_kind == 'action_commitment' %}selected{% endif %}>30-day action commitment</option>
+      <option value="template" {% if form_values.item_kind == 'template' %}selected{% endif %}>Reusable coaching template</option>
+      <option value="checklist" {% if form_values.item_kind == 'checklist' %}selected{% endif %}>Checklist</option>
+    </select>
+
+    <label for="item_title">Title (required)</label>
+    <input id="item_title" name="item_title" type="text" required
+           value="{{ form_values.item_title }}">
+
+    <label for="owner_name">Owner</label>
+    <input id="owner_name" name="owner_name" type="text" autocomplete="nickname"
+           value="{{ form_values.owner_name }}">
+
+    <label for="due_date">Due date (optional)</label>
+    <input id="due_date" name="due_date" type="date" value="{{ form_values.due_date }}">
+
+    <label for="item_details">Details (required)</label>
+    <textarea id="item_details" name="item_details" rows="8" required>{{ form_values.item_details }}</textarea>
+
+    <p><button type="submit">Save follow-through item</button></p>
+  </form>
+</section>
+
+{% for group in groups %}
+<section class="workshop-panel">
+  <h2 id="ft-group-{{ group.key }}">{{ group.title }}{% if group.entries %} ({{ group.entries|length }}){% endif %}</h2>
+  {% if not group.entries %}
+  <p>{{ group.empty_text }}</p>
+  {% else %}
+  <ul>
+    {% for item in group.entries %}
+    <li id="ft-item-{{ item.id }}" tabindex="-1">
+      <p><strong>{{ item.title }}</strong></p>
+      <dl>
+        <dt>Owner</dt><dd>{{ item.owner_name }}</dd>
+        {% if item.due_date %}<dt>Due</dt><dd>{{ item.due_date }}</dd>{% endif %}
+        <dt>Status</dt><dd>{{ item.status_label }}</dd>
+        <dt>Details</dt><dd>{{ item.details }}</dd>
+      </dl>
+      <form method="post" action="{{ url_for('workshop.workshop_follow_through_status', session_code=session_code, item_id=item.id) }}">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <input type="hidden" name="status" value="{% if item.status == 'done' %}open{% else %}done{% endif %}">
+        <button type="submit">
+          {% if item.status == 'done' %}Reopen{% else %}Mark complete{% endif %}<span class="visually-hidden">: {{ item.title }}</span>
+        </button>
+      </form>
+    </li>
+    {% endfor %}
+  </ul>
+  {% endif %}
+</section>
+{% endfor %}
+
+<h2>Exports</h2>
+<ul>
+  <li><a href="{{ url_for('workshop.workshop_my_export', session_code=session_code) }}">Download my workshop artifacts (Markdown, .md file)</a></li>
+</ul>
+<p>Session-wide exports covering every participant are available to the facilitator.</p>
+
+{% include "workshop/_session_nav.html" %}
+{% endblock %}

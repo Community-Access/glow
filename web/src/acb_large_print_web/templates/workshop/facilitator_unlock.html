@@ -1,0 +1,55 @@
+{% extends "workshop/_shell.html" %}
+
+{% block title %}{% if error %}Key not recognised — {% endif %}Facilitator access{% endblock %}
+{% block heading %}Facilitator access required{% endblock %}
+
+{% block content %}
+<p>Session: {{ session_code }}</p>
+
+<div id="unlock-status" tabindex="-1"{% if error %} autofocus{% endif %}>
+  {% if error %}
+  <p class="flash-error" role="alert"><strong>Error:</strong> {{ error }}</p>
+  {% endif %}
+</div>
+
+<p>
+  The facilitator dashboard and the session-wide exports show every participant's
+  submissions, so they are limited to the person running the session.
+</p>
+
+{% if key_configured %}
+<h2>Unlock with the facilitator key</h2>
+<form method="post" action="{{ url_for('workshop.workshop_facilitator_unlock', session_code=session_code) }}">
+  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+  <label for="facilitator_key">Facilitator key</label>
+  <input id="facilitator_key" name="facilitator_key" type="password"
+         autocomplete="off" required
+         aria-describedby="facilitator-key-help">
+  <p id="facilitator-key-help">
+    The key is set per session in the conference code configuration, or via the
+    <code>GLOW_WORKSHOP_FACILITATOR_KEY</code> environment variable.
+  </p>
+  <p><button type="submit">Unlock facilitator tools</button></p>
+</form>
+{% else %}
+<h2>No facilitator key is configured</h2>
+<p>
+  Until a facilitator key is configured for this deployment, these tools are
+  available only to a signed-in GLOW administrator. Set a key by adding
+  <code>facilitator_key</code> to the session's entry in the conference code
+  configuration, or by setting the <code>GLOW_WORKSHOP_FACILITATOR_KEY</code>
+  environment variable.
+</p>
+<p><a href="{{ url_for('admin.admin_login') }}">Sign in as a GLOW administrator</a></p>
+{% endif %}
+
+<h2>Participant options</h2>
+<p>
+  If you are attending rather than facilitating, your own work is always
+  available to you:
+</p>
+<ul>
+  <li><a href="{{ url_for('workshop.workshop_my_content', session_code=session_code) }}">My workshop content</a></li>
+  <li><a href="{{ url_for('workshop.workshop_my_export', session_code=session_code) }}">Download my workshop artifacts (Markdown, .md file)</a></li>
+</ul>
+{% endblock %}

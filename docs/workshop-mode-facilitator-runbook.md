@@ -22,6 +22,49 @@ Total day: 8:30 AM to 4:30 PM
 - forms submit path available
 - export paths operational (markdown/json/html/docx)
 - fallback worksheets ready
+- facilitator access configured (see below) and tested before the room fills
+
+### Facilitator access
+
+The facilitator dashboard and the session-wide exports show every
+participant's submissions, so they are not open to everyone holding the
+session code. Access is granted two ways:
+
+- Sign in as an approved GLOW administrator, or
+- Unlock the session with its facilitator key at
+  `/workshop/session/<session-code>/facilitator`.
+
+Set the key either per session, in the conference code configuration
+(`instance/workshop_conference_codes.json` or the
+`WORKSHOP_CONFERENCE_CODES_JSON` environment variable):
+
+```json
+[
+  {
+    "access_code": "AHG2026",
+    "session_code": "ahg-2026",
+    "session_title": "Accessibility Agents in Action",
+    "event_name": "Accessing Higher Ground",
+    "facilitator_key": "choose-a-strong-value"
+  }
+]
+```
+
+...or deployment-wide with the `GLOW_WORKSHOP_FACILITATOR_KEY` environment
+variable, which covers ad-hoc sessions created on the day.
+
+If no key is configured anywhere, these surfaces are restricted to signed-in
+administrators. That is deliberate -- it fails closed rather than exposing the
+room's work.
+
+Participants never need this key. Their own artifacts are always available to
+them from **My workshop content**, including a Markdown download.
+
+### Participant privacy
+
+Submissions marked "share anonymously" are shown and exported as
+"Anonymous participant" in every format, including JSON. Exports never contain
+participant session tokens.
 
 3. Accessibility validation
 - keyboard-only walkthrough complete

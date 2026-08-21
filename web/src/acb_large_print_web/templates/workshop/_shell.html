@@ -1,0 +1,11 @@
+{# Shared shell for every Workshop Mode page.
+   Extends the app-wide base.html so workshop pages inherit the GLOW brand,
+   sidebar, footer, theme switching, cognitive profile and forced-colors
+   support -- and, critically, the CSP-nonced stylesheets. These pages used to
+   be standalone documents with un-nonced inline <style>, which the app's
+   Content-Security-Policy blocked outright in production. #}
+{% extends "base.html" %}
+
+{% block extra_css %}
+  <link rel="stylesheet" href="{{ url_for('static', filename='workshop.css') }}">
+{% endblock %}

@@ -54,9 +54,28 @@ This checklist defines implementation and QA requirements for GLOW Workshop Mode
 - Avoid ambiguous jargon where possible.
 - Keep action labels consistent across workflow steps.
 
+## Forms and Errors, Full-Page-Reload Flows
+Workshop Mode submits with ordinary form posts, not async updates, so the
+"Dynamic Updates" rules below do not cover its status messaging. These do:
+- Focus moves to the status region after a submit. Moving focus in response to
+  the user pressing Submit is user-initiated, not focus stealing.
+- Error lists are never truncated. Every failing field is named.
+- Success and error use distinct elements and distinct roles; errors use
+  role="alert", never role="status".
+- Checkbox and select state round-trips on validation failure, not only text
+  inputs. A dropped checkbox can publish something the participant chose to
+  keep private.
+- Successful posts redirect (Post/Redirect/Get) so refresh cannot duplicate.
+
 ## Verification Gates
 Automated gate:
 - axe-core scan with WCAG 2.2 AA tags must have zero critical and serious issues.
+- Workshop routes are covered by `web/e2e/tests/axe-audit.spec.mjs`, which
+  seeds a session so the gallery and personal pages are scanned populated.
+  Adding a workshop page means adding it to `WORKSHOP_PAGES` in that spec.
+- Workshop pages must render inside `base.html`. Standalone documents with
+  inline `<style>` are dropped by the app's Content-Security-Policy and lose
+  the design system; `tests/test_workshop_routes.py` guards both.
 
 Manual gate:
 - Keyboard-only walkthrough

@@ -1,0 +1,52 @@
+{% extends "workshop/_shell.html" %}
+
+{% block title %}Workshop Guide{% endblock %}
+{% block heading %}Accessibility Agents in Action{% endblock %}
+
+{% block content %}
+<p>
+  A hands-on GLOW workshop design for conference and institutional training
+  environments, centered on partner confidence, responsible AI use, and
+  reusable accessibility workflows.
+</p>
+
+<h2>Core promise</h2>
+<p>
+  Participants do not need to be AI scientists, developers, or programmers.
+  They are guided through practical barriers and leave with artifacts that help
+  others become accessibility champions.
+</p>
+<dl>
+  <dt>G — Ground</dt><dd>Ground the work in a real accessibility problem.</dd>
+  <dt>L — Learn</dt><dd>Learn what people need to understand.</dd>
+  <dt>O — Organize</dt><dd>Organize a repeatable workflow.</dd>
+  <dt>W — Walk forward</dt><dd>Walk forward as accessibility champions.</dd>
+</dl>
+
+<h2>Learning outcomes</h2>
+<div class="workshop-grid">
+  <section class="workshop-panel">
+    <h3>Problem-first practice</h3>
+    <p>Teams start with user barriers and capacity goals before selecting tooling.</p>
+  </section>
+  <section class="workshop-panel">
+    <h3>Responsible AI boundaries</h3>
+    <p>Every workflow defines what AI can draft and what humans must verify.</p>
+  </section>
+  <section class="workshop-panel">
+    <h3>Reusable artifacts</h3>
+    <p>Participants leave with prompts, checklists, and action plans ready for immediate use.</p>
+  </section>
+  <section class="workshop-panel">
+    <h3>Champion pathway</h3>
+    <p>Partners learn ownership patterns that scale accessibility beyond specialist bottlenecks.</p>
+  </section>
+</div>
+
+<h2>Use this workshop kit</h2>
+<ul>
+  <li><a href="{{ url_for('workshop.workshop_exercises') }}">Exercises pack</a></li>
+  <li><a href="{{ url_for('workshop.workshop_utilization') }}">Utilization guide</a></li>
+  <li><a href="{{ url_for('workshop.workshop_home') }}">Workshop Mode home</a></li>
+</ul>
+{% endblock %}

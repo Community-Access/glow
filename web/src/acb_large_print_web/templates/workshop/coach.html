@@ -1,0 +1,18 @@
+{% extends "workshop/_shell.html" %}
+
+{% block title %}Coach Mode{% endblock %}
+{% block heading %}Coach Mode{% endblock %}
+
+{% block content %}
+<p>Session: {{ session_code }}</p>
+<p>Use this surface to frame partner-centered coaching language that teaches ownership, not dependency.</p>
+
+<h2>Coaching pattern</h2>
+<ul>
+  <li>Start with the partner's real barrier and immediate need.</li>
+  <li>Translate accessibility guidance into plain language the partner can reuse.</li>
+  <li>Attach one human-review checkpoint before finalizing changes.</li>
+</ul>
+
+{% include "workshop/_session_nav.html" %}
+{% endblock %}

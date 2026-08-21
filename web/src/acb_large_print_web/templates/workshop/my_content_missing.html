@@ -1,0 +1,14 @@
+{% extends "workshop/_shell.html" %}
+
+{% block title %}My workshop content{% endblock %}
+{% block heading %}My workshop content{% endblock %}
+
+{% block content %}
+<p>Session: {{ session_code }}</p>
+<p>
+  We could not find your personal participant token for this session on this
+  device. This usually means you joined on a different device or browser, or
+  the browser cleared its cookies.
+</p>
+<p><a href="{{ url_for('workshop.workshop_home', code=session_code) }}">Re-enter the workshop with your session code</a></p>
+{% endblock %}

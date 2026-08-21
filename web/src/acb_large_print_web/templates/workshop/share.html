@@ -1,0 +1,24 @@
+{% extends "workshop/_shell.html" %}
+
+{% block title %}Share Mode{% endblock %}
+{% block heading %}Share Mode{% endblock %}
+
+{% block content %}
+<p>Session: {{ session_code }}</p>
+<p>Share mode packages workshop artifacts so teams can reuse strong workflows after the session.</p>
+
+<h2>Ways to share</h2>
+<ul>
+  <li>Publish anonymized gallery examples for team learning.</li>
+  <li>Export artifacts for adoption and training.</li>
+  <li>Promote proven workflows into templates and future GLOW skills.</li>
+</ul>
+
+<h2>Take your own work with you</h2>
+<p>
+  <a href="{{ url_for('workshop.workshop_my_export', session_code=session_code) }}">Download my workshop artifacts (Markdown, .md file)</a>
+</p>
+<p>Session-wide exports covering everyone's submissions are available to the facilitator from the facilitator dashboard.</p>
+
+{% include "workshop/_session_nav.html" %}
+{% endblock %}

@@ -1,0 +1,19 @@
+{# Session-level navigation. Rendered as a list so screen reader users get a
+   count and can navigate it as a group; each link text stands alone out of
+   context (WCAG 2.4.4). #}
+<nav aria-label="Workshop session navigation">
+  <h2>Go to</h2>
+  <ul>
+    <li><a href="{{ url_for('workshop.workshop_activity', session_code=session_code, activity_key='journey_check_in') }}">Workshop activities</a></li>
+    <li><a href="{{ url_for('workshop.workshop_launchpad', session_code=session_code) }}">Exercise launchpad</a></li>
+    <li><a href="{{ url_for('workshop.workshop_my_content', session_code=session_code) }}">My workshop content</a></li>
+    {% if feature_workshop_gallery_enabled %}
+    <li><a href="{{ url_for('workshop.workshop_gallery', session_code=session_code) }}">Shared workshop gallery</a></li>
+    {% endif %}
+    <li><a href="{{ url_for('workshop.workshop_follow_through', session_code=session_code) }}">Follow-through log</a></li>
+    <li><a href="{{ url_for('workshop.workshop_coach', session_code=session_code) }}">Coach mode guidance</a></li>
+    <li><a href="{{ url_for('workshop.workshop_review', session_code=session_code) }}">Review mode guidance</a></li>
+    <li><a href="{{ url_for('workshop.workshop_share', session_code=session_code) }}">Share mode and exports</a></li>
+    <li><a href="{{ url_for('workshop.workshop_home') }}">Workshop home</a></li>
+  </ul>
+</nav>

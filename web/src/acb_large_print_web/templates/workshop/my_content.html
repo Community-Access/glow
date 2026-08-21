@@ -1,0 +1,30 @@
+{% extends "workshop/_shell.html" %}
+
+{% block title %}My workshop content{% endblock %}
+{% block heading %}My workshop content{% endblock %}
+
+{% block content %}
+<p>Participant: {{ participant.display_name }}. Session: {{ session_code }}.</p>
+
+<ul>
+  <li><a href="{{ url_for('workshop.workshop_my_export', session_code=session_code) }}">Download my workshop artifacts (Markdown, .md file)</a></li>
+  <li><a href="{{ url_for('workshop.workshop_champion_skill', session_code=session_code) }}">See and use my accessibility agent</a></li>
+</ul>
+
+<h2>My submissions{% if submissions %} ({{ submissions|length }}){% endif %}</h2>
+
+{% if not submissions %}
+<p>You have not saved any activity responses yet.</p>
+{% else %}
+{% for item in submissions %}
+<article class="workshop-card">
+  <h3>{{ activity_titles.get(item.activity_key, item.activity_key) }}</h3>
+  <p>Last updated: {{ item.updated_display or item.updated_at_utc }}</p>
+  <pre class="workshop-submission-body">{{ item.content_text }}</pre>
+  <p><a href="{{ url_for('workshop.workshop_activity', session_code=session_code, activity_key=item.activity_key) }}">Open {{ activity_titles.get(item.activity_key, item.activity_key) }} to revise</a></p>
+</article>
+{% endfor %}
+{% endif %}
+
+{% include "workshop/_session_nav.html" %}
+{% endblock %}

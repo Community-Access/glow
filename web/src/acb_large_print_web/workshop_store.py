@@ -12,19 +12,18 @@ import os
 import re
 import secrets
 import sqlite3
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from html import escape
 from io import BytesIO
 from pathlib import Path
 
 from flask import current_app
 
-
 _SESSION_CODE_RE = re.compile(r"^[a-zA-Z0-9_-]{3,64}$")
 
 
 def _utc_now() -> str:
-    return datetime.now(timezone.utc).isoformat()
+    return datetime.now(UTC).isoformat()
 
 
 def _db_path() -> Path:
@@ -59,6 +58,8 @@ def _ensure_schema(conn: sqlite3.Connection) -> None:
         " display_name TEXT NOT NULL,"
         " anonymity_mode INTEGER NOT NULL DEFAULT 0,"
         " content_text TEXT NOT NULL,"
+        " content_json TEXT,"
+        " is_draft INTEGER NOT NULL DEFAULT 0,"
         " created_at_utc TEXT NOT NULL,"
         " updated_at_utc TEXT NOT NULL,"
         " FOREIGN KEY(session_code) REFERENCES workshop_sessions(session_code)"
@@ -123,6 +124,66 @@ def _ensure_schema(conn: sqlite3.Connection) -> None:
     cols = [str(r["name"]) for r in conn.execute("PRAGMA table_info(workshop_submissions)").fetchall()]
     if "participant_key" not in cols:
         conn.execute("ALTER TABLE workshop_submissions ADD COLUMN participant_key TEXT")
+    if "content_json" not in cols:
+        # Structured field values alongside the rendered content_text, so a
+        # participant returning to an activity gets their answers back in the
+        # right boxes (WCAG 3.3.7 Redundant Entry) rather than a blank form.
+        conn.execute("ALTER TABLE workshop_submissions ADD COLUMN content_json TEXT")
+    if "is_draft" not in cols:
+        conn.execute("ALTER TABLE workshop_submissions ADD COLUMN is_draft INTEGER NOT NULL DEFAULT 0")
+    session_cols = [str(r["name"]) for r in conn.execute("PRAGMA table_info(workshop_sessions)").fetchall()]
+    if "facilitator_key" not in session_cols:
+        conn.execute("ALTER TABLE workshop_sessions ADD COLUMN facilitator_key TEXT")
+    # One stored response per participant per activity. Re-saving an activity
+    # must revise that row, not append another copy of the same work.
+    #
+    # Existing deployments predate this rule and may already hold duplicates
+    # from repeated saves, which would make the unique index fail to build.
+    # Collapse them first, keeping the most recently updated row so no
+    # participant loses their latest answer.
+    # Peer feedback and follow-through items reference submissions by id, so
+    # move anything hanging off a duplicate onto the survivor before deleting.
+    # Orphaned feedback would simply vanish from the gallery.
+    survivor_map = (
+        "SELECT d.id AS dup_id, k.keep_id AS keep_id FROM workshop_submissions d "
+        "JOIN ("
+        " SELECT session_code, activity_key, participant_key, id AS keep_id FROM ("
+        "  SELECT session_code, activity_key, participant_key, id, ROW_NUMBER() OVER ("
+        "   PARTITION BY session_code, activity_key, participant_key"
+        "   ORDER BY updated_at_utc DESC, id DESC"
+        "  ) AS rn FROM workshop_submissions WHERE participant_key IS NOT NULL"
+        " ) WHERE rn = 1"
+        ") k ON d.session_code = k.session_code AND d.activity_key = k.activity_key "
+        "AND d.participant_key = k.participant_key "
+        "WHERE d.participant_key IS NOT NULL AND d.id <> k.keep_id"
+    )
+    remaps = conn.execute(survivor_map).fetchall()
+    for row in remaps:
+        conn.execute(
+            "UPDATE workshop_feedback SET submission_id=? WHERE submission_id=?",
+            (int(row["keep_id"]), int(row["dup_id"])),
+        )
+        conn.execute(
+            "UPDATE workshop_follow_through SET source_submission_id=? WHERE source_submission_id=?",
+            (int(row["keep_id"]), int(row["dup_id"])),
+        )
+
+    conn.execute(
+        "DELETE FROM workshop_submissions WHERE participant_key IS NOT NULL AND id NOT IN ("
+        " SELECT id FROM ("
+        "  SELECT id, ROW_NUMBER() OVER ("
+        "   PARTITION BY session_code, activity_key, participant_key"
+        "   ORDER BY updated_at_utc DESC, id DESC"
+        "  ) AS rn"
+        "  FROM workshop_submissions WHERE participant_key IS NOT NULL"
+        " ) WHERE rn = 1"
+        ")"
+    )
+    conn.execute(
+        "CREATE UNIQUE INDEX IF NOT EXISTS idx_workshop_submissions_unique_owner "
+        "ON workshop_submissions(session_code, activity_key, participant_key) "
+        "WHERE participant_key IS NOT NULL"
+    )
     conn.execute(
         "CREATE INDEX IF NOT EXISTS idx_workshop_submissions_session_activity "
         "ON workshop_submissions(session_code, activity_key)"
@@ -175,60 +236,181 @@ def save_submission(
     *,
     participant_key: str | None = None,
     anonymity_mode: bool = False,
+    field_values: dict[str, str] | None = None,
+    is_draft: bool = False,
 ) -> int:
+    """Store a participant's response, replacing their previous one.
+
+    This is an upsert, not an append. A participant who revises an activity is
+    revising one answer; the old behaviour left a fresh row behind on every
+    save, which inflated the gallery, double-counted progress and made the
+    facilitator's completion numbers meaningless by mid-morning.
+
+    Submissions with no ``participant_key`` (seeded or legacy rows) keep the
+    old insert behaviour, since there is no owner to key the revision on.
+    """
     code = normalize_session_code(session_code)
     now = _utc_now()
+    key = (participant_key or "").strip() or None
+    name = (display_name or "Participant").strip() or "Participant"
+    payload = json.dumps(field_values or {}, ensure_ascii=False)
     conn = _conn()
-    cur = conn.execute(
-        "INSERT INTO workshop_submissions (session_code, activity_key, participant_key, display_name, anonymity_mode, content_text, created_at_utc, updated_at_utc) "
-        "VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
-        (
-            code,
-            activity_key,
-            (participant_key or "").strip() or None,
-            (display_name or "Participant").strip() or "Participant",
-            int(bool(anonymity_mode)),
-            content_text,
-            now,
-            now,
-        ),
+
+    if key is None:
+        cur = conn.execute(
+            "INSERT INTO workshop_submissions "
+            "(session_code, activity_key, participant_key, display_name, anonymity_mode, content_text, content_json, is_draft, created_at_utc, updated_at_utc) "
+            "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+            (code, activity_key, None, name, int(bool(anonymity_mode)), content_text, payload, int(bool(is_draft)), now, now),
+        )
+        conn.commit()
+        new_id = int(cur.lastrowid)
+        conn.close()
+        return new_id
+
+    conn.execute(
+        "INSERT INTO workshop_submissions "
+        "(session_code, activity_key, participant_key, display_name, anonymity_mode, content_text, content_json, is_draft, created_at_utc, updated_at_utc) "
+        "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?) "
+        # The unique index is partial, so the conflict target must repeat its
+        # WHERE clause or SQLite will not match it.
+        "ON CONFLICT(session_code, activity_key, participant_key) WHERE participant_key IS NOT NULL DO UPDATE SET "
+        "display_name=excluded.display_name, anonymity_mode=excluded.anonymity_mode, "
+        "content_text=excluded.content_text, content_json=excluded.content_json, "
+        # A finished response must never be demoted back to a draft. Someone
+        # returning to a completed activity to reword one sentence and pressing
+        # "Save draft" would otherwise pull their work out of the gallery, the
+        # room count and their own passport -- under a success message.
+        "is_draft=CASE WHEN workshop_submissions.is_draft = 0 THEN 0 ELSE excluded.is_draft END, "
+        "updated_at_utc=excluded.updated_at_utc",
+        (code, activity_key, key, name, int(bool(anonymity_mode)), content_text, payload, int(bool(is_draft)), now, now),
     )
     conn.commit()
-    new_id = int(cur.lastrowid)
+    row = conn.execute(
+        "SELECT id FROM workshop_submissions WHERE session_code=? AND activity_key=? AND participant_key=?",
+        (code, activity_key, key),
+    ).fetchone()
     conn.close()
-    return new_id
+    return int(row["id"]) if row else 0
 
 
-def list_submissions(session_code: str, *, activity_key: str | None = None) -> list[dict]:
+def get_participant_submission(session_code: str, participant_key: str, activity_key: str) -> dict | None:
+    """A participant's stored answer for one activity, if any."""
     code = normalize_session_code(session_code)
+    key = (participant_key or "").strip()
+    if not key:
+        return None
     conn = _conn()
+    row = conn.execute(
+        "SELECT id, session_code, activity_key, participant_key, display_name, anonymity_mode, content_text, content_json, is_draft, created_at_utc, updated_at_utc "
+        "FROM workshop_submissions WHERE session_code=? AND participant_key=? AND activity_key=?",
+        (code, key, activity_key),
+    ).fetchone()
+    conn.close()
+    return dict(row) if row else None
+
+
+def decode_field_values(row: dict | None) -> dict[str, str]:
+    """Field values stored with a submission, or an empty mapping."""
+    if not row:
+        return {}
+    raw = (row.get("content_json") or "").strip()
+    if not raw:
+        return {}
+    try:
+        decoded = json.loads(raw)
+    except (TypeError, ValueError):
+        return {}
+    if not isinstance(decoded, dict):
+        return {}
+    return {str(k): str(v) for k, v in decoded.items()}
+
+
+def _submission_filters(
+    code: str,
+    activity_key: str | None,
+    include_drafts: bool,
+) -> tuple[str, list]:
+    clause = "session_code=?"
+    params: list = [code]
     if activity_key:
-        rows = conn.execute(
-            "SELECT id, session_code, activity_key, participant_key, display_name, anonymity_mode, content_text, created_at_utc, updated_at_utc "
-            "FROM workshop_submissions WHERE session_code=? AND activity_key=? ORDER BY updated_at_utc DESC",
-            (code, activity_key),
-        ).fetchall()
-    else:
-        rows = conn.execute(
-            "SELECT id, session_code, activity_key, participant_key, display_name, anonymity_mode, content_text, created_at_utc, updated_at_utc "
-            "FROM workshop_submissions WHERE session_code=? ORDER BY updated_at_utc DESC",
-            (code,),
-        ).fetchall()
+        clause += " AND activity_key=?"
+        params.append(activity_key)
+    if not include_drafts:
+        clause += " AND is_draft=0"
+    return clause, params
+
+
+def count_submissions(
+    session_code: str,
+    *,
+    activity_key: str | None = None,
+    include_drafts: bool = False,
+) -> int:
+    code = normalize_session_code(session_code)
+    clause, params = _submission_filters(code, activity_key, include_drafts)
+    conn = _conn()
+    row = conn.execute(
+        f"SELECT COUNT(*) AS n FROM workshop_submissions WHERE {clause}",
+        params,
+    ).fetchone()
+    conn.close()
+    return int(row["n"]) if row else 0
+
+
+def list_submissions(
+    session_code: str,
+    *,
+    activity_key: str | None = None,
+    include_drafts: bool = False,
+    limit: int | None = None,
+    offset: int = 0,
+) -> list[dict]:
+    """Submissions for a session, newest first.
+
+    Drafts are excluded by default: a draft is unfinished work and does not
+    belong in the shared gallery, the room-wide counts, or an export.
+
+    ``limit``/``offset`` exist because a full-day session with 25 participants
+    produces hundreds of submissions, and the gallery used to render every one
+    of them on a single page.
+    """
+    code = normalize_session_code(session_code)
+    clause, params = _submission_filters(code, activity_key, include_drafts)
+    sql = f"SELECT id, session_code, activity_key, participant_key, display_name, anonymity_mode, content_text, content_json, is_draft, created_at_utc, updated_at_utc FROM workshop_submissions WHERE {clause} ORDER BY updated_at_utc DESC, id DESC"
+    if limit is not None:
+        sql += " LIMIT ? OFFSET ?"
+        params.extend([int(limit), max(0, int(offset))])
+    conn = _conn()
+    rows = conn.execute(sql, params).fetchall()
     conn.close()
     return [dict(r) for r in rows]
 
 
-def list_submissions_for_participant(session_code: str, participant_key: str) -> list[dict]:
+def list_submissions_for_participant(
+    session_code: str,
+    participant_key: str,
+    *,
+    include_drafts: bool = True,
+) -> list[dict]:
+    """A participant's own submissions.
+
+    Drafts are included here by default -- they are the participant's own
+    unfinished work and they need to see it to carry on.
+    """
     code = normalize_session_code(session_code)
     key = (participant_key or "").strip()
     if not key:
         return []
+    sql = (
+        "SELECT id, session_code, activity_key, participant_key, display_name, anonymity_mode, content_text, content_json, is_draft, created_at_utc, updated_at_utc FROM workshop_submissions "
+        "WHERE session_code=? AND participant_key=?"
+    )
+    if not include_drafts:
+        sql += " AND is_draft=0"
+    sql += " ORDER BY updated_at_utc DESC, id DESC"
     conn = _conn()
-    rows = conn.execute(
-        "SELECT id, session_code, activity_key, participant_key, display_name, anonymity_mode, content_text, created_at_utc, updated_at_utc "
-        "FROM workshop_submissions WHERE session_code=? AND participant_key=? ORDER BY updated_at_utc DESC",
-        (code, key),
-    ).fetchall()
+    rows = conn.execute(sql, (code, key)).fetchall()
     conn.close()
     return [dict(r) for r in rows]
 
@@ -322,6 +504,7 @@ def upsert_conference_code(
     session_title: str,
     event_name: str = "",
     active: bool = True,
+    facilitator_key: str = "",
 ) -> None:
     access = (access_code or "").strip().upper()
     if not access:
@@ -331,6 +514,8 @@ def upsert_conference_code(
     event = (event_name or "").strip()
     now = _utc_now()
     ensure_session(code, title=title, event_name=event)
+    if (facilitator_key or "").strip():
+        set_facilitator_key(code, facilitator_key)
     conn = _conn()
     conn.execute(
         "INSERT INTO workshop_conference_codes (access_code, session_code, session_title, event_name, active, created_at_utc, updated_at_utc) "
@@ -384,6 +569,7 @@ def load_conference_codes_from_file() -> int:
                 session_title=(str(item.get("session_title", "GLOW Workshop Session")) or "").strip() or "GLOW Workshop Session",
                 event_name=(str(item.get("event_name", "")) or "").strip(),
                 active=bool(item.get("active", True)),
+                facilitator_key=(str(item.get("facilitator_key", "")) or "").strip(),
             )
             count += 1
         except Exception:
@@ -417,6 +603,7 @@ def load_conference_codes_from_env() -> int:
                 session_title=(str(item.get("session_title", "GLOW Workshop Session")) or "").strip() or "GLOW Workshop Session",
                 event_name=(str(item.get("event_name", "")) or "").strip(),
                 active=bool(item.get("active", True)),
+                facilitator_key=(str(item.get("facilitator_key", "")) or "").strip(),
             )
             count += 1
         except Exception:
@@ -540,6 +727,60 @@ def list_feedback_for_session(session_code: str) -> dict[int, list[dict]]:
     return grouped
 
 
+def redact_submissions_for_export(rows: list[dict]) -> list[dict]:
+    """Strip participant-identifying material from exported submissions.
+
+    Two things must never leave this function intact:
+
+    * ``participant_key`` is the literal value of the ``glow_workshop_participant``
+      cookie, and :func:`get_participant` accepts it as a bearer credential with
+      no further check. Exporting it hands anyone who downloads the file the
+      ability to assume that participant's workshop identity.
+    * ``display_name`` must be masked whenever the participant ticked the
+      anonymity box. The Markdown, HTML and DOCX exports already honour that
+      choice; the JSON export must not become the way around it.
+
+    ``login_email`` is dropped for the same reason even though the current
+    submission query does not select it -- so a future column addition cannot
+    silently start leaking it.
+    """
+    redacted: list[dict] = []
+    for row in rows:
+        item = dict(row)
+        item.pop("participant_key", None)
+        item.pop("login_email", None)
+        if int(item.get("anonymity_mode", 0) or 0):
+            item["display_name"] = "Anonymous participant"
+        redacted.append(item)
+    return redacted
+
+
+def set_facilitator_key(session_code: str, facilitator_key: str) -> None:
+    code = normalize_session_code(session_code)
+    value = (facilitator_key or "").strip() or None
+    conn = _conn()
+    conn.execute(
+        "UPDATE workshop_sessions SET facilitator_key=? WHERE session_code=?",
+        (value, code),
+    )
+    conn.commit()
+    conn.close()
+
+
+def get_facilitator_key(session_code: str) -> str | None:
+    code = normalize_session_code(session_code)
+    conn = _conn()
+    row = conn.execute(
+        "SELECT facilitator_key FROM workshop_sessions WHERE session_code=?",
+        (code,),
+    ).fetchone()
+    conn.close()
+    if not row:
+        return None
+    value = (row["facilitator_key"] or "").strip()
+    return value or None
+
+
 def export_session_markdown(session_code: str, *, session_title: str = "GLOW Workshop Session") -> str:
     code = normalize_session_code(session_code)
     submissions = list_submissions(code)
@@ -589,7 +830,7 @@ def export_session_json(session_code: str, *, session_title: str = "GLOW Worksho
     code = normalize_session_code(session_code)
     payload = {
         "session": get_session(code) or {"session_code": code, "title": session_title},
-        "submissions": list_submissions(code),
+        "submissions": redact_submissions_for_export(list_submissions(code)),
         "feedback_by_submission": list_feedback_for_session(code),
     }
     return json.dumps(payload, indent=2)

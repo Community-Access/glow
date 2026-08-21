@@ -1,0 +1,180 @@
+{% extends "workshop/_shell.html" %}
+
+{% block title %}Workshop Gallery{% endblock %}
+{% block heading %}Shared workshop gallery{% endblock %}
+
+{% block content %}
+<p>Session: {{ session_code }}</p>
+
+{% if message and not message_is_error %}
+<p class="flash-success" role="status"><strong>Success:</strong> {{ message }}</p>
+{% endif %}
+
+<section>
+  <h2>Filter by activity</h2>
+  <form method="get" action="{{ url_for('workshop.workshop_gallery', session_code=session_code) }}">
+    <label for="activity">Show submissions for</label>
+    <select id="activity" name="activity">
+      <option value="" {% if not activity_filter %}selected{% endif %}>All activities</option>
+      {% for choice in activity_choices %}
+      <option value="{{ choice.key }}" {% if activity_filter == choice.key %}selected{% endif %}>{{ choice.title }} ({{ choice.count }})</option>
+      {% endfor %}
+    </select>
+    <p><button type="submit">Apply filter</button></p>
+  </form>
+</section>
+
+{% if submissions %}
+{# Each submission carries two forms. Left expanded, a 25-person session reaches
+   several thousand tab stops on a page with no other bypass. A closed <details>
+   contributes one tab stop and its contents are not focusable, so this is the
+   bypass mechanism as well as the disclosure. #}
+<nav aria-label="Gallery shortcuts">
+  <h2>Jump to</h2>
+  <ul>
+    <li><a href="#after-submissions">Skip past these {{ submissions|length }} submissions</a></li>
+    <li><a href="{{ url_for('workshop.workshop_my_content', session_code=session_code) }}">My workshop content</a></li>
+  </ul>
+</nav>
+{% endif %}
+
+<h2>Submissions</h2>
+
+{% if not submissions %}
+<p>
+  {% if activity_filter %}
+  No submissions for {{ activity_titles.get(activity_filter, activity_filter) }} yet.
+  {% else %}
+  No submissions yet. Once participants save an activity, their work appears here.
+  {% endif %}
+</p>
+{% else %}
+<p>
+  Showing {{ first_index }} to {{ last_index }} of {{ total }}
+  {%- if activity_filter %} submissions for {{ activity_titles.get(activity_filter, activity_filter) }}
+  {%- else %} submissions{% endif %}. Page {{ page }} of {{ total_pages }}.
+</p>
+{% for s in submissions %}
+{% set submitter = "an anonymous participant" if s.anonymity_mode else s.display_name %}
+<article class="workshop-card" aria-labelledby="submission-{{ s.id }}">
+  <h3 id="submission-{{ s.id }}" tabindex="-1">{{ activity_titles.get(s.activity_key, s.activity_key) }}</h3>
+  <dl>
+    <dt>Submitted by</dt>
+    <dd>{% if s.anonymity_mode %}Anonymous participant{% else %}{{ s.display_name }}{% endif %}</dd>
+    <dt>Last updated</dt>
+    <dd>{{ s.updated_display or s.updated_at_utc }}</dd>
+  </dl>
+
+  <pre class="workshop-submission-body">{{ s.content_text }}</pre>
+
+  {% set items = feedback.get(s.id, []) %}
+  {% if items %}
+  <h4>Peer feedback ({{ items|length }})</h4>
+  <ul>
+    {% for f in items %}
+    <li>
+      <p><strong>{{ f.reviewer_display_name }}</strong></p>
+      <dl>
+        <dt>Strength</dt><dd>{{ f.strength }}</dd>
+        <dt>Risk or gap</dt><dd>{{ f.risk_or_gap }}</dd>
+        <dt>Recommended safeguard</dt><dd>{{ f.recommended_safeguard }}</dd>
+        <dt>Reuse suggestion</dt><dd>{{ f.reuse_suggestion }}</dd>
+      </dl>
+    </li>
+    {% endfor %}
+  </ul>
+  {% endif %}
+
+  {% if peer_review_enabled %}
+  {% set had_error = feedback_error_id == s.id %}
+  {% set draft = feedback_draft if had_error else {} %}
+  <details{% if had_error %} open{% endif %}>
+    <summary>Add peer feedback<span class="visually-hidden"> for {{ activity_titles.get(s.activity_key, s.activity_key) }} by {{ submitter }}</span></summary>
+    {% if had_error %}
+    <p class="flash-error" id="feedback-err-{{ s.id }}" role="alert" tabindex="-1">
+      <strong>Error:</strong> All four answers are needed. A space on its own does
+      not count as an answer. Your text is still below.
+    </p>
+    {% endif %}
+    <form method="post" action="{{ url_for('workshop.workshop_peer_feedback', session_code=session_code, submission_id=s.id) }}">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <input type="hidden" name="return_page" value="{{ page }}">
+      <input type="hidden" name="return_activity" value="{{ activity_filter }}">
+      <label for="reviewer-{{ s.id }}">Reviewer name</label>
+      <input id="reviewer-{{ s.id }}" name="reviewer_display_name" type="text"
+             autocomplete="nickname" value="{{ draft.reviewer_display_name or reviewer_default }}">
+      <label for="strength-{{ s.id }}">One strength (required)</label>
+      <textarea id="strength-{{ s.id }}" name="strength" rows="2" required
+        {% if had_error and not draft.strength %}aria-invalid="true" aria-describedby="feedback-err-{{ s.id }}"{% endif %}
+      >{{ draft.strength or "" }}</textarea>
+      <label for="risk-{{ s.id }}">One risk or gap (required)</label>
+      <textarea id="risk-{{ s.id }}" name="risk_or_gap" rows="2" required
+        {% if had_error and not draft.risk_or_gap %}aria-invalid="true" aria-describedby="feedback-err-{{ s.id }}"{% endif %}
+      >{{ draft.risk_or_gap or "" }}</textarea>
+      <label for="safeguard-{{ s.id }}">Recommended safeguard (required)</label>
+      <textarea id="safeguard-{{ s.id }}" name="recommended_safeguard" rows="2" required
+        {% if had_error and not draft.recommended_safeguard %}aria-invalid="true" aria-describedby="feedback-err-{{ s.id }}"{% endif %}
+      >{{ draft.recommended_safeguard or "" }}</textarea>
+      <label for="reuse-{{ s.id }}">Reuse suggestion (required)</label>
+      <textarea id="reuse-{{ s.id }}" name="reuse_suggestion" rows="2" required
+        {% if had_error and not draft.reuse_suggestion %}aria-invalid="true" aria-describedby="feedback-err-{{ s.id }}"{% endif %}
+      >{{ draft.reuse_suggestion or "" }}</textarea>
+      <p>
+        <button type="submit">Save peer feedback<span class="visually-hidden"> for {{ activity_titles.get(s.activity_key, s.activity_key) }} by {{ submitter }}</span></button>
+      </p>
+    </form>
+  </details>
+  {% endif %}
+
+  <details>
+    <summary>Promote to follow-through<span class="visually-hidden"> for {{ activity_titles.get(s.activity_key, s.activity_key) }} by {{ submitter }}</span></summary>
+    <form method="post" action="{{ url_for('workshop.workshop_follow_through', session_code=session_code) }}">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <input type="hidden" name="source_submission_id" value="{{ s.id }}">
+      <input type="hidden" name="return_to" value="gallery">
+      <input type="hidden" name="return_page" value="{{ page }}">
+      <input type="hidden" name="return_activity" value="{{ activity_filter }}">
+      <label for="kind-{{ s.id }}">Kind</label>
+      <select id="kind-{{ s.id }}" name="item_kind">
+        <option value="action_commitment">30-day action commitment</option>
+        <option value="template">Reusable coaching template</option>
+        <option value="checklist">Checklist</option>
+      </select>
+      <label for="title-{{ s.id }}">Title</label>
+      <input id="title-{{ s.id }}" name="item_title" type="text" required
+             value="{{ activity_titles.get(s.activity_key, s.activity_key) }} follow-through">
+      <label for="owner-{{ s.id }}">Owner</label>
+      <input id="owner-{{ s.id }}" name="owner_name" type="text"
+             autocomplete="nickname"
+             value="{% if s.anonymity_mode %}Workshop participant{% else %}{{ s.display_name }}{% endif %}">
+      <label for="due-{{ s.id }}">Due date (optional)</label>
+      <input id="due-{{ s.id }}" name="due_date" type="date">
+      <label for="details-{{ s.id }}">Details</label>
+      <textarea id="details-{{ s.id }}" name="item_details" rows="6" required>{{ s.content_text }}</textarea>
+      <p>
+        <button type="submit">Save follow-through item<span class="visually-hidden"> for {{ activity_titles.get(s.activity_key, s.activity_key) }} by {{ submitter }}</span></button>
+      </p>
+    </form>
+  </details>
+</article>
+{% endfor %}
+{% endif %}
+
+<h2 id="after-submissions" tabindex="-1">End of submissions</h2>
+
+{% if total_pages > 1 %}
+<nav aria-label="Gallery pages">
+  <h2>More submissions</h2>
+  <ul>
+    {% if page > 1 %}
+    <li><a href="{{ url_for('workshop.workshop_gallery', session_code=session_code, activity=activity_filter or None, page=page - 1) }}">Previous page (page {{ page - 1 }} of {{ total_pages }})</a></li>
+    {% endif %}
+    {% if page < total_pages %}
+    <li><a href="{{ url_for('workshop.workshop_gallery', session_code=session_code, activity=activity_filter or None, page=page + 1) }}">Next page (page {{ page + 1 }} of {{ total_pages }})</a></li>
+    {% endif %}
+  </ul>
+</nav>
+{% endif %}
+
+{% include "workshop/_session_nav.html" %}
+{% endblock %}

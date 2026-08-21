@@ -1,0 +1,134 @@
+{% extends "workshop/_shell.html" %}
+
+{% block title %}{% if status_prefix %}{{ status_prefix }} — {% endif %}{{ activity_title }} — session {{ session_code }}{% endblock %}
+{% block heading %}{{ activity_title }}{% endblock %}
+
+{% block content %}
+{# Status block sits above everything else and is focusable, so the post-submit
+   redirect can land focus here. A server-rendered aria-live region never fires
+   on a full page load, so the message is also reflected in <title>. #}
+<div id="activity-status" tabindex="-1"{% if message_is_error %} autofocus{% endif %}>
+  {% if message %}
+    {% if message_is_error %}
+  <p class="flash-error" role="alert"><strong>Error:</strong> {{ message }}</p>
+    {% else %}
+  <p class="flash-success" role="status"><strong>Success:</strong> {{ message }}</p>
+    {% endif %}
+  {% endif %}
+</div>
+
+<p>Session: {{ session_code }}</p>
+{% if is_draft_state %}
+<p class="flash-info"><strong>Note:</strong> This activity is saved as a draft. It is private to you until you save the finished response.</p>
+{% endif %}
+{% if participant_name %}
+<p>Participant: {{ participant_name }} (<a href="{{ url_for('workshop.workshop_my_content', session_code=session_code) }}">my workshop content</a>)</p>
+{% endif %}
+
+<section class="workshop-panel">
+  <h2 id="magic-progress">Your progress passport</h2>
+  <p>Activity {{ idx + 1 }} of {{ total_activities }}. Suggested length: {{ activity_time }}. Badge: {{ activity_badge }}.</p>
+  <p>
+    <progress class="workshop-progress" id="workshop-progress"
+              value="{{ completed_activities }}" max="{{ total_activities }}"
+              aria-labelledby="workshop-progress-label"></progress>
+    <span id="workshop-progress-label">{{ progress_pct }}% complete — {{ completed_activities }} of {{ total_activities }} activities saved</span>
+  </p>
+  <ul class="workshop-passport" role="list">
+    {% for key in activity_order %}
+    <li class="{% if by_activity.get(key, 0) > 0 %}is-complete{% endif %}">
+      {{ activity_titles[key] }}: {% if by_activity.get(key, 0) > 0 %}complete{% else %}not started{% endif %}
+    </li>
+    {% endfor %}
+  </ul>
+</section>
+
+<section class="workshop-panel">
+  <h2 id="challenge-brief">Challenge brief</h2>
+  <p>{{ prompt_text }}</p>
+</section>
+
+<section class="workshop-panel">
+  <h2 id="interactive-form">Your response</h2>
+  <form method="post" action="{{ url_for('workshop.workshop_activity', session_code=session_code, activity_key=activity_key) }}">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+    <details{% if missing_fields or anonymity_mode %} open{% endif %}>
+      <summary>Display name and anonymous sharing</summary>
+      <label for="display_name">Display name</label>
+      <input id="display_name" name="display_name" type="text"
+             autocomplete="nickname" value="{{ participant_name }}">
+      <p>
+        <label for="anonymity_mode">
+          <input id="anonymity_mode" name="anonymity_mode" type="checkbox"
+                 {% if anonymity_mode %}checked{% endif %}>
+          Share this anonymously in the gallery
+        </label>
+      </p>
+    </details>
+
+    {% for field in activity_fields %}
+      {% set has_error = field.name in missing_fields %}
+      <label for="{{ field.name }}">{{ field.label }}{% if field.required %} (required){% endif %}</label>
+      {% if has_error %}
+      <p class="flash-error" id="{{ field.name }}-err">This answer is needed before the activity can be saved.</p>
+      {% endif %}
+      <textarea id="{{ field.name }}"
+                name="{{ field.name }}"
+                rows="{{ field.rows or 3 }}"
+                {% if field.required %}required{% endif %}
+                {% if has_error %}aria-invalid="true" aria-describedby="{{ field.name }}-err"{% endif %}
+      >{{ field_values.get(field.name, "") }}</textarea>
+    {% endfor %}
+
+    <label for="bonus_note">Bonus reflection (optional)</label>
+    <textarea id="bonus_note" name="bonus_note" rows="3">{{ bonus_note }}</textarea>
+
+    <p>
+      <button type="submit" name="submit_action" value="save">Save activity response</button>
+      {% if next_key %}
+      <button type="submit" name="submit_action" value="save_next">Save and continue to the next activity</button>
+      {% endif %}
+      {#- formnovalidate on this button only. The form keeps its required
+          attributes, so the two Save buttons still get the browser's own
+          validation and focus handling; only the draft path opts out. -#}
+      <button type="submit" name="submit_action" value="draft" formnovalidate aria-describedby="draft-help">Save draft and finish later</button>
+    </p>
+    <p id="draft-help">
+      Saving a draft keeps whatever you have written so far, even if some
+      answers are still empty. Drafts stay private to you and are not shown in
+      the shared gallery until you save the finished response.
+    </p>
+  </form>
+</section>
+
+{% if skill_ready %}
+<section class="workshop-panel">
+  <h2>Your agent is ready</h2>
+  <p>
+    GLOW has compiled the workflow you just designed into a working accessibility
+    agent, in your own words, with your human-review step built in.
+  </p>
+  <p>
+    <a href="{{ url_for('workshop.workshop_champion_skill', session_code=session_code) }}">See and use your accessibility agent</a>
+  </p>
+</section>
+{% endif %}
+
+<p>Submissions saved for this activity across the room: {{ count }}</p>
+
+<nav aria-label="Activity navigation">
+  <h2>Continue</h2>
+  <ul>
+    {% if prev_key %}
+    <li><a href="{{ url_for('workshop.workshop_activity', session_code=session_code, activity_key=prev_key) }}">Previous activity: {{ activity_titles[prev_key] }}</a></li>
+    {% endif %}
+    {% if next_key %}
+    <li><a href="{{ url_for('workshop.workshop_activity', session_code=session_code, activity_key=next_key) }}">Next activity: {{ activity_titles[next_key] }}</a></li>
+    {% endif %}
+    <li><a href="{{ url_for('workshop.workshop_launchpad', session_code=session_code, activity=activity_key) }}">Exercise launchpad for this activity</a></li>
+  </ul>
+</nav>
+
+{% include "workshop/_session_nav.html" %}
+{% endblock %}

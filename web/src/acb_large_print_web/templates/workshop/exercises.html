@@ -1,0 +1,24 @@
+{% extends "workshop/_shell.html" %}
+
+{% block title %}Exercises Pack{% endblock %}
+{% block heading %}Workshop exercises pack{% endblock %}
+
+{% block content %}
+<p>
+  These activities are conference-ready and aligned to the full-day schedule.
+  Each activity is designed for practical output and human-review accountability.
+</p>
+
+{% for ex in exercises %}
+<section class="workshop-panel">
+  <h2 id="ex-{{ loop.index }}">{{ ex.name }}</h2>
+  <dl>
+    <dt>Time</dt><dd>{{ ex.time }}</dd>
+    <dt>Purpose</dt><dd>{{ ex.purpose }}</dd>
+    <dt>Participant output</dt><dd>{{ ex.output }}</dd>
+  </dl>
+</section>
+{% endfor %}
+
+<p><a href="{{ url_for('workshop.workshop_guide') }}">Back to the workshop guide</a></p>
+{% endblock %}

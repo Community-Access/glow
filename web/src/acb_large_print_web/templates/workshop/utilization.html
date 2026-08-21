@@ -1,0 +1,57 @@
+{% extends "workshop/_shell.html" %}
+
+{% block title %}Utilization Guide{% endblock %}
+{% block heading %}Utilization guide for conference and training{% endblock %}
+
+{% block content %}
+<p>Use this guide to run Workshop Mode as a repeatable institutional experience with measurable learning outcomes.</p>
+
+<section class="workshop-panel">
+  <h2 id="preflight">Pre-event readiness</h2>
+  <ul>
+    <li>Enable workshop feature flags and validate route access.</li>
+    <li>Run keyboard-only and screen-reader smoke tests.</li>
+    <li>Prepare backup worksheets for offline fallback.</li>
+    <li>Confirm facilitator script, timing, and support contacts.</li>
+  </ul>
+</section>
+
+<section class="workshop-panel">
+  <h2 id="during">During workshop delivery</h2>
+  <ul>
+    <li>Keep framing on partner confidence and ownership.</li>
+    <li>Require human-review checkpoints in every AI-assisted artifact.</li>
+    <li>Use the gallery and peer feedback to strengthen trust and reuse.</li>
+    <li>Capture capstone artifacts and 30-day action commitments.</li>
+  </ul>
+</section>
+
+<section class="workshop-panel">
+  <h2 id="after">Post-event follow through</h2>
+  <ul>
+    <li>Export artifacts in Markdown for sharing and versioning.</li>
+    <li>Package top workflows into prompts and checklists for local teams.</li>
+    <li>Run a 30-day follow-up to measure adoption and confidence gains.</li>
+    <li>Promote successful workflows into reusable GLOW skills.</li>
+  </ul>
+</section>
+
+<section class="workshop-panel">
+  <h2 id="metrics">Utilization metrics</h2>
+  <ul>
+    <li>Activity completion rates</li>
+    <li>Capstone workflow quality and safeguard coverage</li>
+    <li>Artifact reuse at 30 days</li>
+    <li>Participant confidence delta, before and after</li>
+  </ul>
+</section>
+
+<h2>Download resources</h2>
+<ul>
+  <li><a href="{{ url_for('workshop.workshop_resource_download', slug='guide') }}">Workshop guide (Markdown, .md file)</a></li>
+  <li><a href="{{ url_for('workshop.workshop_resource_download', slug='exercises') }}">Exercises pack (Markdown, .md file)</a></li>
+  <li><a href="{{ url_for('workshop.workshop_resource_download', slug='utilization') }}">Utilization guide (Markdown, .md file)</a></li>
+</ul>
+
+<p><a href="{{ url_for('workshop.workshop_guide') }}">Back to the workshop guide</a></p>
+{% endblock %}

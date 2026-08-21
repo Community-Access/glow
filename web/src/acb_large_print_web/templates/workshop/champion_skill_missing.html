@@ -1,0 +1,22 @@
+{% extends "workshop/_shell.html" %}
+
+{% block title %}Your accessibility agent{% endblock %}
+{% block heading %}Your accessibility agent{% endblock %}
+
+{% block content %}
+<p>Session: {{ session_code }}</p>
+
+<p>
+  Your agent is built from the Accessibility Champion Studio activity, and there
+  is no finished response saved for you yet on this device.
+</p>
+
+<h2>What to do next</h2>
+<ul>
+  <li><a href="{{ url_for('workshop.workshop_activity', session_code=session_code, activity_key='champion_studio') }}">Open the Accessibility Champion Studio</a> and save your workflow.</li>
+  <li>A draft is not enough &mdash; save the finished response so the agent has every part it needs.</li>
+  <li>If you joined on another device, <a href="{{ url_for('workshop.workshop_home', code=session_code) }}">re-enter with your session code</a> there.</li>
+</ul>
+
+{% include "workshop/_session_nav.html" %}
+{% endblock %}

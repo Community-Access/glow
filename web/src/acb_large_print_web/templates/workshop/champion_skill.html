@@ -1,0 +1,85 @@
+{% extends "workshop/_shell.html" %}
+
+{% block title %}Your accessibility agent{% endblock %}
+{% block heading %}Your accessibility agent{% endblock %}
+
+{% block content %}
+<p>Session: {{ session_code }}</p>
+
+<p>
+  You designed <strong>{{ workflow_name }}</strong> in the Accessibility Champion
+  Studio. GLOW has compiled your answers into a working agent. Nothing below was
+  written by AI &mdash; it is your own wording, arranged into a format an
+  assistant can follow.
+</p>
+
+{% if not has_guidance %}
+<p class="flash-info" role="status">
+  <strong>Note:</strong> Your agent has no trusted guidance section yet. Complete
+  the <a href="{{ url_for('workshop.workshop_activity', session_code=session_code, activity_key='agent_formula') }}">Accessibility Agent Formula</a>
+  activity and name the standards it should follow, then come back &mdash; it will
+  be added here automatically.
+</p>
+{% endif %}
+
+<h2>Use it right now, with whatever you already have</h2>
+
+<p>
+  This needs no installation and no account. Copy the text below and paste it
+  into any AI assistant you already use &mdash; ChatGPT, Copilot, Claude, Gemini
+  &mdash; on any device, before your request.
+</p>
+
+<p>
+  <label for="copy-prompt">Prompt for any assistant</label>
+</p>
+<textarea id="copy-prompt" rows="16" readonly
+          aria-describedby="copy-prompt-help">{{ copy_prompt }}</textarea>
+<p id="copy-prompt-help">
+  This box is read-only. Select all of the text inside it and copy, or use the
+  download below to get it as a file.
+</p>
+
+<h2>Take it home as a reusable agent</h2>
+
+<p>
+  The same workflow is also packaged as an
+  <span lang="en">Agent Plugins 1.0</span> skill &mdash; the portable format used
+  by the Accessibility Agents project. This is optional. If you do not use an
+  agent tool, the prompt above does the same job.
+</p>
+
+<p>
+  <a href="{{ url_for('workshop.workshop_champion_skill_download', session_code=session_code) }}">Download your agent package (ZIP archive, contains Markdown and text files)</a>
+</p>
+
+<p>The package contains three files:</p>
+<dl>
+  <dt><code>SKILL.md</code></dt>
+  <dd>Your workflow in the portable skill format, shown in full below.</dd>
+  <dt><code>README.md</code></dt>
+  <dd>A plain-language explanation you can hand to a colleague.</dd>
+  <dt><code>copy-into-any-assistant.txt</code></dt>
+  <dd>The same prompt as above, so the package is useful without any agent tooling.</dd>
+</dl>
+
+<h2>What GLOW generated</h2>
+
+<p>
+  Read it. Change anything you disagree with. It is a plain text file with no
+  code in it, and it is yours.
+</p>
+
+<pre class="workshop-submission-body" tabindex="0" role="region"
+     aria-label="Generated SKILL.md file, scrollable">{{ skill_markdown }}</pre>
+
+<h2>One thing to keep</h2>
+
+<p>
+  The <strong>Verification truth</strong> section carries the human-review step
+  you wrote. It is what stops this agent from claiming work is finished when a
+  person still needs to check it. If you edit this file, keep that section.
+</p>
+
+{% include "workshop/_session_nav.html" %}
+{% endblock %}

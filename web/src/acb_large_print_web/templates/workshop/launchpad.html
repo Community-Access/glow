@@ -1,0 +1,38 @@
+{% extends "workshop/_shell.html" %}
+
+{% block title %}Exercise Launchpad{% endblock %}
+{% block heading %}Exercise launchpad{% endblock %}
+
+{% block content %}
+<p>Session: {{ session_code }} — {{ session_title }}</p>
+{% if participant_name %}
+<p>Participant: {{ participant_name }} (<a href="{{ url_for('workshop.workshop_my_content', session_code=session_code) }}">my workshop content</a>)</p>
+{% endif %}
+<p>Each scenario includes sample files, workflow guidance, and deep links into GLOW tools that preserve your way back.</p>
+
+{% for card in scenario_cards %}
+<section class="workshop-panel">
+  <h2 id="scenario-{{ card.id }}">{{ card.title }}</h2>
+  <dl>
+    <dt>Goal</dt>
+    <dd>{{ card.goal }}</dd>
+    <dt>Suggested activity</dt>
+    <dd><a href="{{ url_for('workshop.workshop_activity', session_code=session_code, activity_key=card.activity_key) }}">{{ card.activity_title }}</a></dd>
+    <dt>Sample document</dt>
+    <dd><a href="{{ url_for('workshop.workshop_sample_download', session_code=session_code, slug=card.sample_slug) }}">Download {{ card.sample_name }}</a></dd>
+    <dt>Suggested workflow</dt>
+    <dd>{{ card.workflow_html }}</dd>
+  </dl>
+  {% if card.action_links %}
+  <h3>Open a GLOW tool for {{ card.title }}</h3>
+  <ul>
+    {% for action in card.action_links %}
+    <li><a href="{{ action.href }}">{{ action.label }}</a></li>
+    {% endfor %}
+  </ul>
+  {% endif %}
+</section>
+{% endfor %}
+
+{% include "workshop/_session_nav.html" %}
+{% endblock %}

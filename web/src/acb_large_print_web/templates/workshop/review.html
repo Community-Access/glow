@@ -1,0 +1,18 @@
+{% extends "workshop/_shell.html" %}
+
+{% block title %}Review Mode{% endblock %}
+{% block heading %}Review Mode{% endblock %}
+
+{% block content %}
+<p>Session: {{ session_code }}</p>
+<p>Review keeps humans accountable for final context, policy fit, and disability-centered quality checks.</p>
+
+<h2>What review must confirm</h2>
+<ul>
+  <li>Verify assumptions, audience context, and institutional requirements.</li>
+  <li>Check whether proposed fixes are teachable and reusable by partners.</li>
+  <li>Confirm each artifact has explicit safeguards and escalation points.</li>
+</ul>
+
+{% include "workshop/_session_nav.html" %}
+{% endblock %}
