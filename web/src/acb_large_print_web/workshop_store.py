@@ -474,6 +474,32 @@ def create_or_update_participant(
     return dict(out) if out else {"participant_key": key, "session_code": code, "display_name": name}
 
 
+def get_submission(session_code: str, submission_id: int) -> dict | None:
+    """One submission, scoped to its session so an id cannot cross sessions."""
+    code = normalize_session_code(session_code)
+    conn = _conn()
+    row = conn.execute(
+        "SELECT id, session_code, activity_key, participant_key, display_name, anonymity_mode, "
+        "content_text, content_json, is_draft, created_at_utc, updated_at_utc "
+        "FROM workshop_submissions WHERE session_code=? AND id=?",
+        (code, int(submission_id)),
+    ).fetchone()
+    conn.close()
+    return dict(row) if row else None
+
+
+def count_participants(session_code: str) -> int:
+    """How many people have joined this session."""
+    code = normalize_session_code(session_code)
+    conn = _conn()
+    row = conn.execute(
+        "SELECT COUNT(*) AS total FROM workshop_participants WHERE session_code=?",
+        (code,),
+    ).fetchone()
+    conn.close()
+    return int(row["total"]) if row else 0
+
+
 def get_participant(participant_key: str) -> dict | None:
     key = (participant_key or "").strip()
     if not key:

@@ -161,9 +161,11 @@ def test_workshop_facilitator_and_surfaces(client, app: Flask):
     html = dashboard.get_data(as_text=True)
     assert "Facilitator dashboard" in html
     assert "Feedback coverage" in html
-    # Activity names are rendered, not raw storage keys.
+    # Activity names are rendered, not raw storage keys. Keys may appear in
+    # data-* attributes -- the live pulse table maps its counts by key -- so
+    # this checks the visible text rather than the markup.
     assert "Fix It for Me vs Teach Me to Improve It" in html
-    assert "teach_vs_fix" not in html
+    assert "teach_vs_fix" not in re.sub(r"<[^>]+>", "", html)
 
     coach = client.get(f"/workshop/session/{code}/coach")
     assert coach.status_code == 200

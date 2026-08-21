@@ -1,0 +1,40 @@
+{% extends "workshop/_shell.html" %}
+
+{% block title %}My badges — session {{ session_code }}{% endblock %}
+{% block heading %}My badges{% endblock %}
+
+{% block content %}
+<p>
+  {{ participant_name }}: {{ earned_count }} of {{ total_count }} badges earned.
+  Each one is awarded when you save a finished response, and drafts do not
+  count towards it.
+</p>
+
+<p>
+  <progress id="badge-progress" value="{{ earned_count }}" max="{{ total_count }}"
+            aria-labelledby="badge-progress-label"></progress>
+  <span id="badge-progress-label">{{ earned_count }} of {{ total_count }} badges earned</span>
+</p>
+
+<h2>Collection</h2>
+<ul class="workshop-badge-list" role="list">
+  {% for card in cards %}
+  <li class="workshop-badge {% if card.earned %}is-earned{% endif %}">
+    <h3>{{ card.badge }}</h3>
+    <p>
+      {{ card.activity_title }}{% if card.optional %} (optional, not counted){% endif %}
+    </p>
+    {% if card.earned %}
+    <p>Earned{% if card.earned_display %} on {{ card.earned_display }}{% endif %}.</p>
+    {% else %}
+    <p>
+      Not yet earned.
+      <a href="{{ url_for('workshop.workshop_activity', session_code=session_code, activity_key=card.activity_key) }}">Open {{ card.activity_title }}</a>
+    </p>
+    {% endif %}
+  </li>
+  {% endfor %}
+</ul>
+
+{% include "workshop/_session_nav.html" %}
+{% endblock %}

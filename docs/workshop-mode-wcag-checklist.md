@@ -48,6 +48,41 @@ This checklist defines implementation and QA requirements for GLOW Workshop Mode
 - No repeated or noisy announcements.
 - Focus is not stolen during background updates.
 
+### The live room, specifically
+
+The gallery and facilitator dashboard stream updates from
+`/workshop/session/<code>/pulse.stream`. The rules that keep that usable:
+
+- The server sends counts only, never content. There is nothing in the stream
+  that would need redacting, and nothing for an announcement to read out.
+- New work is announced as a count in a polite status region, once per change.
+- The list is never re-rendered, reordered, or extended underneath the reader.
+  New work appears only when they activate "Show new submissions", which is an
+  ordinary link and an ordinary page load.
+- Focus is never moved.
+- Where EventSource is unavailable the page polls the JSON endpoint instead;
+  the page is correct either way, just not live.
+
+Note for test authors: a page holding an SSE connection never reaches
+Playwright's `networkidle`, so the axe helper waits for `load` instead.
+
+### Copy-to-clipboard controls
+
+- The copied text stays on the page in a labelled, read-only field, so the
+  button is an accelerator rather than the only route to it.
+- The outcome is reported in a status region, not by moving focus.
+- Clipboard failure is reported and tells the reader what to do instead.
+
+### QR codes
+
+- Every QR code is accompanied by its address as text, in large type. The
+  address is the artifact; the code is the companion. A QR code is no use to
+  someone reading the page on the phone they would scan it with, or to anyone
+  using a screen reader.
+- Each code carries alt text naming the address it encodes.
+- Codes render with their own white quiet zone so they stay scannable in dark
+  mode.
+
 ## Cognitive and Readability
 - Plain language instructions.
 - Task steps are short and explicit.
@@ -76,6 +111,12 @@ Automated gate:
 - Workshop pages must render inside `base.html`. Standalone documents with
   inline `<style>` are dropped by the app's Content-Security-Policy and lose
   the design system; `tests/test_workshop_routes.py` guards both.
+
+Downloadable artifacts are audited too, in their own way:
+- The blank worksheet pack ships as a standalone HTML document with `lang`,
+  a heading per activity, and an aria-labelled writing space per field, plus a
+  Word version whose Normal style is Arial 18pt.
+- The generated agent skill package is plain Markdown.
 
 Manual gate:
 - Keyboard-only walkthrough

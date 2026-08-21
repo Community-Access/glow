@@ -208,6 +208,17 @@
   </ul>
 </nav>
 
+{% if adopted %}
+<section class="workshop-panel">
+  <h2>Workflow shared by {{ adopted.author }}</h2>
+  <p>
+    You already have your own answers saved for this activity, so nothing has
+    been overwritten. Copy across whatever is useful.
+  </p>
+  <pre class="workshop-submission-body">{{ adopted.content_text }}</pre>
+</section>
+{% endif %}
+
 {% if copy_prompt %}
 <section class="workshop-panel" id="copy-prompt-panel">
   <h2>Use the assistant you already have</h2>

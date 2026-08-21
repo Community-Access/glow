@@ -3,7 +3,9 @@
 from __future__ import annotations
 
 import hmac
+import json
 import os
+import time
 from datetime import UTC, datetime
 from io import BytesIO
 from pathlib import Path
@@ -14,6 +16,7 @@ from flask import (
     abort,
     current_app,
     g,
+    jsonify,
     make_response,
     redirect,
     render_template,
@@ -39,6 +42,7 @@ from ..workshop_store import (
     add_feedback,
     bind_participant_login,
     consume_return_link,
+    count_participants,
     count_submissions,
     create_or_update_participant,
     create_return_link,
@@ -54,6 +58,7 @@ from ..workshop_store import (
     get_participant,
     get_participant_submission,
     get_session,
+    get_submission,
     list_feedback_for_session,
     list_follow_through_items,
     list_submissions,
@@ -800,6 +805,37 @@ def workshop_home():
     )
 
 
+ADOPTABLE_ACTIVITY = "champion_studio"
+
+
+def _adoption_source(session_code: str, raw_id: str, *, activity_key: str) -> dict | None:
+    """A gallery workflow a participant asked to start from.
+
+    Peer learning, mechanised: the packet's "steal this" idea. Only finished,
+    shared work from the same session and the same activity qualifies, and an
+    anonymous submitter stays anonymous in the attribution.
+    """
+    if activity_key != ADOPTABLE_ACTIVITY or not raw_id.strip().isdigit():
+        return None
+    row = get_submission(session_code, int(raw_id.strip()))
+    if not row:
+        return None
+    if str(row.get("activity_key", "")) != activity_key or int(row.get("is_draft", 0) or 0):
+        return None
+
+    author = (
+        "an anonymous participant"
+        if int(row.get("anonymity_mode", 0) or 0)
+        else str(row.get("display_name", "")).strip() or "another participant"
+    )
+    return {
+        "id": int(row.get("id", 0)),
+        "author": author,
+        "values": decode_field_values(row),
+        "content_text": str(row.get("content_text", "")),
+    }
+
+
 def _scenario_cards(activity_key: str, session_code: str, *, selected_id: str) -> list[dict]:
     """The scenario menu for one activity, ready to render."""
     cards = []
@@ -1008,6 +1044,33 @@ def workshop_activity(session_code: str, activity_key: str):
         if prior:
             anonymity_mode = bool(int(prior[0].get("anonymity_mode", 0) or 0))
 
+    # "Steal this": start from somebody else's workflow. Their answers are
+    # only copied into the form when this participant has nothing saved for
+    # the activity -- otherwise the source is shown alongside, because
+    # overwriting someone's own work to give them a template is a bad trade.
+    adopted = None
+    if request.method == "GET":
+        adopted = _adoption_source(
+            code, request.args.get("adopt") or "", activity_key=activity_key
+        )
+    if adopted:
+        if existing:
+            message = message or (
+                f"Showing the workflow by {adopted['author']} below. Your own "
+                "saved answers are untouched -- copy across whatever is useful."
+            )
+        else:
+            for field in activity_fields:
+                name = str(field.get("name", ""))
+                if adopted["values"].get(name):
+                    field_values[name] = adopted["values"][name]
+            note = f"Adapted from the workflow shared by {adopted['author']}."
+            bonus_note = f"{note}\n{bonus_note}".strip() if bonus_note else note
+            message = message or (
+                f"Started from the workflow shared by {adopted['author']}. "
+                "Make it yours before you save."
+            )
+
     # Scenario selection. A query parameter wins over the stored choice so a
     # participant can switch briefs; "surprise" picks one deterministically
     # from their own key, which spreads briefs across the room without
@@ -1094,6 +1157,8 @@ def workshop_activity(session_code: str, activity_key: str):
         field_values=field_values,
         bonus_note=bonus_note,
         copy_prompt=copy_prompt,
+        adopted=adopted if adopted and existing else None,
+        adopted_author=adopted["author"] if adopted else "",
         scenario_cards=_scenario_cards(activity_key, code, selected_id=scenario_id),
         scenario=_scenario_detail(scenario, code, activity_key=activity_key) if scenario else None,
         scenario_id=scenario_id,
@@ -1823,6 +1888,8 @@ def workshop_facilitator(session_code: str):
     return render_template(
         "workshop/facilitator.html",
         ai_usage=session_usage(code),
+        pulse=_pulse_payload(code),
+        activity_order=ACTIVITY_ORDER,
         session_code=code,
         session_title=session_meta.get("title", "GLOW Workshop Session"),
         activity_rows=activity_rows,
@@ -1876,6 +1943,133 @@ def workshop_share(session_code: str):
         abort(404)
     code = _require_session(session_code)
     return render_template("workshop/share.html", session_code=code)
+
+
+# ---------------------------------------------------------------------------
+# Badges
+# ---------------------------------------------------------------------------
+
+@workshop_bp.route("/session/<session_code>/badges", methods=["GET"])
+def workshop_badges(session_code: str):
+    """The badge collection.
+
+    Badges were already awarded on save and announced once in a flash
+    message, then had nowhere to live. Momentum is easier to feel when it is
+    somewhere you can look at.
+    """
+    if not _workshop_enabled() or not _lab_hub_enabled():
+        abort(404)
+    code = _require_session(session_code)
+
+    participant = _current_participant(code)
+    if not participant:
+        return render_template("workshop/my_content_missing.html", session_code=code), 404
+
+    earned = {
+        str(row.get("activity_key", "")): row
+        for row in list_submissions_for_participant(
+            code, str(participant.get("participant_key", "")), include_drafts=False
+        )
+    }
+
+    def _card(key: str, *, optional: bool) -> dict:
+        meta = ACTIVITY_META.get(key, {})
+        row = earned.get(key)
+        return {
+            "activity_key": key,
+            "activity_title": meta.get("title", key),
+            "badge": meta.get("badge", "Workshop Champion"),
+            "optional": optional,
+            "earned": bool(row),
+            "earned_display": _format_timestamp(str(row.get("updated_at_utc", ""))) if row else "",
+        }
+
+    cards = [_card(key, optional=False) for key in ACTIVITY_ORDER]
+    cards += [_card(key, optional=True) for key in OPTIONAL_ACTIVITY_ORDER]
+    core = [card for card in cards if not card["optional"]]
+
+    return render_template(
+        "workshop/badges.html",
+        session_code=code,
+        cards=cards,
+        earned_count=sum(1 for card in core if card["earned"]),
+        total_count=len(core),
+        participant_name=str(participant.get("display_name", "")).strip(),
+    )
+
+
+# ---------------------------------------------------------------------------
+# Live room
+# ---------------------------------------------------------------------------
+#
+# The gallery and the facilitator dashboard were static renders: the packet
+# promises participants see each other's work as it arrives, and gives the
+# facilitator something to highlight in real time.
+#
+# A live-updating list is hostile to screen reader users when done naively, so
+# the server sends counts and nothing else. The page announces "three new
+# submissions" politely and offers a control the reader activates when they
+# are ready. Content never appears underneath somebody's cursor, and focus is
+# never moved for them.
+
+_PULSE_POLL_SECONDS = 3
+_PULSE_MAX_SECONDS = 30 * 60
+
+
+def _pulse_payload(session_code: str) -> dict:
+    """Counts only. No names, no content, nothing that needs redacting."""
+    by_activity = {
+        key: count_submissions(session_code, activity_key=key) for key in ACTIVITY_ORDER
+    }
+    return {
+        "total": sum(by_activity.values()),
+        "by_activity": by_activity,
+        "participants": count_participants(session_code),
+    }
+
+
+@workshop_bp.route("/session/<session_code>/pulse.json", methods=["GET"])
+def workshop_pulse(session_code: str):
+    """One-shot snapshot. Also the fallback where EventSource is unavailable."""
+    if not _workshop_enabled() or not _lab_hub_enabled():
+        abort(404)
+    code = _require_session(session_code)
+    return jsonify(_pulse_payload(code))
+
+
+@workshop_bp.route("/session/<session_code>/pulse.stream", methods=["GET"])
+def workshop_pulse_stream(session_code: str):
+    """Server-sent counts, emitted only when something actually changed."""
+    if not _workshop_enabled() or not _lab_hub_enabled():
+        abort(404)
+    code = _require_session(session_code)
+    app = current_app._get_current_object()
+
+    def _generate():
+        last = None
+        waited = 0
+        while waited < _PULSE_MAX_SECONDS:
+            with app.app_context():
+                payload = _pulse_payload(code)
+            if payload != last:
+                last = payload
+                yield f"data: {json.dumps(payload)}\n\n"
+            else:
+                # Comment frames keep proxies from closing an idle stream.
+                yield ": heartbeat\n\n"
+            time.sleep(_PULSE_POLL_SECONDS)
+            waited += _PULSE_POLL_SECONDS
+        yield 'event: timeout\ndata: {"state":"TIMEOUT"}\n\n'
+
+    return Response(
+        _generate(),
+        mimetype="text/event-stream",
+        headers={
+            "Cache-Control": "no-cache",
+            "X-Accel-Buffering": "no",
+            "Connection": "keep-alive",
+        },
+    )
 
 
 # ---------------------------------------------------------------------------

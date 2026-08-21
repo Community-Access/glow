@@ -6,6 +6,20 @@
 {% block content %}
 <p>Session: {{ session_code }}</p>
 
+{# Live room. The server sends counts only; this block announces them politely
+   and offers a control the reader activates when they are ready. Nothing is
+   re-rendered underneath anyone and focus is never moved. #}
+<div id="workshop-live"
+     data-mode="gallery"
+     data-initial="{{ total }}"
+     data-stream-url="{{ url_for('workshop.workshop_pulse_stream', session_code=session_code) }}"
+     data-poll-url="{{ url_for('workshop.workshop_pulse', session_code=session_code) }}">
+  <p id="workshop-live-status" role="status"></p>
+  <p id="workshop-live-reveal" hidden>
+    <a href="{{ url_for('workshop.workshop_gallery', session_code=session_code, activity=activity_filter or none, page=page) }}">Show new submissions</a>
+  </p>
+</div>
+
 {% if message and not message_is_error %}
 <p class="flash-success" role="status"><strong>Success:</strong> {{ message }}</p>
 {% endif %}
@@ -66,6 +80,15 @@
   </dl>
 
   <pre class="workshop-submission-body">{{ s.content_text }}</pre>
+
+  {% if s.activity_key == 'champion_studio' and not s.is_draft %}
+  {# Peer learning, mechanised. Opening this fills the Champion Studio form
+     only when the reader has nothing of their own saved there; otherwise it
+     shows this workflow beside their own work rather than over it. #}
+  <p>
+    <a href="{{ url_for('workshop.workshop_activity', session_code=session_code, activity_key='champion_studio', adopt=s.id) }}">Start from this workflow<span class="visually-hidden"> by {{ submitter }}</span></a>
+  </p>
+  {% endif %}
 
   {% set items = feedback.get(s.id, []) %}
   {% if items %}
@@ -177,4 +200,8 @@
 {% endif %}
 
 {% include "workshop/_session_nav.html" %}
+{% endblock %}
+
+{% block extra_js %}
+  <script src="{{ url_for('static', filename='workshop-live.js') }}"></script>
 {% endblock %}

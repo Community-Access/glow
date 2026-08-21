@@ -78,6 +78,51 @@
 </ul>
 
 <section class="workshop-panel">
+  <h2>Room pulse</h2>
+  <p>
+    Live, from the session. Safe to project: it shows counts, never anyone's
+    work.
+  </p>
+  <div id="workshop-live"
+       data-mode="pulse"
+       data-initial="{{ pulse.total }}"
+       data-stream-url="{{ url_for('workshop.workshop_pulse_stream', session_code=session_code) }}"
+       data-poll-url="{{ url_for('workshop.workshop_pulse', session_code=session_code) }}">
+    <p>
+      <span id="workshop-live-total">{{ pulse.total }}</span>
+      submissions from
+      <span id="workshop-live-participants">{{ pulse.participants }}</span>
+      participants.
+    </p>
+    <p id="workshop-live-status" role="status"></p>
+    <table>
+      <caption>Submissions per activity, updating live</caption>
+      <thead>
+        <tr>
+          <th scope="col">Activity</th>
+          <th scope="col">Submissions</th>
+          <th scope="col">Progress</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for key in activity_order %}
+        <tr>
+          <th scope="row">{{ activity_titles[key] }}</th>
+          <td data-activity-count="{{ key }}">{{ pulse.by_activity.get(key, 0) }}</td>
+          <td>
+            <progress data-activity-meter="{{ key }}"
+                      value="{{ pulse.by_activity.get(key, 0) }}"
+                      max="{{ pulse.participants if pulse.participants else 1 }}"
+                      aria-label="{{ activity_titles[key] }}: {{ pulse.by_activity.get(key, 0) }} of {{ pulse.participants }} participants"></progress>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<section class="workshop-panel">
   <h2>Built-in AI usage</h2>
   <p>
     The room shares one AI allowance. When someone reaches a cap they are sent
@@ -93,4 +138,8 @@
 </section>
 
 {% include "workshop/_session_nav.html" %}
+{% endblock %}
+
+{% block extra_js %}
+  <script src="{{ url_for('static', filename='workshop-live.js') }}"></script>
 {% endblock %}

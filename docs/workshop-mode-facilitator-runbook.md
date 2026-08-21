@@ -24,6 +24,19 @@ Total day: 8:30 AM to 4:30 PM
 - fallback worksheets ready
 - facilitator access configured (see below) and tested before the room fills
 
+3. Print and set before the room fills
+- Room signage: `/workshop/session/<code>/signage` gives a printable card per
+  activity with the short address in large type and a QR code beside it. The
+  short addresses are `/w/<code>` to join and `/w/<code>/<number>` for each
+  activity, numbered the way you will say them out loud.
+- Blank worksheet packs: `/workshop/worksheets.docx` and
+  `/workshop/worksheets.html`. Print a dozen. Some attendees will prefer paper
+  and some institutions block the tool.
+- `POSTMARK_SERVER_TOKEN` if you want return links (see below).
+- AI caps, if the defaults do not suit the room:
+  `GLOW_WORKSHOP_AI_PARTICIPANT_CAP` (default 40) and
+  `GLOW_WORKSHOP_AI_SESSION_CAP` (default 600). Zero disables a cap.
+
 ### Facilitator access
 
 The facilitator dashboard and the session-wide exports show every
@@ -103,6 +116,56 @@ because it is invisible until someone looks for it.
 - scenario packets for labs
 - peer feedback rubric
 - capstone prompt and action plan template
+
+## Running the room
+
+### The room pulse
+
+The facilitator dashboard updates live. It shows submissions per activity, how
+many people have joined, and a progress bar per activity. It is safe to
+project: it carries counts only, never anyone's work.
+
+Use it to decide when to move on. "Eighteen of twenty-four have finished Lab
+2" is a better signal than a show of hands, and it does not put anyone on the
+spot.
+
+The participant gallery is live in a quieter way. It announces new work as a
+count in a polite live region and offers a "Show new submissions" control that
+the reader activates when they are ready. Nothing is inserted underneath
+someone mid-review and focus is never moved. This is deliberate: an
+auto-updating list is hostile to screen reader users, and this room will
+contain some.
+
+### Scenarios
+
+Each of the three GLOW labs offers four scenarios from different institutional
+sectors. Participants can pick one, take "Surprise me", or ignore the bank and
+use a real document of their own -- which is always the better choice when they
+have one. Three scenarios attach a real starting document that GLOW can audit.
+
+"Surprise me" is deterministic per participant, so two people at a table are
+unlikely to get the same brief, and you can walk someone back through what they
+were given.
+
+### When the built-in AI runs out
+
+The room shares one AI allowance. When a participant or the room reaches its
+cap, they are not shown an error: they are shown the copy-a-prompt path, which
+works with whatever assistant they already have on any device. Watch the AI
+usage panel on the dashboard so you know before the afternoon rather than
+after it.
+
+Say out loud in the first ten minutes that the day works three ways: on paper,
+with GLOW's built-in AI, and with whatever assistant they already use. All
+three are first-class.
+
+### Borrowing between participants
+
+Champion Studio workflows shared to the gallery carry a "Start from this
+workflow" link. It fills the borrower's form only when they have nothing saved
+there; if they already have their own answers, the borrowed workflow is shown
+beside their work instead of over it. Anonymous submitters stay anonymous in
+the attribution.
 
 ## Facilitation Rhythm
 1. Start with problem framing

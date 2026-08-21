@@ -173,3 +173,24 @@ html[data-theme="dark"] {
     border: 2px solid #000000;
   }
 }
+
+
+/* --- Badge collection ------------------------------------------------------ */
+/* Earned state is carried by the text in each card, never by colour alone. */
+.workshop-badge-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
+  gap: 1rem;
+  list-style: none;
+  padding: 0;
+}
+
+.workshop-badge {
+  border: 2px solid currentColor;
+  border-radius: 0.25rem;
+  padding: 0.75rem;
+}
+
+.workshop-badge.is-earned {
+  border-width: 4px;
+}

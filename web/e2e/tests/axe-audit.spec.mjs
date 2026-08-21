@@ -129,8 +129,14 @@ async function seedWorkshop(page, sessionCode) {
 async function auditPage(page, url) {
   await page.goto(url);
   await ensureConsent(page);
-  // Wait for the page to settle (no pending network requests, no animation)
-  await page.waitForLoadState('networkidle');
+  // Wait for the page to settle. Deliberately not 'networkidle': the live
+  // gallery and facilitator pages hold a Server-Sent Events connection open
+  // for the life of the page, so the network is never idle and the audit
+  // would hang until the test timed out. 'load' means stylesheets have
+  // arrived, which is what a colour-contrast pass needs; the short wait
+  // covers anything the page defers to the next frame.
+  await page.waitForLoadState('load');
+  await page.waitForTimeout(400);
   const resolvedPath = new URL(page.url()).pathname;
 
   let builder = new AxeBuilder({ page }).withTags(AXE_TAGS);
@@ -207,6 +213,11 @@ const WORKSHOP_PAGES = [
   { label: 'workshop coach mode', path: `/workshop/session/${WORKSHOP_SESSION}/coach` },
   { label: 'workshop review mode', path: `/workshop/session/${WORKSHOP_SESSION}/review` },
   { label: 'workshop share mode', path: `/workshop/session/${WORKSHOP_SESSION}/share` },
+  // The Tier 3 door: optional, outside the agenda, and still audited.
+  { label: 'workshop optional lab', path: `/workshop/session/${WORKSHOP_SESSION}/activity/lab_run_your_agent` },
+  // Badge collection, and the printable room signage with its QR codes.
+  { label: 'workshop badges', path: `/workshop/session/${WORKSHOP_SESSION}/badges` },
+  { label: 'workshop signage', path: `/workshop/session/${WORKSHOP_SESSION}/signage` },
   // Compiled from the seeded Champion Studio response above: the page that
   // hands each participant their generated agent skill.
   { label: 'workshop champion skill', path: `/workshop/session/${WORKSHOP_SESSION}/champion-skill` },
