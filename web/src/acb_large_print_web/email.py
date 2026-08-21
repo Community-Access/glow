@@ -51,6 +51,122 @@ def email_configured() -> bool:
 
 
 # ---------------------------------------------------------------------------
+# Configuration status and the shared message layout
+# ---------------------------------------------------------------------------
+#
+# Everything GLOW sends goes through one Postmark server token. Six features
+# depend on it, and until now the only way to know whether it worked was to
+# trigger one of them and wait. email_status() answers "is mail going to
+# work?" without sending anything, and send_test_email() answers "does it
+# actually arrive?" without needing a real audit or a real workshop.
+
+# What stops working when the token is unset. Kept here rather than scattered
+# so the admin page and the status page cannot drift from reality.
+EMAIL_FEATURES = (
+    ("Audit report delivery", "A participant emails themselves an audit and its findings CSV."),
+    ("Batch audit reports", "The same for a folder of documents."),
+    ("Whisperer job notifications", "Queued, started, finished and cleared transcription mail."),
+    ("Admin sign-in links", "The email route into /admin. OAuth still works without mail."),
+    ("Workshop return links", "How a participant reaches their work from another device."),
+    ("Workshop artifact email", "The end-of-day page, agent package and link home."),
+    ("Workshop 30-day nudge", "The follow-up that closes the loop."),
+)
+
+
+def email_status() -> dict:
+    """Everything worth knowing about mail, with nothing secret in it."""
+    token = _token()
+    return {
+        "configured": bool(token),
+        "from_address": _from_address(),
+        "stream": _POSTMARK_STREAM,
+        "token_length": len(token),
+        "features": [
+            {"name": name, "detail": detail, "available": bool(token)}
+            for name, detail in EMAIL_FEATURES
+        ],
+    }
+
+
+def render_email(
+    *,
+    title: str,
+    intro: str,
+    paragraphs: tuple[str, ...] = (),
+    bullets: tuple[str, ...] = (),
+    closing: str = "",
+) -> tuple[str, str]:
+    """Build (html, text) for a message, in the house style.
+
+    Every message carries a real plain-text alternative rather than a
+    stripped-out afterthought: some readers prefer it, some gateways deliver
+    only that, and a screen reader on a text-only client should get the same
+    content in the same order. Structure is semantic -- a heading, paragraphs,
+    a list -- because an email client is a browser with opinions, and nothing
+    here depends on colour or on images loading.
+    """
+    html_parts = [f"<h1>{title}</h1>", f"<p>{intro}</p>"]
+    text_parts = [title, "=" * len(title), "", intro, ""]
+
+    for paragraph in paragraphs:
+        html_parts.append(f"<p>{paragraph}</p>")
+        text_parts += [paragraph, ""]
+
+    if bullets:
+        html_parts.append("<ul>")
+        for item in bullets:
+            html_parts.append(f"<li>{item}</li>")
+            text_parts.append(f"- {item}")
+        html_parts.append("</ul>")
+        text_parts.append("")
+
+    if closing:
+        html_parts.append(f"<p>{closing}</p>")
+        text_parts += [closing, ""]
+
+    return "".join(html_parts), "\n".join(text_parts).rstrip() + "\n"
+
+
+def send_test_email(to_email: str, *, requested_by: str = "") -> tuple[bool, str]:
+    """Prove the mail path end to end, without waiting for a real event.
+
+    Deliberately says which server and which sender it came from: the usual
+    failure is not "no mail" but "mail from an address the domain does not
+    authorise", and that is invisible until someone checks a spam folder.
+    """
+    if not email_configured():
+        return False, "POSTMARK_SERVER_TOKEN is not set, so nothing can be sent."
+
+    who = f" It was requested by {requested_by}." if requested_by.strip() else ""
+    html_body, text_body = render_email(
+        title="GLOW test email",
+        intro=(
+            "If you are reading this, GLOW's mail path works: the token is "
+            f"valid, the sender is accepted, and delivery reached you.{who}"
+        ),
+        bullets=(
+            f"Sender: {_from_address()}",
+            f"Message stream: {_POSTMARK_STREAM}",
+        ),
+        closing=(
+            "Nothing was changed by sending this. If it landed in spam, the "
+            "sender domain's DKIM and Return-Path records are the first thing "
+            "to check."
+        ),
+    )
+
+    payload = {
+        "From": _from_address(),
+        "To": to_email,
+        "Subject": "GLOW test email",
+        "HtmlBody": html_body,
+        "TextBody": text_body,
+        "MessageStream": _POSTMARK_STREAM,
+    }
+    return _send(payload, to_email)
+
+
+# ---------------------------------------------------------------------------
 # CSV generation
 # ---------------------------------------------------------------------------
 

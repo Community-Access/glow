@@ -338,6 +338,144 @@ have to be true on a bad wifi day.
 
 ---
 
+## 6. Email: Postmark, end to end
+
+Email is not configured in production. Seven features depend on it, so this
+section is the whole path from a Postmark account to a verified test message
+landing in an inbox.
+
+Everything here is optional. GLOW runs with mail switched off; each feature
+below hides itself or degrades in a stated way rather than failing.
+
+### 6.1 What GLOW sends, and what happens without it
+
+| Feature | Without email |
+|---|---|
+| Audit report delivery | The report is on screen and downloadable; the email link is simply absent |
+| Batch audit reports | Same, for a folder of documents |
+| Whisperer job notifications | Transcription still runs; nobody is told when it finishes |
+| Admin sign-in links | `/admin` is reachable only through the OAuth providers |
+| Workshop return links | Identity stays a cookie on one device. The form is replaced by a prompt to download work before leaving |
+| Workshop artifact email | The artifact is still viewable, printable and downloadable |
+| Workshop 30-day nudge | The follow-through loop never closes, and there is no outcome data |
+
+The two that matter for Accessing Higher Ground are the return link and the
+artifact email: they are the difference between the day ending in a browser
+tab and the day ending in someone's inbox.
+
+### 6.2 Setup, in order
+
+**1. Postmark account and server.** Create a Server (call it "GLOW
+production"). Copy its **Server API token** -- the per-server token, not the
+account token. The account token cannot send.
+
+**2. Verify the sender.** Postmark will not send from an address it has not
+verified. Two ways:
+
+- *Sender Signature*: verify one address by clicking a link sent to it.
+  Quickest, and it only authorises that one address.
+- *Domain verification (recommended)*: add the DKIM `TXT` record and the
+  Return-Path `CNAME` that Postmark shows you, at the DNS host for
+  `notify.letitglow.app`. This authorises every address on the domain,
+  survives address changes, and is what keeps mail out of spam folders.
+
+GLOW's default sender is `no-reply@notify.letitglow.app`. Whatever you
+verify, `POSTMARK_FROM_EMAIL` must match it exactly.
+
+**3. Leave the account's sandbox.** New Postmark accounts are restricted to
+verified recipient addresses until approved. Request approval well before
+November, or thirty participants will receive nothing and Postmark will
+report success.
+
+**4. Message stream.** The code sends on the `transactional` stream, which is
+the default ID Postmark creates. If you make a custom stream, either name it
+`transactional` or change `_POSTMARK_STREAM` in
+`web/src/acb_large_print_web/email.py`. Broadcast streams are for marketing
+and must not be used here.
+
+**5. Configure the server.** In `~/app/web/.env` on bishoplink -- the `web`
+service loads it through `env_file`, and `docker-compose.prod.yml` does not
+reference these names individually:
+
+    POSTMARK_SERVER_TOKEN=<the server API token>
+    POSTMARK_FROM_EMAIL=no-reply@notify.letitglow.app
+
+Then restart:
+
+    cd ~/app/web && docker compose -f docker-compose.prod.yml up -d web worker
+
+The worker needs it too: Whisperer notifications are sent from Celery.
+
+**6. Verify without guessing.** Sign in to `/admin`, open the queue page, and
+use the **Email** panel: it states whether Postmark is configured, which
+sender and stream are in use, what each feature would do, and offers a test
+send. Send one to yourself, then confirm it in Postmark's Activity view.
+
+    # or from a shell on the server
+    docker compose -f docker-compose.prod.yml exec -T web python -c \
+      "from acb_large_print_web.email import email_status; print(email_status())"
+
+### 6.3 When it does not work
+
+| Symptom | Cause | Fix |
+|---|---|---|
+| `401` from Postmark | Account token used instead of the server token | Copy the token from the Server, not the account |
+| `422` validation error | `POSTMARK_FROM_EMAIL` is not a verified sender | Verify the address, or the domain it belongs to |
+| Sends succeed, nothing arrives | Account still in sandbox, or recipient not verified | Request account approval |
+| Mail lands in spam | DKIM and Return-Path records missing | Complete domain verification rather than a single signature |
+| `429` | Rate limited | Back off; the workshop's volume is nowhere near this |
+| Timeout | Postmark unreachable from the container | Check egress; GLOW surfaces the failure and never blocks the request |
+
+### 6.4 Volume and cost for the event
+
+Thirty participants generate roughly: 30 return links, plus a handful of
+re-requests, plus 30 artifact emails, plus 30 nudges a month later. Call it
+120 messages for the event and its follow-up, well inside Postmark's smallest
+paid tier and around the free developer allowance. Audit-report delivery adds
+one message per person who asks for one.
+
+### 6.5 Privacy stance
+
+Addresses are used only to send someone their own work. They never appear in
+the shared gallery, on the facilitator dashboard, or in any export, and a test
+asserts that across all five surfaces. Giving an address is optional at every
+step, and the retention period is stated on the form that asks for it.
+
+### 6.6 What was built for this, and what is still optional
+
+Added on 21 August, all of it inert until a token exists:
+
+- `email_status()` -- one structured answer to "will mail work?", carrying the
+  sender, the stream and a feature-by-feature availability list, and never the
+  token itself.
+- `render_email()` -- the house layout. Semantic HTML, a real plain-text
+  alternative in the same reading order, no colour-carried meaning and no
+  images, because an email client is a browser with opinions and some readers
+  will only ever see the text part.
+- `send_test_email()` and the admin **Email** panel -- prove the path in
+  production without waiting for a real audit or a real workshop.
+
+Still optional, in rough order of usefulness:
+
+1. **Bounce and spam-complaint webhooks.** Postmark can POST delivery events
+   back. Today a hard bounce is invisible; with a webhook, a participant whose
+   address was mistyped could be told on the day rather than never.
+2. **A delivery log.** Store feature, outcome and a hash of the recipient (not
+   the address) so "did their artifact go?" has an answer that does not depend
+   on someone's Postmark login.
+3. **Per-feature switches.** One token turns on all seven features. A
+   `GLOW_EMAIL_FEATURES` allow-list would let a deployment enable audit
+   delivery without enabling workshop mail, or the reverse.
+4. **A digest instead of individual sends.** The 30-day nudge is a natural fit
+   for a scheduled digest to the facilitator as well as the participant.
+5. **Moving the older senders onto `render_email()`.** The audit-report builder
+   still writes its own HTML with inline colour for severity pills. It works
+   and is well covered by tests, so it was left alone -- but two message
+   styles is one more than a product needs, and the severity pills are the one
+   place GLOW's own mail carries meaning in colour alone.
+
+---
+
 ## Appendix A — Feature inventory
 
 **Participant surfaces:** workshop home and join, eleven activities plus one

@@ -53,7 +53,12 @@ from ..feature_flags import (
     migrate_json_to_sqlite as _migrate_flags,
     get_audit_entries as _get_audit_entries,
 )
-from ..email import email_configured, send_whisperer_status_email
+from ..email import (
+    email_configured,
+    email_status,
+    send_test_email,
+    send_whisperer_status_email,
+)
 from ..speech import (
     get_engine_status,
     get_piper_voice_inventory,
@@ -770,7 +775,45 @@ def admin_oauth_callback(provider_key: str) -> Any:
 def admin_queue() -> Any:
     email = _require_admin()
     rows = get_admin_queue_snapshot()
-    return render_template("admin_queue.html", admin_email=email, rows=rows)
+    return render_template(
+        "admin_queue.html",
+        admin_email=email,
+        rows=rows,
+        email_status=email_status(),
+        email_notice=request.args.get("email_notice", "").strip(),
+        email_error=request.args.get("email_error", "").strip(),
+    )
+
+
+@admin_bp.route("/email/test", methods=["POST"])
+@limiter.limit("6 per hour")
+def admin_email_test() -> Any:
+    """Send one test message, to prove the mail path in production.
+
+    Seven features depend on a single Postmark token -- audit delivery,
+    Whisperer notifications, admin sign-in links, and three workshop
+    features. Until now the only way to know whether it worked was to
+    trigger one of them and wait. The usual failure is not "no mail" but
+    "mail the recipient's domain silently rejects", which nobody notices
+    until the day it matters.
+    """
+    admin_email = _require_admin()
+    target = (request.form.get("test_email") or "").strip() or admin_email
+
+    if not email_configured():
+        return redirect(
+            url_for(
+                "admin.admin_queue",
+                email_error="POSTMARK_SERVER_TOKEN is not set, so nothing can be sent.",
+            )
+        )
+
+    ok, detail = send_test_email(target, requested_by=admin_email)
+    if ok:
+        return redirect(
+            url_for("admin.admin_queue", email_notice=f"Test email sent to {target}.")
+        )
+    return redirect(url_for("admin.admin_queue", email_error=detail))
 
 
 @admin_bp.route("/speech", methods=["GET"])

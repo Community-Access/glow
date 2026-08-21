@@ -25,6 +25,45 @@
 {% endif %}
 
 <section>
+  <h2 id="admin-email-heading">Email</h2>
+  {% if email_notice %}
+  <p class="flash-success" role="status"><strong>Success:</strong> {{ email_notice }}</p>
+  {% endif %}
+  {% if email_error %}
+  <p class="flash-error" role="alert"><strong>Error:</strong> {{ email_error }}</p>
+  {% endif %}
+  <p>
+    {% if email_status.configured %}
+    Postmark is configured. Mail is sent from <code>{{ email_status.from_address }}</code>
+    on the <code>{{ email_status.stream }}</code> stream.
+    {% else %}
+    Postmark is not configured, so nothing below can send. Set
+    <code>POSTMARK_SERVER_TOKEN</code> and restart.
+    {% endif %}
+  </p>
+  <ul>
+    {% for feature in email_status.features %}
+    <li>
+      {{ feature.name }} — {{ 'available' if feature.available else 'unavailable' }}.
+      {{ feature.detail }}
+    </li>
+    {% endfor %}
+  </ul>
+  <form method="post" action="{{ url_for('admin.admin_email_test') }}">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <div class="form-field">
+      <label for="test_email">Send a test email to</label>
+      <input type="email" id="test_email" name="test_email"
+             autocomplete="email" placeholder="{{ admin_email }}"
+             aria-describedby="test-email-help">
+      <p id="test-email-help">
+        Leave blank to send to your own admin address. The message changes
+        nothing; it only proves the token, the sender and delivery.
+      </p>
+    </div>
+    <button type="submit"{% if not email_status.configured %} disabled{% endif %}>Send test email</button>
+  </form>
+
   <h2 id="admin-health-heading">System Health</h2>
   <p class="field-hint">Live status from <a href="/health">/health</a> (auto-refreshes every 20 seconds).</p>
   <table class="findings-table">
