@@ -7,13 +7,18 @@ import json
 import logging
 import os
 import sqlite3
-from datetime import UTC, datetime
+from datetime import UTC, datetime, timedelta
 from pathlib import Path
 
 from flask import Blueprint, abort, current_app, jsonify, render_template, request
 
 from ..app import csrf, limiter
-from ..support_hub import create_support_issue, load_support_hub_config
+from ..support_hub import (
+    SKIP_PREFIX,
+    create_support_issue,
+    load_support_hub_config,
+    should_open_issue,
+)
 from ..version import get_version
 
 feedback_bp = Blueprint("feedback", __name__)
@@ -88,6 +93,41 @@ def _ensure_feedback_schema(conn: sqlite3.Connection) -> None:
             conn.execute(f"ALTER TABLE feedback ADD COLUMN {col} {col_type}")
 
 
+_DUPLICATE_WINDOW_HOURS = 24
+
+
+def _recent_duplicate(conn, entry: dict[str, str], *, exclude_id: int) -> int | None:
+    """The id of an identical submission already filed in the last day.
+
+    A synthetic monitor -- or an impatient person pressing submit twice --
+    should not open a second tracker issue saying exactly what the first one
+    said. Matching is on what a reader would call the same report: the same
+    application, category, summary and message.
+    """
+    cutoff = (datetime.now(UTC) - timedelta(hours=_DUPLICATE_WINDOW_HOURS)).isoformat()
+    try:
+        row = conn.execute(
+            "SELECT id FROM feedback "
+            "WHERE id <> ? AND timestamp >= ? "
+            "  AND source_app = ? AND COALESCE(category, '') = ? "
+            "  AND COALESCE(summary, '') = ? AND COALESCE(message, '') = ? "
+            "  AND github_sync_status IN ('synced', 'skipped') "
+            "ORDER BY id DESC LIMIT 1",
+            (
+                exclude_id,
+                cutoff,
+                entry.get("source_app", ""),
+                entry.get("category", "") or "",
+                entry.get("summary", "") or "",
+                entry.get("message", "") or "",
+            ),
+        ).fetchone()
+    except sqlite3.Error:
+        # A dedupe lookup must never be the reason feedback is lost.
+        return None
+    return int(row[0]) if row else None
+
+
 def _save_feedback_entry(entry: dict[str, str]) -> tuple[int, str | None, str | None, str | None]:
     conn = _get_db()
     cur = conn.execute(
@@ -114,7 +154,21 @@ def _save_feedback_entry(entry: dict[str, str]) -> tuple[int, str | None, str | 
     feedback_id = int(cur.lastrowid)
     stored_entry = dict(entry)
     stored_entry["id"] = feedback_id
-    issue_number, issue_url, sync_error = create_support_issue(stored_entry)
+
+    # Decide here rather than inside the sender: the rule is about which
+    # feedback deserves a person's attention, not about how it is delivered.
+    duplicate_of = _recent_duplicate(conn, entry, exclude_id=feedback_id)
+    triageable, skip_reason = should_open_issue(stored_entry)
+    if duplicate_of:
+        issue_number, issue_url, sync_error = (
+            None,
+            None,
+            f"{SKIP_PREFIX}same feedback already filed as #{duplicate_of}",
+        )
+    elif not triageable:
+        issue_number, issue_url, sync_error = None, None, skip_reason
+    else:
+        issue_number, issue_url, sync_error = create_support_issue(stored_entry)
     if issue_number and issue_url:
         conn.execute(
             "UPDATE feedback SET github_issue_number=?, github_issue_url=?, github_sync_status=?, github_sync_error=?, github_synced_at=? WHERE id=?",
@@ -127,6 +181,14 @@ def _save_feedback_entry(entry: dict[str, str]) -> tuple[int, str | None, str | 
                 feedback_id,
             ),
         )
+    elif sync_error and sync_error.startswith(SKIP_PREFIX):
+        # Deliberately not filed. Nothing went wrong, so this is not a
+        # failure and does not deserve a warning in the log.
+        conn.execute(
+            "UPDATE feedback SET github_sync_status=?, github_sync_error=? WHERE id=?",
+            ("skipped", sync_error, feedback_id),
+        )
+        log.info("Support-hub issue not filed for id=%s: %s", feedback_id, sync_error)
     else:
         conn.execute(
             "UPDATE feedback SET github_sync_status=?, github_sync_error=? WHERE id=?",
@@ -242,8 +304,9 @@ def feedback_submit():
         return _render_feedback_form(" ".join(errors), **entry), 400
 
     issue_url = None
+    sync_error = None
     try:
-        _feedback_id, issue_url, _sync_error, source_app = _save_feedback_entry(entry)
+        _feedback_id, issue_url, sync_error, source_app = _save_feedback_entry(entry)
     except (sqlite3.Error, OSError):
         log.exception("Failed to save feedback")
         source_app = entry["source_app"]
@@ -251,6 +314,9 @@ def feedback_submit():
     return render_template(
         "feedback_thanks.html",
         issue_url=issue_url,
+        # True when the feedback was deliberately not filed, so the page can
+        # say so plainly instead of implying a configuration problem.
+        not_filed=bool(sync_error and sync_error.startswith(SKIP_PREFIX)),
         source_app=source_app,
         support_repo=load_support_hub_config().repo,
     )

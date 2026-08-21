@@ -22,8 +22,14 @@ from acb_large_print.stress_profiles import describe_stress_corpus
 from acb_large_print_web.app import create_app
 
 
+# Repo-root anchored, so these tests read the same files whether pytest was
+# started from the repository root (as CI does) or from web/ (as a developer
+# does). Reading them relative to the working directory made three tests fail
+# for everyone running the suite from inside web/.
+_REPO_ROOT = Path(__file__).resolve().parents[2]
+
 def _expected_release_version() -> str:
-    version_file = Path(__file__).resolve().parents[2] / "VERSION"
+    version_file = _REPO_ROOT / "VERSION"
     return version_file.read_text(encoding="utf-8").strip()
 
 
@@ -1396,8 +1402,8 @@ class TestSettingsIntegration:
         assert speech._KOKORO_VOICES_FILE == "voices-v1.0.bin"
 
     def test_piper_tts_is_installed_with_web_app(self):
-        pyproject = Path("web/pyproject.toml").read_text(encoding="utf-8")
-        requirements = Path("web/requirements.txt").read_text(encoding="utf-8")
+        pyproject = (_REPO_ROOT / "web/pyproject.toml").read_text(encoding="utf-8")
+        requirements = (_REPO_ROOT / "web/requirements.txt").read_text(encoding="utf-8")
 
         assert "piper-tts>=1.4.2" in pyproject
         assert "piper-tts>=1.4.2" in requirements
@@ -1586,14 +1592,14 @@ class TestSettingsIntegration:
         # CSP is emitted per-request by Flask (with a fresh nonce per response)
         # rather than by Caddy, so the directives now live in app.py. Caddy only
         # handles transport-level + policy headers (HSTS, Permissions-Policy).
-        app_py = Path("web/src/acb_large_print_web/app.py").read_text(encoding="utf-8")
+        app_py = (_REPO_ROOT / "web/src/acb_large_print_web/app.py").read_text(encoding="utf-8")
 
         assert "connect-src 'self'" in app_py
         assert "media-src 'self' blob:" in app_py
 
     def test_deploy_seeds_piper_default_voice(self):
-        deploy_script = Path("scripts/deploy-app.sh").read_text(encoding="utf-8")
-        dockerfile = Path("web/Dockerfile").read_text(encoding="utf-8")
+        deploy_script = (_REPO_ROOT / "scripts/deploy-app.sh").read_text(encoding="utf-8")
+        dockerfile = (_REPO_ROOT / "web/Dockerfile").read_text(encoding="utf-8")
 
         assert "Ensuring curated Piper voice model files are present" in deploy_script
         assert "en_US-lessac-medium" in deploy_script

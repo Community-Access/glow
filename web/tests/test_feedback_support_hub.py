@@ -42,6 +42,9 @@ def test_feedback_form_submission_syncs_to_support_hub(client, monkeypatch, app:
     response = client.post(
         "/feedback/",
         data={
+            # A tracker issue is opened for the categories that need a person
+            # to act; general praise is stored without one.
+            "category": "bug",
             "rating": "good",
             "task": "convert",
             "summary": "HTML conversion looked great but the footer was duplicated",

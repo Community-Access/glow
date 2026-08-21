@@ -1,6 +1,36 @@
 import pytest
 from acb_large_print_web import ai_features
 
+# Environment variables that point the support hub at a real GitHub repository
+# with a real token. A developer machine or a deploy shell has them set, and
+# tests/test_app.py::TestFeedback posts feedback without stubbing the sender --
+# so running the suite filed live issues in Community-Access/support, one pair
+# per run. Neutralised for every test, everywhere.
+_SUPPORT_HUB_ENV = (
+    "SUPPORT_HUB_GITHUB_TOKEN",
+    "FEEDBACK_GITHUB_TOKEN",
+    "SUPPORT_HUB_GITHUB_REPO",
+    "FEEDBACK_GITHUB_REPO",
+    "SUPPORT_HUB_GITHUB_ASSIGNEE",
+    "FEEDBACK_GITHUB_ASSIGNEE",
+    "SUPPORT_HUB_GITHUB_LABELS",
+    "FEEDBACK_GITHUB_LABELS",
+    "SUPPORT_HUB_API_TOKEN",
+    "FEEDBACK_API_TOKEN",
+    "SUPPORT_HUB_ISSUE_CATEGORIES",
+)
+
+
+@pytest.fixture(autouse=True)
+def _isolate_support_hub_env(monkeypatch):
+    """No test may reach the real support tracker, whatever the shell carries.
+
+    A test that wants this configuration sets it explicitly with monkeypatch,
+    which still works: this only clears what leaked in from outside.
+    """
+    for name in _SUPPORT_HUB_ENV:
+        monkeypatch.delenv(name, raising=False)
+
 
 def _ai_available() -> bool:
     try:

@@ -6,6 +6,17 @@ from dataclasses import dataclass
 from urllib import error as urlerror
 from urllib import request as urlrequest
 
+# Categories that warrant a tracker issue. Praise and general comments are
+# still stored and still reach the admin feedback list; they just do not open
+# a ticket somebody has to triage. A monitoring script exercising the live
+# site every twenty minutes opened ten identical "Love it" issues in one
+# afternoon, which is how a real user's bug report gets buried.
+DEFAULT_ISSUE_CATEGORIES = ("bug", "accessibility", "regression", "support")
+
+# Returned as the sync "error" when an entry was deliberately not filed. The
+# caller distinguishes this from a failure: nothing went wrong.
+SKIP_PREFIX = "skipped: "
+
 
 @dataclass(frozen=True, slots=True)
 class SupportHubConfig:
@@ -14,6 +25,7 @@ class SupportHubConfig:
     assignee: str
     labels: list[str]
     api_token: str
+    issue_categories: tuple[str, ...] = DEFAULT_ISSUE_CATEGORIES
 
 
 def load_support_hub_config() -> SupportHubConfig:
@@ -40,19 +52,50 @@ def load_support_hub_config() -> SupportHubConfig:
         os.environ.get("SUPPORT_HUB_API_TOKEN", "").strip()
         or os.environ.get("FEEDBACK_API_TOKEN", "").strip()
     )
+    categories_raw = os.environ.get("SUPPORT_HUB_ISSUE_CATEGORIES", "").strip()
+    if categories_raw.lower() == "all":
+        # Explicit opt-in to the old behaviour: file everything.
+        issue_categories: tuple[str, ...] = ()
+    elif categories_raw:
+        issue_categories = tuple(
+            item.strip().lower() for item in categories_raw.split(",") if item.strip()
+        )
+    else:
+        issue_categories = DEFAULT_ISSUE_CATEGORIES
+
     return SupportHubConfig(
         token=token,
         repo=repo,
         assignee=assignee,
         labels=labels,
         api_token=api_token,
+        issue_categories=issue_categories,
     )
+
+
+def should_open_issue(entry: dict[str, object], cfg: SupportHubConfig | None = None) -> tuple[bool, str]:
+    """Whether this feedback deserves a tracker issue, and why not if it does not.
+
+    An empty ``issue_categories`` means "file everything", which is what
+    SUPPORT_HUB_ISSUE_CATEGORIES=all configures.
+    """
+    cfg = cfg or load_support_hub_config()
+    if not cfg.issue_categories:
+        return True, ""
+    category = str(entry.get("category", "") or "").strip().lower()
+    if category in cfg.issue_categories:
+        return True, ""
+    return False, f"{SKIP_PREFIX}category {category or 'unset'!r} is not triaged"
 
 
 def create_support_issue(entry: dict[str, object]) -> tuple[int | None, str | None, str | None]:
     cfg = load_support_hub_config()
     if not cfg.token:
         return None, None, "SUPPORT_HUB_GITHUB_TOKEN not configured"
+
+    wanted, reason = should_open_issue(entry, cfg)
+    if not wanted:
+        return None, None, reason
 
     payload = _build_issue_payload(entry, cfg)
     req = urlrequest.Request(
