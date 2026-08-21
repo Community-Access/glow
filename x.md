@@ -4,7 +4,63 @@
 **First written:** 18 August 2026
 **Last updated:** 21 August 2026
 **GLOW version:** 8.0.0 (Workshop Mode introduced 7.3.0)
-**Status:** Phases 1–4 built and verified. Phase 5 — hardening and rehearsal — is what remains.
+**Status:** Phases 1–4 built, merged, and running in production. Phase 5 —
+hardening and rehearsal — is what remains, plus two credentials and the event
+configuration.
+
+**How to use this document:** section 0 is the ordered checklist. Everything
+after it is the detail behind an item, and each checklist entry says where to
+look.
+
+---
+
+## 0. Do this next
+
+Ordered. Times are honest. Nothing below needs code written.
+
+### 0.1 Before anything else — about an hour in total
+
+| # | Do | Where the detail is | Done when |
+|---|---|---|---|
+| 1 | **Fix the CI deploy key.** Generate `ssh-keygen -t ed25519 -N "" -C github-actions-deploy -f ~/.ssh/github-actions-deploy`, append the public half to `authorized_keys` on bishoplink, then `gh secret set DEPLOY_SSH_KEY < ~/.ssh/github-actions-deploy` plus `DEPLOY_USER=jeffbis` and `DEPLOY_HOST=lp.csedesigns.com` | §2.1 item 4 | A push to `main` deploys without a manual SSH session |
+| 2 | **Set `OPENROUTER_API_KEY` in `~/app/web/.env`**, and turn on `GLOW_ENABLE_AI_ALT_TEXT`, `GLOW_ENABLE_AI_CHAT`, `GLOW_ENABLE_AI_WHISPERER` — all three are `0` today, so the key alone changes nothing | §2.3, §5 | `/health` reports `key_set: true` and `status: ready` for vision |
+| 3 | **Configure Postmark**: server token, verified sender or domain (DKIM + Return-Path), leave the sandbox, set `POSTMARK_SERVER_TOKEN` and `POSTMARK_FROM_EMAIL`, restart web *and* worker | §6.2 | The Email panel on `/admin/queue` sends you a test message |
+| 4 | **Set the event configuration**: `WORKSHOP_CONFERENCE_CODES_JSON` with the AHG access code, `GLOW_WORKSHOP_FACILITATOR_KEY`, and the AI caps once you have a spend figure | §5 | `/w/<code>` joins the real session |
+| 5 | **Walk the whole day on the deployed site**, not locally | — | You have personally done all eleven activities at letitglow.app |
+
+### 0.2 Content and rehearsal — weeks 3 to 11
+
+| # | Do | Detail | Done when |
+|---|---|---|---|
+| 6 | Read all twelve scenarios aloud; cut or rewrite anything that sounds like software wrote it | §1.1 | You would say each one to a room |
+| 7 | Print the worksheet packs and the room signage; look at them on paper | §5 | A stack of both exists |
+| 8 | Screen reader pass: NVDA first, then JAWS and VoiceOver | §2.2 | Each of the eleven activities completed end to end by ear |
+| 9 | Cost the AI; set the caps to the agreed number; rehearse hitting a cap | §2.2, §5 | A figure is written down and agreed |
+| 10 | Load rehearsal, 30 simulated participants | §2.2 | No 429s, no request over two seconds |
+| 11 | Full run with the house AI switched off | §2.2 | A complete activity run with `OPENROUTER_API_KEY` unset |
+| 12 | Degraded-network run, and a run from paper alone | §2.2 | Both completed |
+| 13 | Facilitator dry run against the real agenda, with an awkward participant | §2.2 | A timed run-through, room pulse open |
+| 14 | Freeze: tag the release, print everything, write your pocket card | §3, §5 | No merges in the final week |
+
+### 0.3 Housekeeping — whenever
+
+| # | Do | Detail |
+|---|---|---|
+| 15 | Decide the fate of `office-addin` and clear the 77 dependency alerts | §2.3 |
+| 16 | Restore or delete `review.md` at the repository root | §2.3 |
+| 17 | Salvage the two uncommitted fixes in `C:\Users\jeffb\glow`, then delete that checkout | §2.3 |
+| 18 | Find out what deleted the Playwright browsers and the virtualenvs on the dev machine | §2.3 |
+| 19 | Delete the merged `workshop-ahg-readiness` branch from the remote | §2.3 |
+| 20 | Generate the Keycloak fixtures at setup instead of tracking them | §2.3 |
+
+### 0.4 Optional, after the conference
+
+| # | Do | Detail |
+|---|---|---|
+| 21 | Long-conversion completion notifications — the one unfinished piece of passport slice 2 | §7.6 |
+| 22 | Bounce and complaint webhooks, a delivery log, per-feature email switches | §6.6 |
+| 23 | Move the audit-report email onto the shared layout; it still signals severity by colour alone | §6.6 |
+| 24 | Keycloak on a real database before any email-based Keycloak flow | §7.9 |
 
 ---
 
@@ -15,8 +71,9 @@ curriculum complete, and its delivery layer newly repaired — and then listed
 four phases of work that would take it from "a good conference session" to
 "the session people remember".
 
-Phases 1 through 4 are now built, tested, and committed on the branch
-`workshop-ahg-readiness`.
+Phases 1 through 4 are built, tested, merged to `main`, and running in
+production at letitglow.app. A fifth piece nobody planned for -- the GLOW
+passport in section 7 -- was built on top of them.
 
 ### 1.1 What shipped
 
@@ -140,11 +197,13 @@ explanation.
 
 | Check | Result |
 |---|---|
-| Full web test suite | **792 passed, 0 failed**, 31 skipped -- run with quill-glow-core installed, which is the deployed configuration |
+| Full web test suite | **832 passed, 0 failed**, 31 skipped -- run with quill-glow-core installed, which is the deployed configuration |
 | Workshop suites alone | 253 tests |
 | Production after deploy | post-deploy verification passed, every URL check OK, all eight containers healthy |
 | Live MCP | `/mcp/health` reports `backend: "glow"` |
-| axe-core, WCAG 2.2 AA | **37 pages, 0 violations, 1009 passing rules** |
+| Passport | Live in production: retention 90 days, link TTL 14 days |
+| Email | Not configured. Seven features waiting on one token (§6) |
+| axe-core, WCAG 2.2 AA | **38 pages, 0 violations, 1035 passing rules** |
 | Ruff on every file touched | clean |
 | MCP endpoint tests against installed wheels | 8 passed |
 
@@ -192,7 +251,7 @@ This is the whole remaining risk. None of it is code.
   `TestSettingsIntegration` failures read repo files relative to the working
   directory and now resolve from the repository root; the two feedback
   failures were reading the developer's real support-hub configuration and are
-  now isolated. The suite is 792 passed, 0 failed.
+  now isolated. The suite is 832 passed, 0 failed.
 - **Dependency alerts.** 77 open on the default branch (2 critical, 31 high),
   nearly all npm packages under `office-addin`, with eight Dependabot pull
   requests waiting. `office-addin` has not been touched since 23 May --
