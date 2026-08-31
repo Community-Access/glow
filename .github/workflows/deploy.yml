@@ -132,8 +132,17 @@ jobs:
             echo "=== Starting deploy at $(date -u) ==="
             cd ~/app
             git fetch origin
-            # Use the branch that triggered the workflow (main or release/**)
-            git reset --hard origin/${{ github.ref_name }}
+            # Use the branch that triggered the workflow (main or release/**).
+            #
+            # Fast-forward, never reset --hard. The production checkout carries
+            # uncommitted operational config that exists nowhere in this repo:
+            # web/Caddyfile holds the helpdesk.community-access.org block and the
+            # Community Picks /submit/* endpoint. A hard reset deletes both
+            # silently, and the first green deploy after a red streak is exactly
+            # when nobody is reading the log. --ff-only keeps local edits and
+            # fails loudly if an incoming commit would overwrite one.
+            git checkout ${{ github.ref_name }}
+            git merge --ff-only origin/${{ github.ref_name }}
             bash scripts/deploy-app.sh
             bash scripts/post-deploy-check.sh
             echo "=== Deploy finished at $(date -u) ==="
