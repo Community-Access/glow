@@ -1,3 +1,6 @@
 *.sh text eol=lf
 *.yml text eol=lf
 *.yaml text eol=lf
+# Caddy reads this inside a Linux container; a CRLF checkout on a Windows
+# workstation would travel back on the next commit and break the config.
+Caddyfile text eol=lf

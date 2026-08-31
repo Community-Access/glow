@@ -25,7 +25,32 @@ lp.csedesigns.com, glow.bits-acb.org, www.letitglow.app {
         reverse_proxy ggg:80
     }
 
-    redir https://letitglow.app{uri} 301
+    # The Community Picks submission endpoint (feedback-hub 1.2.0), so that
+    # quillforall.org/picks/suggest/ can file an issue for a visitor who has no
+    # GitHub account. See ~/feedback-hub/deploy/README.md.
+    #
+    # ABOVE the redir below, like /ggg*, and for a sharper reason than tidiness:
+    # a 301 here would send the browser to a different origin, the CORS check
+    # would then be made against an origin the server does not allow, and the
+    # form would fail in a way that looks exactly like the server being down.
+    #
+    # `handle`, not `handle_path`: handle_path strips the matched prefix, so
+    # /submit/picks would reach the app as /picks and 404 against its own
+    # configured PICKS_PATH.
+    #
+    # The matcher pins this to lp.csedesigns.com alone -- this site block covers
+    # three hostnames and the endpoint has no business on the other two.
+    @picks_submit {
+        host lp.csedesigns.com
+        path /submit/*
+    }
+    handle @picks_submit {
+        reverse_proxy feedback-hub-submit:8095
+    }
+
+    handle {
+        redir https://letitglow.app{uri} 301
+    }
 }
 
 # ACB Large Print web application -- canonical reverse proxy to Flask/Gunicorn
@@ -87,4 +112,89 @@ letitglow.app {
             Strict-Transport-Security "max-age=63072000; includeSubDomains"
         }
     }
+}
+
+helpdesk.community-access.org {
+	# Two upstreams behind one hostname: FreeScout for people, and the Postmark
+	# bridge for the inbound webhook. The bridge is matched first; everything
+	# else is FreeScout.
+
+	# FreeScout sets its own Content-Security-Policy and cookie flags, so Caddy
+	# adds only the transport-level and policy headers that do not depend on
+	# application state.
+	header {
+		Strict-Transport-Security "max-age=63072000; includeSubDomains"
+		X-Content-Type-Options nosniff
+		Referrer-Policy strict-origin-when-cross-origin
+		Permissions-Policy "geolocation=(), microphone=(), camera=()"
+	}
+
+	# Attachments. FreeScout's own limit is set in its interface; this is the
+	# proxy's, and the smaller of the two is the one that wins -- silently, and
+	# with an error that blames the wrong component.
+	request_body {
+		max_size 25MB
+	}
+
+	# The Postmark inbound webhook, BEFORE the catch-all below -- otherwise it
+	# reaches FreeScout, which 404s it, and Postmark spends ten retries over ten
+	# and a half hours on a path that was never going to work.
+	#
+	# handle, not handle_path: the bridge answers on the full /postmark/inbound
+	# and stripping the prefix would 404 it against its own configured path.
+	#
+	# The bridge does its own HTTP Basic check, so Caddy passes the header
+	# straight through and adds no auth of its own -- two places to configure a
+	# credential is one too many, and the one that matters is the one the
+	# request is actually validated against.
+	@postmark path /postmark/*
+	handle @postmark {
+		reverse_proxy helpdesk-mailbridge:8096
+	}
+
+	# FreeScout gets everything else -- and it is inside a `handle` rather than
+	# left as a bare reverse_proxy on purpose. Caddy sorts directives by a fixed
+	# order, so a bare directive alongside a handle block is evaluated at its
+	# own position in that order rather than where it appears in the file.
+	# Writing both as handles makes them mutually exclusive and makes the order
+	# on the page the order that runs. The `lp.csedesigns.com` block on this
+	# same box had a bare `redir` that silently shadowed every handler above it
+	# for months; this is that lesson, applied before it costs anything.
+	handle {
+		reverse_proxy helpdesk-app:80 {
+			# Without X-Forwarded-Proto, FreeScout builds every absolute URL as
+			# http:// -- so the login POST leaves an https page for an http one,
+			# the browser refuses it as mixed content, and sign-in fails with
+			# nothing in any log that names the cause. Caddy sets this by
+			# default; it is written out because the container is configured to
+			# trust it (ENABLE_SSL_PROXY=TRUE) and the two have to agree.
+			header_up X-Forwarded-Proto {scheme}
+
+			# Long enough for a mailbox fetch or a module install to finish.
+			# A deliberate ceiling, so a wedged request cannot hold a
+			# connection open forever.
+			transport http {
+				response_header_timeout 120s
+			}
+		}
+	}
+
+	encode {
+		gzip
+		match {
+			header Content-Type text/html*
+			header Content-Type text/plain*
+			header Content-Type text/css*
+			header Content-Type application/json*
+			header Content-Type application/javascript*
+			header Content-Type image/svg+xml*
+		}
+	}
+
+	log {
+		output file /data/helpdesk-access.log {
+			roll_size 10MB
+			roll_keep 5
+		}
+	}
 }

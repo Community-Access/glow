@@ -39,6 +39,11 @@ fi
 echo "$(date -Iseconds) Backing up feedback database..."
 docker compose -f "$WEB_ROOT/$COMPOSE_FILE" cp web:/app/instance/feedback.db "$BACKUP_FILE"
 
+# docker compose cp preserves the SOURCE file's mtime. feedback.db inside the
+# container is months old, so without this touch the copy lands on disk already
+# older than KEEP_DAYS and the rotation step below deletes it on the same run.
+touch "$BACKUP_FILE"
+
 if [[ -f "$BACKUP_FILE" ]]; then
     SIZE=$(stat --format='%s' "$BACKUP_FILE" 2>/dev/null || stat -f'%z' "$BACKUP_FILE" 2>/dev/null || echo "unknown")
     echo "$(date -Iseconds) Backup created: $BACKUP_FILE ($SIZE bytes)"
