@@ -10,6 +10,12 @@
 {% set tip_link_text = "Read the audit guide" %}
 {% include '_workflow_tip.html' %}
 
+{% if feature_site_audit_enabled %}
+<div class="notice-box">
+  <p>Auditing a web page instead of a file? This page accepts uploaded documents only. To check a live URL, use <a href="{{ url_for('site_audit.site_audit_form') }}">Site Audit: scan a web page URL</a>.</p>
+</div>
+{% endif %}
+
 <details class="help-accordion">
   <summary>What does the audit do?</summary>
   <p>The audit checks your document against the ACB Large Print Guidelines and WCAG 2.2 AA requirements. Rules adapt automatically to the file type:</p>
@@ -21,6 +27,7 @@
     <li><strong>PDF (.pdf)</strong> -- title, language, tagging, font sizes, font families, scanned pages, and bookmarks.</li>
     <li><strong>ePub (.epub)</strong> -- title, language, navigation, heading hierarchy, alt text, table headers, accessibility metadata, and link text.</li>
   </ul>
+  <p>Web pages are not audited here. Uploading an <code>.html</code> file is not the same as scanning a live page, so URLs are handled by {% if feature_site_audit_enabled %}<a href="{{ url_for('site_audit.site_audit_form') }}">Site Audit</a>{% else %}Site Audit{% endif %}, which fetches each page, follows in-site links to a depth you choose, and returns the same kind of findings report.</p>
   <p>You receive a detailed report showing each finding with its severity and the relevant guideline reference.</p>
 </details>
 

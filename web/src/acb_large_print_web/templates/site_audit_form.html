@@ -12,6 +12,12 @@
 </div>
 {% endif %}
 
+{% if feature_audit_enabled %}
+<div class="notice-box">
+  <p>Auditing a file instead of a web page? Use <a href="{{ url_for('audit.audit_form') }}">Document Audit: check a Word, Excel, PowerPoint, Markdown, PDF, or ePub file</a>.</p>
+</div>
+{% endif %}
+
 <details class="help-accordion">
   <summary>How this scan works</summary>
   <ul>

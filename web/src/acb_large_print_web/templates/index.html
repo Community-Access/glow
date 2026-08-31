@@ -35,11 +35,14 @@
     <div class="mission-card mission-card--assess">
       <h3 id="mission-assess">Assess Accessibility</h3>
       <p>Find every accessibility issue in a document or website and get a detailed, standards-referenced report.</p>
-      {% if feature_audit_enabled %}
-      <a class="mission-card__cta" href="{{ url_for('audit.audit_form') }}">Open Document Audit &rarr;</a>
-      {% elif feature_site_audit_enabled %}
-      <a class="mission-card__cta" href="{{ url_for('site_audit.site_audit_form') }}">Open Site Audit &rarr;</a>
-      {% endif %}
+      <ul class="mission-card__links" role="list">
+        {% if feature_audit_enabled %}
+        <li><a class="mission-card__cta" href="{{ url_for('audit.audit_form') }}">Open Document Audit &rarr;</a></li>
+        {% endif %}
+        {% if feature_site_audit_enabled %}
+        <li><a class="mission-card__cta" href="{{ url_for('site_audit.site_audit_form') }}">Open Site Audit &rarr;</a></li>
+        {% endif %}
+      </ul>
     </div>
     {% endif %}
 
@@ -48,11 +51,14 @@
     <div class="mission-card mission-card--fix">
       <h3 id="mission-fix">Fix and Build</h3>
       <p>Automatically correct compliance issues in an existing document, or start fresh with a pre-configured Word template.</p>
-      {% if feature_checker_enabled %}
-      <a class="mission-card__cta" href="{{ url_for('fix.fix_form') }}">Open Fix Document &rarr;</a>
-      {% elif feature_template_builder_enabled %}
-      <a class="mission-card__cta" href="{{ url_for('template.template_form') }}">Build a Template &rarr;</a>
-      {% endif %}
+      <ul class="mission-card__links" role="list">
+        {% if feature_checker_enabled %}
+        <li><a class="mission-card__cta" href="{{ url_for('fix.fix_form') }}">Open Fix Document &rarr;</a></li>
+        {% endif %}
+        {% if feature_template_builder_enabled %}
+        <li><a class="mission-card__cta" href="{{ url_for('template.template_form') }}">Build a Template &rarr;</a></li>
+        {% endif %}
+      </ul>
     </div>
     {% endif %}
 
@@ -61,11 +67,14 @@
     <div class="mission-card mission-card--transform">
       <h3 id="mission-transform">Transform Format</h3>
       <p>Convert documents between formats -- Markdown, HTML, EPUB, PDF, DAISY, CMS Fragment -- or translate to and from braille.</p>
-      {% if feature_converter_enabled %}
-      <a class="mission-card__cta" href="{{ url_for('convert.convert_form') }}">Open Convert Format &rarr;</a>
-      {% elif feature_braille_enabled %}
-      <a class="mission-card__cta" href="{{ url_for('braille.braille_form') }}">Open Braille Studio &rarr;</a>
-      {% endif %}
+      <ul class="mission-card__links" role="list">
+        {% if feature_converter_enabled %}
+        <li><a class="mission-card__cta" href="{{ url_for('convert.convert_form') }}">Open Convert Format &rarr;</a></li>
+        {% endif %}
+        {% if feature_braille_enabled %}
+        <li><a class="mission-card__cta" href="{{ url_for('braille.braille_form') }}">Open Braille Studio &rarr;</a></li>
+        {% endif %}
+      </ul>
     </div>
     {% endif %}
 
@@ -74,11 +83,14 @@
     <div class="mission-card mission-card--listen">
       <h3 id="mission-listen">Listen and Speak</h3>
       <p>Narrate documents to MP3 or WAV with expressive voices, or transcribe audio recordings into accessible text.</p>
-      {% if feature_speech_enabled %}
-      <a class="mission-card__cta" href="{{ url_for('speech.speech_form') }}">Open Speech Studio &rarr;</a>
-      {% elif ai_whisperer_enabled %}
-      <a class="mission-card__cta" href="{{ url_for('whisperer.whisperer_form') }}">Open {{ brand_whisperer_label }} &rarr;</a>
-      {% endif %}
+      <ul class="mission-card__links" role="list">
+        {% if feature_speech_enabled %}
+        <li><a class="mission-card__cta" href="{{ url_for('speech.speech_form') }}">Open Speech Studio &rarr;</a></li>
+        {% endif %}
+        {% if ai_whisperer_enabled %}
+        <li><a class="mission-card__cta" href="{{ url_for('whisperer.whisperer_form') }}">Open {{ brand_whisperer_label }} &rarr;</a></li>
+        {% endif %}
+      </ul>
     </div>
     {% endif %}
 
