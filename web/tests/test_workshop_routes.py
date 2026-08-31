@@ -1321,3 +1321,41 @@ def test_rate_limit_key_prefers_the_participant_over_the_address(app: Flask):
         headers={"Cookie": f"{workshop_routes.PARTICIPANT_COOKIE}=abc123"},
     ):
         assert rate_limit_key() == "workshop:abc123"
+
+
+def test_workflow_tokens_render_as_links_not_escaped_markup(app: Flask):
+    """A workshop action token becomes a real anchor, not visible markup.
+
+    `escape()` returns Markup, and `Markup.replace()` escapes its replacement,
+    so building the anchor and splicing it into the escaped text turned it
+    straight back into "&lt;a href=...&gt;". Readers saw raw markup, and the
+    un-breakable URL inside it pushed the card past the right edge of the
+    viewport -- a 1.4.10 Reflow failure that also left axe unable to resolve
+    what was behind the text.
+    """
+    with app.test_request_context("/workshop/"):
+        rendered = workshop_routes._render_tokenized_workflow_text(
+            "Run [[GLOW:AUDIT]] to identify barriers.",
+            "demo75",
+            return_to="/workshop/session/demo75/launchpad",
+        )
+
+    assert "<a href=" in rendered
+    assert "Audit Workspace</a>" in rendered
+    assert "&lt;a" not in rendered
+
+
+def test_workflow_text_still_escapes_untrusted_content(app: Flask):
+    """The token splice must not become an injection point."""
+    with app.test_request_context("/workshop/"):
+        rendered = workshop_routes._render_tokenized_workflow_text(
+            '<script>alert(1)</script> "><img src=x onerror=alert(1)> [[GLOW:AUDIT]]',
+            "demo75",
+            return_to="/workshop/session/demo75/launchpad",
+        )
+
+    assert "<script>" not in rendered
+    assert "<img" not in rendered
+    assert "&lt;script&gt;" in rendered
+    # The trusted anchor is still spliced in as real markup.
+    assert "<a href=" in rendered

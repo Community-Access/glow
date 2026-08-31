@@ -590,7 +590,12 @@ def _action_link_for_token(token: str, session_code: str, *, return_to: str) -> 
 
 
 def _render_tokenized_workflow_text(text: str, session_code: str, *, return_to: str) -> Markup:
-    rendered = escape(text or "")
+    # A plain str, not Markup. Markup.replace() escapes its replacement, so the
+    # anchors built below came back out as visible "&lt;a href=...&gt;" text --
+    # the reader saw raw markup, and the un-breakable URL inside it overflowed
+    # the card and the viewport. Escape the untrusted text first, then splice
+    # the trusted anchors into an ordinary string, and re-wrap at the end.
+    rendered = str(escape(text or ""))
     for token, (label, endpoint) in WORKSHOP_ACTION_TOKENS.items():
         pattern = f"[[{token}]]"
         if pattern in rendered:

@@ -3068,6 +3068,16 @@ pre {
   overflow-wrap: anywhere;
   overflow-x: auto;
   max-width: 100%;
+  /* Load-bearing, not decoration. Two things put text outside the box this
+     pre appears to occupy: a pre-wrap line break keeps its trailing space,
+     which hangs about 1ch past the content edge, and axe bounds a scroll
+     container at getBoundingClientRect().left + scrollWidth, counting neither
+     the 1px border nor the fraction scrollWidth truncates. The text lands
+     1-20px outside, axe cannot tell what is behind it, and colour-contrast
+     comes back "incomplete" instead of the real 17.4:1 -- which is what has
+     failed the weekly strict audit since June. It also stops the text
+     touching its own border. */
+  padding: 0.5rem 0.75rem;
 }
 
 pre code {
@@ -3585,10 +3595,51 @@ html[data-theme="dark"] .flash-success {
   color: #b0f5b0;
 }
 
-html[data-theme="dark"] .celebration {
+/* The workflow tip shares the celebration palette: both are blue callouts in
+   light mode, and both need a dark background here or they keep the light
+   #f0f5ff while the text inherits #e0e0e0 from body -- 1.21:1, unreadable.
+   The tip appears on audit, fix, convert, export and template, so the fault
+   was on five pages at once. */
+html[data-theme="dark"] .celebration,
+html[data-theme="dark"] .workflow-banner {
   background: #0a1a2d;
-  border-color: #1a4570;
+  /* #1a4570 was only 1.90:1 against the #121212 page. The fill is 1.07:1, so
+     the border is the sole thing separating this callout from the page. */
+  border-color: #4a90d9;
   color: #b0d8ff;
+}
+
+/* Same fault as the workflow banner: a light blue callout with no dark
+   counterpart, so in dark mode the link inherited #7ab3ff and sat on #f0f5ff
+   at 1.97:1. */
+html[data-theme="dark"] .flash-info,
+html[data-theme="dark"] .flash-message {
+  background: #0a1a2d;
+  border-color: #4a90d9;
+  color: #e0e0e0;
+}
+
+/* pre/kbd/table keep background-color:#ffffff and color:#1a1a1a from the light
+   rule above, which had no dark counterpart at all. Body text survived because
+   the colour is re-declared, but a link crossing into a table inherited the
+   dark #7ab3ff and hit 2.16:1 on white. `code` is excluded: it has its own
+   dark rule further down. */
+html[data-theme="dark"] pre,
+html[data-theme="dark"] kbd,
+html[data-theme="dark"] table,
+html[data-theme="dark"] thead,
+html[data-theme="dark"] tbody,
+html[data-theme="dark"] tr,
+html[data-theme="dark"] th,
+html[data-theme="dark"] td {
+  background-color: #1e1e1e;
+  color: #e0e0e0;
+}
+
+/* 94 h3 nodes on /changelog/ computed #1a1a1a on #121212 -- 1.07:1, headings
+   invisible in dark mode. Only h3 declares a colour; h2 and h4 inherit. */
+html[data-theme="dark"] .changelog-content h3 {
+  color: #e0e0e0;
 }
 
 /* Forms */

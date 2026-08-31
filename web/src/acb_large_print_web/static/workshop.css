@@ -115,6 +115,14 @@ html[data-theme="dark"] {
   overflow-wrap: anywhere;
 }
 
+/* The launchpad renders its scenario cards as a bare <dl> inside
+   .workshop-panel, so it never picked up .workshop-field-list above. Anything
+   long and unbreakable in a definition -- a deep-linked tool URL, a token --
+   then overflows the card and the viewport (1.4.10 Reflow). */
+.workshop-panel > dl > dd {
+  overflow-wrap: anywhere;
+}
+
 /* --- Metric list (facilitator) ------------------------------------------- */
 .workshop-metrics {
   display: grid;
