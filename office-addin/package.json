@@ -25,7 +25,8 @@
     "tmp": ">=0.2.4",
     "uuid": ">=14.0.0",
     "nanoid": "^3.3.18",
-    "browserslist": "^4.28.7"
+    "browserslist": "^4.28.7",
+    "adm-zip": ">=0.6.0"
   },
   "devDependencies": {
     "@types/office-js": "^1.0.589",

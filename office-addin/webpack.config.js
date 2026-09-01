@@ -1,9 +1,29 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
+const fs = require("fs");
 const path = require("path");
+const webpack = require("webpack");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 const CopyWebpackPlugin = require("copy-webpack-plugin");
 
 const isProduction = process.env.NODE_ENV === "production";
+
+// Resolve the add-in version at build time from the repo-root VERSION file so
+// it stays in sync with the desktop and web components. Fall back to this
+// package's version, then a hard-coded default, so a build never fails on a
+// missing file. Injected into the bundle via DefinePlugin (see below).
+function resolveAppVersion() {
+    try {
+        return fs.readFileSync(path.resolve(__dirname, "../VERSION"), "utf-8").trim();
+    } catch (e) {
+        try {
+            return require("./package.json").version || "0.0.0";
+        } catch (e2) {
+            return "0.0.0";
+        }
+    }
+}
+
+const appVersion = resolveAppVersion();
 
 module.exports = {
     entry: {
@@ -32,6 +52,9 @@ module.exports = {
         ],
     },
     plugins: [
+        new webpack.DefinePlugin({
+            __APP_VERSION__: JSON.stringify(appVersion),
+        }),
         new HtmlWebpackPlugin({
             template: "./src/taskpane.html",
             filename: "taskpane.html",
