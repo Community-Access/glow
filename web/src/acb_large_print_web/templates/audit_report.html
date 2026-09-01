@@ -128,7 +128,7 @@
     <button type="button" id="quick-wins-toggle" class="btn-secondary"
             aria-pressed="false" aria-controls="findings-tbody"
             data-total="{{ result.findings | length }}" data-fixable="{{ ns.fixable }}">
-      Show Quick Wins Only ({{ ns.fixable }} auto-fixable)
+      Quick wins only ({{ ns.fixable }} auto-fixable)
     </button>
     {% if doc_format == "docx" and feature_checker_enabled %}
     {% if chat_token %}
@@ -270,10 +270,9 @@
   var active = false;
   btn.addEventListener('click', function () {
     active = !active;
+    // Label stays fixed; aria-pressed carries the on/off state so the control
+    // does not contradict itself ("Show All Findings" while pressed).
     btn.setAttribute('aria-pressed', active ? 'true' : 'false');
-    btn.textContent = active
-      ? 'Show All Findings (' + total + ')'
-      : 'Show Quick Wins Only (' + fixable + ' auto-fixable)';
     var rows = document.querySelectorAll('#findings-tbody tr');
     rows.forEach(function (row) {
       row.hidden = active && row.getAttribute('data-fixable') !== '1';

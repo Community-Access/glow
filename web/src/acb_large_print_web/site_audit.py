@@ -243,14 +243,29 @@ def run_site_audit(
         page_json = page_dir / "page.json"
 
         if page_json.exists() and not options.force:
-            previous = _load_json(page_json, {})
-            previous["result"] = "skipped"
-            previous["reason"] = "existing output"
-            previous["index"] = index
-            pages.append(previous)
-            totals["skipped"] += 1
-            log_lines.append(f"[{index}/{len(scan_urls)}] skipped {url} (existing output)")
-            continue
+            previous = _load_json(page_json, None)
+            if not isinstance(previous, dict) or "url" not in previous or "result" not in previous:
+                # A corrupt or truncated cached page.json would otherwise be
+                # pushed straight into the summary, rendering a row with no url
+                # or result. Re-scan instead of trusting the bad cache.
+                log_lines.append(
+                    f"[{index}/{len(scan_urls)}] cached page.json invalid, re-scanning {url}"
+                )
+            else:
+                previous["result"] = "skipped"
+                previous["reason"] = "existing output"
+                previous["index"] = index
+                pages.append(previous)
+                totals["skipped"] += 1
+                # Aggregate the findings the cached page already recorded, so a
+                # run that reuses cached output still reports its findings
+                # instead of "0 findings".
+                for finding in previous.get("findings", []):
+                    all_findings.append(finding)
+                for tag, count in (previous.get("wcag_tags") or {}).items():
+                    wcag_rollup[tag] = wcag_rollup.get(tag, 0) + int(count)
+                log_lines.append(f"[{index}/{len(scan_urls)}] skipped {url} (existing output)")
+                continue
 
         log_lines.append(f"[{index}/{len(scan_urls)}] scanning {url}")
         page_result = _scan_single_page(
@@ -336,6 +351,35 @@ def _scan_single_page(url: str, page_dir: Path, *, strict_open_source_only: bool
             "wcag_tags": {},
         }
 
+    # Only HTML bodies are parseable; a linked PDF or image served at a URL we
+    # crawled would otherwise be pulled fully into the parser. Skip anything
+    # that is not (X)HTML, or that declares no content type at all.
+    headers = getattr(resp, "headers", None)
+    content_type = str(headers.get("Content-Type", "") or "") if headers else ""
+    main_type = content_type.split(";", 1)[0].strip().lower()
+    if main_type not in {"text/html", "application/xhtml+xml"}:
+        return {
+            "url": url,
+            "final_url": getattr(resp, "url", url),
+            "result": "skipped",
+            "status_code": status_code,
+            "reason": f"Unsupported content type: {content_type or 'none'}",
+            "title": "",
+            "findings": [],
+            "wcag_tags": {},
+        }
+
+    # requests defaults an un-declared text/* charset to ISO-8859-1, which
+    # mojibakes UTF-8 pages (garbled titles). When the server sent no charset,
+    # fall back to the byte-sniffed encoding before decoding.
+    if "charset=" not in content_type.lower():
+        apparent = getattr(resp, "apparent_encoding", None)
+        if apparent:
+            try:
+                resp.encoding = apparent
+            except Exception:
+                pass
+
     html = resp.text or ""
     (page_dir / "page.html").write_text(html, encoding="utf-8", errors="ignore")
 
@@ -352,7 +396,7 @@ def _scan_single_page(url: str, page_dir: Path, *, strict_open_source_only: bool
             _finding(
                 url,
                 "HEURISTIC-HTML-LANG",
-                "high",
+                "serious",
                 "Document root is missing a lang attribute.",
                 "html",
                 wcag_tags=["wcag311"],
@@ -364,7 +408,7 @@ def _scan_single_page(url: str, page_dir: Path, *, strict_open_source_only: bool
             _finding(
                 url,
                 "HEURISTIC-HTML-TITLE",
-                "high",
+                "serious",
                 "Document is missing a non-empty title element.",
                 "head > title",
                 wcag_tags=["wcag242"],
@@ -484,6 +528,9 @@ def _expand_with_crawl(
     is_cancelled: Callable[[], bool] | None = None,
 ) -> list[str]:
     queue: list[tuple[str, int, str]] = [(url, 0, url) for url in sources]
+    # Mirror the frontier in a set so the membership test on every discovered
+    # link is O(1) instead of rebuilding a set from the whole queue per link.
+    queued: set[str] = {url for url in sources}
     visited: list[str] = []
     seen: set[str] = set()
 
@@ -518,8 +565,9 @@ def _expand_with_crawl(
                 continue
             if _is_excluded_url(candidate, exclude_url_patterns):
                 continue
-            if candidate not in seen and candidate not in {queued_url for queued_url, _, _ in queue}:
+            if candidate not in seen and candidate not in queued:
                 queue.append((candidate, depth + 1, seed_url))
+                queued.add(candidate)
 
     return visited
 
@@ -785,13 +833,23 @@ def _build_learning_resources(
     return deduped
 
 
+def _npx_path() -> str | None:
+    # Resolve once. A bare "npx" passed to subprocess.run raises
+    # FileNotFoundError on Windows, where the launcher is "npx.cmd"; shutil.which
+    # finds the real executable (honouring PATHEXT) and we reuse that full path.
+    return shutil.which("npx")
+
+
 def _axe_available() -> bool:
-    return shutil.which("npx") is not None
+    return _npx_path() is not None
 
 
 def _run_axe(url: str, output_path: Path) -> None:
+    npx = _npx_path()
+    if not npx:
+        raise RuntimeError("npx executable not found on PATH")
     command = [
-        "npx",
+        npx,
         "axe",
         url,
         "--tags",
@@ -805,12 +863,17 @@ def _run_axe(url: str, output_path: Path) -> None:
         raise RuntimeError(err)
 
 
+# Single severity vocabulary shared by axe and heuristic findings, most to
+# least severe. Heuristic findings emit these values directly; axe impacts map
+# onto them below (critical -> critical, not the old critical -> serious that
+# meant no finding was ever "critical").
+SEVERITY_LEVELS = ("critical", "serious", "moderate", "minor")
+
+
 def _severity_for_impact(impact: str) -> str:
     impact = (impact or "").strip().lower()
-    if impact in {"critical", "serious"}:
-        return "serious"
-    if impact in {"moderate", "minor"}:
-        return "moderate"
+    if impact in SEVERITY_LEVELS:
+        return impact
     return "minor"
 
 

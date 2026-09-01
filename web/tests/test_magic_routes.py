@@ -144,3 +144,85 @@ def test_ocr_and_reading_order_flags_respected(client, monkeypatch: pytest.Monke
     ro_res = client.post("/magic/reading-order", data={})
     assert ocr_res.status_code == 404
     assert ro_res.status_code == 404
+
+
+# ---------------------------------------------------------------------------
+# magic_features unit-level regression tests (findings 6-9)
+# ---------------------------------------------------------------------------
+
+from acb_large_print_web import magic_features
+
+
+def test_pronunciation_backslash_replacement_is_literal(app):
+    """Finding 6: a replacement containing regex escapes (\\g, \\1) must be
+    treated literally and must not raise re.error."""
+    with app.app_context():
+        magic_features.upsert_pronunciation("foo", r"\g<0>\1 bar")
+        out = magic_features.apply_pronunciation_dictionary("a foo b")
+        assert out == r"a \g<0>\1 bar b"
+
+
+def test_pronunciation_non_word_edge_term(app):
+    """Finding 6: a term with non-word edges ('C++') must still match, since
+    \\b never fires between two non-word characters."""
+    with app.app_context():
+        magic_features.upsert_pronunciation("C++", "C plus plus")
+        out = magic_features.apply_pronunciation_dictionary("I love C++ code")
+        assert out == "I love C plus plus code"
+
+
+def test_pronunciation_normal_term_boundaries_preserved(app):
+    """Finding 6: normal terms still respect word boundaries (no partial hits)."""
+    with app.app_context():
+        magic_features.upsert_pronunciation("cat", "feline")
+        out = magic_features.apply_pronunciation_dictionary("the cat concatenates")
+        assert out == "the feline concatenates"
+
+
+def test_nested_table_single_is_reported():
+    """Finding 7: a single nested table (descendant-only .//table gives len 1)
+    must be reported."""
+    html = "<table><tr><td><table><tr><td>x</td></tr></table></td></tr></table>"
+    result = magic_features.analyze_tables(html)
+    codes = [f["code"] for f in result["findings"]]
+    assert "TABLE-NESTED" in codes
+
+
+def test_markdown_blank_header_cell_detected():
+    """Finding 8: a blank interior header cell is detected from the raw split."""
+    md = "| Name | | Date |\n| --- | --- | --- |\n| a | b | c |\n"
+    result = magic_features.analyze_tables(md)
+    codes = [f["code"] for f in result["findings"]]
+    assert "TABLE-MISSING-HEADERS" in codes
+
+
+def test_markdown_table_inside_code_fence_skipped():
+    """Finding 8: pipe lines inside a fenced code block are not parsed as tables."""
+    md = "```\n| only |\n| --- |\n```\n"
+    result = magic_features.analyze_tables(md)
+    codes = [f["code"] for f in result["findings"]]
+    assert "TABLE-TOO-FEW-COLS" not in codes
+    assert "TABLE-MISSING-HEADERS" not in codes
+
+
+def test_extract_text_for_compare_never_deletes_extensionless_input(tmp_path, monkeypatch):
+    """Finding 9: for an extensionless upload, the comparison output path must
+    differ from the input so the later unlink cannot delete the user's file."""
+    src = tmp_path / "uploadnoext"
+    src.write_bytes(b"original content")
+
+    def fake_convert(path, output_path):
+        output_path.write_text("converted markdown", encoding="utf-8")
+        return output_path, None
+
+    monkeypatch.setattr(
+        "acb_large_print_web.core_services.convert_to_markdown", fake_convert
+    )
+
+    text = magic_features.extract_text_for_compare(src)
+    assert text == "converted markdown"
+    # The user's original upload survives.
+    assert src.exists()
+    assert src.read_bytes() == b"original content"
+    # The temporary conversion artifact was cleaned up.
+    assert not (tmp_path / "uploadnoext.cmp.md").exists()

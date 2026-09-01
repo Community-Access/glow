@@ -48,9 +48,16 @@
       headers: { 'X-CSRFToken': getCsrfToken() }
     })
       .then(function (response) {
-        return response.json().then(function (data) {
-          return { ok: response.ok, data: data };
-        });
+        return response.json().then(
+          function (data) {
+            return { ok: response.ok, data: data };
+          },
+          function () {
+            // Body was not JSON (e.g. an HTML error page). Surface a clean
+            // status instead of announcing a raw SyntaxError to the reader.
+            throw new Error('Server error ' + response.status);
+          }
+        );
       })
       .then(function (payload) {
         if (!payload.ok || !payload.data || !payload.data.ok) {
@@ -130,13 +137,24 @@
       }
       target.select();
       target.setSelectionRange(0, target.value.length);
-      navigator.clipboard.writeText(target.value)
-        .then(function () {
+      // navigator.clipboard is undefined on non-secure origins, so guard it
+      // and fall back to execCommand (mirrors static/inline-handlers.js).
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(target.value)
+          .then(function () {
+            setStatus('Suggestion copied to clipboard.');
+          })
+          .catch(function () {
+            setStatus('Could not copy automatically. The text is selected for manual copy.');
+          });
+      } else {
+        try {
+          document.execCommand('copy');
           setStatus('Suggestion copied to clipboard.');
-        })
-        .catch(function () {
+        } catch (err) {
           setStatus('Could not copy automatically. The text is selected for manual copy.');
-        });
+        }
+      }
     });
   });
 }());

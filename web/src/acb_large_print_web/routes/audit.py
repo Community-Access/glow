@@ -35,13 +35,6 @@ from ..tasks.convert_tasks import create_job, run_audit_job
 audit_bp = Blueprint("audit", __name__)
 _ASYNC_HEAVY_ENABLED = os.environ.get("GLOW_CONVERT_ASYNC", "1") == "1"
 
-# Rule IDs where AI-powered alt-text suggestions apply.
-_ALT_TEXT_RULE_IDS: frozenset[str] = frozenset({
-    "MSAC-ALT-TEXT",
-    "EPUB-MISSING-ALT-TEXT",
-    "ACB-MISSING-ALT",
-})
-
 
 def _is_small_upload() -> bool:
     """Return True when the upload Content-Length is below the large-file threshold.
@@ -66,6 +59,13 @@ def _fire_webhook(callback_url: str, payload: dict) -> None:
     import time as _time
 
     import requests as _requests
+
+    from ..site_audit import _is_public_url
+
+    # Defense in depth: re-validate the destination inside the worker thread so
+    # a caller that forgets the gate cannot turn this into an SSRF primitive.
+    if not callback_url.lower().startswith("https://") or not _is_public_url(callback_url):
+        return
 
     try:
         secret = (_os.environ.get("WEBHOOK_SECRET") or "").encode() or _WEBHOOK_FALLBACK_SECRET
@@ -316,9 +316,10 @@ def suggest_alt_text():
     if not ai_alt_text_enabled():
         return {"error": "AI alt-text suggestions are not enabled on this server."}, 503
 
-    token = (request.form.get("token") or request.json.get("token") if request.is_json else request.form.get("token") or "").strip()
+    payload = request.get_json(silent=True) or {}
+    token = (request.form.get("token") or payload.get("token") or "").strip()
     try:
-        image_index = int((request.form.get("image_index") or (request.json.get("image_index", 0) if request.is_json else 0)))
+        image_index = int(request.form.get("image_index") or payload.get("image_index", 0))
     except (TypeError, ValueError):
         image_index = 0
 
@@ -1055,9 +1056,18 @@ def _audit_single():
             passphrase=_share_passphrase_from_form(),
         )
 
-        # --- #11: Optional webhook callback (HTTPS URLs only) ------------
+        # --- #11: Optional webhook callback (public HTTPS URLs only) -----
+        # The scheme check is case-insensitive (``HTTPS://`` must not slip
+        # through) and the host must resolve entirely to public addresses --
+        # otherwise the callback POST (which carries the report share_url and
+        # its token) is a blind SSRF into internal HTTPS services.
+        from ..site_audit import _is_public_url
         raw_callback = (request.form.get("callback_url") or "").strip()
-        if raw_callback and raw_callback.startswith("https://"):
+        if (
+            raw_callback
+            and raw_callback.lower().startswith("https://")
+            and _is_public_url(raw_callback)
+        ):
             _payload = {
                 "event": "audit.complete",
                 "score": result.score,

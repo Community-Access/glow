@@ -480,6 +480,8 @@ def admin_login_password() -> Any:
             error="This account is not approved for admin access.",
         ), 403
 
+    # Prevent session fixation: drop any pre-login session before elevating.
+    session.clear()
     session["admin_email"] = email
     return redirect(url_for("admin.admin_queue"))
 
@@ -643,7 +645,6 @@ def admin_magic_link_consume() -> Any:
     conn.close()
 
     session.clear()
-    session.clear()
     session["admin_email"] = email
     return redirect(url_for("admin.admin_queue"))
 
@@ -767,6 +768,8 @@ def admin_oauth_callback(provider_key: str) -> Any:
             ttl_minutes=_MAGIC_LINK_TTL_MINUTES,
         ), 403
 
+    # Prevent session fixation: drop any pre-login session before elevating.
+    session.clear()
     session["admin_email"] = email
     return redirect(url_for("admin.admin_queue"))
 

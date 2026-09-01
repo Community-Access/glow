@@ -139,6 +139,8 @@
     if (mq.matches && sidebar.classList.contains(OPEN_CLASS)) {
       sidebar.classList.remove(OPEN_CLASS);
       toggle.setAttribute('aria-expanded', 'false');
+      toggle.setAttribute('aria-label', 'Open navigation menu');
+      toggle.setAttribute('title', 'Open navigation menu');
       if (overlay) { overlay.setAttribute('hidden', ''); }
       document.body.classList.remove(LOCKED_CLASS);
     }

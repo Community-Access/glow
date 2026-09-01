@@ -20,13 +20,13 @@
   <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
 
   <nav class="tabs" role="tablist" aria-label="Feature flag sections">
-    <button type="button" role="tab" aria-selected="true" data-tab="ai">AI Features</button>
-    <button type="button" role="tab" aria-selected="false" data-tab="core">Core Features</button>
-    <button type="button" role="tab" aria-selected="false" data-tab="advanced">Advanced</button>
-    <button type="button" role="tab" aria-selected="false" data-tab="audit">Audit Log</button>
+    <button type="button" role="tab" id="fftab-ai" aria-controls="tab-ai" aria-selected="true" tabindex="0" data-tab="ai">AI Features</button>
+    <button type="button" role="tab" id="fftab-core" aria-controls="tab-core" aria-selected="false" tabindex="-1" data-tab="core">Core Features</button>
+    <button type="button" role="tab" id="fftab-advanced" aria-controls="tab-advanced" aria-selected="false" tabindex="-1" data-tab="advanced">Advanced</button>
+    <button type="button" role="tab" id="fftab-audit" aria-controls="tab-audit" aria-selected="false" tabindex="-1" data-tab="audit">Audit Log</button>
   </nav>
 
-  <section class="tab-panel" id="tab-ai" role="tabpanel">
+  <div class="tab-panel" id="tab-ai" role="tabpanel" aria-labelledby="fftab-ai" tabindex="0">
     <h3>AI feature visibility</h3>
     <fieldset class="flag-group" aria-labelledby="legend-ai-master">
       <legend id="legend-ai-master">Master AI</legend>
@@ -61,9 +61,9 @@
         <div id="meta-GLOW_ENABLE_PII_GUARDRAILS_STRICT_MODE" class="field-meta">Last modified: {{ flag_meta.GLOW_ENABLE_PII_GUARDRAILS_STRICT_MODE.updated_at or 'unknown' }}</div>
       </fieldset>
     </details>
-  </section>
+  </div>
 
-  <section class="tab-panel" id="tab-core" role="tabpanel" hidden>
+  <div class="tab-panel" id="tab-core" role="tabpanel" aria-labelledby="fftab-core" tabindex="0" hidden>
     <h3>Core GLOW features</h3>
     {% if categories.core %}
     <details open class="accordion">
@@ -90,9 +90,9 @@
       </fieldset>
     </details>
     {% endif %}
-  </section>
+  </div>
 
-  <section class="tab-panel" id="tab-advanced" role="tabpanel" hidden>
+  <div class="tab-panel" id="tab-advanced" role="tabpanel" aria-labelledby="fftab-advanced" tabindex="0" hidden>
     <h3>Advanced</h3>
 
     <div class="info-box" role="note" aria-labelledby="branding-profile-heading">
@@ -170,9 +170,9 @@
       </fieldset>
     </details>
     {% endif %}
-  </section>
+  </div>
 
-  <section class="tab-panel" id="tab-audit" role="tabpanel" hidden>
+  <div class="tab-panel" id="tab-audit" role="tabpanel" aria-labelledby="fftab-audit" tabindex="0" hidden>
     <h3>Flag audit log</h3>
     <p class="field-hint">Recent changes to feature flags (most recent first).</p>
     {% if audit_rows %}
@@ -194,7 +194,7 @@
     {% else %}
     <p>No audit entries available.</p>
     {% endif %}
-  </section>
+  </div>
 
   <button type="submit" class="btn-primary">Save flags</button>
 </form>
@@ -221,14 +221,42 @@ input[type="checkbox"]:focus-visible{ outline:3px solid #6ca0ff; outline-offset:
 </style>
 
 <script nonce="{{ csp_nonce }}">
-// Tab switching
-document.querySelectorAll('.tabs button').forEach(function(btn){
+// Tab switching (ARIA Authoring Practices tab pattern with roving tabindex)
+var flagTabs = Array.prototype.slice.call(document.querySelectorAll('.tabs [role="tab"]'));
+
+function selectFlagTab(btn, focusPanel){
+  flagTabs.forEach(function(b){
+    b.setAttribute('aria-selected','false');
+    b.setAttribute('tabindex','-1');
+  });
+  btn.setAttribute('aria-selected','true');
+  btn.setAttribute('tabindex','0');
+  document.querySelectorAll('.tab-panel').forEach(function(p){ p.hidden = true; });
+  var panelId = btn.getAttribute('aria-controls') || ('tab-' + btn.getAttribute('data-tab'));
+  var panel = document.getElementById(panelId);
+  if (panel) {
+    panel.hidden = false;
+    if (focusPanel) { panel.focus(); }
+  }
+}
+
+flagTabs.forEach(function(btn, index){
   btn.addEventListener('click', function(){
-    document.querySelectorAll('.tabs button').forEach(b=>b.setAttribute('aria-selected','false'));
-    btn.setAttribute('aria-selected','true');
-    var tab = btn.getAttribute('data-tab');
-    document.querySelectorAll('.tab-panel').forEach(p=>p.hidden=true);
-    document.getElementById('tab-'+tab).hidden = false;
+    selectFlagTab(btn, false);
+  });
+  btn.addEventListener('keydown', function(e){
+    var newIndex = null;
+    switch (e.key) {
+      case 'ArrowRight': newIndex = (index + 1) % flagTabs.length; break;
+      case 'ArrowLeft': newIndex = (index - 1 + flagTabs.length) % flagTabs.length; break;
+      case 'Home': newIndex = 0; break;
+      case 'End': newIndex = flagTabs.length - 1; break;
+      default: return;
+    }
+    e.preventDefault();
+    var target = flagTabs[newIndex];
+    selectFlagTab(target, false);
+    target.focus();
   });
 });
 

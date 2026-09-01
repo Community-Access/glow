@@ -40,38 +40,8 @@
   window.GLOW = window.GLOW || {};
   window.GLOW.toast = createToast;
 
-  // Global clipboard-copy handler for [data-copy-target] buttons
-  document.addEventListener('click', function (e) {
-    var btn = e.target.closest('[data-copy-target]');
-    if (!btn) return;
-    var targetId = btn.getAttribute('data-copy-target');
-    var target = document.getElementById(targetId);
-    if (!target) return;
-    var text = target.tagName === 'INPUT' || target.tagName === 'TEXTAREA'
-      ? target.value
-      : target.textContent;
-    if (navigator.clipboard && navigator.clipboard.writeText) {
-      navigator.clipboard.writeText(text).then(function () {
-        createToast('Copied to clipboard.', 'success');
-        var orig = btn.textContent;
-        btn.textContent = 'Copied!';
-        btn.setAttribute('aria-label', 'Copied to clipboard');
-        setTimeout(function () {
-          btn.textContent = orig;
-          btn.removeAttribute('aria-label');
-        }, 2000);
-      }).catch(function () {
-        createToast('Copy failed. Please select and copy manually.', 'error');
-      });
-    } else {
-      // Fallback for older browsers
-      try {
-        if (target.select) { target.select(); }
-        document.execCommand('copy');
-        createToast('Copied to clipboard.', 'success');
-      } catch (err) {
-        createToast('Copy failed. Please select and copy manually.', 'error');
-      }
-    }
-  });
+  // NOTE: [data-copy-target] clicks are handled by static/inline-handlers.js,
+  // which is the single documented owner of that behavior. A duplicate copy
+  // listener used to live here, causing every copy to fire twice and announce
+  // two or three times. Do not re-add it here.
 }());

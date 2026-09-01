@@ -127,8 +127,26 @@ def apply_pronunciation_dictionary(text: str) -> str:
     # Replace longer terms first to avoid partial replacement collisions.
     rows.sort(key=lambda r: len(r["term"]), reverse=True)
     for row in rows:
-        term = re.escape(row["term"])
-        out = re.sub(rf"\b{term}\b", row["replacement"], out, flags=re.IGNORECASE)
+        term_raw = row["term"]
+        if not term_raw:
+            continue
+        term = re.escape(term_raw)
+        # \b only fires between a word and a non-word char, so it never matches
+        # at a term edge that is itself a non-word char (e.g. "C++"). Apply a
+        # boundary lookaround only on the edges that are word characters.
+        prefix = r"(?<!\w)" if re.match(r"\w", term_raw[0]) else ""
+        suffix = r"(?!\w)" if re.match(r"\w", term_raw[-1]) else ""
+        pattern = prefix + term + suffix
+        replacement = row["replacement"]
+        # Use a replacement FUNCTION so backslashes / group refs (\g, \1, \U)
+        # in the user's replacement are treated as literal text, not regex
+        # escapes (which would raise re.error or inject a backreference).
+        out = re.sub(
+            pattern,
+            lambda _m, _r=replacement: _r,
+            out,
+            flags=re.IGNORECASE,
+        )
     return out
 
 
@@ -142,11 +160,19 @@ class TableAdvisory:
 def _markdown_table_findings(text: str) -> list[TableAdvisory]:
     findings: list[TableAdvisory] = []
     lines = text.splitlines()
+    in_fence = False
     for i in range(len(lines) - 1):
+        # Track fenced code blocks so pipes inside code are not parsed as tables.
+        if lines[i].lstrip().startswith("```") or lines[i].lstrip().startswith("~~~"):
+            in_fence = not in_fence
+            continue
+        if in_fence:
+            continue
+
         a = lines[i].strip()
         b = lines[i + 1].strip()
         if "|" in a and re.search(r"\|?\s*:?-{3,}:?\s*\|", b):
-            # Simple markdown table detected
+            # Simple markdown table detected.
             cols = [c for c in a.split("|") if c.strip()]
             if len(cols) < 2:
                 findings.append(
@@ -156,7 +182,15 @@ def _markdown_table_findings(text: str) -> list[TableAdvisory]:
                         message=f"Table near line {i + 1} appears to have fewer than 2 meaningful columns.",
                     )
                 )
-            if not any(c.strip() for c in cols):
+            # Evaluate blank cells from the RAW split (empty cells preserved) so a
+            # blank interior header like "| Name | | Date |" is detected. Drop only
+            # the empty artifacts produced by the leading/trailing border pipes.
+            raw_cells = a.split("|")
+            if raw_cells and not raw_cells[0].strip():
+                raw_cells = raw_cells[1:]
+            if raw_cells and not raw_cells[-1].strip():
+                raw_cells = raw_cells[:-1]
+            if raw_cells and any(not c.strip() for c in raw_cells):
                 findings.append(
                     TableAdvisory(
                         severity="high",
@@ -201,12 +235,12 @@ def _html_table_findings(text: str) -> list[TableAdvisory]:
                 )
             )
         nested = table.xpath(".//table")
-        if len(nested) > 1:
+        if nested:
             findings.append(
                 TableAdvisory(
                     severity="high",
                     code="TABLE-NESTED",
-                    message=f"HTML table #{idx} contains nested tables. Consider flattening structure.",
+                    message=f"HTML table #{idx} contains {len(nested)} nested table(s). Consider flattening structure.",
                 )
             )
     return findings
@@ -225,40 +259,39 @@ def detect_reading_order_pdf(path: Path, max_pages: int = 5) -> dict[str, Any]:
     if fitz is None:
         return {"status": "unavailable", "detail": "PyMuPDF is not installed."}
 
-    doc = fitz.open(path)
     findings: list[dict[str, Any]] = []
 
-    pages_scanned = min(max_pages, len(doc))
-    for page_idx in range(pages_scanned):
-        page = doc[page_idx]
-        blocks = page.get_text("blocks")  # x0, y0, x1, y1, text, block_no, block_type
-        text_blocks = [b for b in blocks if str(b[4]).strip()]
-        if len(text_blocks) < 3:
-            continue
+    with fitz.open(path) as doc:
+        pages_scanned = min(max_pages, len(doc))
+        for page_idx in range(pages_scanned):
+            page = doc[page_idx]
+            blocks = page.get_text("blocks")  # x0, y0, x1, y1, text, block_no, block_type
+            text_blocks = [b for b in blocks if str(b[4]).strip()]
+            if len(text_blocks) < 3:
+                continue
 
-        original_order = [(b[0], b[1]) for b in text_blocks]
-        sorted_order = [(b[0], b[1]) for b in sorted(text_blocks, key=lambda b: (round(b[1] / 8), b[0]))]
+            original_order = [(b[0], b[1]) for b in text_blocks]
+            sorted_order = [(b[0], b[1]) for b in sorted(text_blocks, key=lambda b: (round(b[1] / 8), b[0]))]
 
-        if original_order != sorted_order:
-            findings.append(
-                {
-                    "severity": "medium",
-                    "code": "READING-ORDER-SUSPECT",
-                    "message": f"Page {page_idx + 1} block order differs from top-to-bottom/left-to-right order.",
-                }
-            )
+            if original_order != sorted_order:
+                findings.append(
+                    {
+                        "severity": "medium",
+                        "code": "READING-ORDER-SUSPECT",
+                        "message": f"Page {page_idx + 1} block order differs from top-to-bottom/left-to-right order.",
+                    }
+                )
 
-        xs = sorted(b[0] for b in text_blocks)
-        if xs and (max(xs) - min(xs)) > 180:
-            findings.append(
-                {
-                    "severity": "low",
-                    "code": "READING-ORDER-MULTI-COLUMN",
-                    "message": f"Page {page_idx + 1} appears multi-column; verify reading sequence.",
-                }
-            )
+            xs = sorted(b[0] for b in text_blocks)
+            if xs and (max(xs) - min(xs)) > 180:
+                findings.append(
+                    {
+                        "severity": "low",
+                        "code": "READING-ORDER-MULTI-COLUMN",
+                        "message": f"Page {page_idx + 1} appears multi-column; verify reading sequence.",
+                    }
+                )
 
-    doc.close()
     return {
         "status": "ok",
         "pages_scanned": pages_scanned,
@@ -279,31 +312,30 @@ def ocr_pdf(path: Path, max_pages: int = 3) -> dict[str, Any]:
             "detail": "pytesseract and/or Pillow are not installed on this server.",
         }
 
-    doc = fitz.open(path)
     texts: list[str] = []
     conf_values: list[float] = []
 
-    pages_scanned = min(max_pages, len(doc))
-    for page_idx in range(pages_scanned):
-        page = doc[page_idx]
-        pix = page.get_pixmap(matrix=fitz.Matrix(2, 2), alpha=False)
-        img = Image.frombytes("RGB", [pix.width, pix.height], pix.samples)
-        txt = pytesseract.image_to_string(img)
-        if txt.strip():
-            texts.append(txt.strip())
-        try:
-            data = pytesseract.image_to_data(img, output_type=pytesseract.Output.DICT)
-            for c in data.get("conf", []):
-                try:
-                    v = float(c)
-                except Exception:
-                    continue
-                if v >= 0:
-                    conf_values.append(v)
-        except Exception:
-            pass
+    with fitz.open(path) as doc:
+        pages_scanned = min(max_pages, len(doc))
+        for page_idx in range(pages_scanned):
+            page = doc[page_idx]
+            pix = page.get_pixmap(matrix=fitz.Matrix(2, 2), alpha=False)
+            img = Image.frombytes("RGB", [pix.width, pix.height], pix.samples)
+            txt = pytesseract.image_to_string(img)
+            if txt.strip():
+                texts.append(txt.strip())
+            try:
+                data = pytesseract.image_to_data(img, output_type=pytesseract.Output.DICT)
+                for c in data.get("conf", []):
+                    try:
+                        v = float(c)
+                    except Exception:
+                        continue
+                    if v >= 0:
+                        conf_values.append(v)
+            except Exception:
+                pass
 
-    doc.close()
     combined = "\n\n".join(texts).strip()
     return {
         "status": "ok",
@@ -322,7 +354,11 @@ def extract_text_for_compare(path: Path) -> str:
     # Use existing MarkItDown extractor for binary docs.
     from .core_services import convert_to_markdown
 
-    out_path = path.with_suffix(path.suffix + ".cmp.md")
+    # Append a fixed suffix to the *name* (not via with_suffix, which is a no-op
+    # for an extensionless path and would make out_path == path -- a later
+    # md_path.unlink() would then delete the user's uploaded file).
+    out_path = path.with_name(path.name + ".cmp.md")
+    assert out_path != path
     md_path, _ = convert_to_markdown(path, output_path=out_path)
     text = md_path.read_text(encoding="utf-8", errors="replace")
     try:

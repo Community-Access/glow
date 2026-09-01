@@ -7,6 +7,11 @@
 <p><strong>Signed in as:</strong> {{ admin_email }}</p>
 <p>This dashboard is for administrative operations only. It refreshes automatically every 20 seconds while jobs are active.</p>
 
+<div class="queue-refresh-controls">
+  <button type="button" id="queue-refresh-toggle" class="btn-secondary" hidden aria-pressed="false">Pause auto-refresh</button>
+  <p id="queue-refresh-status" class="visually-hidden" aria-live="polite" aria-atomic="true"></p>
+</div>
+
 <form method="post" action="{{ url_for('admin.admin_logout') }}" class="inline-form">
   <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
   <button type="submit" class="btn-secondary">Sign Out</button>
@@ -218,8 +223,17 @@
 
   var INTERVAL_MS = 20000;
   var lastUpdatedEl = document.getElementById('queue-last-updated');
+  var statusEl = document.getElementById('queue-refresh-status');
+  var toggleBtn = document.getElementById('queue-refresh-toggle');
+  var timer = null;
+  var paused = false;
 
   function pad(n) { return n < 10 ? '0' + n : String(n); }
+
+  function announce(message) {
+    /* Write into the static live region so the change is announced. */
+    if (statusEl) statusEl.textContent = message;
+  }
 
   function updateTimestamp() {
     if (!lastUpdatedEl) return;
@@ -232,24 +246,47 @@
   function refresh() {
     refreshHealthPanel();
     updateTimestamp();
-    /* Announce to screen readers before reloading */
-    var liveEl = document.createElement('p');
-    liveEl.setAttribute('aria-live', 'polite');
-    liveEl.setAttribute('aria-atomic', 'true');
-    liveEl.className = 'field-hint';
-    liveEl.textContent = 'Refreshing queue status\u2026';
-    document.getElementById('main').appendChild(liveEl);
+    announce('Refreshing queue status\u2026');
     setTimeout(function () { window.location.reload(); }, 400);
   }
 
-  var timer = setInterval(refresh, INTERVAL_MS);
+  function startTimer() {
+    if (timer || paused || document.hidden) return;
+    timer = setInterval(refresh, INTERVAL_MS);
+  }
+
+  function stopTimer() {
+    if (timer) {
+      clearInterval(timer);
+      timer = null;
+    }
+  }
+
+  /* Give the admin explicit control over the auto-reload (WCAG 2.2.1). */
+  if (toggleBtn) {
+    toggleBtn.hidden = false;
+    toggleBtn.addEventListener('click', function () {
+      paused = !paused;
+      toggleBtn.setAttribute('aria-pressed', paused ? 'true' : 'false');
+      toggleBtn.textContent = paused ? 'Resume auto-refresh' : 'Pause auto-refresh';
+      if (paused) {
+        stopTimer();
+        announce('Auto-refresh paused.');
+      } else {
+        announce('Auto-refresh resumed.');
+        startTimer();
+      }
+    });
+  }
+
+  startTimer();
 
   /* Stop auto-refresh if admin navigates away or the page is hidden */
   document.addEventListener('visibilitychange', function () {
     if (document.hidden) {
-      clearInterval(timer);
+      stopTimer();
     } else {
-      timer = setInterval(refresh, INTERVAL_MS);
+      startTimer();
     }
   });
 }());

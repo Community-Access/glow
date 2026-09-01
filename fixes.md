@@ -177,12 +177,85 @@ a problem.
 
 ---
 
-## 3. Remaining findings (documented, not yet fixed)
+## 3. Second pass — the remaining findings, now fixed
 
-These came out of the same audit. They are real but were left out of this
-change set to keep it coherent and low-risk. Ranked by priority. Most of the
-HIGH items share one root cause: **in-memory per-process state under a
-2-worker gunicorn deployment.**
+Everything below was fixed in a second pass by seven file-partitioned
+implementation agents, each with regression tests. The full web suite is green
+(916 passing). The per-agent summary:
+
+- **Site Audit engine/UI** — run-dir + `_jobs` TTL sweep and eviction;
+  cancel+retry no longer spawns a second worker over one run dir; retry forces a
+  fresh crawl and the skip branch aggregates cached findings; UTF-8 charset
+  recovery; non-HTML content-type is skipped instead of parsed; axe resolves
+  `npx` via `shutil.which`; one severity vocabulary (axe critical → critical);
+  the protected-run gate coerces naive timestamps (403 not 500); corrupt
+  `page.json` is re-scanned; O(1) crawl-frontier membership; new-tab link labels.
+- **Whisperer + Playground** — the transcription failure handler catches broad
+  exceptions and always advances the queue in a `finally`; `GatingError`
+  re-queues then re-dispatches when capacity frees; terminal jobs are pruned
+  (background jobs inside their retrieval window exempted); the token dir is
+  touched on completion; the completion email uses an absolute URL resolved in
+  the request; ffmpeg has a timeout; the Playground SSE stream persists history
+  server-side (plus two latent `get_quota_status` NameErrors fixed).
+- **Core infra** — feature-flag seeding is gated on the store actually being
+  empty (no more reset-to-defaults on every sqlite restart); flag writes are
+  atomic + locked with a last-known-good fallback; sqlite connections are closed
+  and the schema built once; the rate limiter uses Redis when available; session
+  cookies are HttpOnly/SameSite/Secure; admin password and OAuth logins clear the
+  session first; request logs redact secret query params; the share cache
+  survives the upload sweep; the cleanup lock recovers from a stale tmp;
+  `report_cache` guards its token and TTL parse.
+- **Content processing** — the chat Compliance Agent reads `.message` and
+  lowercases severity (it produces real audits again, not a silent heuristic
+  fallback); PDF export raises on failure and the route returns the error page;
+  pandoc/ffmpeg have timeouts; PyMuPDF docs are always closed; the pronunciation
+  regex escapes its replacement and handles punctuated terms; table heuristics
+  fixed; an extensionless upload is never deleted; zip/XML bombs are capped and
+  parsed with `defusedxml`.
+- **Rules + audit/fix routes** — WCAG reference mismatches corrected and missing
+  slugs added; `build_rule_policy` no longer iterates a string into an empty
+  rule set; an empty custom selection audits nothing (not everything);
+  `suggest_alt_text` returns 400 not 500; the webhook callback runs through the
+  SSRF gate with a case-insensitive scheme check; fix downloads use the right
+  mimetype.
+- **PageFlow SSRF** — `source_url` and every redirect hop run through
+  `_is_public_url`; the POST handler is rate-limited; argv option-injection into
+  the node subprocess is blocked.
+- **Frontend** — the rules_ref data-loss null deref, tabs.js hijacking the admin
+  flags tablist (and re-injecting un-nonced script), the app-wide once-a-second
+  ai-meter re-announcement, the job-progress SSE with no error fallback, the
+  file-input Enter and Ctrl+U key hijacks, the Escape-in-`<details>` trap,
+  duplicate copy handlers, the 20s admin_queue hard reload, the incomplete
+  admin_flags tab pattern, the alt-text-helper JSON/clipboard crashes, and the
+  smaller pluralization / aria-label / queued-guard / Quick-Wins-label items.
+
+### What still genuinely remains (needs a design decision, not a bounded fix)
+
+- **Cross-worker job state.** Whisperer and Site Audit job dicts are now pruned
+  and TTL-swept, but they still live in one gunicorn worker's memory, so under
+  two workers a job page can still land on the worker that doesn't own the job.
+  Fully fixing this means either sticky sessions at Caddy or moving job state to
+  a shared store (the `tasks/convert_tasks.py` filesystem pattern, or Redis).
+  That is a deployment-topology decision, so it was left for you.
+- **SSRF DNS-rebinding residual (R1)** — `_is_public_url` resolves and validates
+  but a later connect could re-resolve; pinning the resolved IP is a hardening
+  follow-up.
+- **office-addin build + dev-toolchain vulns** — the `nanoid` and `browserslist`
+  Dependabot alerts are fixed (pinned in `overrides` to 3.3.18 / 4.28.8). The
+  other npm advisories are all `adm-zip` pulled in transitively by the dev-only
+  `office-addin-debugging` sideload tool and need a breaking major downgrade of
+  it. Separately, the add-in's `npm run build` fails on `version.ts` Node types
+  (`__dirname`, `path`) — this is **pre-existing** (it fails identically on the
+  committed lockfile) and unrelated to the dependency changes; the shipped
+  `dist/` bundle is committed. Both were left for a dedicated add-in pass.
+
+---
+
+## Appendix: original finding detail (for reference)
+
+The findings above were originally documented here as "not yet fixed"; the
+detail is retained below. Most HIGH items shared one root cause: **in-memory
+per-process state under a 2-worker gunicorn deployment.**
 
 ### Multi-worker state (the biggest theme) — HIGH
 Caddy round-robins across two gunicorn worker processes, but several stores

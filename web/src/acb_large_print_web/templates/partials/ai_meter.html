@@ -6,11 +6,12 @@
   id="ai-meter"
   role="complementary"
   aria-label="AI usage"
-  aria-live="polite"
-  aria-atomic="true"
   data-session-url="{{ url_for('ai.ollama_session_status', provider=ai_primary_provider_id) }}"
   data-extend-url="{{ url_for('ai.extend_ollama_session', provider=ai_primary_provider_id) }}"
 >
+  {# Dedicated live region: written only on meaningful transitions so the
+     per-second countdown does not re-announce the whole meter every second. #}
+  <span id="ai-meter-announce" class="visually-hidden" aria-live="polite" aria-atomic="true"></span>
   <span class="ai-meter__label">AI ({{ ai_primary_provider_label or 'Personal' }})</span>
   <span class="ai-meter__detail" id="ai-meter-detail">
     <span id="ai-meter-requests">--</span> requests today &middot; <span id="ai-meter-model">{{ ai_primary_provider_model or '--' }}</span>
@@ -28,8 +29,6 @@
   id="ai-meter"
   role="complementary"
   aria-label="AI usage"
-  aria-live="polite"
-  aria-atomic="true"
 >
   <span class="ai-meter__label">AI (shared)</span>
   <span class="ai-meter__detail" id="ai-meter-detail">

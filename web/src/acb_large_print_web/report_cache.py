@@ -28,8 +28,20 @@ from pathlib import Path
 
 from .upload import UPLOAD_TEMP_BASE
 
-# Default 4 hours -- overridden by SHARE_TTL_HOURS env var.
-SHARE_TTL_SECONDS: int = int(os.environ.get("SHARE_TTL_HOURS", "4")) * 3600
+# Default 4 hours -- overridden by SHARE_TTL_HOURS env var. A non-numeric value
+# must not crash app startup: fall back to the 4-hour default.
+def _resolve_share_ttl_seconds() -> int:
+    raw = os.environ.get("SHARE_TTL_HOURS", "4")
+    try:
+        hours = int(raw)
+    except (TypeError, ValueError):
+        hours = 4
+    if hours < 1:
+        hours = 1
+    return hours * 3600
+
+
+SHARE_TTL_SECONDS: int = _resolve_share_ttl_seconds()
 
 
 def get_share_ttl_hours() -> int:
@@ -48,6 +60,8 @@ def _share_dir(share_token: str) -> Path:
 
 def save_report(share_token: str, html: str) -> None:
     """Save rendered report HTML to the share cache under the given token."""
+    if not _UUID_RE.match(share_token or ""):
+        return
     share_dir = _share_dir(share_token)
     share_dir.mkdir(parents=True, exist_ok=True)
     (share_dir / "report.html").write_text(html, encoding="utf-8")

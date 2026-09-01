@@ -7,7 +7,35 @@ import io
 import zipfile
 from pathlib import Path
 from typing import Any
-from xml.etree import ElementTree as ET
+
+# defusedxml hardens XML parsing against entity-expansion ("billion laughs")
+# and external-entity attacks that the stdlib xml.etree is vulnerable to.
+from defusedxml.ElementTree import fromstring as _safe_xml_fromstring
+
+# Decompression-bomb guards for ZIP-based formats (docx, epub): reject any
+# single entry, or a running total, whose *declared* uncompressed size is
+# implausibly large before we ever call archive.read() (which would inflate
+# it fully into memory).
+_MAX_ZIP_ENTRY_BYTES = 80 * 1024 * 1024  # 80 MB per entry
+_MAX_ZIP_TOTAL_BYTES = 300 * 1024 * 1024  # 300 MB running total
+
+
+class _ZipBudget:
+    """Tracks cumulative uncompressed bytes read from an archive."""
+
+    def __init__(self) -> None:
+        self.total = 0
+
+    def read(self, archive: zipfile.ZipFile, name: str) -> bytes:
+        """Read an entry only if it fits the per-entry and running-total caps."""
+        info = archive.getinfo(name)  # raises KeyError if absent
+        if info.file_size > _MAX_ZIP_ENTRY_BYTES:
+            raise ValueError(f"zip entry '{name}' exceeds per-entry size cap")
+        if self.total + info.file_size > _MAX_ZIP_TOTAL_BYTES:
+            raise ValueError("archive exceeds cumulative decompression cap")
+        data = archive.read(name)
+        self.total += info.file_size
+        return data
 
 
 _IMAGE_EXTS = {
@@ -131,17 +159,18 @@ def _extract_from_image_file(path: Path) -> list[dict[str, Any]]:
     ]
 
 
-def _extract_docx_media(path: Path) -> list[dict[str, Any]]:
+def _extract_docx_media(path: Path, max_items: int = 24) -> list[dict[str, Any]]:
     items: list[dict[str, Any]] = []
+    budget = _ZipBudget()
     try:
         with zipfile.ZipFile(path, "r") as archive:
-            rels_root = ET.fromstring(archive.read("word/_rels/document.xml.rels"))
+            rels_root = _safe_xml_fromstring(budget.read(archive, "word/_rels/document.xml.rels"))
             rel_map = {
                 rel.attrib.get("Id", ""): rel.attrib.get("Target", "")
                 for rel in rels_root
                 if rel.attrib.get("Id")
             }
-            doc_root = ET.fromstring(archive.read("word/document.xml"))
+            doc_root = _safe_xml_fromstring(budget.read(archive, "word/document.xml"))
             doc_texts = [
                 _safe_text(node.text, 200)
                 for node in doc_root.findall(".//w:t", _WORD_NS)
@@ -150,6 +179,8 @@ def _extract_docx_media(path: Path) -> list[dict[str, Any]]:
             surrounding = "; ".join(doc_texts[:6])
 
             for idx, drawing in enumerate(doc_root.findall(".//w:drawing", _WORD_NS), start=1):
+                if len(items) >= max_items:
+                    break
                 doc_pr = drawing.find(".//wp:docPr", _WORD_NS)
                 current_alt = (doc_pr.attrib.get("descr", "") if doc_pr is not None else "").strip()
                 blip = drawing.find(".//a:blip", _WORD_NS)
@@ -165,8 +196,8 @@ def _extract_docx_media(path: Path) -> list[dict[str, Any]]:
                 if ext not in _IMAGE_EXTS:
                     continue
                 try:
-                    image_bytes = archive.read(media_name)
-                except KeyError:
+                    image_bytes = budget.read(archive, media_name)
+                except (KeyError, ValueError):
                     continue
                 items.append(
                     _image_item(
@@ -391,6 +422,15 @@ def _extract_pdf_visuals(path: Path) -> list[dict[str, Any]]:
     except Exception:
         return []
 
+    try:
+        items = _collect_pdf_visual_items(doc, path)
+    finally:
+        doc.close()
+    return items
+
+
+def _collect_pdf_visual_items(doc: Any, path: Path) -> list[dict[str, Any]]:
+    items: list[dict[str, Any]] = []
     for page_index in range(min(len(doc), 10)):
         page = doc[page_index]
         page_text = _safe_text(page.get_text("text"), 500)
@@ -445,21 +485,23 @@ def _extract_pdf_visuals(path: Path) -> list[dict[str, Any]]:
                     )
             except Exception:
                 continue
-    doc.close()
     return items
 
 
-def _extract_epub_visuals(path: Path) -> list[dict[str, Any]]:
+def _extract_epub_visuals(path: Path, max_items: int = 24) -> list[dict[str, Any]]:
     items: list[dict[str, Any]] = []
+    budget = _ZipBudget()
     try:
         with zipfile.ZipFile(path, "r") as archive:
             for idx, name in enumerate(sorted(archive.namelist()), start=1):
+                if len(items) >= max_items:
+                    break
                 ext = Path(name).suffix.lower()
                 if ext not in _IMAGE_EXTS or name.endswith("/"):
                     continue
                 try:
-                    image_bytes = archive.read(name)
-                except KeyError:
+                    image_bytes = budget.read(archive, name)
+                except (KeyError, ValueError):
                     continue
                 items.append(
                     _image_item(
@@ -484,7 +526,7 @@ def extract_visual_items(path: Path, max_items: int = 24) -> list[dict[str, Any]
     if ext in _IMAGE_EXTS:
         items = _extract_from_image_file(path)
     elif ext == ".docx":
-        items = _extract_docx_media(path)
+        items = _extract_docx_media(path, max_items=max_items)
     elif ext == ".pptx":
         items = _extract_pptx_visuals(path)
     elif ext == ".xlsx":
@@ -492,7 +534,7 @@ def extract_visual_items(path: Path, max_items: int = 24) -> list[dict[str, Any]
     elif ext == ".pdf":
         items = _extract_pdf_visuals(path)
     elif ext == ".epub":
-        items = _extract_epub_visuals(path)
+        items = _extract_epub_visuals(path, max_items=max_items)
     else:
         items = []
 

@@ -451,9 +451,123 @@ class TestChatSession:
 
 
 
+class _StubFinding:
+    """Minimal stand-in for auditor.Finding (real Capitalized Severity enum)."""
+
+    def __init__(self, rule_id, severity, message, auto_fixable):
+        self.rule_id = rule_id
+        self.severity = severity
+        self.message = message
+        self.auto_fixable = auto_fixable
+
+
+class _StubAuditResult:
+    def __init__(self, findings, score):
+        self.findings = findings
+        self.score = score
+
+
+class TestLiveAuditCache:
+    """Regression tests for the Compliance Agent live-audit path.
+
+    Guards two historical bugs:
+      1. The cache builder read f.description (Finding has .message), so every
+         live audit raised AttributeError and silently fell back to heuristics.
+      2. Severity was compared against lowercase ("critical") while the enum
+         value is Capitalized ("Critical"), so counts were always zero and
+         get_critical_findings wrongly reported "good shape".
+    """
+
+    @pytest.fixture
+    def stubbed_tools(self, monkeypatch):
+        from pathlib import Path
+        from acb_large_print.constants import Severity
+        from acb_large_print_web import core_services
+
+        findings = [
+            _StubFinding("ACB-NO-ITALIC", Severity.CRITICAL, "Italic text found", True),
+            _StubFinding("ACB-FONT-SIZE-BODY", Severity.CRITICAL, "Body text too small", True),
+            _StubFinding("ACB-HEADING-HIERARCHY", Severity.HIGH, "Skipped heading level", False),
+            _StubFinding("ACB-MARGINS", Severity.MEDIUM, "Margin is 0.5in", True),
+        ]
+        monkeypatch.setattr(
+            core_services,
+            "audit_by_extension",
+            lambda _p: _StubAuditResult(findings, 40),
+        )
+        ctx = DocumentContext("# Doc\n\nbody", "known_violations.docx", doc_path=Path("known_violations.docx"))
+        return ToolRegistry(ctx)
+
+    def test_audit_cache_populated(self, stubbed_tools):
+        """Finding 1: live audit populates a non-empty findings cache."""
+        summary = stubbed_tools.run_accessibility_audit()
+        cache = stubbed_tools.context._audit_cache
+        assert cache is not None
+        assert len(cache["findings"]) == 4
+        # Severity is normalized to lowercase in the cache.
+        assert cache["findings"][0]["severity"] == "critical"
+        # Uses .message, not .description.
+        assert cache["findings"][0]["message"] == "Italic text found"
+        # And it is the live audit, not the heuristic fallback.
+        assert "Audit complete" in summary
+        assert "Critical: 2" in summary
+
+    def test_get_critical_findings_reports_violations(self, stubbed_tools):
+        """Finding 2: critical/high findings are counted, not reported as clean."""
+        result = stubbed_tools.get_critical_findings()
+        assert "good shape" not in result
+        assert "ACB-NO-ITALIC" in result
+        assert "3 total" in result  # 2 critical + 1 high
+
+    def test_get_compliance_score_severity_counts(self, stubbed_tools):
+        """Finding 2: score summary reflects real severity distribution."""
+        result = stubbed_tools.get_compliance_score()
+        assert "Critical: 2" in result
+        assert "High: 1" in result
+        assert "Medium: 1" in result
+
+    def test_auto_fixable_findings(self, stubbed_tools):
+        """Auto-fixable findings are listed with their message text."""
+        result = stubbed_tools.get_auto_fixable_findings()
+        assert "ACB-NO-ITALIC" in result
+        assert "Body text too small" in result
+        assert "ACB-HEADING-HIERARCHY" not in result  # not auto-fixable
+
+
+class TestExportPdfFailure:
+    """Finding 3 & 4: export_pdf must raise (not silently emit a 0-byte PDF)
+    and must pass a timeout to the pandoc subprocess.
+    """
+
+    def test_export_pdf_raises_when_pandoc_missing(self, tmp_path, monkeypatch):
+        import subprocess
+
+        calls = {}
+
+        def fake_run(*args, **kwargs):
+            calls["timeout"] = kwargs.get("timeout")
+            raise FileNotFoundError("pandoc not found")
+
+        monkeypatch.setattr(subprocess, "run", fake_run)
+
+        session = ChatSession("tok", "doc.md")
+        turn = session.add_turn("Q?")
+        turn.answer = "A"
+        out = tmp_path / "out.pdf"
+
+        with pytest.raises(Exception):
+            session.export_pdf(out)
+
+        # Finding 4: a timeout was supplied to the subprocess.
+        assert calls.get("timeout") == 60
+        # Temp siblings are cleaned up in finally.
+        assert not (tmp_path / "out.md").exists()
+        assert not (tmp_path / "out.html").exists()
+
+
 class TestChatRoutes:
     """Integration tests for chat routes (requires Flask context).
-    
+
     Note: Route tests are covered by smoke tests in test_app.py.
     Unit tests above verify the core chat_handler module independently.
     """

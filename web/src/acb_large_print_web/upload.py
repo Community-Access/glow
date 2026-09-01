@@ -248,9 +248,16 @@ def cleanup_stale_uploads(max_age_hours: int = 1) -> int:
     cleaned = 0
     cutoff = time.time() - (max_age_hours * 3600)
     
+    # Long-lived subdirectories that live under UPLOAD_TEMP_BASE but have their
+    # own, longer retention (e.g. report_cache shares, TTL up to 4h). The 1h
+    # upload sweep must not delete them or outstanding share links 404 early.
+    _PRESERVED_SUBDIRS = {"shares"}
+
     try:
         for item in UPLOAD_TEMP_BASE.iterdir():
             if item.is_dir():
+                if item.name in _PRESERVED_SUBDIRS:
+                    continue
                 # Check modification time
                 mtime = item.stat().st_mtime
                 if mtime < cutoff:

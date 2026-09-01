@@ -17,6 +17,13 @@
   var main = document.getElementById("main");
   if (!tabs.length || !main) return;
 
+  /* This SPA enhancement only applies to link-based tabs (navigation tabs
+     with an href). Some pages (e.g. admin feature flags) use a <button>
+     tablist for in-page panels; enhancing those would wipe their state and
+     re-inject their inline <script> without a CSP nonce. Bail out unless
+     every tab is a real link. */
+  if (!tabs.every(function (t) { return t.tagName === "A" && t.href; })) return;
+
   /* ---- Roving tabindex setup ---- */
   var activeTab = null;
   tabs.forEach(function (tab) {
@@ -58,6 +65,11 @@
     var scripts = main.querySelectorAll("script");
     Array.prototype.forEach.call(scripts, function (old) {
       var fresh = document.createElement("script");
+      /* A cloned script does not inherit the per-request CSP nonce, so copy
+         it explicitly or the strict script-src would block execution. */
+      if (old.nonce) {
+        fresh.setAttribute("nonce", old.nonce);
+      }
       if (old.src) {
         fresh.src = old.src;
       } else {

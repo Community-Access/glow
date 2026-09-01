@@ -1,12 +1,15 @@
 from __future__ import annotations
 
 from pathlib import Path
+from datetime import UTC, datetime, timedelta
 import json
 import hashlib
+import os
+import threading
 import time
 
 import pytest
-from flask import Flask
+from flask import Flask, render_template
 
 from acb_large_print_web.app import create_app
 import acb_large_print_web.routes.site_audit as site_audit_route
@@ -500,3 +503,391 @@ def test_site_audit_background_job_retry(client, monkeypatch: pytest.MonkeyPatch
     assert res.status_code == 302
     assert started == [job.job_id]
     assert job.status == "queued"
+
+
+# ---------------------------------------------------------------------------
+# Regression tests for the confirmed site-audit findings.
+# ---------------------------------------------------------------------------
+
+
+class _FakeResp:
+    """Minimal stand-in for the _http_get response object."""
+
+    def __init__(
+        self,
+        content: bytes,
+        content_type: str,
+        *,
+        apparent: str = "utf-8",
+        encoding: str = "ISO-8859-1",
+        status: int = 200,
+        url: str = "https://example.com/",
+    ):
+        self._content = content
+        self.headers = {"Content-Type": content_type}
+        self.apparent_encoding = apparent
+        self.encoding = encoding
+        self.status_code = status
+        self.url = url
+
+    @property
+    def text(self) -> str:
+        return self._content.decode(self.encoding or "utf-8", errors="replace")
+
+
+def test_scan_single_page_recovers_utf8_without_charset(monkeypatch, tmp_path):
+    # Finding 4: a UTF-8 page served as text/html with no charset must not mojibake.
+    title = "Caf\u00e9 D\u00e9j\u00e0 Vu"
+    body = (
+        "<html lang='en'><head><title>" + title + "</title></head><body></body></html>"
+    ).encode("utf-8")
+    resp = _FakeResp(body, "text/html")  # no charset -> requests would use ISO-8859-1
+    monkeypatch.setattr(site_audit, "_http_get", lambda url, timeout=20: resp)
+    monkeypatch.setattr(site_audit, "_axe_available", lambda: False)
+    page_dir = tmp_path / "p"
+    page_dir.mkdir()
+    result = site_audit._scan_single_page("https://example.com/", page_dir)
+    assert result["result"] == "ok"
+    assert result["title"] == title
+
+
+def test_scan_single_page_skips_non_html_content(monkeypatch, tmp_path):
+    # Finding 5: a linked PDF must be recorded as skipped, never fed to the parser.
+    resp = _FakeResp(b"%PDF-1.7 binary garbage", "application/pdf")
+    monkeypatch.setattr(site_audit, "_http_get", lambda url, timeout=20: resp)
+    monkeypatch.setattr(site_audit, "_axe_available", lambda: False)
+    page_dir = tmp_path / "p"
+    page_dir.mkdir()
+    result = site_audit._scan_single_page("https://example.com/file.pdf", page_dir)
+    assert result["result"] == "skipped"
+    assert result["findings"] == []
+    assert "content type" in result["reason"].lower()
+
+
+def test_severity_vocab_maps_axe_critical_to_critical():
+    # Finding 7: one taxonomy; axe critical -> critical (not the old -> serious).
+    assert site_audit._severity_for_impact("critical") == "critical"
+    assert site_audit._severity_for_impact("serious") == "serious"
+    assert site_audit._severity_for_impact("moderate") == "moderate"
+    assert site_audit._severity_for_impact("minor") == "minor"
+    assert site_audit._severity_for_impact("bogus") == "minor"
+
+
+def test_heuristic_findings_use_shared_severity_vocab(monkeypatch, tmp_path):
+    # Finding 7: heuristics must emit vocabulary values, never "high".
+    resp = _FakeResp(b"<html><body></body></html>", "text/html")  # no lang, no title
+    monkeypatch.setattr(site_audit, "_http_get", lambda url, timeout=20: resp)
+    monkeypatch.setattr(site_audit, "_axe_available", lambda: False)
+    page_dir = tmp_path / "p"
+    page_dir.mkdir()
+    result = site_audit._scan_single_page("https://example.com/", page_dir)
+    severities = {f["severity"] for f in result["findings"]}
+    assert severities
+    assert "high" not in severities
+    assert severities <= set(site_audit.SEVERITY_LEVELS)
+
+
+def test_run_axe_uses_resolved_npx_path(monkeypatch, tmp_path):
+    # Finding 6: the resolved npx path (npx.cmd on Windows) is used, not bare "npx".
+    monkeypatch.setattr(
+        site_audit.shutil, "which", lambda name: r"C:\tools\npx.cmd" if name == "npx" else None
+    )
+    captured: dict[str, object] = {}
+
+    class _Proc:
+        returncode = 0
+        stderr = ""
+        stdout = ""
+
+    def _fake_run(command, **kwargs):
+        captured["command"] = command
+        return _Proc()
+
+    monkeypatch.setattr(site_audit.subprocess, "run", _fake_run)
+    assert site_audit._axe_available() is True
+    site_audit._run_axe("https://example.com/", tmp_path / "axe.json")
+    assert captured["command"][0] == r"C:\tools\npx.cmd"
+
+
+def test_run_axe_raises_when_npx_missing(monkeypatch, tmp_path):
+    # Finding 6: guard against None from shutil.which instead of FileNotFoundError.
+    monkeypatch.setattr(site_audit.shutil, "which", lambda name: None)
+    assert site_audit._axe_available() is False
+    with pytest.raises(RuntimeError):
+        site_audit._run_axe("https://example.com/", tmp_path / "axe.json")
+
+
+def test_expand_with_crawl_dedupes_shared_frontier(monkeypatch):
+    # Finding 10: a candidate linked from two pages is queued once (O(1) set).
+    pages = {
+        "https://example.com/": '<a href="/a">A</a><a href="/b">B</a>',
+        "https://example.com/a": '<a href="/shared">S</a>',
+        "https://example.com/b": '<a href="/shared">S</a>',
+        "https://example.com/shared": "",
+    }
+
+    class _Resp:
+        def __init__(self, url, text):
+            self.url = url
+            self.text = text
+            self.headers = {"Content-Type": "text/html"}
+
+    monkeypatch.setattr(
+        site_audit, "_http_get", lambda url, timeout=15: _Resp(url, pages.get(url, ""))
+    )
+    urls = site_audit._expand_with_crawl(
+        ["https://example.com/"],
+        max_pages=10,
+        crawl_depth=3,
+        include_subdomains=False,
+        same_path_only=False,
+        exclude_url_patterns=(),
+    )
+    assert urls.count("https://example.com/shared") == 1
+    assert sorted(urls) == [
+        "https://example.com/",
+        "https://example.com/a",
+        "https://example.com/b",
+        "https://example.com/shared",
+    ]
+
+
+def test_run_site_audit_skip_branch_aggregates_findings(monkeypatch, tmp_path):
+    # Finding 3: reusing cached page.json must still report its findings.
+    run_id = "33333333-3333-3333-3333-333333333333"
+    base = tmp_path / "runs"
+    url = "https://example.com/"
+    slug = site_audit._slug_for_url(url)
+    page_dir = base / run_id / "pages" / slug
+    page_dir.mkdir(parents=True)
+    cached = {
+        "url": url,
+        "result": "ok",
+        "status_code": 200,
+        "title": "Cached",
+        "findings": [
+            {
+                "page_url": url,
+                "rule_id": "HEURISTIC-HTML-LANG",
+                "severity": "serious",
+                "message": "x",
+                "location": "html",
+                "help_url": "",
+                "wcag_criteria": ["3.1.1"],
+                "resources": [],
+            }
+        ],
+        "finding_count": 1,
+        "wcag_tags": {"wcag311": 1},
+    }
+    (page_dir / "page.json").write_text(json.dumps(cached), encoding="utf-8")
+    monkeypatch.setattr(site_audit, "_axe_available", lambda: False)
+    options = site_audit.SiteAuditOptions(max_pages=5, crawl_links=False, force=False)
+    summary = site_audit.run_site_audit(run_id=run_id, base_dir=base, sources=[url], options=options)
+    assert summary["totals"]["findings"] == 1
+    assert summary["totals"]["skipped"] == 1
+    assert summary["wcag_rollup"].get("wcag311") == 1
+
+
+def test_run_site_audit_rescans_corrupt_page_json(monkeypatch, tmp_path):
+    # Finding 9: a corrupt cached page.json must be re-scanned, not rendered raw.
+    run_id = "44444444-4444-4444-4444-444444444444"
+    base = tmp_path / "runs"
+    url = "https://example.com/"
+    slug = site_audit._slug_for_url(url)
+    page_dir = base / run_id / "pages" / slug
+    page_dir.mkdir(parents=True)
+    (page_dir / "page.json").write_text("{ this is not valid json", encoding="utf-8")
+    resp = _FakeResp(
+        b"<html lang='en'><head><title>Fresh</title></head><body></body></html>", "text/html"
+    )
+    monkeypatch.setattr(site_audit, "_http_get", lambda url, timeout=20: resp)
+    monkeypatch.setattr(site_audit, "_axe_available", lambda: False)
+    options = site_audit.SiteAuditOptions(max_pages=5, crawl_links=False, force=False)
+    summary = site_audit.run_site_audit(run_id=run_id, base_dir=base, sources=[url], options=options)
+    pages = summary["pages"]
+    assert len(pages) == 1
+    assert pages[0]["url"] == url
+    assert pages[0]["result"] == "ok"
+    assert pages[0]["title"] == "Fresh"
+
+
+def test_sweep_site_audit_runs_removes_old_dirs(app, monkeypatch):
+    # Finding 1: run directories past the TTL are swept; fresh ones survive.
+    with app.app_context():
+        root = site_audit_route._runs_root()
+        old = root / "old-run"
+        old.mkdir()
+        (old / "summary.json").write_text("{}", encoding="utf-8")
+        fresh = root / "fresh-run"
+        fresh.mkdir()
+        old_mtime = time.time() - (site_audit_route._access_ttl_hours + 1) * 3600
+        os.utime(old, (old_mtime, old_mtime))
+        removed = site_audit_route.sweep_site_audit_runs()
+        assert removed == 1
+        assert not old.exists()
+        assert fresh.exists()
+
+
+def test_evict_stale_jobs_drops_old_terminal_jobs():
+    # Finding 1: terminal jobs past the TTL are evicted; fresh/running ones stay.
+    site_audit_route._jobs.clear()
+    old = site_audit_route._SiteAuditJob(
+        job_id="old",
+        run_id="r1",
+        status="complete",
+        created_at=datetime.now(UTC) - timedelta(hours=100),
+        completed_at=datetime.now(UTC) - timedelta(hours=100),
+    )
+    fresh = site_audit_route._SiteAuditJob(
+        job_id="fresh",
+        run_id="r2",
+        status="complete",
+        created_at=datetime.now(UTC),
+        completed_at=datetime.now(UTC),
+    )
+    running = site_audit_route._SiteAuditJob(
+        job_id="running",
+        run_id="r3",
+        status="running",
+        created_at=datetime.now(UTC) - timedelta(hours=100),
+    )
+    site_audit_route._jobs.update({"old": old, "fresh": fresh, "running": running})
+    removed = site_audit_route._evict_stale_jobs()
+    assert removed == 1
+    assert "old" not in site_audit_route._jobs
+    assert "fresh" in site_audit_route._jobs
+    assert "running" in site_audit_route._jobs
+    site_audit_route._jobs.clear()
+
+
+def test_retry_refused_while_worker_alive(client, monkeypatch):
+    # Finding 2: an immediate retry must not spawn a second worker over the run dir.
+    site_audit_route._jobs.clear()
+    release = threading.Event()
+    worker = threading.Thread(target=lambda: release.wait(5), daemon=True)
+    worker.start()
+    job = site_audit_route._SiteAuditJob(
+        job_id="rw1",
+        run_id="run-rw1",
+        status="cancelled",
+        attempt=1,
+        max_attempts=2,
+        deadline_at=9999999999.0,
+        worker=worker,
+        sources=("https://example.com",),
+        options=site_audit.SiteAuditOptions(max_pages=10),
+    )
+    site_audit_route._jobs[job.job_id] = job
+    started: list[str] = []
+    monkeypatch.setattr(
+        site_audit_route, "_start_site_audit_job", lambda **kw: started.append(kw["job"].job_id)
+    )
+    try:
+        res = client.post(f"/site-audit/jobs/{job.job_id}/retry", data={})
+        assert res.status_code == 302
+        assert started == []  # refused because the previous worker is still alive
+    finally:
+        release.set()
+        worker.join()
+        site_audit_route._jobs.clear()
+
+
+def test_retry_forces_fresh_crawl(client, monkeypatch):
+    # Finding 3: retry must force=True so it does not reuse cached page output.
+    site_audit_route._jobs.clear()
+    job = site_audit_route._SiteAuditJob(
+        job_id="rf1",
+        run_id="run-rf1",
+        status="failed",
+        attempt=1,
+        max_attempts=2,
+        deadline_at=9999999999.0,
+        sources=("https://example.com",),
+        options=site_audit.SiteAuditOptions(max_pages=10, force=False),
+    )
+    site_audit_route._jobs[job.job_id] = job
+    captured: dict[str, object] = {}
+
+    def _fake_start(*, job, sources, options):
+        captured["options"] = options
+
+    monkeypatch.setattr(site_audit_route, "_start_site_audit_job", _fake_start)
+    try:
+        res = client.post(f"/site-audit/jobs/{job.job_id}/retry", data={})
+        assert res.status_code == 302
+        assert captured["options"].force is True
+        assert job.options.force is True
+    finally:
+        site_audit_route._jobs.clear()
+
+
+def test_naive_expires_at_does_not_500(client, monkeypatch, tmp_path):
+    # Finding 8: a tz-naive expires_at must yield a clean gate, never a TypeError 500.
+    run_id = "55555555-5555-5555-5555-555555555555"
+    run_dir = tmp_path / "runs" / run_id
+    run_dir.mkdir(parents=True)
+    run_dir_summary = {
+        "run_id": run_id,
+        "elapsed_ms": 10,
+        "options": {"max_pages": 1, "crawl_links": False, "strict_open_source_only": False},
+        "totals": {"pages_total": 1, "scanned": 1, "failed": 0, "skipped": 0, "findings": 0},
+        "wcag_rollup": {},
+        "pages": [],
+    }
+    (run_dir / "summary.json").write_text(json.dumps(run_dir_summary), encoding="utf-8")
+    token = "naivetoken"
+    (run_dir / "access.json").write_text(
+        json.dumps(
+            {
+                "token_hash": hashlib.sha256(token.encode("utf-8")).hexdigest(),
+                "password_hash": None,
+                "expires_at": "2099-01-01T00:00:00",  # tz-naive
+            }
+        ),
+        encoding="utf-8",
+    )
+    monkeypatch.setattr(site_audit_route, "_runs_root", lambda: tmp_path / "runs")
+    res = client.get(f"/site-audit/runs/{run_id}?access={token}")
+    assert res.status_code == 200
+    assert "Site Audit Results" in res.get_data(as_text=True)
+
+
+def test_result_template_labels_new_tab_links(app):
+    # Finding 11: new-tab links warn and fall back to the URL when the title is empty.
+    summary = {
+        "elapsed_ms": 10,
+        "options": {
+            "max_pages": 1,
+            "crawl_links": False,
+            "crawl_depth": 1,
+            "include_subdomains": False,
+            "same_path_only": False,
+            "strict_open_source_only": False,
+            "force": False,
+            "exclude_url_patterns": [],
+        },
+        "totals": {"pages_total": 1, "scanned": 1, "failed": 0, "skipped": 0, "findings": 1},
+        "wcag_rollup": {},
+        "pages": [
+            {
+                "index": 1,
+                "url": "https://example.com/x",
+                "title": "",
+                "result": "ok",
+                "finding_count": 1,
+                "findings": [
+                    {
+                        "rule_id": "R",
+                        "message": "m",
+                        "wcag_criteria": [],
+                        "resources": [{"url": "https://help.example/r", "title": ""}],
+                    }
+                ],
+            }
+        ],
+    }
+    with app.test_request_context():
+        html = render_template("site_audit_result.html", summary=summary, run_id="rid", access=None)
+    assert 'aria-label="Open scanned page in a new tab: https://example.com/x"' in html
+    assert 'aria-label="Open learning resource in a new tab: https://help.example/r"' in html

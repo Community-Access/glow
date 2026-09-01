@@ -98,36 +98,66 @@
     return;
   }
 
-  if (!!window.EventSource && streamUrl) {
-    var es = new EventSource(streamUrl);
-    es.onmessage = function (e) {
-      var payload = JSON.parse(e.data || '{}');
-      if (applyStatus(payload)) es.close();
-    };
-    es.addEventListener('success', function (e) {
-      var payload = JSON.parse(e.data || '{}');
-      applyStatus(payload);
-      es.close();
-    });
-    es.addEventListener('failure', function (e) {
-      var payload = JSON.parse(e.data || '{}');
-      applyStatus(payload);
-      es.close();
-    });
-    es.addEventListener('cancelled', function (e) {
-      var payload = JSON.parse(e.data || '{}');
-      applyStatus(payload);
-      es.close();
-    });
-  } else if (pollUrl) {
+  function parsePayload(raw) {
+    try {
+      return JSON.parse(raw || '{}');
+    } catch (e) {
+      return null;
+    }
+  }
+
+  var MAX_POLL_FAILURES = 10;
+  var pollFailures = 0;
+  var polling = false;
+
+  function startPolling() {
+    if (polling || !pollUrl) return;
+    polling = true;
     var poll = function () {
       fetch(pollUrl)
-        .then(function (r) { return r.json(); })
+        .then(function (r) {
+          if (!r.ok) throw new Error('poll http ' + r.status);
+          return r.json();
+        })
         .then(function (payload) {
+          pollFailures = 0;
           if (!applyStatus(payload)) setTimeout(poll, 1000);
         })
-        .catch(function () { setTimeout(poll, 1500); });
+        .catch(function () {
+          pollFailures += 1;
+          if (pollFailures >= MAX_POLL_FAILURES) {
+            err.textContent = 'Lost connection to the job status service. Reload the page to try again.';
+            return;
+          }
+          setTimeout(poll, 1500);
+        });
     };
     poll();
+  }
+
+  if (!!window.EventSource && streamUrl) {
+    var es = new EventSource(streamUrl);
+    var handleEvent = function (e, closeAfter) {
+      var payload = parsePayload(e.data);
+      if (!payload) return;
+      var done = applyStatus(payload);
+      if (closeAfter || done) es.close();
+    };
+    es.onmessage = function (e) { handleEvent(e, false); };
+    es.addEventListener('success', function (e) { handleEvent(e, true); });
+    es.addEventListener('failure', function (e) { handleEvent(e, true); });
+    es.addEventListener('cancelled', function (e) { handleEvent(e, true); });
+    es.addEventListener('timeout', function () {
+      es.close();
+      startPolling();
+    });
+    es.onerror = function () {
+      // The stream dropped (proxy timeout, network blip, server restart).
+      // Close it and fall back to polling instead of retrying blindly.
+      es.close();
+      startPolling();
+    };
+  } else if (pollUrl) {
+    startPolling();
   }
 })();

@@ -89,6 +89,7 @@ class _WhisperJob:
     is_background: bool = False
     notify_email: str | None = None
     retrieval_token: str | None = None
+    retrieval_url: str | None = None
     retrieval_password_hash: str | None = None
     retrieval_expires_at: datetime | None = None
     retrieved: bool = False
@@ -104,6 +105,16 @@ _MAX_AUDIO_MINUTES = int(os.environ.get("WHISPER_MAX_AUDIO_MINUTES", "120"))
 _MAX_AUDIO_QUEUE_DEPTH = int(os.environ.get("GLOW_MAX_AUDIO_QUEUE_DEPTH", "5"))
 _BACKGROUND_THRESHOLD_MINUTES = int(os.environ.get("WHISPER_BACKGROUND_THRESHOLD_MINUTES", "30"))
 _RETRIEVAL_HOURS = int(os.environ.get("WHISPER_RETRIEVAL_HOURS", "4"))
+# Terminal (complete/failed) jobs are pruned from _jobs once older than this,
+# so foreground/failed jobs no longer live for the whole process lifetime.
+# Background completed jobs that are still inside their retrieval window are
+# exempt from pruning (see _prune_terminal_jobs_locked).
+_TERMINAL_JOB_RETENTION_HOURS = int(
+    os.environ.get("WHISPER_TERMINAL_JOB_RETENTION_HOURS", str(max(_RETRIEVAL_HOURS, 4)))
+)
+# Hard cap on the local ffmpeg normalization step so a hung child cannot pin a
+# worker thread forever.
+_FFMPEG_TIMEOUT_SECONDS = int(os.environ.get("WHISPER_FFMPEG_TIMEOUT_SECONDS", "300"))
 _EMAIL_RE = re.compile(r"^[^@\s]+@[^@\s]+\.[^@\s]+$")
 _ESTIMATE_BYTES_PER_SECOND = 16000  # ~128 kbps compressed audio
 _MIN_PLAUSIBLE_BYTES_PER_SECOND = 500  # guardrail for bogus long metadata durations
@@ -148,44 +159,6 @@ def _remembered_notify_email() -> str:
     exactly as before.
     """
     try:
-        from flask import request
-
-        passport = _get_passport((request.cookies.get(PASSPORT_COOKIE) or "").strip())
-        if passport and passport.get("notify_enabled"):
-            return str(passport.get("email") or "")
-    except Exception:
-        pass
-    return ""
-
-
-def _remembered_notify_email() -> str:
-    """The address this browser's passport asked us to remember, if any.
-
-    Typing the same address into every long job is a small, repeated
-    annoyance, and the passport already holds it. With no passport, or with
-    notifications switched off, this returns "" and the field is empty --
-    exactly as before.
-    """
-    try:
-        passport = _get_passport((request.cookies.get(PASSPORT_COOKIE) or "").strip())
-        if passport and passport.get("notify_enabled"):
-            return str(passport.get("email") or "")
-    except Exception:
-        pass
-    return ""
-
-
-def _remembered_notify_email() -> str:
-    """The address this browser's passport asked us to remember, if any.
-
-    Typing the same address into every long job is a small, repeated
-    annoyance, and the passport already holds it. Absent a passport, or with
-    notifications switched off, this returns "" and the field is empty --
-    exactly as before.
-    """
-    try:
-        from flask import request
-
         passport = _get_passport((request.cookies.get(PASSPORT_COOKIE) or "").strip())
         if passport and passport.get("notify_enabled"):
             return str(passport.get("email") or "")
@@ -428,8 +401,19 @@ def _prepare_audio_for_cloud(saved_path: Path) -> Path:
             check=True,
             capture_output=True,
             text=True,
+            timeout=_FFMPEG_TIMEOUT_SECONDS,
         )
         return normalized_path
+    except subprocess.TimeoutExpired as exc:
+        # A hung ffmpeg child would otherwise pin this worker thread forever.
+        try:
+            normalized_path.unlink(missing_ok=True)
+        except OSError:
+            pass
+        raise UploadError(
+            "Audio normalization timed out on this server. "
+            "Please convert the file to MP3, M4A, or WAV and try again."
+        ) from exc
     except Exception as exc:
         raise UploadError(
             "This audio format needs conversion before cloud transcription, but normalization failed. "
@@ -437,8 +421,34 @@ def _prepare_audio_for_cloud(saved_path: Path) -> Path:
         ) from exc
 
 
+def _prune_terminal_jobs_locked(now: datetime | None = None) -> None:
+    """Drop old terminal (complete/failed) jobs. Caller must hold _jobs_lock.
+
+    Without this, foreground and failed jobs accumulated in _jobs for the whole
+    process lifetime (only background jobs were ever removed, via their 4-hour
+    cleanup Timer). Background completed jobs that are still retrievable are
+    exempt so we never delete a transcript out from under a pending retrieval.
+    """
+    now = now or datetime.now(UTC)
+    cutoff = timedelta(hours=_TERMINAL_JOB_RETENTION_HOURS)
+    for job_id in list(_jobs.keys()):
+        job = _jobs.get(job_id)
+        if job is None or job.status not in ("complete", "failed"):
+            continue
+        # Keep background transcripts alive until their retrieval window closes.
+        if job.is_background and job.status == "complete" and not job.retrieved:
+            if job.retrieval_expires_at is None or now <= job.retrieval_expires_at:
+                continue
+        marker = job.completed_at or job.started_at or job.queued_at
+        if marker is None:
+            continue
+        if now - marker > cutoff:
+            del _jobs[job_id]
+
+
 def _set_job(job: _WhisperJob) -> None:
     with _jobs_lock:
+        _prune_terminal_jobs_locked()
         _jobs[job.job_id] = job
 
 
@@ -548,14 +558,21 @@ def _send_job_email(job: _WhisperJob, phase: str) -> None:
     elif phase == "completed":
         subject = "GLOW BITS Whisperer job complete"
         path = f"/whisperer/retrieve/{job.retrieval_token}"
-        base_url = os.environ.get("GLOW_PUBLIC_BASE_URL", "").rstrip("/")
-        if base_url:
-            link = f"{base_url}{path}"
+        # Prefer the absolute URL resolved in the request context at submission
+        # time. The worker thread has no request/app context, so url_for(...,
+        # _external=True) here would raise RuntimeError and fall back to a
+        # relative (dead-in-email) path.
+        if job.retrieval_url:
+            link = job.retrieval_url
         else:
-            try:
-                link = url_for("whisperer.whisperer_retrieve", token=job.retrieval_token, _external=True)
-            except RuntimeError:
-                link = path
+            base_url = os.environ.get("GLOW_PUBLIC_BASE_URL", "").rstrip("/")
+            if base_url:
+                link = f"{base_url}{path}"
+            else:
+                try:
+                    link = url_for("whisperer.whisperer_retrieve", token=job.retrieval_token, _external=True)
+                except RuntimeError:
+                    link = path
         expiry = job.retrieval_expires_at.isoformat() if job.retrieval_expires_at else "4 hours"
         text = (
             "Your audio transcription is ready.\n\n"
@@ -710,6 +727,7 @@ def _run_whisper_job(job_id: str) -> None:
     if job is None:
         return
 
+    requeued = False
     try:
         ext = job.saved_path.suffix.lower()
         if ext not in AUDIO_EXTENSIONS:
@@ -753,6 +771,7 @@ def _run_whisper_job(job_id: str) -> None:
                     job.status = "queued"
                     job.progress = 0
                     job.message = "Queued... waiting for audio capacity."
+            requeued = True
             return
 
         if job.output_format == "word":
@@ -791,10 +810,15 @@ def _run_whisper_job(job_id: str) -> None:
                 ),
                 download_name=f"{job.saved_path.stem}.docx",
             )
+            # Refresh the token dir mtime at completion so the finished
+            # transcript survives the retrieval window rather than being swept
+            # UPLOAD_MAX_AGE_HOURS after the last processing touch.
+            _touch_token_dir(job.token)
             job = _get_job(job_id)
             if job and job.is_background and job.notify_email:
                 expiry = datetime.now(UTC) + timedelta(hours=_RETRIEVAL_HOURS)
                 _update_job(job_id, retrieval_expires_at=expiry, completed_at=datetime.now(UTC))
+                job = _get_job(job_id)
                 _send_job_email(job, "completed")
                 if not job.cleanup_timer_set:
                     timer = threading.Timer(_RETRIEVAL_HOURS * 3600, _cleanup_unretrieved_job, args=(job_id,))
@@ -803,7 +827,6 @@ def _run_whisper_job(job_id: str) -> None:
                     with _jobs_lock:
                         if _jobs.get(job_id):
                             _jobs[job_id].cleanup_timer_set = True
-            _dispatch_queued_jobs()
             return
 
         _update_job(
@@ -816,10 +839,15 @@ def _run_whisper_job(job_id: str) -> None:
             download_name=f"{job.saved_path.stem}.md",
             completed_at=datetime.now(UTC),
         )
+        # Refresh the token dir mtime at completion so the finished transcript
+        # survives the retrieval window rather than being swept
+        # UPLOAD_MAX_AGE_HOURS after the last processing touch.
+        _touch_token_dir(job.token)
         job = _get_job(job_id)
         if job and job.is_background and job.notify_email:
             expiry = datetime.now(UTC) + timedelta(hours=_RETRIEVAL_HOURS)
             _update_job(job_id, retrieval_expires_at=expiry)
+            job = _get_job(job_id)
             _send_job_email(job, "completed")
             if not job.cleanup_timer_set:
                 timer = threading.Timer(_RETRIEVAL_HOURS * 3600, _cleanup_unretrieved_job, args=(job_id,))
@@ -828,17 +856,32 @@ def _run_whisper_job(job_id: str) -> None:
                 with _jobs_lock:
                     if _jobs.get(job_id):
                         _jobs[job_id].cleanup_timer_set = True
-        _dispatch_queued_jobs()
-    except (UploadError, RuntimeError, FileNotFoundError, ValueError) as exc:
+    except Exception as exc:
+        # Catch *any* failure (OSError, MemoryError, requests errors,
+        # CalledProcessError, ...), not just the previously-narrow set -- an
+        # uncaught exception here left the job stuck "running" forever and, worse,
+        # skipped queue advancement so every job behind it stalled. We do not
+        # catch BaseException (KeyboardInterrupt/SystemExit must propagate).
         _update_job(
             job_id,
             status="failed",
             progress=0,
-            message=str(exc),
-            error=str(exc),
+            message=str(exc) or "Transcription failed due to an unexpected error.",
+            error=str(exc) or exc.__class__.__name__,
         )
         cleanup_token(job.token)
-        _dispatch_queued_jobs()
+    finally:
+        # Always advance the queue so a finished, failed, or re-queued job never
+        # strands the jobs behind it. On re-queue, only dispatch when a slot is
+        # actually free -- _dispatch_queued_jobs() itself returns early when audio
+        # capacity is 0, so this cannot spin into unbounded re-dispatch.
+        if requeued:
+            from ..gating import get_capacity_metrics
+
+            if get_capacity_metrics().get("audio", {}).get("available", 0) > 0:
+                _dispatch_queued_jobs()
+        else:
+            _dispatch_queued_jobs()
 
 
 @whisperer_bp.route("/", methods=["GET"])
@@ -1191,6 +1234,24 @@ def whisperer_start_job():
             )
 
         job_id = str(uuid.uuid4())
+        retrieval_token = secrets.token_urlsafe(32) if background_opt_in else None
+        # Resolve the absolute retrieval URL now, while a request context exists.
+        # The worker thread that sends the completion email has no request/app
+        # context, so url_for(_external=True) there would raise and fall back to
+        # a relative, dead-in-email link. Prefer the operator-configured public
+        # base URL; otherwise resolve from the current request.
+        retrieval_url = None
+        if retrieval_token:
+            base_url = os.environ.get("GLOW_PUBLIC_BASE_URL", "").rstrip("/")
+            if base_url:
+                retrieval_url = f"{base_url}/whisperer/retrieve/{retrieval_token}"
+            else:
+                try:
+                    retrieval_url = url_for(
+                        "whisperer.whisperer_retrieve", token=retrieval_token, _external=True
+                    )
+                except Exception:
+                    retrieval_url = None
         job = _WhisperJob(
             job_id=job_id,
             token=token,
@@ -1208,7 +1269,8 @@ def whisperer_start_job():
             queued_at=datetime.now(UTC),
             is_background=background_opt_in,
             notify_email=notify_email if background_opt_in else None,
-            retrieval_token=secrets.token_urlsafe(32) if background_opt_in else None,
+            retrieval_token=retrieval_token,
+            retrieval_url=retrieval_url,
             retrieval_password_hash=generate_password_hash(retrieval_password) if background_opt_in else None,
         )
         _set_job(job)

@@ -634,6 +634,7 @@
     nextDocumentBtn.addEventListener("click", function () {
       preparedDocument = null;
       ensureDocumentPrepared().catch(function (err) {
+        if (err && err.isQueued) return;
         showDocumentError(err && err.message ? err.message : String(err));
       });
     });

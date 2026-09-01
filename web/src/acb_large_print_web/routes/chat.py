@@ -117,12 +117,12 @@ def _pdf_first_page_png(path: Path) -> bytes | None:
     try:
         import fitz  # type: ignore[import-untyped]
 
-        doc = fitz.open(str(path))
-        if doc.page_count < 1:
-            return None
-        page = doc.load_page(0)
-        pix = page.get_pixmap(dpi=160)
-        return pix.tobytes("png")
+        with fitz.open(str(path)) as doc:
+            if doc.page_count < 1:
+                return None
+            page = doc.load_page(0)
+            pix = page.get_pixmap(dpi=160)
+            return pix.tobytes("png")
     except Exception:
         return None
 
@@ -460,12 +460,16 @@ def chat_export(format: str):
             temp_path = Path(temp.name)
             temp.close()
 
-            chat_session.export_pdf(temp_path)
+            try:
+                chat_session.export_pdf(temp_path)
+                pdf_ok = temp_path.exists() and temp_path.stat().st_size > 0
+            except Exception:
+                pdf_ok = False
 
-            if temp_path.exists():
+            if pdf_ok:
                 with open(temp_path, "rb") as f:
                     pdf_data = f.read()
-                temp_path.unlink()
+                temp_path.unlink(missing_ok=True)
 
                 return (
                     pdf_data,
@@ -476,6 +480,7 @@ def chat_export(format: str):
                     },
                 )
             else:
+                temp_path.unlink(missing_ok=True)
                 return render_template(
                     "error.html",
                     title="Export Failed",

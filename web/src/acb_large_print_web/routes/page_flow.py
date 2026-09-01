@@ -93,6 +93,7 @@ def _page_flow_context(**extra):
 
 
 @page_flow_bp.route("/", methods=["GET", "POST"])
+@limiter.limit("6 per minute", methods=["POST"])
 def page_flow_form():
     source_url = ""
     error = ""

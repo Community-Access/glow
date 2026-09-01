@@ -17,11 +17,16 @@
         if (e.key !== 'Escape' && e.keyCode !== 27) return;
         var active = document.activeElement;
         if (!active) return;
+        // Don't hijack Escape inside form controls that have their own behavior
+        // (e.g. clearing a field, closing a native <select> popup) or while the
+        // user is typing in editable content -- collapsing the disclosure would
+        // yank them out mid-edit.
+        var tag = active.tagName;
+        if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT' || active.isContentEditable) {
+            return;
+        }
         var details = active.closest ? active.closest('details[open]') : null;
         if (!details) return;
-        // Don't hijack Escape inside form controls that have their own behavior
-        // (e.g. an open <select>); the closest('details[open]') guard already
-        // limits us to elements within the disclosure body.
         e.preventDefault();
         details.open = false;
         var summary = details.querySelector(':scope > summary');
@@ -122,7 +127,30 @@
     } else {
         updateFooterHealthStatus();
     }
-    window.setInterval(updateFooterHealthStatus, 30 * 1000);
+    // Poll only while the tab is visible. A forever-running interval on every
+    // background tab is wasteful and keeps hitting /health for no benefit.
+    var _footerHealthTimer = null;
+    function startFooterHealthPolling() {
+        if (_footerHealthTimer || document.getElementById('footer-deploy-phase') === null) return;
+        _footerHealthTimer = window.setInterval(updateFooterHealthStatus, 30 * 1000);
+    }
+    function stopFooterHealthPolling() {
+        if (_footerHealthTimer) {
+            window.clearInterval(_footerHealthTimer);
+            _footerHealthTimer = null;
+        }
+    }
+    document.addEventListener('visibilitychange', function () {
+        if (document.hidden) {
+            stopFooterHealthPolling();
+        } else {
+            updateFooterHealthStatus();
+            startFooterHealthPolling();
+        }
+    });
+    if (!document.hidden) {
+        startFooterHealthPolling();
+    }
 
     // --- 5. Cognitive profile helpers -------------------------------------
     function cognitiveModeEnabled() {
@@ -151,10 +179,13 @@
     window.GLOW.rewriteLocalTimes = rewriteTimes;
     window.GLOW.applyCognitiveMode = applyCognitiveMode;
 
-    // --- 3. Ctrl+U / Cmd+U -- focus first visible file input -----------------
+    // --- 3. Alt+U -- focus first visible file input --------------------------
+    // Deliberately NOT Ctrl/Cmd+U: those are reserved (View Source in the
+    // browser, and the readline "kill line" chord in terminals/inputs), and
+    // preventing their default breaks that behavior. Alt+U is unclaimed.
     document.addEventListener('keydown', function (e) {
         if (e.key !== 'u' && e.key !== 'U') return;
-        if (!(e.ctrlKey || e.metaKey)) return;
+        if (!e.altKey || e.ctrlKey || e.metaKey || e.shiftKey) return;
         var input = document.querySelector('input[type="file"]:not([disabled]):not([hidden])');
         if (!input) return;
         e.preventDefault();
@@ -227,26 +258,10 @@
         initUploadHelperButtons();
     }
 
-    // --- 7. File picker keyboard fallback (Enter to upload/submit) ---------
-    // Some browser/file-dialog combinations return focus to the file input
-    // after selecting a file, but do not reliably trigger the expected submit
-    // path when users confirm with Enter/Space in the dialog.
-    document.addEventListener('keydown', function (e) {
-        if (e.key !== 'Enter' && e.keyCode !== 13) return;
-        var active = document.activeElement;
-        if (!active || active.tagName !== 'INPUT' || active.type !== 'file') return;
-        if (!active.files || active.files.length < 1) return;
-        var form = active.form;
-        if (!form) return;
-
-        // Allow explicit multi-select workflows to continue without auto-submit.
-        if (active.multiple) return;
-
-        e.preventDefault();
-        if (typeof form.requestSubmit === 'function') {
-            form.requestSubmit();
-        } else {
-            form.submit();
-        }
-    });
+    // --- 7. (removed) Enter-on-file-input auto-submit -----------------------
+    // A keydown handler here used to call form.requestSubmit() when Enter was
+    // pressed on a focused file input. That hijacked the file input's native
+    // Enter/Space behavior (open the file-picker dialog) and could submit the
+    // wrong form. The explicit "Upload selected file" helper button in section
+    // 6 provides the keyboard-friendly submit path instead.
 }());

@@ -16,6 +16,15 @@
 
   function el(id) { return document.getElementById(id); }
 
+  // Announce only meaningful session transitions through the dedicated live
+  // region, so the per-second countdown does not re-announce the whole meter.
+  function announce(message) {
+    var live = el('ai-meter-announce');
+    if (live && live.textContent !== message) {
+      live.textContent = message;
+    }
+  }
+
   function getCsrfToken() {
     var meta = document.querySelector('meta[name="csrf-token"]');
     return meta ? meta.getAttribute('content') || '' : '';
@@ -88,14 +97,26 @@
 
     secondsRemaining = Math.max(0, Math.floor((_sessionExpiryMs - Date.now()) / 1000));
     if (!_sessionExpiryMs || secondsRemaining <= 0) {
-      sessionEl.textContent = 'Key session expired';
+      var expired = 'Key session expired';
+      if (sessionEl.textContent !== expired) {
+        sessionEl.textContent = expired;
+        announce(expired);
+      }
       if (extendBtn) {
         extendBtn.disabled = true;
+      }
+      // Countdown has reached zero -- stop the per-second timer so it does
+      // not keep firing (and re-writing) forever.
+      if (_countdownTimer) {
+        clearInterval(_countdownTimer);
+        _countdownTimer = null;
       }
       return;
     }
 
-    sessionEl.textContent = 'Key session: ' + formatDuration(secondsRemaining);
+    var next = 'Key session: ' + formatDuration(secondsRemaining);
+    if (sessionEl.textContent === next) return;
+    sessionEl.textContent = next;
     if (extendBtn) {
       extendBtn.disabled = false;
     }
@@ -117,11 +138,20 @@
     if (!data || !data.ok || !data.active || !data.expires_utc) {
       _sessionExpiryMs = 0;
       sessionWrap.hidden = false;
+      // Session is inactive -- stop any running countdown timer.
+      if (_countdownTimer) {
+        clearInterval(_countdownTimer);
+        _countdownTimer = null;
+      }
       renderSessionCountdown();
       return;
     }
+    var wasInactive = !_sessionExpiryMs;
     _sessionExpiryMs = Date.parse(data.expires_utc);
     sessionWrap.hidden = false;
+    if (wasInactive) {
+      announce('AI key session active');
+    }
     startCountdownTimer();
   }
 

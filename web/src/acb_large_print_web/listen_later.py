@@ -19,6 +19,8 @@ from urllib.parse import urljoin, urlparse
 import requests
 from lxml import html as lxml_html
 
+from .site_audit import _is_public_url
+
 try:
     from trafilatura import extract as _extract_main_text
     from trafilatura import extract_metadata as _extract_metadata
@@ -29,6 +31,18 @@ except Exception:  # pragma: no cover - handled at runtime if dependency is abse
 
 class ArticleExtractionError(Exception):
     """Raised when article extraction fails."""
+
+
+class BlockedURLError(ArticleExtractionError):
+    """Raised when a target URL is not public (SSRF guard).
+
+    Subclasses ArticleExtractionError so the page-flow route already renders it
+    as a clean user-facing message instead of a 500.
+    """
+
+
+_FETCH_HEADERS = {"User-Agent": "GLOW-Listen-Later/1.0"}
+_MAX_FETCH_REDIRECTS = 5
 
 
 @dataclass(slots=True)
@@ -64,6 +78,13 @@ def extract_article(url: str, *, max_pages: int = 5, follow_pagination: bool = T
     start_url = normalize_url(url)
     if not start_url:
         raise ArticleExtractionError("Please enter a valid article URL.")
+
+    # SSRF gate: only fetch public http(s) hosts. Blocks loopback, private,
+    # link-local, reserved, multicast and unspecified addresses and non-web
+    # ports so a submitter can't read internal services (e.g. cloud metadata
+    # at http://169.254.169.254/ or http://localhost/).
+    if not _is_public_url(start_url):
+        raise BlockedURLError("That URL can't be fetched. Enter a public web (http/https) article address.")
 
     if _extract_main_text is None or _extract_metadata is None:
         raise ArticleExtractionError("Article extraction requires the trafilatura package.")
@@ -116,9 +137,32 @@ def extract_article(url: str, *, max_pages: int = 5, follow_pagination: bool = T
 
 
 def _fetch_html(url: str) -> tuple[str, str]:
-    response = requests.get(url, timeout=20, headers={"User-Agent": "GLOW-Listen-Later/1.0"})
-    response.raise_for_status()
-    return response.text or "", response.url or url
+    """SSRF-guarded fetch.
+
+    Redirects are followed manually so the public-address gate is re-checked on
+    every hop; otherwise an allowed host could 302 to an internal one and escape
+    the gate (mirrors site_audit._http_get).
+    """
+    current = url
+    for _ in range(_MAX_FETCH_REDIRECTS + 1):
+        if not _is_public_url(current):
+            raise BlockedURLError(f"Refusing to fetch non-public URL: {current}")
+        response = requests.get(
+            current,
+            timeout=20,
+            headers=_FETCH_HEADERS,
+            allow_redirects=False,
+        )
+        if response.is_redirect or response.is_permanent_redirect:
+            location = response.headers.get("Location")
+            if not location:
+                response.raise_for_status()
+                return response.text or "", response.url or current
+            current = urljoin(current, location)
+            continue
+        response.raise_for_status()
+        return response.text or "", response.url or current
+    raise BlockedURLError(f"Too many redirects while fetching {url}")
 
 
 def _extract_title(html: str) -> str:
@@ -527,6 +571,13 @@ def _get_browser_adapter_payload(url: str) -> dict:
     web_root = Path(__file__).resolve().parents[2]
     script_path = web_root / "tools" / "page_flow_render.mjs"
     if not script_path.exists():
+        return {}
+
+    # Defense in depth against argv option injection into the Node renderer.
+    # The SSRF gate already forces a normalized http(s):// URL on a public host,
+    # so a leading '-' can't survive normalization; guard explicitly anyway so a
+    # value like "--foo" can never be parsed as a flag by page_flow_render.mjs.
+    if not url.startswith(("http://", "https://")) or url.startswith("-"):
         return {}
 
     timeout_sec = 20

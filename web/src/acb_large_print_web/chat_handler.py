@@ -491,24 +491,27 @@ class ToolRegistry:
             from .core_services import audit_by_extension
 
             result = audit_by_extension(str(self.context.doc_path))
+            cached_findings = [
+                {
+                    "rule_id": f.rule_id,
+                    # Severity is a Capitalized enum ("Critical"); normalize to
+                    # lowercase so every downstream comparison is consistent.
+                    "severity": str(getattr(f.severity, "value", f.severity)).lower(),
+                    "message": f.message,
+                    "auto_fixable": f.auto_fixable,
+                }
+                for f in result.findings
+            ]
             self.context._audit_cache = {
-                "findings": [
-                    {
-                        "rule_id": f.rule_id,
-                        "severity": f.severity,
-                        "description": f.description,
-                        "auto_fixable": f.auto_fixable,
-                    }
-                    for f in result.findings
-                ],
+                "findings": cached_findings,
                 "score": result.score,
             }
-            total = len(result.findings)
-            critical = sum(1 for f in result.findings if f.severity == "critical")
-            high = sum(1 for f in result.findings if f.severity == "high")
-            medium = sum(1 for f in result.findings if f.severity == "medium")
-            low = sum(1 for f in result.findings if f.severity == "low")
-            fixable = sum(1 for f in result.findings if f.auto_fixable)
+            total = len(cached_findings)
+            critical = sum(1 for f in cached_findings if f["severity"] == "critical")
+            high = sum(1 for f in cached_findings if f["severity"] == "high")
+            medium = sum(1 for f in cached_findings if f["severity"] == "medium")
+            low = sum(1 for f in cached_findings if f["severity"] == "low")
+            fixable = sum(1 for f in cached_findings if f["auto_fixable"])
             return (
                 f"Audit complete. Score: {result.score}/100\n"
                 f"Total findings: {total} "
@@ -574,7 +577,7 @@ class ToolRegistry:
         lines = [f"Critical/High findings ({len(findings)} total):"]
         for f in findings[:15]:
             fixable = "auto-fixable" if f["auto_fixable"] else "manual fix required"
-            lines.append(f"  [{f['severity'].upper()}] {f['rule_id']}: {f['description']} ({fixable})")
+            lines.append(f"  [{f['severity'].upper()}] {f['rule_id']}: {f['message']} ({fixable})")
         return "\n".join(lines)
 
     def get_auto_fixable_findings(self) -> str:
@@ -588,7 +591,7 @@ class ToolRegistry:
             return "No auto-fixable findings detected."
         lines = [f"Auto-fixable findings ({len(findings)} total — upload to Fix to correct):"]
         for f in findings[:15]:
-            lines.append(f"  {f['rule_id']}: {f['description']}")
+            lines.append(f"  {f['rule_id']}: {f['message']}")
         return "\n".join(lines)
 
     # ------------------------------------------------------------------
@@ -816,7 +819,7 @@ class ToolRegistry:
         lines = ["Prioritized findings (by severity, auto-fixable first):"]
         for i, f in enumerate(sorted_f[:10], 1):
             tag = "AUTO-FIX" if f["auto_fixable"] else "MANUAL"
-            lines.append(f"  {i}. [{f['severity'].upper()} / {tag}] {f['rule_id']}: {f['description']}")
+            lines.append(f"  {i}. [{f['severity'].upper()} / {tag}] {f['rule_id']}: {f['message']}")
         return "\n".join(lines)
 
     def estimate_fix_impact(self) -> str:
@@ -1276,33 +1279,50 @@ class ChatSession:
         doc.save(str(output_path))
 
     def export_pdf(self, output_path: Path) -> None:
-        """Export conversation to PDF via markdown + Pandoc + WeasyPrint."""
+        """Export conversation to PDF via markdown + Pandoc + WeasyPrint.
+
+        Raises on any failure so the caller does not serve a 0-byte PDF. The
+        intermediate .md/.html siblings are always cleaned up.
+        """
         import subprocess
-        from weasyprint import HTML
 
         md_content = self.export_markdown()
         md_path = output_path.with_suffix(".md")
         html_path = output_path.with_suffix(".html")
 
-        # Write markdown
-        md_path.write_text(md_content, encoding="utf-8")
-
-        # Convert markdown to HTML via Pandoc
         try:
-            subprocess.run(
-                ["pandoc", str(md_path), "-o", str(html_path)],
-                check=True,
-                capture_output=True,
-            )
-        except (FileNotFoundError, subprocess.CalledProcessError) as e:
-            log.error("Pandoc conversion failed: %s", e)
-            return
+            # Write markdown
+            md_path.write_text(md_content, encoding="utf-8")
 
-        # Convert HTML to PDF via WeasyPrint
-        try:
-            HTML(str(html_path)).write_pdf(str(output_path))
-            md_path.unlink()
-            html_path.unlink()
+            # Convert markdown to HTML via Pandoc
+            try:
+                subprocess.run(
+                    ["pandoc", str(md_path), "-o", str(html_path)],
+                    check=True,
+                    capture_output=True,
+                    timeout=60,
+                )
+            except (
+                FileNotFoundError,
+                subprocess.CalledProcessError,
+                subprocess.TimeoutExpired,
+            ) as e:
+                log.error("Pandoc conversion failed: %s", e)
+                raise RuntimeError("PDF export failed during Pandoc conversion") from e
+
+            # Convert HTML to PDF via WeasyPrint
+            try:
+                from weasyprint import HTML
+
+                HTML(str(html_path)).write_pdf(str(output_path))
+            except Exception as e:
+                log.error("WeasyPrint PDF generation failed: %s", e)
+                raise RuntimeError("PDF export failed during WeasyPrint rendering") from e
+
             log.info("PDF export successful: %s", output_path)
-        except Exception as e:
-            log.error("WeasyPrint PDF generation failed: %s", e)
+        finally:
+            for tmp in (md_path, html_path):
+                try:
+                    tmp.unlink(missing_ok=True)
+                except OSError:
+                    pass

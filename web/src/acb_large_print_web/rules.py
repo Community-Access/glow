@@ -52,14 +52,19 @@ _WCAG_SLUGS: dict[str, str] = {
     "1.1.1": "non-text-content",
     "1.3.1": "info-and-relationships",
     "1.3.2": "meaningful-sequence",
+    "1.3.3": "sensory-characteristics",
     "1.3.5": "identify-input-purpose",
     "1.4.1": "use-of-color",
     "1.4.3": "contrast-minimum",
     "1.4.4": "resize-text",
     "1.4.5": "images-of-text",
+    "1.4.8": "visual-presentation",
     "1.4.11": "non-text-contrast",
     "1.4.12": "text-spacing",
     "2.1.1": "keyboard",
+    "2.2.1": "timing-adjustable",
+    "2.2.2": "pause-stop-hide",
+    "2.3.3": "animation-from-interactions",
     "2.4.1": "bypass-blocks",
     "2.4.2": "page-titled",
     "2.4.3": "focus-order",
@@ -75,6 +80,28 @@ _WCAG_SLUGS: dict[str, str] = {
 }
 
 _WCAG_RE = re.compile(r"WCAG\s+(\d+\.\d+\.\d+)")
+
+# Per-rule corrections to the auto-generated WCAG link.
+#
+# The link is normally derived by pulling the first "WCAG X.Y.Z" out of a
+# rule's ``acb_reference``. A few references name the wrong success criterion,
+# and a few name one that does not actually govern the rule at all. Map a
+# rule_id to a corrected criterion string, or to ``None`` to suppress the
+# auto-generated link entirely (the curated ``_RULE_HELP_URLS`` links, if any,
+# still show).
+_WCAG_REFERENCE_OVERRIDES: dict[str, str | None] = {
+    # Minimum font size is governed by 1.4.4 Resize Text, not 1.4.3 Contrast.
+    "PPTX-SMALL-FONT": "1.4.4",
+    # Author/description are document metadata; neither is governed by 2.4.2
+    # Page Titled (nor any single WCAG SC) -- drop the misleading link.
+    "ACB-DOC-AUTHOR": None,
+    "MD-YAML-MISSING-AUTHOR": None,
+    "MD-YAML-MISSING-DESCRIPTION": None,
+    # Emoji use and code-block language are not 1.3.3 Sensory Characteristics.
+    "MD-NO-EMOJI": None,
+    "MD-CODE-BLOCK-NO-LANGUAGE": None,
+    "MD-INDENTED-CODE-BLOCK": None,
+}
 
 # Per-rule authoritative help links: list of (label, url) tuples.
 # Rules not listed here still get auto-generated WCAG links from acb_reference.
@@ -773,12 +800,26 @@ _RULE_HELP_URLS: dict[str, list[tuple[str, str]]] = {
 }
 
 
-def _wcag_url_from_reference(acb_reference: str) -> tuple[str, str] | None:
-    """Extract a WCAG Understanding doc URL from an acb_reference string."""
-    m = _WCAG_RE.search(acb_reference)
-    if not m:
-        return None
-    criterion = m.group(1)
+def _wcag_url_from_reference(
+    acb_reference: str, rule_id: str | None = None
+) -> tuple[str, str] | None:
+    """Extract a WCAG Understanding doc URL from an acb_reference string.
+
+    When *rule_id* has an entry in ``_WCAG_REFERENCE_OVERRIDES`` that override
+    wins over whatever criterion the ``acb_reference`` text names: a string
+    substitutes a corrected criterion, and ``None`` suppresses the link.
+    """
+    criterion: str | None = None
+    if rule_id is not None and rule_id in _WCAG_REFERENCE_OVERRIDES:
+        override = _WCAG_REFERENCE_OVERRIDES[rule_id]
+        if override is None:
+            return None
+        criterion = override
+    if criterion is None:
+        m = _WCAG_RE.search(acb_reference)
+        if not m:
+            return None
+        criterion = m.group(1)
     slug = _WCAG_SLUGS.get(criterion)
     if not slug:
         return None
@@ -799,7 +840,7 @@ def get_help_urls(rule_id: str, acb_reference: str) -> list[dict[str, str]]:
     for label, url in _RULE_HELP_URLS.get(rule_id, []):
         urls.append({"label": label, "url": url})
     # Auto-generate WCAG link from acb_reference if not already present
-    wcag = _wcag_url_from_reference(acb_reference)
+    wcag = _wcag_url_from_reference(acb_reference, rule_id)
     if wcag:
         # Avoid duplicate: check if we already have a link to the same page
         wcag_base = wcag[1].split("?")[0]
@@ -997,6 +1038,20 @@ def get_rules_by_format() -> dict[str, dict]:
     return groups
 
 
+def _as_list(value) -> list:
+    """Normalize a form value to a list.
+
+    ``request.form`` is a MultiDict whose ``.getlist()`` yields a list, but a
+    plain ``dict`` passed as *form* yields a bare string from ``.get()``.
+    Iterating that string character-by-character (e.g. ``"acb"`` -> ``"a",
+    "c", "b"``) silently produced an empty rule set and zero findings. Coerce
+    scalars to a single-element list and treat empty/None as no selection.
+    """
+    if isinstance(value, (list, tuple)):
+        return list(value)
+    return [value] if value else []
+
+
 def build_rule_policy(form) -> "RulePolicy":
     """Build a :class:`RulePolicy` from Flask form data.
 
@@ -1023,7 +1078,7 @@ def build_rule_policy(form) -> "RulePolicy":
 
     # ---- Category + profile intersection --------------------------------
     categories = (
-        form.getlist("category") if hasattr(form, "getlist") else form.get("category", [])
+        form.getlist("category") if hasattr(form, "getlist") else _as_list(form.get("category"))
     )
     if not categories:
         categories = ["acb", "msac"]
@@ -1037,9 +1092,13 @@ def build_rule_policy(form) -> "RulePolicy":
         mode_label = "Quick Audit -- Critical and High only"
     elif mode == "custom":
         custom_ids = (
-            set(form.getlist("rule")) if hasattr(form, "getlist") else set(form.get("rule", []))
+            set(form.getlist("rule")) if hasattr(form, "getlist") else set(_as_list(form.get("rule")))
         )
-        base = custom_ids or get_all_rule_ids()
+        # Custom mode honours an explicit empty selection as "audit nothing".
+        # Previously ``custom_ids or get_all_rule_ids()`` silently expanded an
+        # empty selection to the entire rule set -- the opposite of the user's
+        # intent. A user who unchecks every rule now gets zero findings.
+        base = custom_ids
         mode_label = f"Custom Audit -- {len(base)} rules selected"
     else:
         base = get_all_rule_ids()

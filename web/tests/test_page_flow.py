@@ -8,6 +8,7 @@ from types import SimpleNamespace
 import pytest
 from flask import Flask
 
+import acb_large_print_web.listen_later as listen_later
 import acb_large_print_web.routes.page_flow as page_flow_route
 from acb_large_print_web.app import create_app
 
@@ -67,6 +68,21 @@ def test_pageflow_extract_renders_text(client, monkeypatch: pytest.MonkeyPatch):
     assert "First paragraph." in body
     assert "Second paragraph." in body
     assert "Combined from 2 pages." in body
+
+
+def test_pageflow_rejects_ssrf_url_without_fetching(client, monkeypatch: pytest.MonkeyPatch):
+    # Submitting an internal/loopback URL must be rejected with a clean error
+    # (not a 500) and must never trigger a network fetch.
+    def _boom(*args, **kwargs):
+        raise AssertionError("network must not be reached for a blocked URL")
+
+    monkeypatch.setattr(listen_later.requests, "get", _boom)
+    monkeypatch.setattr(listen_later, "_fetch_html", _boom)
+
+    resp = client.post("/page-flow/", data={"source_url": "http://169.254.169.254/latest/meta-data/"})
+    assert resp.status_code == 200
+    body = resp.get_data(as_text=True)
+    assert "can&#39;t be fetched" in body or "can't be fetched" in body
 
 
 def test_pageflow_download_returns_audio_attachment(client, monkeypatch: pytest.MonkeyPatch):

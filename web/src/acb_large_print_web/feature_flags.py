@@ -10,8 +10,11 @@ remote flags provider without changing callers.
 """
 from __future__ import annotations
 
+import contextlib
 import json
+import logging
 import os
+import threading
 from pathlib import Path
 from typing import Any
 
@@ -20,8 +23,25 @@ import sqlite3
 from datetime import datetime, timezone
 from typing import Optional
 
+_LOG = logging.getLogger(__name__)
+
 # Backends: 'json' (default) or 'sqlite'
 _BACKEND = os.environ.get("FEATURE_FLAGS_BACKEND", "json").strip().lower()
+
+# Serialize read-modify-write updates so concurrent set_flag calls (multiple
+# gunicorn threads) cannot clobber each other or race on the JSON file.
+_LOCK = threading.RLock()
+
+# Last-known-good copy of the persisted flags for this process. A truncated or
+# corrupt store should fall back to what we last read successfully rather than
+# silently returning {} (which makes every flag read its compiled default and
+# re-enables features an admin turned off).
+_LAST_GOOD: dict[str, Any] = {}
+
+# Paths whose schema has already been created, so we do not run CREATE TABLE on
+# every connection. Keyed by db path so a fresh instance dir (tests) still gets
+# its schema built once.
+_SCHEMA_READY_PATHS: set[str] = set()
 
 
 def _sqlite_path() -> Path:
@@ -31,13 +51,26 @@ def _sqlite_path() -> Path:
 
 
 def _sqlite_conn() -> sqlite3.Connection:
-    conn = sqlite3.connect(str(_sqlite_path()))
+    path = str(_sqlite_path())
+    conn = sqlite3.connect(path)
     conn.row_factory = sqlite3.Row
     conn.execute("PRAGMA journal_mode=WAL")
-    conn.execute(
-        "CREATE TABLE IF NOT EXISTS flags (name TEXT PRIMARY KEY, value INTEGER NOT NULL, updated_at TEXT)"
-    )
-    conn.commit()
+    if path not in _SCHEMA_READY_PATHS:
+        conn.execute(
+            "CREATE TABLE IF NOT EXISTS flags (name TEXT PRIMARY KEY, value INTEGER NOT NULL, updated_at TEXT)"
+        )
+        conn.execute(
+            "CREATE TABLE IF NOT EXISTS flag_audit ("
+            " id INTEGER PRIMARY KEY AUTOINCREMENT,"
+            " name TEXT NOT NULL,"
+            " old_value INTEGER,"
+            " new_value INTEGER NOT NULL,"
+            " changed_at TEXT NOT NULL,"
+            " changed_by TEXT"
+            ")"
+        )
+        conn.commit()
+        _SCHEMA_READY_PATHS.add(path)
     return conn
 
 
@@ -172,39 +205,84 @@ def _path() -> Path:
     return p / "feature_flags.json"
 
 
-def _load() -> dict[str, Any]:
+def has_any_persisted() -> bool:
+    """Return True when the persisted store already holds at least one flag.
+
+    Used to decide whether first-run seeding is needed. Checks the *actual*
+    store (sqlite row count, or a non-empty JSON file) rather than the mere
+    existence of ``feature_flags.json`` -- the sqlite backend never creates
+    that file, so an existence check would seed (and clobber admin changes) on
+    every restart.
+    """
     try:
         if _BACKEND == "sqlite":
-            conn = _sqlite_conn()
-            rows = conn.execute("SELECT name, value FROM flags").fetchall()
+            with contextlib.closing(_sqlite_conn()) as conn:
+                row = conn.execute("SELECT COUNT(*) FROM flags").fetchone()
+            return bool(row and int(row[0]) > 0)
+        p = _path()
+        if not p.exists():
+            return False
+        return p.stat().st_size > 0
+    except Exception:
+        return False
+
+
+def _load() -> dict[str, Any]:
+    global _LAST_GOOD
+    try:
+        if _BACKEND == "sqlite":
+            with contextlib.closing(_sqlite_conn()) as conn:
+                rows = conn.execute("SELECT name, value FROM flags").fetchall()
             out = {r["name"]: bool(r["value"]) for r in rows}
-            conn.close()
+            _LAST_GOOD = dict(out)
             return out
         p = _path()
         if not p.exists():
+            # Missing file is a normal first-run state, not corruption; don't
+            # disturb the last-known-good cache.
             return {}
         with p.open("r", encoding="utf-8") as fh:
-            return json.load(fh)
-    except Exception:
-        return {}
+            data = json.load(fh)
+        if not isinstance(data, dict):
+            raise ValueError("feature flags file is not a JSON object")
+        _LAST_GOOD = dict(data)
+        return data
+    except Exception as exc:
+        _LOG.warning(
+            "feature_flags: could not read persisted flags (%s); "
+            "falling back to last-known-good copy",
+            exc,
+        )
+        return dict(_LAST_GOOD)
 
 
 def _save(data: dict[str, Any]) -> None:
+    global _LAST_GOOD
     if _BACKEND == "sqlite":
-        conn = _sqlite_conn()
-        for k, v in data.items():
-            conn.execute(
-                "INSERT INTO flags (name, value, updated_at) VALUES (?, ?, ?) "
-                "ON CONFLICT(name) DO UPDATE SET value=excluded.value, updated_at=excluded.updated_at",
-                (k, int(bool(v)), _now_iso()),
-            )
-        conn.commit()
-        conn.close()
+        with contextlib.closing(_sqlite_conn()) as conn:
+            for k, v in data.items():
+                conn.execute(
+                    "INSERT INTO flags (name, value, updated_at) VALUES (?, ?, ?) "
+                    "ON CONFLICT(name) DO UPDATE SET value=excluded.value, updated_at=excluded.updated_at",
+                    (k, int(bool(v)), _now_iso()),
+                )
+            conn.commit()
+        _LAST_GOOD = dict(data)
         return
 
+    # Atomic JSON write: write a temp file then os.replace so a crash mid-write
+    # can never leave a truncated file that reads as empty.
     p = _path()
-    with p.open("w", encoding="utf-8") as fh:
-        json.dump(data, fh, indent=2, sort_keys=True)
+    tmp = p.with_name(f"{p.name}.{os.getpid()}.tmp")
+    try:
+        with tmp.open("w", encoding="utf-8") as fh:
+            json.dump(data, fh, indent=2, sort_keys=True)
+        os.replace(str(tmp), str(p))
+    finally:
+        with contextlib.suppress(OSError):
+            if tmp.exists():
+                tmp.unlink()
+    _LAST_GOOD = dict(data)
 
 
 def get_flag(name: str, default: bool | None = None) -> bool:
@@ -238,14 +316,12 @@ def _ensure_audit_table(conn: sqlite3.Connection) -> None:
 
 def _record_audit(name: str, old: bool | None, new: bool, changed_by: str | None = None) -> None:
     try:
-        conn = _sqlite_conn()
-        _ensure_audit_table(conn)
-        conn.execute(
-            "INSERT INTO flag_audit (name, old_value, new_value, changed_at, changed_by) VALUES (?, ?, ?, ?, ?)",
-            (name, None if old is None else int(bool(old)), int(bool(new)), _now_iso(), changed_by),
-        )
-        conn.commit()
-        conn.close()
+        with contextlib.closing(_sqlite_conn()) as conn:
+            conn.execute(
+                "INSERT INTO flag_audit (name, old_value, new_value, changed_at, changed_by) VALUES (?, ?, ?, ?, ?)",
+                (name, None if old is None else int(bool(old)), int(bool(new)), _now_iso(), changed_by),
+            )
+            conn.commit()
     except Exception:
         # Audit should not block normal operation
         return
@@ -286,31 +362,31 @@ def set_flag(name: str, value: bool, changed_by: str | None = None) -> None:
 
     `changed_by` is optional (email or username) and used for auditing.
     """
-    old_val = None
-    # Read previous value regardless of backend
-    try:
-        data = _load()
-        if name in data:
-            old_val = bool(data[name])
-    except Exception:
+    with _LOCK:
         old_val = None
+        # Read previous value regardless of backend
+        try:
+            data = _load()
+            if name in data:
+                old_val = bool(data[name])
+        except Exception:
+            old_val = None
 
-    if _BACKEND == "sqlite":
-        conn = _sqlite_conn()
-        cur = conn.execute("SELECT value FROM flags WHERE name=?", (name,)).fetchone()
-        if cur is not None:
-            old_val = bool(cur[0])
-        conn.execute(
-            "INSERT INTO flags (name, value, updated_at) VALUES (?, ?, ?) "
-            "ON CONFLICT(name) DO UPDATE SET value=excluded.value, updated_at=excluded.updated_at",
-            (name, int(bool(value)), _now_iso()),
-        )
-        conn.commit()
-        conn.close()
-    else:
-        data = _load()
-        data[name] = bool(value)
-        _save(data)
+        if _BACKEND == "sqlite":
+            with contextlib.closing(_sqlite_conn()) as conn:
+                cur = conn.execute("SELECT value FROM flags WHERE name=?", (name,)).fetchone()
+                if cur is not None:
+                    old_val = bool(cur[0])
+                conn.execute(
+                    "INSERT INTO flags (name, value, updated_at) VALUES (?, ?, ?) "
+                    "ON CONFLICT(name) DO UPDATE SET value=excluded.value, updated_at=excluded.updated_at",
+                    (name, int(bool(value)), _now_iso()),
+                )
+                conn.commit()
+        else:
+            data = _load()
+            data[name] = bool(value)
+            _save(data)
 
     # Record audit and notify webhook (best-effort)
     try:
@@ -333,9 +409,8 @@ def get_flag_meta(name: str) -> dict[str, Optional[str]]:
     """Return metadata for a flag: updated_at and backend."""
     if _BACKEND == "sqlite":
         try:
-            conn = _sqlite_conn()
-            row = conn.execute("SELECT updated_at FROM flags WHERE name=?", (name,)).fetchone()
-            conn.close()
+            with contextlib.closing(_sqlite_conn()) as conn:
+                row = conn.execute("SELECT updated_at FROM flags WHERE name=?", (name,)).fetchone()
             return {"updated_at": row["updated_at"] if row else None, "backend": "sqlite"}
         except Exception:
             return {"updated_at": None, "backend": "sqlite"}
@@ -355,11 +430,11 @@ def get_audit_entries(name: str, limit: int = 25) -> list[dict[str, Any]]:
     """Return recent audit entries for a flag (best-effort)."""
     out: list[dict[str, Any]] = []
     try:
-        conn = _sqlite_conn()
-        cur = conn.execute(
-            "SELECT id, name, old_value, new_value, changed_at, changed_by FROM flag_audit WHERE name=? ORDER BY id DESC LIMIT ?",
-            (name, int(limit)),
-        ).fetchall()
+        with contextlib.closing(_sqlite_conn()) as conn:
+            cur = conn.execute(
+                "SELECT id, name, old_value, new_value, changed_at, changed_by FROM flag_audit WHERE name=? ORDER BY id DESC LIMIT ?",
+                (name, int(limit)),
+            ).fetchall()
         for r in cur:
             out.append({
                 "id": r[0],
@@ -369,7 +444,6 @@ def get_audit_entries(name: str, limit: int = 25) -> list[dict[str, Any]]:
                 "changed_at": r[4],
                 "changed_by": r[5],
             })
-        conn.close()
     except Exception:
         pass
     return out
@@ -393,15 +467,14 @@ def migrate_json_to_sqlite() -> None:
                 js = json.load(fh)
         if not js:
             return
-        conn = _sqlite_conn()
-        for k, v in js.items():
-            conn.execute(
-                "INSERT INTO flags (name, value, updated_at) VALUES (?, ?, ?) "
-                "ON CONFLICT(name) DO UPDATE SET value=excluded.value, updated_at=excluded.updated_at",
-                (k, int(bool(v)), _now_iso()),
-            )
-        conn.commit()
-        conn.close()
+        with contextlib.closing(_sqlite_conn()) as conn:
+            for k, v in js.items():
+                conn.execute(
+                    "INSERT INTO flags (name, value, updated_at) VALUES (?, ?, ?) "
+                    "ON CONFLICT(name) DO UPDATE SET value=excluded.value, updated_at=excluded.updated_at",
+                    (k, int(bool(v)), _now_iso()),
+                )
+            conn.commit()
     except Exception:
         return
 

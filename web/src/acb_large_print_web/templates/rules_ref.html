@@ -577,7 +577,7 @@ document.addEventListener('DOMContentLoaded', function () {
     audit: [],
     fix: [],
   };
-  let currentTarget = '{{ default_target }}';
+  let currentTarget = {{ default_target | tojson }};
   let filterTimer = null;
 
   function getSettings() {
@@ -909,33 +909,36 @@ document.addEventListener('DOMContentLoaded', function () {
   document.getElementById('btn-save-rule-set').addEventListener('click', saveRuleSet);
   document.getElementById('btn-reset-rule-set').addEventListener('click', resetRuleSet);
 
-  document.getElementById('btn-toggle-all').addEventListener('click', function () {
-    const btn = this;
-    const allItems = Array.from(document.querySelectorAll('.rule-group, .rule-card'));
-    
-    // Check if the currently visible items are all open
-    const allOpen = allItems.every(function(item) {
-      // For details elements, checking the 'open' property is the standard way
-      return item.hidden || item.open;
-    });
-    
-    allItems.forEach(function (item) {
-      if (!item.hidden) {
-        // Force the open property to the new state
-        item.open = !allOpen;
+  const toggleAllBtn = document.getElementById('btn-toggle-all');
+  if (toggleAllBtn) {
+    toggleAllBtn.addEventListener('click', function () {
+      const btn = this;
+      const allItems = Array.from(document.querySelectorAll('.rule-group, .rule-card'));
+
+      // Check if the currently visible items are all open
+      const allOpen = allItems.every(function(item) {
+        // For details elements, checking the 'open' property is the standard way
+        return item.hidden || item.open;
+      });
+
+      allItems.forEach(function (item) {
+        if (!item.hidden) {
+          // Force the open property to the new state
+          item.open = !allOpen;
+        }
+      });
+
+      btn.textContent = allOpen ? 'Expand all' : 'Collapse all';
+      btn.setAttribute('aria-label', allOpen ? 'Expand all rules' : 'Collapse all rules');
+
+      // Accessibility: announce results to screen reader
+      const status = allOpen ? 'All rules collapsed' : 'All rules expanded';
+      const live = document.getElementById('rules-selection-status');
+      if (live) {
+        live.textContent = status;
       }
     });
-    
-    btn.textContent = allOpen ? 'Expand all' : 'Collapse all';
-    btn.setAttribute('aria-label', allOpen ? 'Expand all rules' : 'Collapse all rules');
-    
-    // Accessibility: announce results to screen reader
-    const status = allOpen ? 'All rules collapsed' : 'All rules expanded';
-    const live = document.getElementById('rules-selection-status');
-    if (live) {
-      live.textContent = status;
-    }
-  });
+  }
 
   selectionTarget.addEventListener('change', function () {
     updateWorkingSelectionFromDom();

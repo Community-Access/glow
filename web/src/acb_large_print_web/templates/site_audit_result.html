@@ -128,7 +128,7 @@
       {% if ns.count < 40 %}
       {% set ns.count = ns.count + 1 %}
       <tr>
-        <td><a href="{{ page.url }}" target="_blank" rel="noopener noreferrer">{{ page.title or page.url }}</a></td>
+        <td><a href="{{ page.url }}" target="_blank" rel="noopener noreferrer" aria-label="Open scanned page in a new tab: {{ page.title or page.url }}">{{ page.title or page.url }}</a></td>
         <td>
           <strong>{{ finding.rule_id }}</strong><br>
           {{ finding.message }}
@@ -138,7 +138,7 @@
         </td>
         <td>
           {% for resource in finding.resources or [] %}
-          <a href="{{ resource.url }}" target="_blank" rel="noopener noreferrer">{{ resource.title }}</a>{% if not loop.last %}<br>{% endif %}
+          <a href="{{ resource.url }}" target="_blank" rel="noopener noreferrer" aria-label="Open learning resource in a new tab: {{ resource.title or resource.url }}">{{ resource.title or resource.url }}</a>{% if not loop.last %}<br>{% endif %}
           {% endfor %}
         </td>
       </tr>

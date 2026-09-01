@@ -62,10 +62,26 @@ def rate_limit_key() -> str:
     return get_remote_address()
 
 
+def _rate_limit_storage_uri() -> str:
+    """Choose a shared backing store for rate limits when one is available.
+
+    ``memory://`` keeps counters per-process, so with N gunicorn workers a
+    caller effectively gets N times the intended budget and which worker sees a
+    request is non-deterministic. Point the limiter at the existing Redis when
+    an env var advertises it; fall back to in-memory for tests and single-proc
+    dev so nothing has to be running.
+    """
+    for var in ("RATELIMIT_STORAGE_URI", "REDIS_URL", "CELERY_BROKER_URL"):
+        value = (os.environ.get(var) or "").strip()
+        if value:
+            return value
+    return "memory://"
+
+
 limiter = Limiter(
     key_func=rate_limit_key,
     default_limits=["120 per minute"],
-    storage_uri="memory://",
+    storage_uri=_rate_limit_storage_uri(),
 )
 
 
@@ -156,6 +172,21 @@ def create_app(config: dict | None = None) -> Flask:
 
     if config:
         app.config.update(config)
+
+    # Session cookie hardening. HttpOnly and SameSite=Lax always; Secure only
+    # off for local HTTP dev and tests so cookies still round-trip there.
+    # (Flask pre-seeds SESSION_COOKIE_SAMESITE=None, so assign rather than
+    # setdefault -- but still honour any value the caller passed in `config`.)
+    _cookie_cfg = config or {}
+    app.config["SESSION_COOKIE_HTTPONLY"] = _cookie_cfg.get("SESSION_COOKIE_HTTPONLY", True)
+    app.config["SESSION_COOKIE_SAMESITE"] = _cookie_cfg.get("SESSION_COOKIE_SAMESITE", "Lax")
+    _dev_signal = bool(
+        app.config.get("TESTING")
+        or os.environ.get("FLASK_ENV", "").strip().lower() == "development"
+        or os.environ.get("FLASK_DEBUG", "").strip() in {"1", "true", "True"}
+        or os.environ.get("GLOW_DEV", "").strip() == "1"
+    )
+    app.config["SESSION_COOKIE_SECURE"] = _cookie_cfg.get("SESSION_COOKIE_SECURE", not _dev_signal)
 
     # Initialize shared-core wiring once at process startup when available.
     if _configure_shared_core_default is not None:
@@ -258,7 +289,7 @@ def create_app(config: dict | None = None) -> Flask:
             'REQUEST id=%s %s %s -> %s (%dms) ua=%s',
             request_id,
             _req.method,
-            _req.full_path.rstrip('?'),
+            _redacted_request_target(_req),
             response.status_code,
             duration_ms,
             (_req.user_agent.string or '')[:80],
@@ -648,15 +679,17 @@ def create_app(config: dict | None = None) -> Flask:
         os.environ.get("LOG_LEVEL", "INFO"),
     )
 
-    # Seed defaults for feature flags on first startup (if no persisted flags exist).
+    # Seed defaults for feature flags on first startup, but only when the
+    # ACTUAL store is empty. The old guard checked for feature_flags.json, which
+    # the sqlite backend never creates -- so it re-seeded (clobbering admin
+    # changes and re-enabling disabled features) on every restart/worker
+    # respawn. has_any_persisted() inspects the real store for either backend.
     try:
         from . import feature_flags as _feature_flags
-        from pathlib import Path as _Path
 
-        ff_path = _Path(app.instance_path) / "feature_flags.json"
-        if not ff_path.exists():
-            with app.app_context():
-                app.logger.info("Seeding default feature flags into instance/feature_flags.json")
+        with app.app_context():
+            if not _feature_flags.has_any_persisted():
+                app.logger.info("Seeding default feature flags (persisted store is empty)")
                 _feature_flags.reset_defaults()
     except Exception:
         app.logger.debug("Failed to seed default feature flags (continuing)")
@@ -1080,6 +1113,15 @@ def create_app(config: dict | None = None) -> Flask:
             # O_CREAT | O_EXCL fails if another worker already created the
             # temp file; that worker owns this sweep cycle.
             tmp = lock_path.with_suffix(".tmp")
+            # A process killed between os.open and os.replace leaves the temp
+            # file behind, and O_EXCL would then fail forever -- wedging the GC
+            # so uploads never get cleaned again. Treat a temp older than a few
+            # minutes as abandoned and remove it so the next request recovers.
+            try:
+                if tmp.exists() and now - tmp.stat().st_mtime > 300:
+                    tmp.unlink()
+            except OSError:
+                pass
             try:
                 fd = os.open(str(tmp), os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)
                 os.write(fd, str(now).encode())
@@ -1147,6 +1189,33 @@ def _configure_logging(app: Flask) -> None:
     pkg_logger.handlers.clear()
     pkg_logger.addHandler(handler)
     pkg_logger.setLevel(getattr(logging, log_level, logging.INFO))
+
+
+# Query params that carry a secret and must never reach the request log:
+# share passphrase (?p=), site-audit access token (?access=), admin magic-link
+# (?token=), feedback key (?key=), and any stray password.
+_SENSITIVE_QUERY_PARAMS = frozenset({"access", "p", "token", "key", "password"})
+
+
+def _redacted_request_target(req) -> str:
+    """Return ``path`` plus a query string with sensitive values masked.
+
+    The previous log line wrote ``request.full_path`` verbatim, spilling share
+    passphrases and access tokens into the logs. Rebuild the query from the
+    parsed args, masking known-sensitive keys.
+    """
+    path = req.path
+    args = req.args
+    if not args:
+        return path
+    parts: list[str] = []
+    for key in args:
+        if key.lower() in _SENSITIVE_QUERY_PARAMS:
+            parts.append(f"{key}=REDACTED")
+            continue
+        for value in args.getlist(key):
+            parts.append(f"{key}={value}")
+    return f"{path}?{'&'.join(parts)}" if parts else path
 
 
 def _render_error(title: str, message: str, code: int):

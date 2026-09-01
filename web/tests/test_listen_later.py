@@ -11,10 +11,14 @@ import acb_large_print_web.listen_later as listen_later
 
 
 class _Response:
+    is_redirect = False
+    is_permanent_redirect = False
+
     def __init__(self, url: str, text: str, status_code: int = 200):
         self.url = url
         self.text = text
         self.status_code = status_code
+        self.headers: dict[str, str] = {}
 
     def raise_for_status(self) -> None:
         if self.status_code >= 400:
@@ -56,9 +60,10 @@ def test_extract_article_follows_next_page_and_merges_text(monkeypatch: pytest.M
         "https://example.com/story?page=2": _Response("https://example.com/story?page=2", page_two),
     }
 
-    def _fake_get(url, timeout, headers):
+    def _fake_get(url, timeout=None, headers=None, allow_redirects=True, **kwargs):
         return responses[url]
 
+    monkeypatch.setattr(listen_later, "_is_public_url", lambda url: True)
     monkeypatch.setattr(listen_later.requests, "get", _fake_get)
     monkeypatch.setattr(listen_later, "_extract_metadata", lambda html: SimpleNamespace(title="Story Title"))
 
@@ -112,9 +117,10 @@ def test_extract_article_falls_back_to_next_data_collection(monkeypatch: pytest.
         "https://example.com/collection": _Response("https://example.com/collection", page),
     }
 
-    def _fake_get(url, timeout, headers):
+    def _fake_get(url, timeout=None, headers=None, allow_redirects=True, **kwargs):
         return responses[url]
 
+    monkeypatch.setattr(listen_later, "_is_public_url", lambda url: True)
     monkeypatch.setattr(listen_later.requests, "get", _fake_get)
     monkeypatch.setattr(listen_later, "_extract_metadata", lambda html: None)
     monkeypatch.setattr(listen_later, "_extract_main_text", lambda html, **kwargs: "")
@@ -250,3 +256,67 @@ def test_browser_adapter_auto_mode_runs_for_js_heavy_pages(monkeypatch: pytest.M
     next_url = listen_later._discover_next_page_url(js_html, "https://example.com/story/1/")
     assert next_url == "https://example.com/story/2/"
     assert calls["count"] >= 1
+
+
+# ---------------------------------------------------------------------------
+# SSRF gate regression tests
+# ---------------------------------------------------------------------------
+
+@pytest.mark.parametrize(
+    "blocked_url",
+    [
+        "http://169.254.169.254/latest/meta-data/",
+        "http://localhost/",
+        "http://127.0.0.1/",
+        "http://[::1]/",
+    ],
+)
+def test_extract_article_blocks_non_public_url_without_fetching(
+    blocked_url: str, monkeypatch: pytest.MonkeyPatch
+):
+    def _boom(*args, **kwargs):
+        raise AssertionError("network must not be reached for a blocked URL")
+
+    # Fail loudly if the gate is bypassed and any fetch is attempted.
+    monkeypatch.setattr(listen_later.requests, "get", _boom)
+    monkeypatch.setattr(listen_later, "_fetch_html", _boom)
+
+    with pytest.raises(listen_later.ArticleExtractionError):
+        listen_later.extract_article(blocked_url)
+
+
+def test_blocked_url_error_is_article_extraction_error():
+    assert issubclass(listen_later.BlockedURLError, listen_later.ArticleExtractionError)
+
+
+def test_fetch_html_revalidates_redirect_hops(monkeypatch: pytest.MonkeyPatch):
+    # An allowed public host 302s to an internal address; the per-hop gate must
+    # block the second hop instead of following it.
+    redirect = _Response("https://public.example.com/a", "", status_code=302)
+    redirect.is_redirect = True
+    redirect.headers = {"Location": "http://169.254.169.254/latest/"}
+
+    def _fake_get(url, timeout=None, headers=None, allow_redirects=True, **kwargs):
+        assert url == "https://public.example.com/a", "must not fetch the internal hop"
+        return redirect
+
+    public = {"https://public.example.com/a"}
+    monkeypatch.setattr(listen_later, "_is_public_url", lambda url: url in public)
+    monkeypatch.setattr(listen_later.requests, "get", _fake_get)
+
+    with pytest.raises(listen_later.BlockedURLError):
+        listen_later._fetch_html("https://public.example.com/a")
+
+
+def test_browser_adapter_payload_guards_option_injection(tmp_path, monkeypatch: pytest.MonkeyPatch):
+    # A URL that does not begin with http(s):// (or begins with '-') must never
+    # reach the Node subprocess as argv.
+    def _boom_run(*args, **kwargs):
+        raise AssertionError("subprocess must not run for a guarded URL")
+
+    monkeypatch.setattr(listen_later.subprocess, "run", _boom_run)
+
+    listen_later._get_browser_adapter_payload.cache_clear()
+    assert listen_later._get_browser_adapter_payload("--dump-io") == {}
+    listen_later._get_browser_adapter_payload.cache_clear()
+    assert listen_later._get_browser_adapter_payload("-foo") == {}

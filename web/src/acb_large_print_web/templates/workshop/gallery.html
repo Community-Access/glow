@@ -46,7 +46,7 @@
 <nav aria-label="Gallery shortcuts">
   <h2>Jump to</h2>
   <ul>
-    <li><a href="#after-submissions">Skip past these {{ submissions|length }} submissions</a></li>
+    <li><a href="#after-submissions">Skip past {{ 'this' if submissions|length == 1 else 'these' }} {{ submissions|length }} submission{{ '' if submissions|length == 1 else 's' }}</a></li>
     <li><a href="{{ url_for('workshop.workshop_my_content', session_code=session_code) }}">My workshop content</a></li>
   </ul>
 </nav>

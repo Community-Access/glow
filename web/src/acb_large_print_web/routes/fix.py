@@ -34,6 +34,19 @@ from ..tasks.convert_tasks import create_job, run_fix_job
 fix_bp = Blueprint("fix", __name__)
 _ASYNC_HEAVY_ENABLED = os.environ.get("GLOW_CONVERT_ASYNC", "1") == "1"
 
+# Download MIME types keyed on the fixed file's suffix. A fix can emit any of
+# the supported formats (.docx/.xlsx/.pptx/.md/.pdf/.epub); serving them all as
+# DOCX corrupted non-Word downloads. Covers the same ground as convert.py's
+# ``_DOWNLOAD_MIMETYPES`` plus the Office formats fix produces.
+_FIX_DOWNLOAD_MIMETYPES: dict[str, str] = {
+    ".docx": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+    ".xlsx": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    ".pptx": "application/vnd.openxmlformats-officedocument.presentationml.presentation",
+    ".md": "text/markdown; charset=utf-8",
+    ".pdf": "application/pdf",
+    ".epub": "application/epub+zip",
+}
+
 
 def _busy_response(operation: str, back_url: str):
     """Render the 503 busy page for gating rejections."""
@@ -563,9 +576,10 @@ def _run_fix_and_render(
         selected = get_rule_ids_by_severity("Critical", "High")
         mode_label = "Essentials Fix -- Critical and High focus"
     elif mode == "custom":
+        # Custom mode honours an explicit empty selection as "fix nothing".
+        # Falling back to the full rule set when the user unchecked everything
+        # was the opposite of intent; an empty selection now stays empty.
         selected = set(request.form.getlist("rule"))
-        if not selected:
-            selected = get_all_rule_ids()
         mode_label = f"Custom Fix -- {len(selected)} rules selected"
     else:
         selected = get_all_rule_ids()
@@ -897,11 +911,14 @@ def fix_download():
             404,
         )
 
+    mimetype = _FIX_DOWNLOAD_MIMETYPES.get(
+        file_path.suffix.lower(), "application/octet-stream"
+    )
     response = send_file(
         str(file_path),
         as_attachment=True,
         download_name=download_name,
-        mimetype="application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+        mimetype=mimetype,
     )
 
     @response.call_on_close

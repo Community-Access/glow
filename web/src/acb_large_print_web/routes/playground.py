@@ -18,6 +18,7 @@ from __future__ import annotations
 import hashlib
 import json
 import logging
+import threading
 from datetime import datetime, UTC
 
 from flask import Blueprint, Response, jsonify, render_template, request, session, stream_with_context
@@ -58,15 +59,49 @@ def _session_hash() -> str:
     return hashlib.sha256(key.encode()).hexdigest()
 
 
+# Server-side conversation history, keyed by session hash.
+#
+# History previously lived only in the signed-cookie session. That worked for
+# the plain-request paths (/send, /regenerate) because the Set-Cookie is written
+# when the view returns. It silently failed for the SSE stream: Flask builds and
+# commits the response cookie *before* the @stream_with_context body iterates, so
+# any session write from inside the generator was discarded and every streamed
+# turn's history was lost -- the assistant never saw prior context. Persisting
+# server-side lets the streaming generator record turns durably.
+_server_history: dict[str, list[dict]] = {}
+_server_history_lock = threading.Lock()
+
+
 def _get_history() -> list[dict]:
-    return list(session.get(_PLAYGROUND_HISTORY_KEY, []))
+    key = _session_hash()
+    with _server_history_lock:
+        if key in _server_history:
+            return list(_server_history[key])
+    # First touch this process/session: seed the server-side store from whatever
+    # the signed cookie carried (preserves history across a restart and keeps the
+    # cookie-seeded rendering path working).
+    seeded = list(session.get(_PLAYGROUND_HISTORY_KEY, []))
+    if seeded:
+        with _server_history_lock:
+            _server_history[key] = list(seeded)
+    return seeded
 
 
 def _set_history(history: list[dict]) -> None:
     # Trim to last N pairs (each pair = 2 messages)
     turns = _MAX_HISTORY_TURNS * 2
-    session[_PLAYGROUND_HISTORY_KEY] = history[-turns:]
-    session.modified = True
+    trimmed = list(history[-turns:])
+    key = _session_hash()
+    with _server_history_lock:
+        _server_history[key] = trimmed
+    # Best-effort mirror into the cookie session so history survives a restart.
+    # This is a no-op when the response is already committed (the SSE generator),
+    # where the server-side store above is the authoritative copy.
+    try:
+        session[_PLAYGROUND_HISTORY_KEY] = trimmed
+        session.modified = True
+    except Exception:
+        pass
 
 
 @playground_bp.route("/", methods=["GET"])
@@ -167,7 +202,7 @@ def playground_stream():
     if len(message) > _MAX_QUESTION_LEN:
         return jsonify({"ok": False, "error": f"Message too long (max {_MAX_QUESTION_LEN} characters)."}), 400
 
-    from ..ai_gateway import stream_ollama_chat
+    from ..ai_gateway import get_quota_status, stream_ollama_chat
 
     history = _get_history()
     sess_hash = _session_hash()
@@ -237,6 +272,8 @@ def playground_set_model():
 @playground_bp.route("/quota", methods=["GET"])
 def playground_quota():
     """Return session quota status for UI meter/warnings."""
+    from ..ai_gateway import get_quota_status
+
     sess_hash = _session_hash()
     quota = get_quota_status(sess_hash)
     return jsonify({"ok": True, "quota": quota})
@@ -261,6 +298,7 @@ def playground_regenerate():
     base_history = history[:-2]
 
     from ..ai_gateway import chat as gateway_chat
+    from ..ai_gateway import get_quota_status
 
     sess_hash = _session_hash()
     quota = get_quota_status(sess_hash)
@@ -310,6 +348,8 @@ def playground_export():
 @playground_bp.route("/clear", methods=["POST"])
 def playground_clear():
     """Wipe the server-side conversation history for this session."""
+    with _server_history_lock:
+        _server_history.pop(_session_hash(), None)
     session.pop(_PLAYGROUND_HISTORY_KEY, None)
     session.modified = True
     return jsonify({"ok": True})
