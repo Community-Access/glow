@@ -639,6 +639,22 @@ class BlockedURLError(Exception):
     """Raised when a target URL resolves to a non-public address (SSRF guard)."""
 
 
+def _ip_is_public(ip_str: str) -> bool:
+    """Return True only for a genuinely routable public address."""
+    try:
+        ip = ipaddress.ip_address(ip_str)
+    except ValueError:
+        return False
+    return not (
+        ip.is_private
+        or ip.is_loopback
+        or ip.is_link_local
+        or ip.is_reserved
+        or ip.is_multicast
+        or ip.is_unspecified
+    )
+
+
 def _is_public_url(url: str) -> bool:
     """Return True only if every address the host resolves to is public.
 
@@ -648,6 +664,11 @@ def _is_public_url(url: str) -> bool:
     submitter read cloud-metadata credentials and internal services through the
     saved page body. Reject loopback, private, link-local, reserved, multicast
     and unspecified addresses, and anything not on an ordinary web port.
+
+    This is a fast pre-check for a clean error message. It is not the only
+    defense: DNS can rebind between this lookup and the socket connect, so the
+    guarded fetch session below also validates the *actual* peer address at
+    connect time (see ``_GuardedHTTPSConnection``), which is TOCTOU-free.
     """
     try:
         parsed = urlparse(url)
@@ -671,20 +692,81 @@ def _is_public_url(url: str) -> bool:
     if not infos:
         return False
     for info in infos:
-        try:
-            ip = ipaddress.ip_address(info[4][0])
-        except ValueError:
-            return False
-        if (
-            ip.is_private
-            or ip.is_loopback
-            or ip.is_link_local
-            or ip.is_reserved
-            or ip.is_multicast
-            or ip.is_unspecified
-        ):
+        if not _ip_is_public(info[4][0]):
             return False
     return True
+
+
+def _assert_public_peer(sock) -> None:
+    """Abort a connection whose actual peer is not a public address.
+
+    Called at connect time, after the socket has connected, so the address
+    validated is exactly the one bytes would be sent to -- closing the DNS
+    rebinding window that a name-based pre-check alone leaves open.
+    """
+    try:
+        peer = sock.getpeername()[0]
+    except OSError:
+        raise BlockedURLError("Could not determine peer address")
+    if not _ip_is_public(peer):
+        raise BlockedURLError(f"Refusing to connect to non-public address {peer}")
+
+
+def _build_guarded_session() -> "requests.Session":
+    """A requests Session whose connections validate the peer IP at connect time.
+
+    Implemented by subclassing urllib3's connection classes so the check runs
+    inside ``connect()`` -- no DNS/SNI/cert behavior is changed, we merely refuse
+    to proceed once the real peer turns out to be internal. If urllib3 internals
+    differ from what we expect, fall back to a plain session (still protected by
+    the ``_is_public_url`` pre-check on every hop, just not TOCTOU-free).
+    """
+    session = requests.Session()
+    try:
+        from urllib3.connection import HTTPConnection, HTTPSConnection
+        from urllib3.connectionpool import HTTPConnectionPool, HTTPSConnectionPool
+        from urllib3.poolmanager import PoolManager
+        from requests.adapters import HTTPAdapter
+
+        class _GuardedHTTPConnection(HTTPConnection):
+            def connect(self):
+                super().connect()
+                _assert_public_peer(self.sock)
+
+        class _GuardedHTTPSConnection(HTTPSConnection):
+            def connect(self):
+                super().connect()
+                _assert_public_peer(self.sock)
+
+        class _GuardedHTTPPool(HTTPConnectionPool):
+            ConnectionCls = _GuardedHTTPConnection
+
+        class _GuardedHTTPSPool(HTTPSConnectionPool):
+            ConnectionCls = _GuardedHTTPSConnection
+
+        class _GuardedPoolManager(PoolManager):
+            def __init__(self, *args, **kwargs):
+                super().__init__(*args, **kwargs)
+                self.pool_classes_by_scheme = {
+                    "http": _GuardedHTTPPool,
+                    "https": _GuardedHTTPSPool,
+                }
+
+        class _GuardedAdapter(HTTPAdapter):
+            def init_poolmanager(self, connections, maxsize, block=False, **kw):
+                self.poolmanager = _GuardedPoolManager(
+                    num_pools=connections, maxsize=maxsize, block=block, **kw
+                )
+
+        adapter = _GuardedAdapter()
+        session.mount("http://", adapter)
+        session.mount("https://", adapter)
+    except Exception:  # pragma: no cover - urllib3 shape changed; degrade safely
+        pass
+    return session
+
+
+_guarded_session = _build_guarded_session()
 
 
 def _http_get(url: str, *, timeout: int) -> requests.Response:
@@ -692,15 +774,17 @@ def _http_get(url: str, *, timeout: int) -> requests.Response:
 
     Validates the public-address gate on the initial URL and on every redirect
     hop (so an attacker cannot 302 an allowed host to an internal one), and caps
-    the body read so a decompression bomb cannot exhaust memory or disk. Raises
-    BlockedURLError for a non-public target or too many redirects; other network
-    failures propagate as the usual requests exceptions.
+    the body read so a decompression bomb cannot exhaust memory or disk. The
+    fetch runs on a session that also re-validates the real peer IP at connect
+    time, so a DNS rebind between the name check and the socket cannot slip an
+    internal address through. Raises BlockedURLError for a non-public target or
+    too many redirects; other network failures propagate as requests exceptions.
     """
     current = url
     for _ in range(_MAX_FETCH_REDIRECTS + 1):
         if not _is_public_url(current):
             raise BlockedURLError(f"Refusing to fetch non-public URL: {current}")
-        resp = requests.get(
+        resp = _guarded_session.get(
             current,
             timeout=timeout,
             headers=_FETCH_HEADERS,

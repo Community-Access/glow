@@ -257,16 +257,31 @@ implementation agents, each with regression tests. The full web suite is green
   The version is now injected at build time by webpack's `DefinePlugin` from the
   repo-root `VERSION` file, so the add-in compiles cleanly and stays in sync.
 
-### Still open (minor hardening, tracked)
+### Fourth pass — the last hardening items, now fixed
 
-- **SSRF DNS-rebinding residual (R1)** — `_is_public_url` resolves and validates
-  the host, but a subsequent connect could re-resolve to a different address.
-  Pinning the resolved IP for the actual connection is a hardening follow-up; the
-  single-fetch window makes this low-risk.
-- **Per-process queue/gating** — Whisperer's audio queue depth and concurrency
-  gate are still per-worker, so the advertised caps are effectively multiplied by
-  the worker count. Making these exact needs a shared counter (Redis); the job
-  *state* is now shared, which was the user-visible bug.
+- **SSRF DNS-rebinding closed (R1).** The name-based `_is_public_url` pre-check
+  is no longer the only defense: both fetch paths (Site Audit `_http_get` and
+  PageFlow `_fetch_html`) now run on a guarded `requests` session whose urllib3
+  connection classes validate the *actual* connected peer IP inside `connect()`.
+  Because the address checked is exactly the one bytes would be sent to, a DNS
+  rebind between the name lookup and the socket connect cannot slip an internal
+  address through — it is TOCTOU-free. DNS/SNI/certificate behavior is unchanged
+  (verified: a real HTTPS fetch to a public host still returns 200; a loopback
+  peer is refused at connect). `site_audit.py`, `listen_later.py`.
+- **Concurrency gates count across workers.** `gating.py`'s ai/audio/vision
+  gates now use a Redis-backed distributed semaphore (a per-gate ZSET with an
+  atomic Lua acquire that reclaims slots leaked by crashed workers via a TTL),
+  resolved from the same Redis the rate limiter uses. The advertised
+  `GLOW_MAX_*_SESSIONS` caps and the `/health` capacity numbers are now global
+  across the two gunicorn workers instead of per-process. If Redis is unset or
+  unreachable the gate degrades to the original in-process semaphore, so dev and
+  tests need no Redis and an outage never 500s a request. The public interface
+  (`ai_gate`/`audio_gate`/`vision_gate`/`get_capacity_metrics`) is unchanged.
+
+Nothing from the original audit remains open. Per-worker *queue ordering* (which
+worker picks up an overflowed job) is unchanged by design — the cap that
+protects upstream spend/rate-limits is now enforced globally, which was the
+point.
 
 ---
 

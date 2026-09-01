@@ -19,7 +19,7 @@ from urllib.parse import urljoin, urlparse
 import requests
 from lxml import html as lxml_html
 
-from .site_audit import _is_public_url
+from .site_audit import _guarded_session, _is_public_url
 
 try:
     from trafilatura import extract as _extract_main_text
@@ -147,7 +147,10 @@ def _fetch_html(url: str) -> tuple[str, str]:
     for _ in range(_MAX_FETCH_REDIRECTS + 1):
         if not _is_public_url(current):
             raise BlockedURLError(f"Refusing to fetch non-public URL: {current}")
-        response = requests.get(
+        # The guarded session also validates the real peer IP at connect time,
+        # so a DNS rebind between the name check above and the socket connect
+        # cannot slip an internal address through (mirrors site_audit._http_get).
+        response = _guarded_session.get(
             current,
             timeout=20,
             headers=_FETCH_HEADERS,

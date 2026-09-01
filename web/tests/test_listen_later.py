@@ -64,7 +64,7 @@ def test_extract_article_follows_next_page_and_merges_text(monkeypatch: pytest.M
         return responses[url]
 
     monkeypatch.setattr(listen_later, "_is_public_url", lambda url: True)
-    monkeypatch.setattr(listen_later.requests, "get", _fake_get)
+    monkeypatch.setattr(listen_later._guarded_session, "get", _fake_get)
     monkeypatch.setattr(listen_later, "_extract_metadata", lambda html: SimpleNamespace(title="Story Title"))
 
     def _fake_extract(html, **kwargs):
@@ -121,7 +121,7 @@ def test_extract_article_falls_back_to_next_data_collection(monkeypatch: pytest.
         return responses[url]
 
     monkeypatch.setattr(listen_later, "_is_public_url", lambda url: True)
-    monkeypatch.setattr(listen_later.requests, "get", _fake_get)
+    monkeypatch.setattr(listen_later._guarded_session, "get", _fake_get)
     monkeypatch.setattr(listen_later, "_extract_metadata", lambda html: None)
     monkeypatch.setattr(listen_later, "_extract_main_text", lambda html, **kwargs: "")
 
@@ -302,7 +302,7 @@ def test_fetch_html_revalidates_redirect_hops(monkeypatch: pytest.MonkeyPatch):
 
     public = {"https://public.example.com/a"}
     monkeypatch.setattr(listen_later, "_is_public_url", lambda url: url in public)
-    monkeypatch.setattr(listen_later.requests, "get", _fake_get)
+    monkeypatch.setattr(listen_later._guarded_session, "get", _fake_get)
 
     with pytest.raises(listen_later.BlockedURLError):
         listen_later._fetch_html("https://public.example.com/a")
