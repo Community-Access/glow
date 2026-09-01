@@ -3,6 +3,7 @@ from __future__ import annotations
 from pathlib import Path
 import json
 import hashlib
+import time
 
 import pytest
 from flask import Flask
@@ -368,6 +369,12 @@ def test_site_audit_background_job_status(client, monkeypatch: pytest.MonkeyPatc
     assert site_audit_route._jobs
     job = next(iter(site_audit_route._jobs.values()))
     assert job.access_token_value
+
+    deadline = time.monotonic() + 5.0
+    while job.status not in {"complete", "failed", "cancelled"} and time.monotonic() < deadline:
+        time.sleep(0.02)
+    assert job.error is None
+    assert job.status == "complete"
 
     status = client.get(f"/site-audit/jobs/{job.job_id}/status?access={job.access_token_value}")
     assert status.status_code == 200

@@ -137,73 +137,81 @@ def _enforce_run_access(run_id: str, *, allow_unlock_form: bool = True):
 
 
 def _start_site_audit_job(*, job: _SiteAuditJob, sources: list[str], options: SiteAuditOptions) -> None:
+    app = current_app._get_current_object()
+
     def _worker() -> None:
-        for attempt in range(job.attempt + 1, job.max_attempts + 1):
-            with _jobs_lock:
-                job.attempt = attempt
-                job.status = "running"
-                job.retryable = attempt < job.max_attempts
-                job.message = "Crawl and scan in progress"
-                job.started_at = datetime.now(UTC)
-                job.error = None
-
-            def _is_cancelled() -> bool:
-                if deadline_exceeded(job.deadline_at):
-                    return True
-                return bool(job.cancel_event and job.cancel_event.is_set())
-
-            def _progress(current: int, total: int, url: str) -> None:
-                if _is_cancelled():
-                    return
-                pct = int((current / max(total, 1)) * 100)
-                with _jobs_lock:
-                    job.progress = max(0, min(100, pct))
-                    job.message = f"Scanning {current}/{total}: {url}"
-
-            if deadline_exceeded(job.deadline_at):
-                with _jobs_lock:
-                    job.status = "failed"
-                    job.retryable = False
-                    job.error = "Job exceeded deadline."
-                    job.message = "Scan timed out"
-                    job.completed_at = datetime.now(UTC)
-                return
-
-            try:
-                summary = run_site_audit(
-                    run_id=job.run_id,
-                    base_dir=_runs_root(),
-                    sources=sources,
-                    options=options,
-                    is_cancelled=_is_cancelled,
-                    progress_callback=_progress,
-                )
-                with _jobs_lock:
-                    job.summary = summary
-                    job.cancelled = bool(summary.get("cancelled"))
-                    job.status = "cancelled" if job.cancelled else "complete"
-                    job.progress = 100
-                    job.retryable = bool(job.cancelled and attempt < job.max_attempts and not deadline_exceeded(job.deadline_at))
-                    job.message = "Scan cancelled" if job.cancelled else "Scan complete"
-                    job.completed_at = datetime.now(UTC)
-                return
-            except Exception as exc:
-                if attempt < job.max_attempts and not deadline_exceeded(job.deadline_at):
-                    with _jobs_lock:
-                        job.status = "retrying"
-                        job.message = f"Retrying scan ({attempt}/{job.max_attempts})"
-                        job.error = str(exc)
-                    continue
-                with _jobs_lock:
-                    job.status = "failed"
-                    job.retryable = False
-                    job.error = str(exc)
-                    job.message = "Scan failed"
-                    job.completed_at = datetime.now(UTC)
-                return
+        with app.app_context():
+            _run_site_audit_job(job=job, sources=sources, options=options)
 
     thread = threading.Thread(target=_worker, daemon=True)
     thread.start()
+
+
+def _run_site_audit_job(*, job: _SiteAuditJob, sources: list[str], options: SiteAuditOptions) -> None:
+    for attempt in range(job.attempt + 1, job.max_attempts + 1):
+        with _jobs_lock:
+            job.attempt = attempt
+            job.status = "running"
+            job.retryable = attempt < job.max_attempts
+            job.message = "Crawl and scan in progress"
+            job.started_at = datetime.now(UTC)
+            job.error = None
+
+        def _is_cancelled() -> bool:
+            if deadline_exceeded(job.deadline_at):
+                return True
+            return bool(job.cancel_event and job.cancel_event.is_set())
+
+        def _progress(current: int, total: int, url: str) -> None:
+            if _is_cancelled():
+                return
+            pct = int((current / max(total, 1)) * 100)
+            with _jobs_lock:
+                job.progress = max(0, min(100, pct))
+                job.message = f"Scanning {current}/{total}: {url}"
+
+        if deadline_exceeded(job.deadline_at):
+            with _jobs_lock:
+                job.status = "failed"
+                job.retryable = False
+                job.error = "Job exceeded deadline."
+                job.message = "Scan timed out"
+                job.completed_at = datetime.now(UTC)
+            return
+
+        try:
+            summary = run_site_audit(
+                run_id=job.run_id,
+                base_dir=_runs_root(),
+                sources=sources,
+                options=options,
+                is_cancelled=_is_cancelled,
+                progress_callback=_progress,
+            )
+            with _jobs_lock:
+                job.summary = summary
+                job.cancelled = bool(summary.get("cancelled"))
+                job.status = "cancelled" if job.cancelled else "complete"
+                job.progress = 100
+                job.retryable = bool(job.cancelled and attempt < job.max_attempts and not deadline_exceeded(job.deadline_at))
+                job.message = "Scan cancelled" if job.cancelled else "Scan complete"
+                job.completed_at = datetime.now(UTC)
+            return
+        except Exception as exc:
+            if attempt < job.max_attempts and not deadline_exceeded(job.deadline_at):
+                with _jobs_lock:
+                    job.status = "retrying"
+                    job.message = f"Retrying scan ({attempt}/{job.max_attempts})"
+                    job.error = str(exc)
+                continue
+            with _jobs_lock:
+                job.status = "failed"
+                job.retryable = False
+                job.error = str(exc)
+                job.message = "Scan failed"
+                job.completed_at = datetime.now(UTC)
+            return
+
 
 
 def _can_retry(job: _SiteAuditJob) -> bool:
