@@ -6,6 +6,9 @@ import dataclasses
 import hashlib
 import hmac
 import json
+import logging
+import os
+import re
 import secrets
 import shutil
 import threading
@@ -23,6 +26,8 @@ from ..async_orchestration import deadline_exceeded, load_policy
 from ..feature_flags import get_flag
 from ..site_audit import SiteAuditOptions, get_run_dir, parse_input_urls, run_site_audit
 
+
+log = logging.getLogger(__name__)
 
 site_audit_bp = Blueprint("site_audit", __name__)
 
@@ -129,6 +134,236 @@ def _hash_token(token: str) -> str:
     return hashlib.sha256((token or "").encode("utf-8")).hexdigest()
 
 
+# ---------------------------------------------------------------------------
+# Cross-worker job store
+# ---------------------------------------------------------------------------
+#
+# The in-memory ``_jobs`` dict only exists in the worker process that accepted
+# the submit. Under gunicorn's 2 worker processes a follow-up request (status
+# poll, cancel, retry) that lands on the OTHER worker would see an empty dict
+# and return 404. To fix that we persist each job's serializable state to
+# ``instance/site_audit_jobs/<job_id>/status.json`` on the shared instance
+# volume (the same volume tasks/convert_tasks.py uses). Any worker can read it
+# back. The worker thread that actually runs the scan still lives only in the
+# accepting process; only status / cancel / retry / lookup become cross-worker.
+
+_JOB_ID_RE = re.compile(
+    r"^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
+)
+
+
+def _jobs_store_root() -> Path:
+    root = Path(current_app.instance_path) / "site_audit_jobs"
+    root.mkdir(parents=True, exist_ok=True)
+    return root
+
+
+def _safe_job_id(job_id: str) -> str:
+    """Validate job_id as a UUID before it is ever used in a path join.
+
+    Rejects anything that is not a canonical UUID so a crafted job_id cannot
+    traverse out of the job-store root.
+    """
+    if not job_id or not _JOB_ID_RE.match(job_id):
+        raise ValueError(f"Invalid job_id: {job_id!r}")
+    return job_id
+
+
+def _job_store_dir(job_id: str, *, create: bool = True) -> Path:
+    safe = _safe_job_id(job_id)
+    d = _jobs_store_root() / safe
+    if create:
+        d.mkdir(parents=True, exist_ok=True)
+    return d
+
+
+def _job_status_path(job_id: str, *, create: bool = True) -> Path:
+    return _job_store_dir(job_id, create=create) / "status.json"
+
+
+def _dt_iso(value: datetime | None) -> str | None:
+    if value is None:
+        return None
+    if value.tzinfo is None:
+        value = value.replace(tzinfo=UTC)
+    return value.astimezone(UTC).isoformat()
+
+
+def _dt_parse(value: Any) -> datetime | None:
+    if not value:
+        return None
+    try:
+        dt = datetime.fromisoformat(str(value))
+    except (ValueError, TypeError):
+        return None
+    if dt.tzinfo is None:
+        dt = dt.replace(tzinfo=UTC)
+    return dt
+
+
+def _job_status_fields(job: _SiteAuditJob) -> dict[str, Any]:
+    """Serializable snapshot of a job. Never includes the plaintext token."""
+    options = job.options
+    options_data = dataclasses.asdict(options) if options is not None else None
+    return {
+        # job_id is the directory name, not a stored field, so it cannot collide
+        # with the positional job_id in _write_job_status.
+        "run_id": job.run_id,
+        "status": job.status,
+        "progress": job.progress,
+        "message": job.message,
+        "error": job.error,
+        "cancelled": job.cancelled,
+        "attempt": job.attempt,
+        "max_attempts": job.max_attempts,
+        "deadline_at": job.deadline_at,
+        "retryable": job.retryable,
+        "created_at": _dt_iso(job.created_at),
+        "started_at": _dt_iso(job.started_at),
+        "completed_at": _dt_iso(job.completed_at),
+        # Only the HASH of the access token is persisted; the plaintext token is
+        # returned to the caller once and never written to disk.
+        "access_token_hash": job.access_token_hash,
+        "access_password_hash": job.access_password_hash,
+        "access_expires_at": _dt_iso(job.access_expires_at),
+        "sources": list(job.sources),
+        "options": options_data,
+    }
+
+
+def _write_job_status(job_id: str, **fields: Any) -> None:
+    """Atomically merge *fields* into the job's shared status file.
+
+    Read-modify-write (not overwrite) so a ``cancel_requested`` flag written by
+    another worker is not clobbered by the running worker's next progress write.
+    """
+    try:
+        path = _job_status_path(job_id)
+    except ValueError:
+        log.warning("refusing to write status for invalid job_id %r", job_id)
+        return
+    try:
+        existing: dict[str, Any] = {}
+        if path.exists():
+            try:
+                existing = json.loads(path.read_text(encoding="utf-8"))
+            except (ValueError, OSError):
+                existing = {}
+        existing.update(fields)
+        existing["updated_at"] = time.time()
+        tmp = path.with_suffix(".tmp")
+        tmp.write_text(json.dumps(existing), encoding="utf-8")
+        os.replace(tmp, path)
+    except Exception:
+        log.exception("failed to persist site-audit job status for %s", job_id)
+
+
+def _persist_job(job: _SiteAuditJob) -> None:
+    _write_job_status(job.job_id, **_job_status_fields(job))
+
+
+def _read_job_status(job_id: str) -> dict[str, Any] | None:
+    """Read a job's shared status file, or None if absent/invalid/unreadable.
+
+    Tolerates a concurrent atomic rewrite momentarily racing the reader by
+    treating a transient unreadable file as "not found".
+    """
+    try:
+        path = _job_status_path(job_id, create=False)
+    except ValueError:
+        return None
+    if not path.exists():
+        return None
+    try:
+        return json.loads(path.read_text(encoding="utf-8"))
+    except (ValueError, OSError):
+        return None
+
+
+def _load_job_from_store(job_id: str) -> _SiteAuditJob | None:
+    """Rebuild a _SiteAuditJob from the shared store (no live worker/event)."""
+    data = _read_job_status(job_id)
+    if not data:
+        return None
+    options = None
+    options_data = data.get("options")
+    if isinstance(options_data, dict):
+        try:
+            opts = dict(options_data)
+            patterns = opts.get("exclude_url_patterns")
+            if patterns is not None:
+                opts["exclude_url_patterns"] = tuple(patterns)
+            options = SiteAuditOptions(**opts)
+        except (TypeError, ValueError):
+            options = None
+    return _SiteAuditJob(
+        job_id=str(data.get("job_id") or job_id),
+        run_id=str(data.get("run_id") or ""),
+        status=str(data.get("status") or "queued"),
+        progress=int(data.get("progress") or 0),
+        message=str(data.get("message") or ""),
+        error=data.get("error"),
+        cancelled=bool(data.get("cancelled")),
+        created_at=_dt_parse(data.get("created_at")),
+        started_at=_dt_parse(data.get("started_at")),
+        completed_at=_dt_parse(data.get("completed_at")),
+        access_token_hash=data.get("access_token_hash"),
+        access_password_hash=data.get("access_password_hash"),
+        access_expires_at=_dt_parse(data.get("access_expires_at")),
+        cancel_event=threading.Event(),
+        attempt=int(data.get("attempt") or 0),
+        max_attempts=int(data.get("max_attempts") or 1),
+        deadline_at=data.get("deadline_at"),
+        retryable=bool(data.get("retryable")),
+        sources=tuple(data.get("sources") or ()),
+        options=options,
+    )
+
+
+def _lookup_job(job_id: str) -> _SiteAuditJob | None:
+    """Local ``_jobs`` cache first, then the shared cross-worker store."""
+    with _jobs_lock:
+        job = _jobs.get(job_id)
+    if job is not None:
+        return job
+    return _load_job_from_store(job_id)
+
+
+def _shared_cancel_requested(job_id: str) -> bool:
+    data = _read_job_status(job_id)
+    return bool(data and data.get("cancel_requested"))
+
+
+def _request_job_cancel(job_id: str) -> None:
+    _write_job_status(job_id, cancel_requested=True)
+
+
+def sweep_site_audit_job_store(max_age_hours: int = _access_ttl_hours) -> int:
+    """Delete stale ``instance/site_audit_jobs/<id>`` dirs past the TTL.
+
+    Mirrors sweep_site_audit_runs / _evict_stale_jobs so the shared job store
+    does not grow without bound. Returns the number of dirs removed.
+    """
+    root = Path(current_app.instance_path) / "site_audit_jobs"
+    if not root.exists():
+        return 0
+    removed = 0
+    cutoff = time.time() - (max_age_hours * 3600)
+    try:
+        for item in root.iterdir():
+            if not item.is_dir():
+                continue
+            try:
+                if item.stat().st_mtime < cutoff:
+                    shutil.rmtree(item, ignore_errors=True)
+                    removed += 1
+            except OSError:
+                pass
+    except OSError:
+        pass
+    return removed
+
+
 def _write_access_metadata(run_id: str, token_hash: str, password_hash: str | None, expires_at: datetime) -> None:
     run_dir = _runs_root() / run_id
     run_dir.mkdir(parents=True, exist_ok=True)
@@ -223,11 +458,16 @@ def _run_site_audit_job(*, job: _SiteAuditJob, sources: list[str], options: Site
             job.message = "Crawl and scan in progress"
             job.started_at = datetime.now(UTC)
             job.error = None
+        _persist_job(job)
 
         def _is_cancelled() -> bool:
             if deadline_exceeded(job.deadline_at):
                 return True
-            return bool(job.cancel_event and job.cancel_event.is_set())
+            if job.cancel_event and job.cancel_event.is_set():
+                return True
+            # A cancel issued on another worker only lands in the shared status
+            # file, so consult it too.
+            return _shared_cancel_requested(job.job_id)
 
         def _progress(current: int, total: int, url: str) -> None:
             if _is_cancelled():
@@ -236,6 +476,7 @@ def _run_site_audit_job(*, job: _SiteAuditJob, sources: list[str], options: Site
             with _jobs_lock:
                 job.progress = max(0, min(100, pct))
                 job.message = f"Scanning {current}/{total}: {url}"
+            _persist_job(job)
 
         if deadline_exceeded(job.deadline_at):
             with _jobs_lock:
@@ -244,6 +485,7 @@ def _run_site_audit_job(*, job: _SiteAuditJob, sources: list[str], options: Site
                 job.error = "Job exceeded deadline."
                 job.message = "Scan timed out"
                 job.completed_at = datetime.now(UTC)
+            _persist_job(job)
             return
 
         try:
@@ -263,6 +505,7 @@ def _run_site_audit_job(*, job: _SiteAuditJob, sources: list[str], options: Site
                 job.retryable = bool(job.cancelled and attempt < job.max_attempts and not deadline_exceeded(job.deadline_at))
                 job.message = "Scan cancelled" if job.cancelled else "Scan complete"
                 job.completed_at = datetime.now(UTC)
+            _persist_job(job)
             return
         except Exception as exc:
             if attempt < job.max_attempts and not deadline_exceeded(job.deadline_at):
@@ -270,6 +513,7 @@ def _run_site_audit_job(*, job: _SiteAuditJob, sources: list[str], options: Site
                     job.status = "retrying"
                     job.message = f"Retrying scan ({attempt}/{job.max_attempts})"
                     job.error = str(exc)
+                _persist_job(job)
                 continue
             with _jobs_lock:
                 job.status = "failed"
@@ -277,6 +521,7 @@ def _run_site_audit_job(*, job: _SiteAuditJob, sources: list[str], options: Site
                 job.error = str(exc)
                 job.message = "Scan failed"
                 job.completed_at = datetime.now(UTC)
+            _persist_job(job)
             return
 
 
@@ -296,6 +541,7 @@ def site_audit_form():
     if not _enabled():
         abort(404)
     sweep_site_audit_runs()
+    sweep_site_audit_job_store()
     _evict_stale_jobs()
     return render_template("site_audit_form.html")
 
@@ -306,6 +552,7 @@ def site_audit_submit():
         abort(404)
 
     sweep_site_audit_runs()
+    sweep_site_audit_job_store()
     _evict_stale_jobs()
 
     sources_raw = (request.form.get("sources") or "").strip()
@@ -402,6 +649,7 @@ def site_audit_submit():
         )
         with _jobs_lock:
             _jobs[job_id] = job
+        _persist_job(job)
         _start_site_audit_job(job=job, sources=urls, options=options)
 
         return render_template(
@@ -431,8 +679,7 @@ def site_audit_submit():
 def site_audit_job(job_id: str):
     if not _enabled():
         abort(404)
-    with _jobs_lock:
-        job = _jobs.get(job_id)
+    job = _lookup_job(job_id)
     if not job:
         abort(404)
 
@@ -453,8 +700,7 @@ def site_audit_job(job_id: str):
 def site_audit_job_status(job_id: str):
     if not _enabled():
         abort(404)
-    with _jobs_lock:
-        job = _jobs.get(job_id)
+    job = _lookup_job(job_id)
     if not job:
         abort(404)
     token = _access_token_from_request()
@@ -482,8 +728,7 @@ def site_audit_job_status(job_id: str):
 def site_audit_job_cancel(job_id: str):
     if not _enabled():
         abort(404)
-    with _jobs_lock:
-        job = _jobs.get(job_id)
+    job = _lookup_job(job_id)
     if not job:
         abort(404)
 
@@ -491,13 +736,29 @@ def site_audit_job_cancel(job_id: str):
     if job.access_token_hash and (not token or not hmac.compare_digest(_hash_token(token), job.access_token_hash)):
         abort(403)
 
+    # Write the cross-worker cancel flag first: a worker running in ANOTHER
+    # process observes it via _is_cancelled -> _shared_cancel_requested.
+    _request_job_cancel(job_id)
+
     if job.cancel_event:
         job.cancel_event.set()
     with _jobs_lock:
-        if job.status in {"queued", "running", "retrying"}:
-            job.status = "cancelled"
-            job.message = "Cancellation requested"
-            job.cancelled = True
+        local = _jobs.get(job_id)
+        if local is not None and local.status in {"queued", "running", "retrying"}:
+            local.status = "cancelled"
+            local.message = "Cancellation requested"
+            local.cancelled = True
+    # Reflect the optimistic cancelled state in the shared store when the job is
+    # still active there (self-heals if a live worker later writes a real term
+    # state; the cancel_requested flag persists through the merge either way).
+    data = _read_job_status(job_id) or {}
+    if str(data.get("status")) in {"queued", "running", "retrying"}:
+        _write_job_status(
+            job_id,
+            status="cancelled",
+            message="Cancellation requested",
+            cancelled=True,
+        )
 
     return redirect(url_for("site_audit.site_audit_job", job_id=job_id, access=token))
 
@@ -506,8 +767,7 @@ def site_audit_job_cancel(job_id: str):
 def site_audit_job_retry(job_id: str):
     if not _enabled():
         abort(404)
-    with _jobs_lock:
-        job = _jobs.get(job_id)
+    job = _lookup_job(job_id)
     if not job:
         abort(404)
 
@@ -535,6 +795,12 @@ def site_audit_job_retry(job_id: str):
             job.options = retry_options
             if job.cancel_event:
                 job.cancel_event.clear()
+            # The retry runs in THIS process, so promote the job (which may have
+            # been loaded from the shared store) into the local cache.
+            _jobs[job_id] = job
+        # Clear any stale cross-worker cancel flag so the retried run is active.
+        _write_job_status(job_id, cancel_requested=False)
+        _persist_job(job)
         summary_path = (_runs_root() / job.run_id) / "summary.json"
         if summary_path.exists():
             summary_path.unlink()
@@ -547,6 +813,7 @@ def site_audit_job_retry(job_id: str):
                 job.status = "failed"
                 job.error = "Unable to retry this job."
                 job.message = "Scan failed"
+            _persist_job(job)
 
     return redirect(url_for("site_audit.site_audit_job", job_id=job_id, access=token))
 

@@ -229,25 +229,44 @@ implementation agents, each with regression tests. The full web suite is green
   admin_flags tab pattern, the alt-text-helper JSON/clipboard crashes, and the
   smaller pluralization / aria-label / queued-guard / Quick-Wins-label items.
 
-### What still genuinely remains (needs a design decision, not a bounded fix)
+### Third pass — the last remaining items, now fixed
 
-- **Cross-worker job state.** Whisperer and Site Audit job dicts are now pruned
-  and TTL-swept, but they still live in one gunicorn worker's memory, so under
-  two workers a job page can still land on the worker that doesn't own the job.
-  Fully fixing this means either sticky sessions at Caddy or moving job state to
-  a shared store (the `tasks/convert_tasks.py` filesystem pattern, or Redis).
-  That is a deployment-topology decision, so it was left for you.
+- **Cross-worker job state (Site Audit + Whisperer).** Both job stores now
+  persist each job's state to a per-job `status.json` on the shared instance
+  volume (`instance/site_audit_jobs/<id>/` and `instance/whisperer_jobs/<id>/`),
+  written atomically (temp + `os.replace`), following the `tasks/convert_tasks.py`
+  idioms. Status polls, cancel, retry, download, and the emailed Whisperer
+  retrieval link now resolve from any gunicorn worker instead of 404-ing ~half
+  the time. Job ids are validated against a strict UUID pattern before any path
+  join (traversal guard); the plaintext access/retrieval tokens are never written
+  to disk (only their hashes), and the retrieval password keeps its existing
+  hash-only storage. Cross-worker cancellation works via a flag in the shared
+  status file, which the running worker consults. Residual, unchanged by design:
+  which worker *runs* a job, and the per-process queue/gating, stay per-process —
+  only lookup/status/cancel/retry/download/retrieve became cross-worker. (For
+  Whisperer download/retrieve the output *file* must also be on the shared volume;
+  in production `GLOW_UPLOAD_TEMP_BASE` is on the `feedback-data` volume mounted
+  into every container, so it is.)
+- **office-addin vulnerabilities and build.** `npm audit` now reports **0
+  vulnerabilities**: `nanoid`, `browserslist`, and `adm-zip` are pinned to patched
+  versions in `overrides` (the adm-zip override to `>=0.6.0` avoided a breaking
+  downgrade of the dev-only `office-addin-debugging` tool), and a semver-safe
+  `npm audit fix` cleared the rest. The pre-existing `npm run build` failure is
+  fixed: `version.ts` read the filesystem at runtime (`fs`/`path`/`__dirname`),
+  which is wrong for a browser task-pane bundle and broke the TypeScript build.
+  The version is now injected at build time by webpack's `DefinePlugin` from the
+  repo-root `VERSION` file, so the add-in compiles cleanly and stays in sync.
+
+### Still open (minor hardening, tracked)
+
 - **SSRF DNS-rebinding residual (R1)** — `_is_public_url` resolves and validates
-  but a later connect could re-resolve; pinning the resolved IP is a hardening
-  follow-up.
-- **office-addin build + dev-toolchain vulns** — the `nanoid` and `browserslist`
-  Dependabot alerts are fixed (pinned in `overrides` to 3.3.18 / 4.28.8). The
-  other npm advisories are all `adm-zip` pulled in transitively by the dev-only
-  `office-addin-debugging` sideload tool and need a breaking major downgrade of
-  it. Separately, the add-in's `npm run build` fails on `version.ts` Node types
-  (`__dirname`, `path`) — this is **pre-existing** (it fails identically on the
-  committed lockfile) and unrelated to the dependency changes; the shipped
-  `dist/` bundle is committed. Both were left for a dedicated add-in pass.
+  the host, but a subsequent connect could re-resolve to a different address.
+  Pinning the resolved IP for the actual connection is a hardening follow-up; the
+  single-fetch window makes this low-risk.
+- **Per-process queue/gating** — Whisperer's audio queue depth and concurrency
+  gate are still per-worker, so the advertised caps are effectively multiplied by
+  the worker count. Making these exact needs a shared counter (Redis); the job
+  *state* is now shared, which was the user-visible bug.
 
 ---
 

@@ -20,10 +20,13 @@ Route:
 
 from __future__ import annotations
 
+import hashlib
 import hmac
+import json
 import os
 import re
 import secrets
+import shutil
 import subprocess
 import threading
 import uuid
@@ -53,7 +56,14 @@ from ..email import email_configured, send_whisperer_status_email
 from ..gating import RETRY_AFTER_SECONDS, GatingError, audio_gate
 from ..passport_store import COOKIE_NAME as PASSPORT_COOKIE
 from ..passport_store import get_passport as _get_passport
-from ..upload import AUDIO_EXTENSIONS, UploadError, cleanup_token, get_temp_dir, validate_upload
+from ..upload import (
+    AUDIO_EXTENSIONS,
+    UPLOAD_TEMP_BASE,
+    UploadError,
+    cleanup_token,
+    get_temp_dir,
+    validate_upload,
+)
 
 whisperer_bp = Blueprint("whisperer", __name__)
 
@@ -99,6 +109,263 @@ class _WhisperJob:
 _jobs: dict[str, _WhisperJob] = {}
 _jobs_lock = threading.Lock()
 _audio_queue: deque[str] = deque()
+
+
+# ---------------------------------------------------------------------------
+# Shared, cross-worker job store
+# ---------------------------------------------------------------------------
+#
+# The in-memory ``_jobs`` dict is per-process. Under gunicorn (2 workers x 16
+# threads in production) a follow-up request -- a progress poll, a download, or
+# an emailed secure-retrieval link opened hours later -- routinely lands on the
+# OTHER worker, where ``_jobs`` has no entry, and 404s.
+#
+# To make status/results/retrieval discoverable from any worker we persist each
+# job's serializable state to ``<instance>/whisperer_jobs/<job_id>/status.json``
+# atomically (temp file + os.replace). Readers on any process load from there
+# when the id is absent locally. Follows the idioms in
+# ``tasks/convert_tasks.py`` (write_status/read_status/_safe_job_id/_jobs_root).
+#
+# Precondition for cross-worker DOWNLOAD/RETRIEVE (not just status): the output
+# file itself must live on a volume shared by every worker. Outputs are written
+# into the upload token dir (``UPLOAD_TEMP_BASE/<token>/...``). In production
+# ``GLOW_UPLOAD_TEMP_BASE=/app/instance/upload_temp`` lives on the ``feedback-data``
+# volume mounted read-write into every container (see docker-compose.prod.yml),
+# so this holds. If an operator points GLOW_UPLOAD_TEMP_BASE at a per-container
+# path, status/progress still work cross-worker but the file transfer only works
+# on the worker that produced it.
+#
+# NOTE ON CONTEXT: the transcription worker runs in a bare ``threading.Thread``
+# with no Flask application context, so ``current_app.instance_path`` (the
+# convert_tasks idiom, valid inside a Celery task context) would raise there and
+# progress would never persist. We instead site the store beside
+# ``UPLOAD_TEMP_BASE`` -- a module constant resolved from GLOW_UPLOAD_TEMP_BASE
+# with no app context required -- which is the same shared instance volume.
+
+_WHISPERER_JOBS_DIR_ENV = "GLOW_WHISPERER_JOBS_DIR"
+# Job ids are ``str(uuid.uuid4())``. Validate strictly before any path join so a
+# crafted id/token can never traverse out of the store root.
+_JOB_ID_RE = re.compile(
+    r"^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
+)
+
+
+def _whisperer_jobs_root() -> Path:
+    """Return the shared job-store root, creating it if needed.
+
+    Resolved without a Flask app context so the bare worker thread can persist
+    progress. ``GLOW_WHISPERER_JOBS_DIR`` overrides for tests/ops.
+    """
+    override = os.environ.get(_WHISPERER_JOBS_DIR_ENV, "").strip()
+    if override:
+        root = Path(override)
+    else:
+        root = UPLOAD_TEMP_BASE.parent / "whisperer_jobs"
+    root.mkdir(parents=True, exist_ok=True)
+    return root
+
+
+def _safe_whisperer_job_id(job_id: str) -> str:
+    """Reject any id that is not a plain UUID before joining it to a path."""
+    if not job_id or not _JOB_ID_RE.match(job_id):
+        raise ValueError(f"Invalid job_id: {job_id!r}")
+    return job_id
+
+
+def _job_store_dir(job_id: str, *, create: bool) -> Path:
+    safe = _safe_whisperer_job_id(job_id)
+    d = _whisperer_jobs_root() / safe
+    if create:
+        d.mkdir(parents=True, exist_ok=True)
+    return d
+
+
+def _hash_retrieval_token(token: str) -> str:
+    """Hash a retrieval token for storage/lookup. We never persist the plaintext."""
+    return hashlib.sha256((token or "").encode("utf-8")).hexdigest()
+
+
+def _iso(dt: datetime | None) -> str | None:
+    return dt.isoformat() if dt else None
+
+
+def _parse_dt(value: str | None) -> datetime | None:
+    if not value:
+        return None
+    try:
+        return datetime.fromisoformat(value)
+    except ValueError:
+        return None
+
+
+def _job_to_status_dict(job: _WhisperJob) -> dict:
+    """Serialize a job to the cross-worker status payload.
+
+    NEVER writes the retrieval password (only its existing hash) and NEVER writes
+    the plaintext retrieval token (only its SHA-256 hash, matched by hashing the
+    presented token at retrieval time).
+    """
+    return {
+        "job_id": job.job_id,
+        "token": job.token,
+        "saved_path": str(job.saved_path) if job.saved_path else None,
+        "language": job.language,
+        "output_format": job.output_format,
+        "title": job.title,
+        "status": job.status,
+        "progress": job.progress,
+        "message": job.message,
+        "error": job.error,
+        "output_path": str(job.output_path) if job.output_path else None,
+        "mimetype": job.mimetype,
+        "download_name": job.download_name,
+        "queued_at": _iso(job.queued_at),
+        "started_at": _iso(job.started_at),
+        "completed_at": _iso(job.completed_at),
+        "is_background": job.is_background,
+        "notify_email": job.notify_email,
+        "retrieval_token_hash": (
+            _hash_retrieval_token(job.retrieval_token) if job.retrieval_token else None
+        ),
+        "retrieval_url": job.retrieval_url,
+        "retrieval_password_hash": job.retrieval_password_hash,
+        "retrieval_expires_at": _iso(job.retrieval_expires_at),
+        "retrieved": job.retrieved,
+    }
+
+
+def _status_dict_to_job(data: dict) -> _WhisperJob:
+    """Reconstruct a (detached) job from a stored status payload."""
+    return _WhisperJob(
+        job_id=str(data.get("job_id", "")),
+        token=str(data.get("token", "")),
+        saved_path=Path(data["saved_path"]) if data.get("saved_path") else Path(),
+        language=data.get("language"),
+        output_format=str(data.get("output_format", "markdown")),
+        title=data.get("title"),
+        status=str(data.get("status", "queued")),
+        progress=int(data.get("progress", 0) or 0),
+        message=str(data.get("message", "")),
+        error=data.get("error"),
+        output_path=Path(data["output_path"]) if data.get("output_path") else None,
+        mimetype=data.get("mimetype"),
+        download_name=data.get("download_name"),
+        queued_at=_parse_dt(data.get("queued_at")),
+        started_at=_parse_dt(data.get("started_at")),
+        completed_at=_parse_dt(data.get("completed_at")),
+        is_background=bool(data.get("is_background", False)),
+        notify_email=data.get("notify_email"),
+        # Plaintext retrieval token is never stored; leave it None. Retrieval
+        # lookup matches on the stored hash instead.
+        retrieval_token=None,
+        retrieval_url=data.get("retrieval_url"),
+        retrieval_password_hash=data.get("retrieval_password_hash"),
+        retrieval_expires_at=_parse_dt(data.get("retrieval_expires_at")),
+        retrieved=bool(data.get("retrieved", False)),
+    )
+
+
+def _write_job_status(job: _WhisperJob) -> None:
+    """Atomically persist a full job snapshot. Never raises into the job flow."""
+    try:
+        d = _job_store_dir(job.job_id, create=True)
+    except (ValueError, OSError):
+        return
+    try:
+        path = d / "status.json"
+        tmp = d / "status.json.tmp"
+        tmp.write_text(json.dumps(_job_to_status_dict(job)), encoding="utf-8")
+        os.replace(tmp, path)
+    except OSError:
+        pass
+
+
+def _patch_job_status(job_id: str, **fields) -> None:
+    """Atomically merge *fields* into an existing status file (create if needed).
+
+    Used for incremental transitions so a job that only exists in the shared
+    store (i.e. was created on another worker) still records the change.
+    """
+    try:
+        d = _job_store_dir(job_id, create=True)
+    except (ValueError, OSError):
+        return
+    try:
+        path = d / "status.json"
+        existing: dict = {}
+        if path.exists():
+            try:
+                existing = json.loads(path.read_text(encoding="utf-8"))
+            except (ValueError, OSError):
+                existing = {}
+        existing.update(fields)
+        tmp = d / "status.json.tmp"
+        tmp.write_text(json.dumps(existing), encoding="utf-8")
+        os.replace(tmp, path)
+    except OSError:
+        pass
+
+
+def _load_job_from_store(job_id: str) -> _WhisperJob | None:
+    """Load a job from the shared store, or None if absent/unreadable/invalid."""
+    try:
+        d = _job_store_dir(job_id, create=False)
+    except (ValueError, OSError):
+        return None
+    path = d / "status.json"
+    if not path.exists():
+        return None
+    try:
+        data = json.loads(path.read_text(encoding="utf-8"))
+    except (ValueError, OSError):
+        return None
+    return _status_dict_to_job(data)
+
+
+def _delete_job_store(job_id: str) -> None:
+    """Remove a job's status directory from the shared store."""
+    try:
+        d = _job_store_dir(job_id, create=False)
+    except (ValueError, OSError):
+        return
+    shutil.rmtree(d, ignore_errors=True)
+
+
+def _find_job_by_retrieval_token(token: str) -> _WhisperJob | None:
+    """Resolve a retrieval token to its job, cross-worker, by matching its HASH.
+
+    Checks the local cache first (constant-time hash compare), then scans the
+    shared store's ``*/status.json`` for a matching ``retrieval_token_hash``. The
+    scan is bounded because terminal jobs are pruned (see prune helpers).
+    """
+    if not token:
+        return None
+    presented = _hash_retrieval_token(token)
+
+    with _jobs_lock:
+        for job in _jobs.values():
+            if job.retrieval_token and hmac.compare_digest(
+                _hash_retrieval_token(job.retrieval_token), presented
+            ):
+                return job
+
+    try:
+        root = _whisperer_jobs_root()
+    except OSError:
+        return None
+    for status_file in root.glob("*/status.json"):
+        try:
+            data = json.loads(status_file.read_text(encoding="utf-8"))
+        except (ValueError, OSError):
+            continue
+        stored = data.get("retrieval_token_hash")
+        if stored and hmac.compare_digest(str(stored), presented):
+            job = _status_dict_to_job(data)
+            # The presented token matched this job's stored hash; expose it so
+            # downstream code that references job.retrieval_token still works.
+            job.retrieval_token = token
+            return job
+    return None
 
 _MAX_AUDIO_MB = int(os.environ.get("WHISPER_MAX_AUDIO_MB", "500"))
 _MAX_AUDIO_MINUTES = int(os.environ.get("WHISPER_MAX_AUDIO_MINUTES", "120"))
@@ -444,17 +711,75 @@ def _prune_terminal_jobs_locked(now: datetime | None = None) -> None:
             continue
         if now - marker > cutoff:
             del _jobs[job_id]
+    _prune_store_dirs(now, cutoff)
+
+
+def _prune_store_dirs(now: datetime, cutoff: timedelta) -> None:
+    """Delete stale terminal ``whisperer_jobs/<id>`` dirs from the shared store.
+
+    Mirrors the in-memory retention: a background transcript that is still
+    retrievable (complete, not retrieved, inside its window) is never removed.
+    Best-effort and never raises into the caller.
+    """
+    try:
+        root = _whisperer_jobs_root()
+    except OSError:
+        return
+    try:
+        entries = list(root.iterdir())
+    except OSError:
+        return
+    for d in entries:
+        try:
+            if not d.is_dir():
+                continue
+            status_file = d / "status.json"
+            try:
+                marker_ts = (status_file if status_file.exists() else d).stat().st_mtime
+            except OSError:
+                continue
+            if now.timestamp() - marker_ts <= cutoff.total_seconds():
+                continue
+            data: dict = {}
+            if status_file.exists():
+                try:
+                    data = json.loads(status_file.read_text(encoding="utf-8"))
+                except (ValueError, OSError):
+                    data = {}
+            status = data.get("status")
+            if status not in ("complete", "failed"):
+                # Non-terminal (or unknown): leave it. A live job keeps its
+                # status file fresh via write-through, so a stale non-terminal
+                # dir is an orphan we still avoid deleting out from under a poll.
+                continue
+            if (
+                data.get("is_background")
+                and status == "complete"
+                and not data.get("retrieved")
+            ):
+                exp = _parse_dt(data.get("retrieval_expires_at"))
+                if exp is None or now <= exp:
+                    continue
+            shutil.rmtree(d, ignore_errors=True)
+        except OSError:
+            continue
 
 
 def _set_job(job: _WhisperJob) -> None:
     with _jobs_lock:
         _prune_terminal_jobs_locked()
         _jobs[job.job_id] = job
+    _write_job_status(job)
 
 
 def _get_job(job_id: str) -> _WhisperJob | None:
     with _jobs_lock:
-        return _jobs.get(job_id)
+        job = _jobs.get(job_id)
+    if job is not None:
+        return job
+    # Not in this worker's cache -- the accepting worker may have created it.
+    # Fall back to the shared store so progress/download resolve cross-worker.
+    return _load_job_from_store(job_id)
 
 
 def _delete_job(job_id: str) -> None:
@@ -485,32 +810,59 @@ def _update_job(
     retrieval_expires_at: datetime | None = None,
     retrieved: bool | None = None,
 ) -> None:
+    # Build a serialized patch alongside the in-memory mutation so the change is
+    # recorded even when this worker has no local cache entry (the job was
+    # created on another worker). The patch merges into the shared status file.
+    patch: dict = {}
     with _jobs_lock:
         job = _jobs.get(job_id)
-        if job is None:
-            return
         if status is not None:
-            job.status = status
+            if job is not None:
+                job.status = status
+            patch["status"] = status
         if progress is not None:
-            job.progress = max(0, min(100, int(progress)))
+            clamped = max(0, min(100, int(progress)))
+            if job is not None:
+                job.progress = clamped
+            patch["progress"] = clamped
         if message is not None:
-            job.message = message
+            if job is not None:
+                job.message = message
+            patch["message"] = message
         if error is not None:
-            job.error = error
+            if job is not None:
+                job.error = error
+            patch["error"] = error
         if output_path is not None:
-            job.output_path = output_path
+            if job is not None:
+                job.output_path = output_path
+            patch["output_path"] = str(output_path)
         if mimetype is not None:
-            job.mimetype = mimetype
+            if job is not None:
+                job.mimetype = mimetype
+            patch["mimetype"] = mimetype
         if download_name is not None:
-            job.download_name = download_name
+            if job is not None:
+                job.download_name = download_name
+            patch["download_name"] = download_name
         if started_at is not None:
-            job.started_at = started_at
+            if job is not None:
+                job.started_at = started_at
+            patch["started_at"] = _iso(started_at)
         if completed_at is not None:
-            job.completed_at = completed_at
+            if job is not None:
+                job.completed_at = completed_at
+            patch["completed_at"] = _iso(completed_at)
         if retrieval_expires_at is not None:
-            job.retrieval_expires_at = retrieval_expires_at
+            if job is not None:
+                job.retrieval_expires_at = retrieval_expires_at
+            patch["retrieval_expires_at"] = _iso(retrieval_expires_at)
         if retrieved is not None:
-            job.retrieved = retrieved
+            if job is not None:
+                job.retrieved = retrieved
+            patch["retrieved"] = retrieved
+    if patch:
+        _patch_job_status(job_id, **patch)
 
 
 def _validate_email_address(address: str) -> None:
@@ -613,6 +965,7 @@ def _cleanup_unretrieved_job(job_id: str) -> None:
     _send_job_email(job, "cleared")
     cleanup_token(job.token)
     _delete_job(job.job_id)
+    _delete_job_store(job.job_id)
 
 
 def _dispatch_queued_jobs() -> None:
@@ -635,6 +988,8 @@ def _dispatch_queued_jobs() -> None:
             job.progress = 1
             job.message = "Initializing transcription..."
             job.started_at = datetime.now(UTC)
+
+        _write_job_status(job)
 
         if job.notify_email:
             _send_job_email(job, "started")
@@ -689,6 +1044,7 @@ def admin_cancel_queued_job(job_id: str) -> tuple[bool, str]:
         job.message = "Canceled by admin before processing."
         job.error = "Canceled by admin."
 
+    _write_job_status(job)
     cleanup_token(job.token)
     return True, "Queued job canceled."
 
@@ -718,6 +1074,7 @@ def admin_requeue_failed_job(job_id: str) -> tuple[bool, str]:
         job.completed_at = None
         _audio_queue.append(job_id)
 
+    _write_job_status(job)
     _dispatch_queued_jobs()
     return True, "Failed job re-queued."
 
@@ -771,6 +1128,8 @@ def _run_whisper_job(job_id: str) -> None:
                     job.status = "queued"
                     job.progress = 0
                     job.message = "Queued... waiting for audio capacity."
+            if job is not None:
+                _write_job_status(job)
             requeued = True
             return
 
@@ -1285,6 +1644,7 @@ def whisperer_start_job():
             # deadlock the worker and, through it, every route that touches
             # the lock (progress polling, dispatch, the admin queue page).
             _delete_job(job_id)
+            _delete_job_store(job_id)
             cleanup_token(token)
             return jsonify({
                 "error": (
@@ -1400,12 +1760,9 @@ def whisperer_job_download(job_id: str):
 def whisperer_retrieve(token: str):
     """Secure retrieval endpoint for background jobs (link + password)."""
     _require_whisperer_feature()
-    job = None
-    with _jobs_lock:
-        for _job in _jobs.values():
-            if _job.retrieval_token and hmac.compare_digest(_job.retrieval_token, token):
-                job = _job
-                break
+    # Resolve cross-worker: match the presented token's HASH against the shared
+    # store (the emailed link is very likely opened on a different worker).
+    job = _find_job_by_retrieval_token(token)
 
     if job is None or not job.is_background:
         return render_template("whisperer_form.html", error="Secure retrieval link is invalid or expired.", **_template_context()), 404
