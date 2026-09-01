@@ -33,6 +33,7 @@ dependencies = [
     "markitdown[all]>=0.1.5",
     "weasyprint>=68.0",
     "requests>=2.33.0",
+    "defusedxml>=0.7.1",
     "mutagen>=1.47.0",
     "lxml>=5.4.0",
     "trafilatura>=1.10.0",

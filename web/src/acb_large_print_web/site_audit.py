@@ -4,9 +4,11 @@ from __future__ import annotations
 
 import csv
 import hashlib
+import ipaddress
 import json
 import re
 import shutil
+import socket
 import subprocess
 import time
 import zipfile
@@ -15,9 +17,9 @@ from html.parser import HTMLParser
 from pathlib import Path
 from typing import Any, Callable, Iterable
 from urllib.parse import urljoin, urlparse
-from xml.etree import ElementTree
 
 import requests
+from defusedxml import ElementTree
 
 
 WCAG_TAGS = ["wcag2a", "wcag2aa", "wcag21a", "wcag21aa", "wcag22aa"]
@@ -123,6 +125,20 @@ class _PageParser(HTMLParser):
             self._in_title = False
             self.title = "".join(self._title_parts).strip()
         elif tag == "a" and self._current_anchor_href:
+            anchor_text = " ".join(p.strip() for p in self._current_anchor_text if p.strip()).strip()
+            self.links.append((self._current_anchor_href, anchor_text))
+            self._current_anchor_href = ""
+            self._current_anchor_text = []
+
+    def close(self) -> None:
+        # Flush title/anchor state that a missing or chunk-split closing tag
+        # never committed, so a compliant page is not reported as title-less
+        # and a trailing link is not dropped from the crawl frontier.
+        super().close()
+        if self._in_title and not self.title:
+            self.title = "".join(self._title_parts).strip()
+            self._in_title = False
+        if self._current_anchor_href:
             anchor_text = " ".join(p.strip() for p in self._current_anchor_text if p.strip()).strip()
             self.links.append((self._current_anchor_href, anchor_text))
             self._current_anchor_href = ""
@@ -291,8 +307,10 @@ def run_site_audit(
 
 def _scan_single_page(url: str, page_dir: Path, *, strict_open_source_only: bool = False) -> dict[str, Any]:
     try:
-        resp = requests.get(url, timeout=20, headers={"User-Agent": "GLOW-SiteAudit/1.0"})
+        resp = _http_get(url, timeout=20)
     except Exception as exc:
+        # Includes BlockedURLError (SSRF gate) and ordinary network failures;
+        # one page erroring must not abort the whole run.
         return {
             "url": url,
             "result": "error",
@@ -303,11 +321,30 @@ def _scan_single_page(url: str, page_dir: Path, *, strict_open_source_only: bool
             "wcag_tags": {},
         }
 
+    status_code = getattr(resp, "status_code", None)
+    if isinstance(status_code, int) and status_code >= 400:
+        # An error page is not an audited page. Recording it as "ok" counted a
+        # 404/500 body toward coverage and, since it has no title or lang,
+        # produced two "high" findings against a URL that never really renders.
+        return {
+            "url": url,
+            "result": "error",
+            "status_code": status_code,
+            "reason": f"HTTP {status_code}",
+            "title": "",
+            "findings": [],
+            "wcag_tags": {},
+        }
+
     html = resp.text or ""
     (page_dir / "page.html").write_text(html, encoding="utf-8", errors="ignore")
 
     parser = _PageParser()
     parser.feed(html)
+    # HTMLParser only commits title/link state on the closing tag; without
+    # close() a page whose </title> is missing or split across chunks is
+    # wrongly reported as having no title.
+    parser.close()
 
     findings: list[dict[str, Any]] = []
     if not parser.doc_lang:
@@ -465,11 +502,12 @@ def _expand_with_crawl(
             continue
 
         try:
-            resp = requests.get(url, timeout=15, headers={"User-Agent": "GLOW-SiteAudit/1.0"})
+            resp = _http_get(url, timeout=15)
         except Exception:
             continue
         parser = _PageParser()
         parser.feed(resp.text or "")
+        parser.close()
         for href, _ in parser.links:
             candidate = _normalize_url(urljoin(resp.url, href))
             if not candidate:
@@ -517,23 +555,135 @@ def _same_site(base: str, candidate: str, include_subdomains: bool) -> bool:
     return False
 
 
+_SCHEME_RE = re.compile(r"^[a-zA-Z][a-zA-Z0-9+.\-]*:")
+
+
 def _normalize_url(value: str) -> str:
     value = (value or "").strip()
     if not value:
         return ""
     if not value.startswith(("http://", "https://")):
+        # A bare host ("example.com/path") gets https://, but a non-web scheme
+        # ("mailto:", "tel:", "javascript:") must be rejected -- prefixing it
+        # produced "https://mailto:info@x", which urlparse read as host
+        # "mailto" with userinfo, so the crawler queued and fetched it as a
+        # same-site page and reported bogus findings against it.
+        if _SCHEME_RE.match(value):
+            return ""
         value = "https://" + value
     parsed = urlparse(value)
     if parsed.scheme not in {"http", "https"} or not parsed.netloc:
         return ""
+    # Drop the fragment so "/page" and "/page#section" are one page, not two
+    # (in-page anchors and skip links otherwise exhaust the max_pages budget
+    # re-scanning identical HTML).
+    parsed = parsed._replace(fragment="")
     return parsed.geturl()
+
+
+_ALLOWED_FETCH_PORTS = {80, 443}
+_MAX_FETCH_BYTES = 8 * 1024 * 1024
+_MAX_FETCH_REDIRECTS = 5
+_FETCH_HEADERS = {"User-Agent": "GLOW-SiteAudit/1.0"}
+
+
+class BlockedURLError(Exception):
+    """Raised when a target URL resolves to a non-public address (SSRF guard)."""
+
+
+def _is_public_url(url: str) -> bool:
+    """Return True only if every address the host resolves to is public.
+
+    The auditor fetches whatever URL an anonymous visitor submits, so without
+    this gate the tool is a server-side request forgery primitive: a request
+    for ``http://169.254.169.254/...`` or ``http://redis:6379/`` would let the
+    submitter read cloud-metadata credentials and internal services through the
+    saved page body. Reject loopback, private, link-local, reserved, multicast
+    and unspecified addresses, and anything not on an ordinary web port.
+    """
+    try:
+        parsed = urlparse(url)
+    except ValueError:
+        return False
+    if parsed.scheme not in {"http", "https"}:
+        return False
+    host = parsed.hostname
+    if not host:
+        return False
+    try:
+        port = parsed.port or (443 if parsed.scheme == "https" else 80)
+    except ValueError:
+        return False
+    if port not in _ALLOWED_FETCH_PORTS:
+        return False
+    try:
+        infos = socket.getaddrinfo(host, port, proto=socket.IPPROTO_TCP)
+    except OSError:
+        return False
+    if not infos:
+        return False
+    for info in infos:
+        try:
+            ip = ipaddress.ip_address(info[4][0])
+        except ValueError:
+            return False
+        if (
+            ip.is_private
+            or ip.is_loopback
+            or ip.is_link_local
+            or ip.is_reserved
+            or ip.is_multicast
+            or ip.is_unspecified
+        ):
+            return False
+    return True
+
+
+def _http_get(url: str, *, timeout: int) -> requests.Response:
+    """SSRF-guarded GET.
+
+    Validates the public-address gate on the initial URL and on every redirect
+    hop (so an attacker cannot 302 an allowed host to an internal one), and caps
+    the body read so a decompression bomb cannot exhaust memory or disk. Raises
+    BlockedURLError for a non-public target or too many redirects; other network
+    failures propagate as the usual requests exceptions.
+    """
+    current = url
+    for _ in range(_MAX_FETCH_REDIRECTS + 1):
+        if not _is_public_url(current):
+            raise BlockedURLError(f"Refusing to fetch non-public URL: {current}")
+        resp = requests.get(
+            current,
+            timeout=timeout,
+            headers=_FETCH_HEADERS,
+            allow_redirects=False,
+            stream=True,
+        )
+        if resp.is_redirect or resp.is_permanent_redirect:
+            location = resp.headers.get("Location")
+            resp.close()
+            if not location:
+                return resp
+            current = urljoin(current, location)
+            continue
+        content = b""
+        for chunk in resp.iter_content(65536):
+            content += chunk
+            if len(content) > _MAX_FETCH_BYTES:
+                content = content[:_MAX_FETCH_BYTES]
+                break
+        resp._content = content
+        # Present the final URL to callers that build relative links from it.
+        resp.url = current
+        return resp
+    raise BlockedURLError(f"Too many redirects while fetching {url}")
 
 
 def _read_sitemap_urls(sitemap_url: str) -> list[str]:
     if not sitemap_url:
         return []
     try:
-        resp = requests.get(sitemap_url, timeout=20, headers={"User-Agent": "GLOW-SiteAudit/1.0"})
+        resp = _http_get(sitemap_url, timeout=20)
         resp.raise_for_status()
         root = ElementTree.fromstring(resp.text)
     except Exception:

@@ -1214,15 +1214,21 @@ def whisperer_start_job():
         _set_job(job)
 
         with _jobs_lock:
-            if len(_audio_queue) >= _MAX_AUDIO_QUEUE_DEPTH:
-                _delete_job(job_id)
-                cleanup_token(token)
-                return jsonify({
-                    "error": (
-                        "The audio queue is currently full. Please try again in a few minutes."
-                    )
-                }), 503
-            _audio_queue.append(job_id)
+            queue_full = len(_audio_queue) >= _MAX_AUDIO_QUEUE_DEPTH
+            if not queue_full:
+                _audio_queue.append(job_id)
+        if queue_full:
+            # Do not call the lock-taking helpers while holding _jobs_lock:
+            # _jobs_lock is a plain (non-reentrant) Lock, so _delete_job would
+            # deadlock the worker and, through it, every route that touches
+            # the lock (progress polling, dispatch, the admin queue page).
+            _delete_job(job_id)
+            cleanup_token(token)
+            return jsonify({
+                "error": (
+                    "The audio queue is currently full. Please try again in a few minutes."
+                )
+            }), 503
 
         if job.notify_email:
             _send_job_email(job, "queued")

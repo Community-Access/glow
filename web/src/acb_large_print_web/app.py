@@ -49,10 +49,16 @@ def rate_limit_key() -> str:
     This is abuse protection, not authentication: a forged cookie buys its
     owner a separate bucket, which is exactly what a real participant gets
     anyway.
+
+    Scope the cookie-based key to workshop routes only. Everywhere else --
+    admin sign-in, feedback, uploads -- key purely on the remote address, so
+    an attacker cannot rotate a random participant cookie to mint a fresh
+    bucket per request and walk straight through the brute-force caps.
     """
-    participant = (request.cookies.get(_WORKSHOP_PARTICIPANT_COOKIE) or "").strip()
-    if participant:
-        return f"workshop:{participant[:64]}"
+    if (request.blueprint or "") == "workshop":
+        participant = (request.cookies.get(_WORKSHOP_PARTICIPANT_COOKIE) or "").strip()
+        if participant:
+            return f"workshop:{participant[:64]}"
     return get_remote_address()
 
 

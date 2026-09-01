@@ -13,6 +13,7 @@ pillow>=12.2.0
 pypdf>=6.10.0
 weasyprint>=62.0
 requests>=2.32.0
+defusedxml>=0.7.1
 mutagen>=1.47.0
 lxml>=5.4.0
 trafilatura>=1.10.0

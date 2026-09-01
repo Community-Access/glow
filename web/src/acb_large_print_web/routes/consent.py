@@ -14,6 +14,8 @@ import hmac
 import os
 from datetime import timedelta
 
+from urllib.parse import urlparse
+
 from flask import (
     Blueprint,
     make_response,
@@ -24,6 +26,28 @@ from flask import (
 )
 
 consent_bp = Blueprint("consent", __name__)
+
+
+def _safe_next(next_url: str | None) -> str:
+    """Return a same-site relative path, or the index if unsafe.
+
+    A plain ``startswith(("http://", "https://", "//"))`` reject is bypassable:
+    ``HTTPS://evil.com`` slips through the case-sensitive check, and ``/\\evil``
+    is normalized to ``//evil`` by browsers. Test positively instead -- the
+    target must parse with no scheme and no host, and begin with a single
+    forward slash. The consent page is the first page a new visitor sees, which
+    makes an open redirect here an unusually effective phishing lure.
+    """
+    fallback = url_for("main.index")
+    candidate = (next_url or "").strip()
+    if not candidate.startswith("/"):
+        return fallback
+    if candidate[1:2] in ("/", "\\"):
+        return fallback
+    parsed = urlparse(candidate)
+    if parsed.scheme or parsed.netloc:
+        return fallback
+    return candidate
 
 #: Cookie name.  Increment the suffix if the agreement text changes materially
 #: so that returning users are asked to re-agree.
@@ -105,21 +129,14 @@ def consent_required(req) -> bool:
 
 @consent_bp.route("/", methods=["GET"])
 def consent_form():
-    next_url = request.args.get("next") or url_for("main.index")
-    # Reject open-redirect: only accept relative paths
-    if next_url.startswith(("http://", "https://", "//")):
-        next_url = url_for("main.index")
+    next_url = _safe_next(request.args.get("next"))
     return render_template("consent.html", next_url=next_url)
 
 
 @consent_bp.route("/", methods=["POST"])
 def consent_submit():
     agreed = request.form.get("agreed") == "yes"
-    next_url = request.form.get("next_url") or url_for("main.index")
-
-    # Reject open-redirect
-    if next_url.startswith(("http://", "https://", "//")):
-        next_url = url_for("main.index")
+    next_url = _safe_next(request.form.get("next_url"))
 
     if not agreed:
         return render_template(
@@ -155,9 +172,7 @@ def consent_automation_bypass():
     if not _is_valid_automation_token(supplied_token):
         return "Forbidden", 403
 
-    next_url = request.args.get("next") or url_for("main.index")
-    if next_url.startswith(("http://", "https://", "//")):
-        next_url = url_for("main.index")
+    next_url = _safe_next(request.args.get("next"))
 
     resp = make_response(redirect(next_url))
     resp.set_cookie(

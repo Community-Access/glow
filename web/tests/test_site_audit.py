@@ -195,10 +195,10 @@ def test_expand_with_crawl_respects_depth_and_path_scope(monkeypatch: pytest.Mon
             self.url = url
             self.text = text
 
-    def _fake_get(url: str, timeout: int, headers: dict[str, str]):
+    def _fake_get(url: str, timeout: int = 15):
         return _Resp(url, pages.get(url, ""))
 
-    monkeypatch.setattr(site_audit.requests, "get", _fake_get)
+    monkeypatch.setattr(site_audit, "_http_get", _fake_get)
 
     urls_depth_1 = site_audit._expand_with_crawl(
         ["https://example.com/docs"],
@@ -237,10 +237,10 @@ def test_expand_with_crawl_respects_exclusions(monkeypatch: pytest.MonkeyPatch):
             self.url = url
             self.text = text
 
-    def _fake_get(url: str, timeout: int, headers: dict[str, str]):
+    def _fake_get(url: str, timeout: int = 15):
         return _Resp(url, pages.get(url, ""))
 
-    monkeypatch.setattr(site_audit.requests, "get", _fake_get)
+    monkeypatch.setattr(site_audit, "_http_get", _fake_get)
 
     urls = site_audit._expand_with_crawl(
         ["https://example.com"],
@@ -251,6 +251,89 @@ def test_expand_with_crawl_respects_exclusions(monkeypatch: pytest.MonkeyPatch):
         exclude_url_patterns=("/blog/",),
     )
     assert urls == ["https://example.com", "https://example.com/about"]
+
+
+def test_is_public_url_blocks_internal_targets(monkeypatch: pytest.MonkeyPatch):
+    # Loopback / private / link-local literals are rejected without any DNS.
+    for blocked in (
+        "http://127.0.0.1/",
+        "http://localhost/",  # resolves to loopback
+        "http://169.254.169.254/latest/meta-data/",
+        "http://10.0.0.5/",
+        "http://192.168.1.1/",
+        "http://[::1]/",
+        "http://redis:6379/",  # non-web port
+        "ftp://example.com/",  # non-http scheme
+    ):
+        assert site_audit._is_public_url(blocked) is False, blocked
+
+
+def test_is_public_url_allows_public_host(monkeypatch: pytest.MonkeyPatch):
+    # Stub DNS so the test needs no network and is deterministic.
+    def _fake_getaddrinfo(host, port, *args, **kwargs):
+        return [(2, 1, 6, "", ("93.184.216.34", port))]
+
+    monkeypatch.setattr(site_audit.socket, "getaddrinfo", _fake_getaddrinfo)
+    assert site_audit._is_public_url("https://example.com/page") is True
+
+
+def test_scan_single_page_blocks_ssrf(monkeypatch: pytest.MonkeyPatch, tmp_path: Path):
+    # A non-public target must be turned into a per-page error, never fetched.
+    called = {"n": 0}
+
+    def _should_not_run(*args, **kwargs):
+        called["n"] += 1
+        raise AssertionError("requests.get must not be reached for a blocked URL")
+
+    monkeypatch.setattr(site_audit.requests, "get", _should_not_run)
+    page_dir = tmp_path / "page"
+    page_dir.mkdir()
+    result = site_audit._scan_single_page("http://169.254.169.254/", page_dir)
+    assert result["result"] == "error"
+    assert "non-public" in result["reason"].lower()
+    assert called["n"] == 0
+
+
+def test_normalize_url_rejects_non_web_schemes():
+    assert site_audit._normalize_url("mailto:info@example.com") == ""
+    assert site_audit._normalize_url("tel:+15551234") == ""
+    assert site_audit._normalize_url("javascript:alert(1)") == ""
+    # Bare hosts still get https://, real links pass through.
+    assert site_audit._normalize_url("example.com/path") == "https://example.com/path"
+    assert site_audit._normalize_url("https://example.com/a") == "https://example.com/a"
+
+
+def test_normalize_url_strips_fragment():
+    assert site_audit._normalize_url("https://example.com/page#section") == "https://example.com/page"
+    assert site_audit._normalize_url("https://example.com/#top") == "https://example.com/"
+
+
+def test_page_parser_flushes_title_and_link_without_closing_tags():
+    parser = site_audit._PageParser()
+    parser.feed("<html lang='en'><head><title>My Page")
+    parser.close()
+    assert parser.title == "My Page"
+
+    parser = site_audit._PageParser()
+    parser.feed("<a href='/y'>Home</a><a href='/z'>Docs")
+    parser.close()
+    hrefs = [h for h, _ in parser.links]
+    assert hrefs == ["/y", "/z"]
+
+
+def test_scan_single_page_marks_http_error_as_error(monkeypatch: pytest.MonkeyPatch, tmp_path: Path):
+    class _Resp:
+        status_code = 404
+        url = "https://example.com/missing"
+        text = "<html><body>Not found</body></html>"
+
+    monkeypatch.setattr(site_audit, "_http_get", lambda url, timeout=20: _Resp())
+    page_dir = tmp_path / "page"
+    page_dir.mkdir()
+    result = site_audit._scan_single_page("https://example.com/missing", page_dir)
+    assert result["result"] == "error"
+    assert result["status_code"] == 404
+    assert result["findings"] == []
 
 
 def test_finding_includes_open_learning_resources():

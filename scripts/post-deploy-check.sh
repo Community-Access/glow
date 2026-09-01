@@ -264,14 +264,24 @@ check_url() {
     local url="$2"
     local required="${3:-false}"
     local allow_redirect="${4:-false}"
-    local code
-    code=$(curl -s -o /dev/null -w '%{http_code}' --max-time 10 "$url" 2>/dev/null || echo "000")
+    local code=""
     local ok=0
-    if [[ "$code" == "200" ]]; then
-        ok=1
-    elif [[ "$allow_redirect" == "true" && "$code" =~ ^3[0-9][0-9]$ ]]; then
-        ok=1
-    fi
+    # Retry: these checks run moments after Caddy and the app containers
+    # restart, and a single early probe can catch Caddy mid-reload and
+    # fail a deploy that is actually healthy.
+    local attempt
+    for attempt in 1 2 3 4; do
+        code=$(curl -s -o /dev/null -w '%{http_code}' --max-time 10 "$url" 2>/dev/null || echo "000")
+        if [[ "$code" == "200" ]]; then
+            ok=1
+        elif [[ "$allow_redirect" == "true" && "$code" =~ ^3[0-9][0-9]$ ]]; then
+            ok=1
+        fi
+        if [[ "$ok" -eq 1 ]]; then
+            break
+        fi
+        sleep 5
+    done
 
     if [[ "$ok" -eq 1 ]]; then
         echo "  $label: OK ($code)"
@@ -292,12 +302,17 @@ check_header_contains() {
     local expected_fragment="$4"
     local required="${5:-false}"
     local headers
-    headers=$(curl -s -I --max-time 15 "$url" 2>/dev/null || true)
-
-    if echo "$headers" | grep -Fi "$header_name:" | grep -Fqi "$expected_fragment"; then
-        echo "  $label: OK ($header_name contains '$expected_fragment')"
-        return 0
-    fi
+    # Same retry rationale as check_url: do not fail the deploy on one
+    # probe that raced the Caddy restart.
+    local attempt
+    for attempt in 1 2 3 4; do
+        headers=$(curl -s -I --max-time 15 "$url" 2>/dev/null || true)
+        if echo "$headers" | grep -Fi "$header_name:" | grep -Fqi "$expected_fragment"; then
+            echo "  $label: OK ($header_name contains '$expected_fragment')"
+            return 0
+        fi
+        sleep 5
+    done
 
     echo "  $label: PROBLEM ($header_name missing '$expected_fragment')"
     if [[ "$required" == "true" ]]; then

@@ -9,6 +9,8 @@
 
 <div class="card">
   <h2>Status</h2>
+  <p><label for="job-progress-bar">Progress</label></p>
+  <progress id="job-progress-bar" max="100" value="{{ job.progress }}">{{ job.progress }}%</progress>
   <table>
     <caption>Current background crawl status</caption>
     <tbody>
@@ -16,18 +18,19 @@
       <tr><th scope="row">Progress</th><td><span id="job-progress">{{ job.progress }}</span>%</td></tr>
       <tr><th scope="row">Attempt</th><td><span id="job-attempt">{{ job.attempt }}</span> / <span id="job-max-attempts">{{ job.max_attempts }}</span></td></tr>
       <tr><th scope="row">Message</th><td><span id="job-message">{{ job.message }}</span></td></tr>
-      {% if job.error %}
-      <tr><th scope="row">Error</th><td>{{ job.error }}</td></tr>
-      {% endif %}
+      <tr id="job-error-row" {% if not job.error %}hidden{% endif %}><th scope="row">Error</th><td id="job-error">{{ job.error or "" }}</td></tr>
     </tbody>
   </table>
+  <p id="job-live" class="visually-hidden" role="status" aria-live="polite" aria-atomic="true"></p>
 </div>
 
+{% if access %}
 <div class="card">
   <h2>Private Access</h2>
   <p>Keep this tokenized link private. Access expires {{ job.access_expires_at.isoformat() if job.access_expires_at else "soon" }}.</p>
   <p><a href="{{ url_for('site_audit.site_audit_job', job_id=job_id, access=access) }}">Tokenized status URL</a></p>
 </div>
+{% endif %}
 
 <div class="card">
   <h2>Actions</h2>
@@ -48,33 +51,77 @@
 (function () {
   var stateEl = document.getElementById('job-state');
   var progressEl = document.getElementById('job-progress');
+  var progressBar = document.getElementById('job-progress-bar');
   var messageEl = document.getElementById('job-message');
   var attemptEl = document.getElementById('job-attempt');
   var maxAttemptsEl = document.getElementById('job-max-attempts');
+  var errorRow = document.getElementById('job-error-row');
+  var errorEl = document.getElementById('job-error');
+  var liveEl = document.getElementById('job-live');
   var statusUrlEl = document.getElementById('job-status-url');
   var retryForm = document.getElementById('job-retry-form');
-  var cancelBtn = document.getElementById('job-cancel-btn');
+  var cancelForm = document.querySelector('form[action*="cancel"]');
+  var resultLink = document.getElementById('result-link');
   var pollUrl = statusUrlEl ? statusUrlEl.value : '';
+  var TERMINAL = { complete: 1, cancelled: 1, failed: 1 };
+  var failures = 0;
+  var lastAnnounced = '';
+
+  function announce(text) {
+    if (liveEl && text && text !== lastAnnounced) {
+      liveEl.textContent = text;
+      lastAnnounced = text;
+    }
+  }
+
+  function render(data) {
+    if (stateEl) stateEl.textContent = data.status || '';
+    var pct = Math.max(0, Math.min(100, parseInt(data.progress, 10) || 0));
+    if (progressEl) progressEl.textContent = String(pct);
+    if (progressBar) progressBar.value = pct;
+    if (messageEl) messageEl.textContent = data.message || '';
+    if (attemptEl) attemptEl.textContent = String(data.attempt || 0);
+    if (maxAttemptsEl) maxAttemptsEl.textContent = String(data.max_attempts || 1);
+    if (errorRow && errorEl) {
+      if (data.error) { errorEl.textContent = data.error; errorRow.hidden = false; }
+      else { errorRow.hidden = true; }
+    }
+    if (retryForm) retryForm.hidden = !data.retryable;
+
+    announce((data.status || '') + ', ' + pct + ' percent. ' + (data.message || '') +
+             (data.error ? ' Error: ' + data.error : ''));
+
+    if (TERMINAL[data.status]) {
+      // Do not disable the (possibly focused) cancel button -- that drops
+      // focus to <body>. Hide the whole cancel form and move focus to the
+      // results link so a keyboard/screen-reader user lands somewhere useful.
+      if (cancelForm) cancelForm.hidden = true;
+      if (data.status === 'complete' && resultLink) {
+        try { resultLink.focus(); } catch (e) {}
+      }
+      return true;
+    }
+    return false;
+  }
 
   function poll() {
     fetch(pollUrl, { credentials: 'same-origin' })
-      .then(function (r) { return r.json(); })
+      .then(function (r) {
+        if (!r.ok) { throw new Error('status ' + r.status); }
+        return r.json();
+      })
       .then(function (data) {
-        if (stateEl) stateEl.textContent = data.status || '';
-        if (progressEl) progressEl.textContent = String(data.progress || 0);
-        if (messageEl) messageEl.textContent = data.message || '';
-        if (attemptEl) attemptEl.textContent = String(data.attempt || 0);
-        if (maxAttemptsEl) maxAttemptsEl.textContent = String(data.max_attempts || 1);
-        if (retryForm) retryForm.hidden = !data.retryable;
-        if (cancelBtn && (data.status === 'complete' || data.status === 'cancelled' || data.status === 'failed')) {
-          cancelBtn.disabled = true;
-        }
-        if (data.status === 'complete' || data.status === 'cancelled' || data.status === 'failed') {
-          return;
-        }
+        failures = 0;
+        if (render(data)) { return; }
         window.setTimeout(poll, 2000);
       })
       .catch(function () {
+        failures += 1;
+        if (failures >= 5) {
+          announce('Lost contact with the scan. Reload this page to check its status.');
+          if (messageEl) messageEl.textContent = 'Lost contact with the scan. Reload this page to check its status.';
+          return;
+        }
         window.setTimeout(poll, 3000);
       });
   }

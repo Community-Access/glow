@@ -12,6 +12,16 @@ from flask import Flask
 
 from acb_large_print_web.app import create_app
 
+
+def test_fixable_rule_ids_all_exist():
+    """Quick Wins understates GLOW Fix if an id here does not match a real rule."""
+    from acb_large_print_web.routes.audit import FIXABLE_RULE_IDS
+    from acb_large_print_web.rules import get_all_rule_ids
+
+    unknown = FIXABLE_RULE_IDS - get_all_rule_ids()
+    assert not unknown, f"FIXABLE_RULE_IDS names rules that do not exist: {sorted(unknown)}"
+
+
 # ---------------------------------------------------------------------------
 # Fixtures
 # ---------------------------------------------------------------------------

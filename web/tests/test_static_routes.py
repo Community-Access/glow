@@ -92,6 +92,21 @@ def test_consent_post_relative_next_honoured(client):
     assert "/fix/" in resp.headers.get("Location", "")
 
 
+def test_consent_post_open_redirect_bypass_variants_blocked(client):
+    """Case-mangled schemes and backslash tricks must not escape the site."""
+    for evil in (
+        "HTTPS://evil.example.com/",
+        "https:/evil.example.com/",
+        "/\\evil.example.com",
+        "//evil.example.com",
+        "\\/evil.example.com",
+    ):
+        resp = client.post("/consent/", data={"agreed": "yes", "next_url": evil})
+        assert resp.status_code in (302, 303)
+        location = resp.headers.get("Location", "")
+        assert "evil.example.com" not in location, evil
+
+
 def test_status_path_is_exempt_from_consent_gate():
     req = SimpleNamespace(path="/status", cookies={})
     assert consent_required(req) is False
