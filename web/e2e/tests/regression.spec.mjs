@@ -148,7 +148,13 @@ test.describe('GLOW web regression suite', () => {
     throw new Error('Template flow produced neither direct download nor job progress redirect');
   });
 
-  test('site-audit flow scans local page and renders artifact links', async ({ page, baseURL }) => {
+  // Named for what it actually verifies. The SSRF guard refuses private
+  // addresses, so a scan aimed at this test server is always refused: this
+  // exercises submission, the results page, and the artifact links, and asserts
+  // the refusal is reported honestly. It does NOT prove scanning works -- the
+  // scan engine is covered by web/tests/test_site_audit.py, and the results
+  // page in its populated state by the seeded audit in axe-audit.spec.mjs.
+  test('site-audit flow renders results and reports a refused scan', async ({ page, baseURL }) => {
     test.setTimeout(120000);
 
     await page.goto('/site-audit/');
@@ -177,6 +183,16 @@ test.describe('GLOW web regression suite', () => {
     await expect(page.getByRole('link', { name: /Download JSON summary/i })).toBeVisible();
     await expect(page.getByRole('link', { name: /Download findings CSV/i })).toBeVisible();
     await expect(page.getByRole('link', { name: /Download complete bundle \(ZIP\)/i })).toBeVisible();
+
+    // The refused page must be reported as a failure, not silently counted as
+    // scanned. Without this the test passes identically whether the run
+    // reported an honest error or wrongly claimed a clean page.
+    const perPageRow = page.locator('table', { has: page.locator('caption', { hasText: /Pages included in this scan run/i }) })
+      .locator('tbody tr')
+      .first();
+    await expect(perPageRow).toContainText('error');
+    await expect(page.getByRole('listitem').filter({ hasText: /^Failed:/ })).toContainText('1');
+    await expect(page.getByRole('listitem').filter({ hasText: /^Scanned:/ })).toContainText('0');
   });
 
   test('static reference pages load', async ({ page }) => {

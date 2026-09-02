@@ -1,0 +1,80 @@
+name: Tests
+
+# The "Run tests" required status check.
+#
+# This job used to live only in deploy.yml, which triggers on push to main and
+# workflow_dispatch -- never on pull_request. Branch protection required a
+# check named "Run tests" that a pull request could therefore never produce, so
+# every PR waited forever on a check that could not run, and the only way to
+# land anything was to push straight to main with admin enforcement disabled.
+#
+# Deliberately no `paths:` filter. A required check that is path-filtered is the
+# same trap in a smaller form: a PR touching only unfiltered paths never reports
+# the check and blocks just as permanently.
+on:
+  pull_request:
+  push:
+    branches: [main, "release/**"]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: tests-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    name: Run tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.13"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+
+          install_with_retry() {
+            local max_attempts="$1"
+            shift
+            local attempt=1
+            local delay=5
+            while true; do
+              if "$@"; then
+                return 0
+              fi
+              if [ "$attempt" -ge "$max_attempts" ]; then
+                echo "Command failed after ${attempt} attempts: $*"
+                return 1
+              fi
+              echo "Attempt ${attempt} failed. Retrying in ${delay}s: $*"
+              sleep "$delay"
+              attempt=$((attempt + 1))
+              delay=$((delay * 2))
+            done
+          }
+
+          install_with_retry 4 python -m pip install --upgrade --force-reinstall "git+https://github.com/Community-Access/quill-glow-core.git@main"
+          install_with_retry 4 python -m pip install -e ./desktop
+          install_with_retry 4 python -m pip install -e ./web
+          install_with_retry 4 python -m pip install -r ./mcp_server/requirements.txt
+          install_with_retry 4 python -m pip install -r ./mcp_server/tests/requirements.txt
+          install_with_retry 4 python -m pip install pytest
+
+      - name: Install Pandoc
+        run: sudo apt-get install -y pandoc
+
+      - name: Verify MCP test dependencies
+        run: |
+          python -c "import fastapi, starlette, pydantic"
+
+      - name: Run web tests
+        run: python -m pytest web/tests/ -x -q
+
+      - name: Run MCP server tests
+        run: python -m pytest mcp_server/tests/ -x -q
