@@ -4,6 +4,22 @@
 
 ## Quick Reference
 
+> **Production deploys are automatic.** Pushing to `main` (or `release/**`) with
+> changes under `web/`, `mcp_server/`, `desktop/src/`, the deploy scripts, or
+> `CHANGELOG.md` triggers the **Deploy Web App** workflow, which runs
+> `deploy-app.sh` on the server over SSH. In the normal case you do not need to
+> log in and deploy anything by hand.
+>
+> **Do not run `deploy-app.sh` manually while an Actions deploy may be running.**
+> The workflow's `concurrency: deploy-production` group serialises Actions runs
+> against each other, but it cannot see a person on SSH. Two concurrent runs
+> collide in `docker compose up` and the deploy fails with
+> `Conflict. The container name "..._web-web-1" is already in use` — this has
+> happened. Before any manual deploy, check the Actions tab (or
+> `gh run list --workflow=deploy.yml`) and wait for in-flight runs to finish.
+> Manual deploys are for recovery, a `workflow_dispatch` re-run, or when Actions
+> itself is unavailable.
+
 - **Automated Deployment Script:** `bash ~/app/scripts/deploy-app.sh`
 - **Manual Maintenance Toggle:** `bash ~/app/scripts/maintenance-mode.sh {on|off|status}`
 - **Complete Strategy & Troubleshooting:** The full deployment strategy is maintained in the repository documentation for operators working from the source tree.

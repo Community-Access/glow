@@ -6,8 +6,19 @@ The Community-Access/glow repository enforces branch protection rules on the `ma
 
 ### Status Checks
 - **Required:** All CI workflows must pass before merge (strict mode)
-- **Tests:** "Run tests" workflow must complete successfully
+- **Tests:** "Run tests" must complete successfully. This check is produced by
+  `.github/workflows/tests.yml`, which runs on `pull_request` **and** on pushes
+  to `main`.
 - **Branch must be up-to-date:** New commits to base branch require re-sync before merge
+
+> **Why "Run tests" has its own workflow.** It previously lived only in
+> `deploy.yml`, which triggers on push and `workflow_dispatch` but never on
+> `pull_request`. A pull request could therefore never produce the check it was
+> required to pass, so every PR blocked indefinitely and admin enforcement was
+> switched off so work could land by pushing directly to `main`. If this check
+> is ever moved or renamed, update the required-status-check context at the same
+> time, and keep it free of a `paths:` filter — a path-filtered required check
+> silently reintroduces the same deadlock for PRs that touch other paths.
 
 ### Code Review
 - **Minimum reviews:** 1 approving review required before merge
