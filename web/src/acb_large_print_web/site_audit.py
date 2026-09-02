@@ -37,6 +37,7 @@ _WCAG_UNDERSTANDING_URLS: dict[str, str] = {
     "2.4.4": "https://www.w3.org/WAI/WCAG22/Understanding/link-purpose-in-context.html",
     "2.4.6": "https://www.w3.org/WAI/WCAG22/Understanding/headings-and-labels.html",
     "2.4.7": "https://www.w3.org/WAI/WCAG22/Understanding/focus-visible.html",
+    "2.4.10": "https://www.w3.org/WAI/WCAG22/Understanding/section-headings.html",
     "3.1.1": "https://www.w3.org/WAI/WCAG22/Understanding/language-of-page.html",
     "3.3.1": "https://www.w3.org/WAI/WCAG22/Understanding/error-identification.html",
     "3.3.2": "https://www.w3.org/WAI/WCAG22/Understanding/labels-or-instructions.html",
@@ -73,6 +74,126 @@ _RULE_LEARNING_URLS: dict[str, list[tuple[str, str]]] = {
         ("W3C: Link Purpose (SC 2.4.4)", _WCAG_UNDERSTANDING_URLS["2.4.4"]),
         ("W3C Tutorial: Link text", "https://www.w3.org/WAI/tutorials/links/link-text/"),
     ],
+    "HEURISTIC-HEADING-NONE": [
+        ("W3C Tutorial: Headings", "https://www.w3.org/WAI/tutorials/page-structure/headings/"),
+        ("W3C: Section Headings (SC 2.4.10)", _WCAG_UNDERSTANDING_URLS["2.4.10"]),
+    ],
+    "HEURISTIC-HEADING-NO-H1": [
+        ("W3C Tutorial: Headings", "https://www.w3.org/WAI/tutorials/page-structure/headings/"),
+        ("W3C: Info and Relationships (SC 1.3.1)", _WCAG_UNDERSTANDING_URLS["1.3.1"]),
+    ],
+    "HEURISTIC-HEADING-MULTIPLE-H1": [
+        ("W3C Tutorial: Headings", "https://www.w3.org/WAI/tutorials/page-structure/headings/"),
+    ],
+    "HEURISTIC-HEADING-SKIPPED-LEVEL": [
+        ("W3C Tutorial: Headings", "https://www.w3.org/WAI/tutorials/page-structure/headings/"),
+        ("W3C: Info and Relationships (SC 1.3.1)", _WCAG_UNDERSTANDING_URLS["1.3.1"]),
+    ],
+    "HEURISTIC-HEADING-SPARSE": [
+        ("W3C: Section Headings (SC 2.4.10)", _WCAG_UNDERSTANDING_URLS["2.4.10"]),
+        ("W3C Tutorial: Headings", "https://www.w3.org/WAI/tutorials/page-structure/headings/"),
+    ],
+    "HEURISTIC-HEADING-EMPTY": [
+        ("W3C: Headings and Labels (SC 2.4.6)", _WCAG_UNDERSTANDING_URLS["2.4.6"]),
+        ("W3C Tutorial: Headings", "https://www.w3.org/WAI/tutorials/page-structure/headings/"),
+    ],
+    "HEURISTIC-IMAGE-AS-HEADING": [
+        ("W3C Tutorial: Headings", "https://www.w3.org/WAI/tutorials/page-structure/headings/"),
+        ("W3C Tutorial: Images of text", "https://www.w3.org/WAI/tutorials/images/textual/"),
+    ],
+    "HEURISTIC-TITLE-GENERIC": [
+        ("W3C: Page Titled (SC 2.4.2)", _WCAG_UNDERSTANDING_URLS["2.4.2"]),
+        ("W3C Tutorial: Page titles", "https://www.w3.org/WAI/tutorials/page-structure/title/"),
+    ],
+    "HEURISTIC-TITLE-DUPLICATE": [
+        ("W3C: Page Titled (SC 2.4.2)", _WCAG_UNDERSTANDING_URLS["2.4.2"]),
+        ("W3C Tutorial: Page titles", "https://www.w3.org/WAI/tutorials/page-structure/title/"),
+    ],
+    "HEURISTIC-TITLE-NOT-DESCRIPTIVE": [
+        ("W3C: Page Titled (SC 2.4.2)", _WCAG_UNDERSTANDING_URLS["2.4.2"]),
+        ("W3C Tutorial: Page titles", "https://www.w3.org/WAI/tutorials/page-structure/title/"),
+    ],
+}
+
+# Best-practice rules are real usability problems but are not, on their own, a
+# WCAG 2.2 AA failure. They are tagged so reports can say so plainly instead of
+# leaving a site owner to guess whether they have broken the law.
+_BEST_PRACTICE_RULES = frozenset(
+    {
+        "HEURISTIC-HEADING-NONE",
+        "HEURISTIC-HEADING-NO-H1",
+        "HEURISTIC-HEADING-MULTIPLE-H1",
+        "HEURISTIC-HEADING-SKIPPED-LEVEL",
+        "HEURISTIC-HEADING-SPARSE",
+        "HEURISTIC-HEADING-EMPTY",
+        "HEURISTIC-IMAGE-AS-HEADING",
+        "HEURISTIC-TITLE-GENERIC",
+        "HEURISTIC-TITLE-DUPLICATE",
+        "HEURISTIC-TITLE-NOT-DESCRIPTIVE",
+    }
+)
+
+# Plain-language "what do I actually do about this?" text. The rule id and the
+# WCAG number tell an expert what happened; these tell everyone else.
+_RULE_GUIDANCE: dict[str, str] = {
+    "HEURISTIC-HTML-LANG": (
+        "Screen readers use this to pick the right voice and pronunciation. "
+        "Add lang=\"en\" (or the page's language) to the <html> tag."
+    ),
+    "HEURISTIC-HTML-TITLE": (
+        "The title is the first thing a screen reader announces and what shows in "
+        "browser tabs and bookmarks. Add a <title> describing this page."
+    ),
+    "HEURISTIC-IMG-ALT": (
+        "Add alt text describing what each image shows. If an image is purely "
+        "decorative, give it an empty alt=\"\" so screen readers skip it."
+    ),
+    "HEURISTIC-LINK-TEXT": (
+        "Screen reader users often browse a list of a page's links out of context, "
+        "where \"click here\" means nothing. Say where the link goes instead."
+    ),
+    "HEURISTIC-HEADING-NONE": (
+        "Headings are how screen reader and keyboard users jump around a page. "
+        "With none, the only way through is to read every line in order. "
+        "Mark each section's title as a heading (<h2>, <h3>, and so on)."
+    ),
+    "HEURISTIC-HEADING-NO-H1": (
+        "Every page should start with one <h1> naming what the page is about, "
+        "so people know where they have landed."
+    ),
+    "HEURISTIC-HEADING-MULTIPLE-H1": (
+        "Use a single <h1> for the page's main title and <h2> for the sections "
+        "under it, so the page has one clear top level."
+    ),
+    "HEURISTIC-HEADING-SKIPPED-LEVEL": (
+        "Heading levels should step down one at a time (h1, then h2, then h3). "
+        "A skipped level makes the page outline sound like content is missing."
+    ),
+    "HEURISTIC-HEADING-SPARSE": (
+        "This page has a lot of content but almost no headings, so there is no "
+        "way to skim or skip ahead. Add an <h2> at the start of each section."
+    ),
+    "HEURISTIC-HEADING-EMPTY": (
+        "This heading announces nothing. If it is an image, give the image alt "
+        "text; otherwise put the section's name inside the heading tag."
+    ),
+    "HEURISTIC-IMAGE-AS-HEADING": (
+        "Graphics appear to be doing the visual job of section headings. A sighted "
+        "visitor sees the structure, but a screen reader user gets no headings to "
+        "navigate by. Put a real heading tag beside or behind each of these images."
+    ),
+    "HEURISTIC-TITLE-GENERIC": (
+        "The title does not say which page this is. Lead with the page's own "
+        "subject, then the site name, for example \"Projects | Stow Lions Club\"."
+    ),
+    "HEURISTIC-TITLE-DUPLICATE": (
+        "Several pages share this exact title, so tabs, bookmarks, history, and "
+        "search results cannot be told apart. Give each page its own title."
+    ),
+    "HEURISTIC-TITLE-NOT-DESCRIPTIVE": (
+        "The title does not match what the page is actually about. Make it "
+        "describe this page's content, not just the site."
+    ),
 }
 
 
@@ -86,6 +207,29 @@ class SiteAuditOptions:
     exclude_url_patterns: tuple[str, ...] = ()
     strict_open_source_only: bool = False
     force: bool = False
+    # Best-practice checks. These are not WCAG failures on their own, so they
+    # are reported separately from conformance findings and can be switched
+    # off by anyone who only wants pass/fail conformance results.
+    check_heading_structure: bool = True
+    check_title_quality: bool = True
+
+
+@dataclass(slots=True)
+class _Heading:
+    """One heading found on the page, with the text a screen reader announces."""
+
+    level: int
+    text: str
+    # True when the heading's only content was an image, so its announced text
+    # comes entirely from that image's alt attribute (empty alt = silent heading).
+    image_only: bool
+
+
+# Content-bearing tags whose text counts toward the page's word total. Used to
+# tell a real content page (which needs section headings) apart from a stub.
+_BLOCK_TEXT_TAGS = frozenset({"p", "li", "td", "th", "dd", "dt", "figcaption", "blockquote"})
+
+_HEADING_TAGS = frozenset({"h1", "h2", "h3", "h4", "h5", "h6"})
 
 
 class _PageParser(HTMLParser):
@@ -99,9 +243,28 @@ class _PageParser(HTMLParser):
         self.links: list[tuple[str, str]] = []
         self._current_anchor_href = ""
         self._current_anchor_text: list[str] = []
+        # Heading structure and content-volume signals for the best-practice checks.
+        self.headings: list[_Heading] = []
+        self.img_with_alt_text: list[str] = []
+        self.word_count = 0
+        self._heading_level = 0
+        self._heading_parts: list[str] = []
+        self._heading_had_img_alt: list[str] = []
+        # The tag that opened the current heading, plus how deep the same tag
+        # name is nested inside it, so the heading closes on its own end tag
+        # rather than on the first nested one.
+        self._heading_tag = ""
+        self._heading_nest = 0
+        self._block_depth = 0
+        self._skip_depth = 0
 
     def handle_starttag(self, tag: str, attrs: list[tuple[str, str | None]]) -> None:
         attrs_map = dict(attrs)
+        if tag in {"script", "style"}:
+            self._skip_depth += 1
+            return
+        if self._heading_level and tag == self._heading_tag:
+            self._heading_nest += 1
         if tag == "html":
             self.doc_lang = (attrs_map.get("lang") or "").strip()
         elif tag == "title":
@@ -110,17 +273,76 @@ class _PageParser(HTMLParser):
         elif tag == "img":
             if "alt" not in attrs_map:
                 self.img_missing_alt += 1
+            else:
+                alt = (attrs_map.get("alt") or "").strip()
+                if alt:
+                    self.img_with_alt_text.append(alt)
+                if self._heading_level:
+                    self._heading_had_img_alt.append(alt)
         elif tag == "a":
             self._current_anchor_href = (attrs_map.get("href") or "").strip()
             self._current_anchor_text = []
+        elif tag in _HEADING_TAGS:
+            self._start_heading(int(tag[1]), tag)
+        elif attrs_map.get("role", "").strip().lower() == "heading":
+            # ARIA headings announce exactly like native ones, so an outline
+            # built only from h1-h6 would misreport a page that uses them.
+            try:
+                level = int((attrs_map.get("aria-level") or "2").strip())
+            except ValueError:
+                level = 2
+            self._start_heading(max(1, min(6, level)), tag)
+        elif tag in _BLOCK_TEXT_TAGS:
+            self._block_depth += 1
+
+    def _start_heading(self, level: int, tag: str) -> None:
+        self._heading_level = level
+        self._heading_tag = tag
+        self._heading_nest = 0
+        self._heading_parts = []
+        self._heading_had_img_alt = []
+
+    def _end_heading(self) -> None:
+        if not self._heading_level:
+            return
+        own_text = " ".join(p.strip() for p in self._heading_parts if p.strip()).strip()
+        image_only = not own_text and bool(self._heading_had_img_alt)
+        text = own_text or " ".join(a for a in self._heading_had_img_alt if a).strip()
+        self.headings.append(_Heading(level=self._heading_level, text=text, image_only=image_only))
+        self._heading_level = 0
+        self._heading_tag = ""
+        self._heading_nest = 0
+        self._heading_parts = []
+        self._heading_had_img_alt = []
 
     def handle_data(self, data: str) -> None:
+        if self._skip_depth:
+            return
         if self._in_title:
             self._title_parts.append(data)
-        elif self._current_anchor_href:
+            return
+        if self._heading_level:
+            self._heading_parts.append(data)
+            if data.strip():
+                self._heading_had_own_text = True
+        elif self._block_depth:
+            self.word_count += len(data.split())
+        if self._current_anchor_href:
             self._current_anchor_text.append(data)
 
     def handle_endtag(self, tag: str) -> None:
+        if tag in {"script", "style"}:
+            self._skip_depth = max(0, self._skip_depth - 1)
+            return
+        # A heading ends only on its own tag, never on a nested one. Closing on
+        # any end tag truncated headings like <h2><span class="icon"></span>Projects</h2>
+        # and reported them as announcing no text.
+        if self._heading_level and tag == self._heading_tag:
+            if self._heading_nest:
+                self._heading_nest -= 1
+            else:
+                self._end_heading()
+            return
         if tag == "title":
             self._in_title = False
             self.title = "".join(self._title_parts).strip()
@@ -129,6 +351,8 @@ class _PageParser(HTMLParser):
             self.links.append((self._current_anchor_href, anchor_text))
             self._current_anchor_href = ""
             self._current_anchor_text = []
+        elif tag in _BLOCK_TEXT_TAGS:
+            self._block_depth = max(0, self._block_depth - 1)
 
     def close(self) -> None:
         # Flush title/anchor state that a missing or chunk-split closing tag
@@ -143,6 +367,7 @@ class _PageParser(HTMLParser):
             self.links.append((self._current_anchor_href, anchor_text))
             self._current_anchor_href = ""
             self._current_anchor_text = []
+        self._end_heading()
 
 
 def is_valid_run_id(run_id: str) -> bool:
@@ -272,6 +497,8 @@ def run_site_audit(
             url,
             page_dir,
             strict_open_source_only=options.strict_open_source_only,
+            check_heading_structure=options.check_heading_structure,
+            check_title_quality=options.check_title_quality,
         )
         page_result["index"] = index
         pages.append(page_result)
@@ -288,6 +515,22 @@ def run_site_audit(
 
         _write_json(page_json, page_result)
 
+    # Duplicate titles can only be seen across the run, so this runs once all
+    # pages are in. It appends to each affected page's findings.
+    if options.check_title_quality:
+        duplicate_findings = _duplicate_title_findings(
+            pages, strict_open_source_only=options.strict_open_source_only
+        )
+        all_findings.extend(duplicate_findings)
+        for page in pages:
+            page_json = run_dir / "pages" / _slug_for_url(str(page.get("url") or "")) / "page.json"
+            if page_json.parent.exists():
+                _write_json(page_json, page)
+
+    notices = _build_run_notices(pages)
+    for notice in notices:
+        log_lines.append(f"notice: {notice['title']} - {notice['message']}")
+
     elapsed_ms = int((time.time() - started) * 1000)
     summary = {
         "run_id": run_id,
@@ -302,6 +545,8 @@ def run_site_audit(
             "exclude_url_patterns": list(options.exclude_url_patterns),
             "strict_open_source_only": options.strict_open_source_only,
             "force": options.force,
+            "check_heading_structure": options.check_heading_structure,
+            "check_title_quality": options.check_title_quality,
         },
         "totals": {
             **totals,
@@ -309,6 +554,7 @@ def run_site_audit(
             "pages_total": len(scan_urls),
         },
         "cancelled": cancelled,
+        "notices": notices,
         "wcag_rollup": dict(sorted(wcag_rollup.items())),
         "pages": pages,
     }
@@ -320,7 +566,50 @@ def run_site_audit(
     return summary
 
 
-def _scan_single_page(url: str, page_dir: Path, *, strict_open_source_only: bool = False) -> dict[str, Any]:
+def _build_run_notices(pages: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    """Run-level status messages about the scan itself, not about the pages.
+
+    The deep scanner failing is one event, however many pages it affected. It is
+    reported once, in plain language, with the raw error tucked away for whoever
+    maintains the server.
+    """
+    # Only pages that actually carry a deep-scan record can be counted. A run
+    # that reuses cached pages has results without one, and including those in
+    # the denominator produced counts like "2 of 0 pages".
+    attempted = [p for p in pages if isinstance(p.get("deep_scan"), dict)]
+    failed = [p for p in attempted if not p["deep_scan"].get("ok")]
+    if not failed:
+        return []
+
+    first = failed[0]["deep_scan"]
+    if len(failed) == 1:
+        scope = "1 page in this scan"
+    elif len(failed) == len(attempted):
+        scope = f"all {len(failed)} pages in this scan"
+    else:
+        scope = f"{len(failed)} of {len(attempted)} pages in this scan"
+
+    return [
+        {
+            "id": "deep-scan-unavailable",
+            "level": "warning",
+            "title": "Some automated checks could not run",
+            "message": f"{first.get('message', _SCANNER_FALLBACK_MESSAGE)} This affected {scope}.",
+            "consequence": _SCANNER_CONSEQUENCE,
+            "detail": first.get("detail", ""),
+            "affected_pages": len(failed),
+        }
+    ]
+
+
+def _scan_single_page(
+    url: str,
+    page_dir: Path,
+    *,
+    strict_open_source_only: bool = False,
+    check_heading_structure: bool = True,
+    check_title_quality: bool = True,
+) -> dict[str, Any]:
     try:
         resp = _http_get(url, timeout=20)
     except Exception as exc:
@@ -446,6 +735,15 @@ def _scan_single_page(url: str, page_dir: Path, *, strict_open_source_only: bool
             )
         )
 
+    if check_heading_structure:
+        findings.extend(
+            _heading_findings(url, parser, strict_open_source_only=strict_open_source_only)
+        )
+    if check_title_quality:
+        findings.extend(
+            _title_findings(url, parser, strict_open_source_only=strict_open_source_only)
+        )
+
     wcag_tags: dict[str, int] = {}
     axe_json_path = page_dir / "axe.json"
     axe_data: dict[str, Any] | list[dict[str, Any]] | None = None
@@ -456,6 +754,8 @@ def _scan_single_page(url: str, page_dir: Path, *, strict_open_source_only: bool
             axe_data = _load_json(axe_json_path, None)
         except Exception as exc:
             axe_error = str(exc)
+    else:
+        axe_error = "The deep scanner is not installed on this server."
 
     if axe_data:
         violations = axe_data if isinstance(axe_data, list) else [axe_data]
@@ -492,17 +792,18 @@ def _scan_single_page(url: str, page_dir: Path, *, strict_open_source_only: bool
                 for tag in violation_tags:
                     if str(tag).lower().startswith("wcag"):
                         wcag_tags[tag] = wcag_tags.get(tag, 0) + count
-    elif axe_error:
-        findings.append(
-            _finding(
-                url,
-                "AXE-UNAVAILABLE",
-                "minor",
-                f"axe-cli scan unavailable: {axe_error}",
-                "",
-                strict_open_source_only=strict_open_source_only,
-            )
-        )
+    # A scanner outage is a problem with GLOW, not with the page being scanned.
+    # Reporting it as a per-page "finding" put an unreadable npm stack trace in
+    # every site owner's results and made it look like their own defect, so it
+    # is carried as run-level status and summarised once instead.
+    if axe_data:
+        axe_status = {"ok": True}
+    else:
+        axe_status = {
+            "ok": False,
+            "message": _friendly_scanner_message(axe_error or ""),
+            "detail": _shorten_detail(axe_error or ""),
+        }
 
     return {
         "url": url,
@@ -514,6 +815,7 @@ def _scan_single_page(url: str, page_dir: Path, *, strict_open_source_only: bool
         "findings": findings,
         "finding_count": len(findings),
         "wcag_tags": dict(sorted(wcag_tags.items())),
+        "deep_scan": axe_status,
     }
 
 
@@ -859,7 +1161,289 @@ def _finding(
         "help_url": help_url,
         "wcag_criteria": wcag_criteria,
         "resources": resources,
+        # Plain-language remediation advice, and whether this is a hard WCAG
+        # failure or a best practice, so reports never leave a non-specialist
+        # guessing what a rule id means or how much it matters.
+        "guidance": _RULE_GUIDANCE.get(rule_id, ""),
+        "best_practice": rule_id in _BEST_PRACTICE_RULES,
     }
+
+
+# A page with at least this much prose is treated as a real content page, so
+# "almost no headings" is a navigation problem rather than a short stub page.
+_SPARSE_HEADING_WORD_FLOOR = 250
+# Roughly how much content one heading can reasonably cover. A flat count is the
+# wrong test: the reported page had two headings across ~960 words and was still
+# impossible to navigate, so the expectation scales with content instead.
+_WORDS_PER_HEADING = 300
+# Never demand more than this many, so a long single-topic article is not buried
+# in requests to chop it up.
+_MAX_EXPECTED_HEADINGS = 6
+# Enough alt-bearing graphics to suggest they are carrying the page's structure.
+_IMAGE_AS_HEADING_FLOOR = 3
+
+
+def _expected_heading_count(word_count: int) -> int:
+    """How many headings a page this size needs to stay navigable."""
+    if word_count < _SPARSE_HEADING_WORD_FLOOR:
+        return 0
+    scaled = -(-word_count // _WORDS_PER_HEADING)  # ceiling division
+    return max(2, min(_MAX_EXPECTED_HEADINGS, scaled))
+
+_GENERIC_TITLES = frozenset(
+    {
+        "",
+        "home",
+        "home page",
+        "homepage",
+        "index",
+        "untitled",
+        "untitled document",
+        "untitled page",
+        "new page",
+        "welcome",
+        "page",
+        "default",
+        "document",
+        "main",
+        "main page",
+        "web page",
+        "website",
+    }
+)
+
+# Words too common to prove a title actually describes the page.
+_TITLE_STOPWORDS = frozenset(
+    {
+        "a", "an", "and", "at", "by", "for", "from", "in", "of", "on", "or",
+        "our", "the", "to", "with", "page", "home", "site", "website", "welcome",
+        "official", "www", "com", "org", "net", "html", "htm", "php", "index",
+    }
+)
+
+
+def _title_keywords(text: str) -> set[str]:
+    """Significant lowercase words in a title, heading, or URL slug."""
+    words = re.split(r"[^a-z0-9]+", (text or "").lower())
+    return {w for w in words if len(w) > 2 and w not in _TITLE_STOPWORDS}
+
+
+def _heading_findings(
+    url: str,
+    parser: _PageParser,
+    *,
+    strict_open_source_only: bool = False,
+) -> list[dict[str, Any]]:
+    """Best-practice checks on the page's heading outline.
+
+    Headings are how screen reader users navigate; a page can pass every
+    automated WCAG check and still be unusable because it has none. These are
+    reported as best practice, not as conformance failures.
+    """
+    findings: list[dict[str, Any]] = []
+    headings = parser.headings
+    levels = [h.level for h in headings]
+    h1_count = levels.count(1)
+    expected = _expected_heading_count(parser.word_count)
+
+    def add(rule_id: str, severity: str, message: str, location: str, wcag_tags: list[str]) -> None:
+        findings.append(
+            _finding(
+                url,
+                rule_id,
+                severity,
+                message,
+                location,
+                wcag_tags=wcag_tags,
+                strict_open_source_only=strict_open_source_only,
+            )
+        )
+
+    if not headings:
+        add(
+            "HEURISTIC-HEADING-NONE",
+            "serious",
+            "This page has no headings at all, so there is no way to skim it or jump between sections.",
+            "body",
+            ["wcag131"],
+        )
+    else:
+        if h1_count == 0:
+            add(
+                "HEURISTIC-HEADING-NO-H1",
+                "moderate",
+                "This page has headings but no top-level heading (h1) naming what the page is about.",
+                "body",
+                ["wcag131"],
+            )
+        elif h1_count > 1:
+            add(
+                "HEURISTIC-HEADING-MULTIPLE-H1",
+                "minor",
+                f"This page has {h1_count} top-level headings (h1). A page normally has one.",
+                "h1",
+                ["wcag131"],
+            )
+
+        # Level jumps: h1 -> h3 sounds to a screen reader user like a section
+        # was skipped. Only downward jumps matter; coming back up is normal.
+        previous = levels[0]
+        for level in levels[1:]:
+            if level > previous + 1:
+                add(
+                    "HEURISTIC-HEADING-SKIPPED-LEVEL",
+                    "moderate",
+                    f"Heading levels jump from h{previous} to h{level}, skipping a level in the page outline.",
+                    f"h{level}",
+                    ["wcag131"],
+                )
+                break
+            previous = level
+
+        empty_headings = sum(1 for h in headings if not h.text.strip())
+        if empty_headings:
+            add(
+                "HEURISTIC-HEADING-EMPTY",
+                "serious",
+                f"Detected {empty_headings} heading(s) that announce no text, so they are silent to a screen reader.",
+                "h1, h2, h3, h4, h5, h6",
+                ["wcag246"],
+            )
+
+        # A page with substantial content but hardly any headings: the reported
+        # case was one h1 plus a stray subheading across ~960 words.
+        if expected and len(headings) < expected:
+            add(
+                "HEURISTIC-HEADING-SPARSE",
+                "moderate",
+                (
+                    f"This page has roughly {parser.word_count} words of content but only "
+                    f"{len(headings)} heading(s). A page this size normally needs at least "
+                    f"{expected} to be skimmed or navigated by section."
+                ),
+                "body",
+                ["wcag2410"],
+            )
+
+    # Graphics standing in for section headings: several meaningful images, a
+    # substantial page, and too little heading structure to go with them.
+    if (
+        len(parser.img_with_alt_text) >= _IMAGE_AS_HEADING_FLOOR
+        and expected
+        and len(headings) < expected
+    ):
+        add(
+            "HEURISTIC-IMAGE-AS-HEADING",
+            "moderate",
+            (
+                f"Detected {len(parser.img_with_alt_text)} content images but only {len(headings)} heading(s). "
+                "Graphics may be doing the visual job of section headings, which gives screen "
+                "reader users nothing to navigate by."
+            ),
+            "img",
+            ["wcag131"],
+        )
+
+    return findings
+
+
+def _title_findings(
+    url: str,
+    parser: _PageParser,
+    *,
+    strict_open_source_only: bool = False,
+) -> list[dict[str, Any]]:
+    """Best-practice checks on whether the title actually describes the page.
+
+    A present-but-useless title passes the WCAG 2.4.2 automated check while
+    still leaving tabs, bookmarks, and history entries indistinguishable.
+    """
+    title = (parser.title or "").strip()
+    if not title:
+        # Already reported as a conformance failure by HEURISTIC-HTML-TITLE.
+        return []
+
+    findings: list[dict[str, Any]] = []
+    normalized = re.sub(r"\s+", " ", title).strip().lower()
+
+    if normalized in _GENERIC_TITLES:
+        findings.append(
+            _finding(
+                url,
+                "HEURISTIC-TITLE-GENERIC",
+                "moderate",
+                f'The page title "{title}" does not say which page this is.',
+                "head > title",
+                wcag_tags=["wcag242"],
+                strict_open_source_only=strict_open_source_only,
+            )
+        )
+        return findings
+
+    # Does the title share any significant word with the page's own h1 or with
+    # the URL slug? If not, it is almost certainly the site name on every page.
+    title_words = _title_keywords(title)
+    if not title_words:
+        return findings
+
+    h1_text = next((h.text for h in parser.headings if h.level == 1 and h.text.strip()), "")
+    slug = urlparse(url).path.rsplit("/", 1)[-1]
+    slug_words = _title_keywords(slug.rsplit(".", 1)[0])
+    heading_words = _title_keywords(h1_text) | slug_words
+
+    # With nothing to compare against we cannot judge the title; stay quiet
+    # rather than guess.
+    if heading_words and not (title_words & heading_words):
+        subject = f'the page heading "{h1_text}"' if h1_text.strip() else "this page's address"
+        findings.append(
+            _finding(
+                url,
+                "HEURISTIC-TITLE-NOT-DESCRIPTIVE",
+                "minor",
+                f'The page title "{title}" shares no wording with {subject}, so it may not describe this page.',
+                "head > title",
+                wcag_tags=["wcag242"],
+                strict_open_source_only=strict_open_source_only,
+            )
+        )
+
+    return findings
+
+
+def _duplicate_title_findings(
+    pages: list[dict[str, Any]],
+    *,
+    strict_open_source_only: bool = False,
+) -> list[dict[str, Any]]:
+    """Flag pages in this run that share one title. Cross-page by nature."""
+    by_title: dict[str, list[dict[str, Any]]] = {}
+    for page in pages:
+        if page.get("result") not in {"ok", "skipped"}:
+            continue
+        title = re.sub(r"\s+", " ", str(page.get("title") or "")).strip()
+        if not title:
+            continue
+        by_title.setdefault(title.lower(), []).append(page)
+
+    findings: list[dict[str, Any]] = []
+    for group in by_title.values():
+        if len(group) < 2:
+            continue
+        title = str(group[0].get("title") or "").strip()
+        for page in group:
+            finding = _finding(
+                str(page.get("url") or ""),
+                "HEURISTIC-TITLE-DUPLICATE",
+                "moderate",
+                f'{len(group)} pages in this scan share the title "{title}", so they cannot be told apart.',
+                "head > title",
+                wcag_tags=["wcag242"],
+                strict_open_source_only=strict_open_source_only,
+            )
+            page.setdefault("findings", []).append(finding)
+            page["finding_count"] = len(page["findings"])
+            findings.append(finding)
+    return findings
 
 
 def _extract_wcag_criteria(tags: Iterable[str]) -> list[str]:
@@ -917,6 +1501,77 @@ def _build_learning_resources(
     return deduped
 
 
+# Raw scanner failures are npm/Selenium stack traces. Site owners are not the
+# audience for those, so each known failure shape gets a sentence that says what
+# happened, whose problem it is, and what it means for their results.
+_SCANNER_MESSAGE_PATTERNS: tuple[tuple[str, str], ...] = (
+    (
+        "eacces",
+        "The deep scanner could not start because of a file-permission problem on the "
+        "GLOW server. Nothing is wrong with your page.",
+    ),
+    (
+        "enoent",
+        "The deep scanner is not installed on the GLOW server. Nothing is wrong with your page.",
+    ),
+    (
+        "chromedriver",
+        "The deep scanner's browser could not start on the GLOW server. Nothing is wrong "
+        "with your page.",
+    ),
+    (
+        "session not created",
+        "The deep scanner's browser could not start on the GLOW server. Nothing is wrong "
+        "with your page.",
+    ),
+    (
+        "timed out",
+        "The deep scan took too long on this page and was stopped. Very large or slow "
+        "pages can hit this limit.",
+    ),
+    (
+        "timeout",
+        "The deep scan took too long on this page and was stopped. Very large or slow "
+        "pages can hit this limit.",
+    ),
+    (
+        "network",
+        "The deep scanner could not reach the page from the GLOW server.",
+    ),
+    (
+        "not installed",
+        "The deep scanner is not installed on the GLOW server. Nothing is wrong with your page.",
+    ),
+)
+
+_SCANNER_FALLBACK_MESSAGE = (
+    "The deep scanner could not run on the GLOW server. Nothing is wrong with your page."
+)
+
+_SCANNER_CONSEQUENCE = (
+    "The checks listed below still ran, but this scan did not include the deeper "
+    "automated tests (colour contrast, form labels, ARIA, and similar). Re-run the "
+    "scan later, or report this to the GLOW administrator if it keeps happening."
+)
+
+
+def _friendly_scanner_message(raw_error: str) -> str:
+    """Turn a raw scanner failure into a sentence a site owner can act on."""
+    lowered = (raw_error or "").lower()
+    for needle, message in _SCANNER_MESSAGE_PATTERNS:
+        if needle in lowered:
+            return message
+    return _SCANNER_FALLBACK_MESSAGE
+
+
+def _shorten_detail(raw_error: str, limit: int = 400) -> str:
+    """Collapse a multi-line stack trace into one line for the details pane."""
+    collapsed = re.sub(r"\s+", " ", (raw_error or "").strip())
+    if len(collapsed) <= limit:
+        return collapsed
+    return collapsed[: limit - 1].rstrip() + "…"
+
+
 def _npx_path() -> str | None:
     # Resolve once. A bare "npx" passed to subprocess.run raises
     # FileNotFoundError on Windows, where the launcher is "npx.cmd"; shutil.which
@@ -924,23 +1579,47 @@ def _npx_path() -> str | None:
     return shutil.which("npx")
 
 
+def _axe_path() -> str | None:
+    """Path to a directly installed axe CLI, if the image has one.
+
+    Preferred over `npx axe`: npx downloads the package on first use, which
+    needs both a writable npm cache and outbound registry access at scan time.
+    In the container neither is guaranteed, and the download failure surfaced as
+    an npm EACCES trace on every scanned page.
+    """
+    return shutil.which("axe")
+
+
 def _axe_available() -> bool:
-    return _npx_path() is not None
+    return _axe_path() is not None or _npx_path() is not None
 
 
 def _run_axe(url: str, output_path: Path) -> None:
-    npx = _npx_path()
-    if not npx:
-        raise RuntimeError("npx executable not found on PATH")
-    command = [
-        npx,
-        "axe",
+    axe_bin = _axe_path()
+    if axe_bin:
+        command = [axe_bin]
+    else:
+        npx = _npx_path()
+        if not npx:
+            raise RuntimeError("axe executable not found on PATH")
+        command = [npx, "axe"]
+
+    command += [
         url,
         "--tags",
         ",".join(WCAG_TAGS),
         "--save",
         str(output_path),
     ]
+    # Chrome cannot use its sandbox inside an unprivileged container, and the
+    # default /dev/shm is too small there; without these it exits before axe
+    # ever runs.
+    chrome_options = "no-sandbox,disable-dev-shm-usage,disable-gpu"
+    command += [f"--chrome-options={chrome_options}"]
+    chromedriver = shutil.which("chromedriver")
+    if chromedriver:
+        command += ["--chromedriver-path", chromedriver]
+
     proc = subprocess.run(command, capture_output=True, text=True, timeout=90)
     if proc.returncode != 0:
         err = proc.stderr.strip() or proc.stdout.strip() or f"exit code {proc.returncode}"
@@ -964,7 +1643,20 @@ def _severity_for_impact(impact: str) -> str:
 def _write_findings_csv(path: Path, findings: Iterable[dict[str, Any]]) -> None:
     with path.open("w", encoding="utf-8", newline="") as fh:
         writer = csv.writer(fh)
-        writer.writerow(["page_url", "severity", "rule_id", "message", "location", "help_url", "wcag_criteria", "resource_urls"])
+        writer.writerow(
+            [
+                "page_url",
+                "severity",
+                "category",
+                "rule_id",
+                "message",
+                "what_to_do",
+                "location",
+                "help_url",
+                "wcag_criteria",
+                "resource_urls",
+            ]
+        )
         for item in findings:
             resources = item.get("resources") or []
             resource_urls = "; ".join(str(r.get("url", "")) for r in resources if isinstance(r, dict) and r.get("url"))
@@ -972,8 +1664,12 @@ def _write_findings_csv(path: Path, findings: Iterable[dict[str, Any]]) -> None:
                 [
                     item.get("page_url", ""),
                     item.get("severity", ""),
+                    # Spelled out rather than a bare True/False, so a spreadsheet
+                    # reader can tell a legal requirement from a recommendation.
+                    "Best practice" if item.get("best_practice") else "WCAG conformance",
                     item.get("rule_id", ""),
                     item.get("message", ""),
+                    item.get("guidance", ""),
                     item.get("location", ""),
                     item.get("help_url", ""),
                     ", ".join(item.get("wcag_criteria") or []),

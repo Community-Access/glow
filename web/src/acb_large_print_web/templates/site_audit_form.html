@@ -73,6 +73,23 @@
   </fieldset>
 
   <fieldset>
+    <legend>Best-Practice Checks</legend>
+    <p id="best-practice-help" class="help-text">These are usability problems rather than outright WCAG failures. They are reported separately, and labelled &ldquo;Best practice&rdquo; in your results, so a conformance report stays easy to read.</p>
+
+    <div class="checkbox-group">
+      <div>
+        <label><input type="checkbox" name="check_heading_structure" {% if check_heading_structure is not defined or check_heading_structure %}checked{% endif %} aria-describedby="best-practice-help heading-check-help"> Check heading structure</label>
+        <p id="heading-check-help" class="help-text">Looks for pages with no headings, a missing or repeated level-1 heading, skipped heading levels, headings that announce no text, and graphics used where section headings belong.</p>
+      </div>
+
+      <div>
+        <label><input type="checkbox" name="check_title_quality" {% if check_title_quality is not defined or check_title_quality %}checked{% endif %} aria-describedby="best-practice-help title-check-help"> Check page title quality</label>
+        <p id="title-check-help" class="help-text">Looks for generic titles such as &ldquo;Home&rdquo;, several pages sharing one title, and titles that do not describe the page they belong to.</p>
+      </div>
+    </div>
+  </fieldset>
+
+  <fieldset>
     <legend>Run Experience and Privacy</legend>
     <div class="checkbox-group">
       <label><input type="checkbox" name="run_in_background" {% if run_in_background is not defined or run_in_background %}checked{% endif %}> Run in background and show live status</label>

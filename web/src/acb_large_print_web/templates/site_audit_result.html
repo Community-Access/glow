@@ -5,6 +5,28 @@
 
 {% block content %}
 <p>Run <code>{{ run_id }}</code> completed in {{ (summary.elapsed_ms / 1000) | round(1) }} seconds.</p>
+
+{# Problems with the scan itself, reported once for the whole run. These are
+   never findings against the audited site, so they must not appear in the
+   findings table. #}
+{% for notice in summary.notices or [] %}
+{% if notice.title %}
+<div class="{{ 'warning-box' if notice.level == 'warning' else 'notice-box' }}">
+  <h2>{{ notice.title }}</h2>
+  <p>{{ notice.message }}</p>
+  {% if notice.consequence %}
+  <p>{{ notice.consequence }}</p>
+  {% endif %}
+  {% if notice.detail %}
+  <details>
+    <summary>Technical details for your website administrator</summary>
+    <p><code>{{ notice.detail }}</code></p>
+  </details>
+  {% endif %}
+</div>
+{% endif %}
+{% endfor %}
+
 {% if access %}
 <div class="card">
   <h2>Private Access Link</h2>
@@ -130,10 +152,13 @@
       <tr>
         <td><a href="{{ page.url }}" target="_blank" rel="noopener noreferrer" aria-label="Open scanned page in a new tab: {{ page.title or page.url }}">{{ page.title or page.url }}</a></td>
         <td>
-          <strong>{{ finding.rule_id }}</strong><br>
+          <strong>{{ finding.rule_id }}</strong>{% if finding.best_practice %} <span class="finding-type-tag">(Best practice)</span>{% endif %}<br>
           {{ finding.message }}
           {% if finding.wcag_criteria %}
           <br><span>WCAG: {{ finding.wcag_criteria | join(", ") }}</span>
+          {% endif %}
+          {% if finding.guidance %}
+          <br><span class="finding-guidance">What to do: {{ finding.guidance }}</span>
           {% endif %}
         </td>
         <td>

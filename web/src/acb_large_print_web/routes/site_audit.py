@@ -602,6 +602,8 @@ def site_audit_submit():
     include_subdomains = bool(request.form.get("include_subdomains"))
     same_path_only = bool(request.form.get("same_path_only"))
     strict_open_source_only = bool(request.form.get("strict_open_source_only"))
+    check_heading_structure = bool(request.form.get("check_heading_structure"))
+    check_title_quality = bool(request.form.get("check_title_quality"))
     run_in_background = bool(request.form.get("run_in_background"))
     exclude_patterns_raw = (request.form.get("exclude_patterns") or "").strip()
     exclude_url_patterns = tuple(
@@ -635,6 +637,8 @@ def site_audit_submit():
             include_subdomains=include_subdomains,
             same_path_only=same_path_only,
             strict_open_source_only=strict_open_source_only,
+            check_heading_structure=check_heading_structure,
+            check_title_quality=check_title_quality,
             exclude_patterns=exclude_patterns_raw,
             run_in_background=run_in_background,
             protect_results=protect_results,
@@ -650,6 +654,8 @@ def site_audit_submit():
         same_path_only=same_path_only,
         exclude_url_patterns=exclude_url_patterns,
         strict_open_source_only=strict_open_source_only,
+        check_heading_structure=check_heading_structure,
+        check_title_quality=check_title_quality,
         force=force,
     )
 

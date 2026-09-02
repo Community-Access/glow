@@ -21,9 +21,13 @@ COPY VERSION /app/VERSION
 # DAISY Pipeline 2 runs as a separate Docker service (sidecar) -- see
 # docker-compose.yml / docker-compose.prod.yml.  The web app connects to it
 # via its REST API (no JRE or .deb needed in this image).
+#   chromium + chromium-driver -- headless browser that @axe-core/cli drives for
+#                       the Site Audit deep scan. Without a browser in the image
+#                       axe never ran and every scanned page reported an error.
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \
     pandoc nodejs npm epubcheck \
+    chromium chromium-driver \
     liblouis-bin liblouis-dev liblouis-data python3-louis \
     tesseract-ocr tesseract-ocr-eng \
     ffmpeg \
@@ -43,6 +47,21 @@ RUN apt-get update \
 RUN npm install -g @daisy/ace --no-fund --no-audit \
     && npm cache clean --force \
     && which ace
+
+# Install the axe CLI at build time (MPL-2.0 -- https://github.com/dequelabs/axe-core-npm)
+# for the Site Audit deep scan. It must be installed here, not fetched by
+# `npx axe` at scan time: the runtime user has no writable npm cache and the
+# container is not guaranteed outbound registry access, so the on-demand
+# download failed on every scan with an npm EACCES error.
+# Selenium looks for a Chrome binary by name; Debian ships it as "chromium".
+RUN npm install -g @axe-core/cli --no-fund --no-audit \
+    && npm cache clean --force \
+    && which axe \
+    && which chromedriver \
+    && ln -sf /usr/bin/chromium /usr/bin/google-chrome \
+    && ln -sf /usr/bin/chromium /usr/bin/chrome
+ENV CHROME_BIN=/usr/bin/chromium \
+    CHROME_PATH=/usr/bin/chromium
 
 # Install the core library (audit, fix, convert, export -- no CLI/GUI)
 # The .dockerignore excludes desktop-only files (cli.py, gui.py, __main__.py)
@@ -108,10 +127,20 @@ print(f'Piper voice seeding complete. downloaded={downloaded} skipped={skipped} 
 
 # Create a non-root user
 RUN addgroup --system app && adduser --system --ingroup app app
+# HOME is /app, which stays root-owned, so every tool that writes to a dotdir
+# under $HOME needs that dir pre-created and chowned. npm's cache ($HOME/.npm)
+# was not, which is what produced "EACCES mkdir /app/.npm" on every site audit.
+# Chromium also needs a writable config/cache dir of its own; without them the
+# headless browser exits before axe can run.
 RUN mkdir -p /app/instance /app/.gunicorn /app/instance/speech_models/piper \
-    && chown -R app:app /app/instance /app/.gunicorn
+    /app/.npm /app/.cache /app/.config /app/.local \
+    && chown -R app:app /app/instance /app/.gunicorn /app/.npm /app/.cache \
+       /app/.config /app/.local
 
-ENV HOME=/app
+ENV HOME=/app \
+    NPM_CONFIG_CACHE=/app/.npm \
+    XDG_CACHE_HOME=/app/.cache \
+    XDG_CONFIG_HOME=/app/.config
 USER app
 
 EXPOSE 8000

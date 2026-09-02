@@ -1,19 +1,19 @@
 from __future__ import annotations
 
-from pathlib import Path
-from datetime import UTC, datetime, timedelta
-import json
 import hashlib
+import json
 import os
 import threading
 import time
+from datetime import UTC, datetime, timedelta
+from pathlib import Path
 
 import pytest
 from flask import Flask, render_template
 
-from acb_large_print_web.app import create_app
 import acb_large_print_web.routes.site_audit as site_audit_route
 import acb_large_print_web.site_audit as site_audit
+from acb_large_print_web.app import create_app
 
 
 @pytest.fixture()
@@ -891,3 +891,279 @@ def test_result_template_labels_new_tab_links(app):
         html = render_template("site_audit_result.html", summary=summary, run_id="rid", access=None)
     assert 'aria-label="Open scanned page in a new tab: https://example.com/x"' in html
     assert 'aria-label="Open learning resource in a new tab: https://help.example/r"' in html
+
+
+# --- David/Carroll Center feedback: scanner errors, headings, title quality ---
+
+
+def _parse(html):
+    parser = site_audit._PageParser()
+    parser.feed(html)
+    parser.close()
+    return parser
+
+
+def _sparse_page_html():
+    # Shaped like the reported page: one h1, graphics standing in for section
+    # headings, and a lot of body text with nothing to navigate by.
+    body = "<p>" + ("Stow Lions Club community service work. " * 40) + "</p>"
+    return (
+        '<html lang="en"><head><title>Lions Clubs</title></head><body>'
+        "<h1>Stow Lions Club</h1>"
+        '<img src="a.png" alt="Eyeglass collection">' + body +
+        '<img src="b.png" alt="Food pantry">' + body +
+        '<img src="c.png" alt="Scholarships">' + body +
+        "</body></html>"
+    )
+
+
+def test_scanner_failure_is_not_reported_as_a_page_finding(monkeypatch, tmp_path):
+    # David could not act on a raw npm trace attached to every page. A scanner
+    # outage is run-level status, never a finding against the scanned site.
+    resp = _FakeResp(
+        b"<html lang='en'><head><title>T</title></head><body></body></html>", "text/html"
+    )
+    monkeypatch.setattr(site_audit, "_http_get", lambda url, timeout=20: resp)
+    monkeypatch.setattr(site_audit, "_axe_available", lambda: True)
+
+    def _boom(url, output_path):
+        raise RuntimeError("npm ERR! code EACCES\nnpm ERR! path /app/.npm")
+
+    monkeypatch.setattr(site_audit, "_run_axe", _boom)
+    page_dir = tmp_path / "p"
+    page_dir.mkdir()
+    result = site_audit._scan_single_page("https://example.com/", page_dir)
+
+    assert all(f["rule_id"] != "AXE-UNAVAILABLE" for f in result["findings"])
+    assert result["deep_scan"]["ok"] is False
+    assert "npm" not in result["deep_scan"]["message"].lower()
+    assert "EACCES" not in result["deep_scan"]["message"]
+    assert "Nothing is wrong with your page" in result["deep_scan"]["message"]
+    # The raw text stays available for whoever maintains the server.
+    assert "EACCES" in result["deep_scan"]["detail"]
+
+
+def test_run_notice_summarises_scanner_outage_once():
+    # One outage, one message -- not one row per scanned page.
+    pages = [
+        {
+            "url": f"https://example.com/{i}",
+            "result": "ok",
+            "title": f"P{i}",
+            "deep_scan": {
+                "ok": False,
+                "message": "The deep scanner could not start.",
+                "detail": "raw",
+            },
+        }
+        for i in range(4)
+    ]
+    notices = site_audit._build_run_notices(pages)
+    assert len(notices) == 1
+    assert notices[0]["affected_pages"] == 4
+    assert "all 4 pages" in notices[0]["message"]
+    assert notices[0]["consequence"]
+
+
+def test_run_notice_absent_when_deep_scan_succeeds():
+    pages = [
+        {"url": "https://example.com/", "result": "ok", "title": "P", "deep_scan": {"ok": True}}
+    ]
+    assert site_audit._build_run_notices(pages) == []
+
+
+@pytest.mark.parametrize(
+    "raw,expected_fragment",
+    [
+        ("npm ERR! code EACCES mkdir /app/.npm", "file-permission problem"),
+        ("spawn axe ENOENT", "not installed"),
+        ("session not created: chromedriver mismatch", "browser could not start"),
+        ("axe timed out after 90 seconds", "took too long"),
+        ("something nobody anticipated", "could not run"),
+    ],
+)
+def test_friendly_scanner_messages_avoid_jargon(raw, expected_fragment):
+    message = site_audit._friendly_scanner_message(raw)
+    assert expected_fragment in message
+    for jargon in ("npm ERR", "EACCES", "errno", "syscall", "chown", "stderr"):
+        assert jargon not in message
+
+
+def test_heading_checks_flag_sparse_and_image_led_page():
+    parser = _parse(_sparse_page_html())
+    rules = {f["rule_id"] for f in site_audit._heading_findings("https://example.com/x.php", parser)}
+    assert "HEURISTIC-HEADING-SPARSE" in rules
+    assert "HEURISTIC-IMAGE-AS-HEADING" in rules
+
+
+def test_heading_checks_stay_quiet_on_well_structured_page():
+    html = (
+        '<html lang="en"><head><title>Projects | Stow Lions Club</title></head><body>'
+        "<h1>Projects</h1><p>We run three programmes.</p>"
+        "<h2>Eyeglasses</h2><p>Details.</p><h2>Food pantry</h2><p>Details.</p>"
+        "</body></html>"
+    )
+    parser = _parse(html)
+    assert site_audit._heading_findings("https://example.com/projects", parser) == []
+    assert site_audit._title_findings("https://example.com/projects", parser) == []
+
+
+def test_heading_checks_detect_missing_h1_skips_and_silent_headings():
+    html = (
+        "<html><body><h2>One</h2><h4>Deep</h4>"
+        '<h2><img src="x.png" alt=""></h2></body></html>'
+    )
+    parser = _parse(html)
+    rules = {f["rule_id"] for f in site_audit._heading_findings("https://example.com/", parser)}
+    assert "HEURISTIC-HEADING-NO-H1" in rules
+    assert "HEURISTIC-HEADING-SKIPPED-LEVEL" in rules
+    assert "HEURISTIC-HEADING-EMPTY" in rules
+
+
+def test_heading_checks_flag_page_with_no_headings_at_all():
+    parser = _parse("<html><body><p>Content with no structure at all.</p></body></html>")
+    rules = {f["rule_id"] for f in site_audit._heading_findings("https://example.com/", parser)}
+    assert rules == {"HEURISTIC-HEADING-NONE"}
+
+
+def test_aria_role_heading_counts_as_a_heading():
+    html = '<html><body><h1>Top</h1><div role="heading" aria-level="2">Section</div></body></html>'
+    parser = _parse(html)
+    assert [(h.level, h.text) for h in parser.headings] == [(1, "Top"), (2, "Section")]
+
+
+def test_title_quality_flags_generic_and_undescriptive_titles():
+    generic = _parse(
+        "<html><head><title>Home</title></head><body><h1>Projects</h1></body></html>"
+    )
+    assert {
+        f["rule_id"] for f in site_audit._title_findings("https://example.com/projects", generic)
+    } == {"HEURISTIC-TITLE-GENERIC"}
+
+    mismatched = _parse(
+        "<html><head><title>Acme Corporation</title></head>"
+        "<body><h1>Annual Report</h1></body></html>"
+    )
+    assert {
+        f["rule_id"] for f in site_audit._title_findings("https://example.com/report", mismatched)
+    } == {"HEURISTIC-TITLE-NOT-DESCRIPTIVE"}
+
+
+def test_title_quality_silent_when_title_matches_the_page():
+    parser = _parse(
+        "<html><head><title>Annual Report 2026</title></head>"
+        "<body><h1>Annual Report</h1></body></html>"
+    )
+    assert site_audit._title_findings("https://example.com/report", parser) == []
+
+
+def test_duplicate_titles_are_flagged_across_pages():
+    pages = [
+        {"url": "https://example.com/a", "result": "ok", "title": "Lions Clubs", "findings": []},
+        {"url": "https://example.com/b", "result": "ok", "title": "Lions Clubs", "findings": []},
+        {"url": "https://example.com/c", "result": "ok", "title": "Unique Page", "findings": []},
+    ]
+    findings = site_audit._duplicate_title_findings(pages)
+    assert len(findings) == 2
+    assert all(f["rule_id"] == "HEURISTIC-TITLE-DUPLICATE" for f in findings)
+    # The finding is attached to each affected page, and counts stay in sync.
+    assert pages[0]["finding_count"] == 1
+    assert pages[2]["findings"] == []
+
+
+def test_best_practice_findings_are_labelled_and_carry_plain_guidance():
+    parser = _parse(_sparse_page_html())
+    findings = site_audit._heading_findings("https://example.com/x.php", parser)
+    assert findings
+    for finding in findings:
+        assert finding["best_practice"] is True
+        assert finding["guidance"], f"{finding['rule_id']} has no plain-language guidance"
+    # Conformance failures are not mislabelled as best practice.
+    conformance = site_audit._finding(
+        "https://example.com/", "HEURISTIC-IMG-ALT", "serious", "m", "img"
+    )
+    assert conformance["best_practice"] is False
+    assert conformance["guidance"]
+
+
+def test_best_practice_checks_can_be_switched_off(monkeypatch, tmp_path):
+    resp = _FakeResp(_sparse_page_html().encode("utf-8"), "text/html; charset=utf-8")
+    monkeypatch.setattr(site_audit, "_http_get", lambda url, timeout=20: resp)
+    monkeypatch.setattr(site_audit, "_axe_available", lambda: False)
+    page_dir = tmp_path / "p"
+    page_dir.mkdir()
+
+    on = site_audit._scan_single_page("https://example.com/x.php", page_dir)
+    off = site_audit._scan_single_page(
+        "https://example.com/x.php",
+        page_dir,
+        check_heading_structure=False,
+        check_title_quality=False,
+    )
+    assert any(f["best_practice"] for f in on["findings"])
+    assert not any(f["best_practice"] for f in off["findings"])
+
+
+def test_run_axe_prefers_installed_binary_over_npx(monkeypatch, tmp_path):
+    # npx downloads the package at scan time, which needs a writable npm cache
+    # the container does not have. A build-time install must win.
+    monkeypatch.setattr(
+        site_audit.shutil,
+        "which",
+        lambda name: {"axe": "/usr/bin/axe", "chromedriver": "/usr/bin/chromedriver"}.get(name),
+    )
+    captured = {}
+
+    class _Proc:
+        returncode = 0
+        stderr = ""
+        stdout = ""
+
+    def _fake_run(command, **kwargs):
+        captured["command"] = command
+        return _Proc()
+
+    monkeypatch.setattr(site_audit.subprocess, "run", _fake_run)
+    site_audit._run_axe("https://example.com/", tmp_path / "axe.json")
+    command = captured["command"]
+    assert command[0] == "/usr/bin/axe"
+    assert "npx" not in " ".join(command)
+    # Chrome cannot use its sandbox in an unprivileged container.
+    assert any(
+        str(arg).startswith("--chrome-options=") and "no-sandbox" in str(arg) for arg in command
+    )
+    assert "/usr/bin/chromedriver" in command
+
+
+@pytest.mark.parametrize(
+    "fragment,expected_text",
+    [
+        # A heading must close on its own end tag, not on the first nested one.
+        # Closing early truncated the text and reported real headings as silent.
+        ('<h2><span class="icon"></span>Projects</h2>', "Projects"),
+        ("<h2><strong>A</strong> B <em>C</em></h2>", "A B C"),
+        ('<h2><a href="/x">Our Projects</a></h2>', "Our Projects"),
+        ('<div role="heading" aria-level="2"><div><span>Deep</span></div></div>', "Deep"),
+        ("<h2>Dangling", "Dangling"),  # unclosed heading still recorded
+    ],
+)
+def test_headings_close_on_their_own_tag(fragment, expected_text):
+    parser = _parse(f"<html><body><h1>Top</h1>{fragment}</body></html>")
+    assert [h.text for h in parser.headings] == ["Top", expected_text]
+    rules = {f["rule_id"] for f in site_audit._heading_findings("https://example.com/", parser)}
+    assert "HEURISTIC-HEADING-EMPTY" not in rules
+
+
+def test_image_only_heading_is_silent_only_when_alt_is_empty():
+    labelled = _parse('<html><body><h1>T</h1><h2><img src="a.png" alt="Projects"></h2></body></html>')
+    assert labelled.headings[1].text == "Projects"
+    assert labelled.headings[1].image_only is True
+    assert "HEURISTIC-HEADING-EMPTY" not in {
+        f["rule_id"] for f in site_audit._heading_findings("https://example.com/", labelled)
+    }
+
+    silent = _parse('<html><body><h1>T</h1><h2><img src="a.png" alt=""></h2></body></html>')
+    assert silent.headings[1].text == ""
+    assert "HEURISTIC-HEADING-EMPTY" in {
+        f["rule_id"] for f in site_audit._heading_findings("https://example.com/", silent)
+    }

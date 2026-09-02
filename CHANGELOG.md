@@ -10,6 +10,24 @@ Releases are tagged in the [GitHub repository](https://github.com/Community-Acce
 
 ### Added
 
+- **Site Audit checks heading structure and page title quality.** Two optional
+  best-practice checks, on by default and switchable off, prompted by feedback
+  from a screen reader user at the Carroll Center for the Blind: a page can pass
+  every automated WCAG check and still be laborious to navigate. The heading
+  check flags pages with no headings, a missing or repeated `h1`, skipped
+  heading levels, headings that announce no text, pages whose content volume
+  far outruns their heading count, and graphics apparently doing the visual job
+  of section headings. The title check flags generic titles ("Home"), several
+  pages in one run sharing a title, and titles that do not describe the page
+  they belong to. These are reported and labelled as "Best practice", never as
+  WCAG conformance failures, so a conformance report stays readable.
+  ([site_audit.py](web/src/acb_large_print_web/site_audit.py))
+- **Every finding now carries plain-language guidance.** Each result explains
+  what to actually do about it, in the results table and in the CSV export,
+  alongside a column saying whether it is a WCAG conformance failure or a best
+  practice. A rule id and a WCAG number tell a specialist what happened; these
+  tell everyone else. ([site_audit.py](web/src/acb_large_print_web/site_audit.py))
+
 - **The GLOW passport** -- one optional identity for the whole product:
   settings that follow a person to another device via a single-use emailed
   link, with no password and no account. Preferences previously lived in one
@@ -40,6 +58,22 @@ Releases are tagged in the [GitHub repository](https://github.com/Community-Acce
 
 ### Fixed
 
+- **Site Audit's deep scanner never ran in production, and said so unreadably.**
+  Every scanned page carried an `AXE-UNAVAILABLE` finding containing a raw npm
+  permission trace, which the site owner could neither understand nor act on --
+  and which was not a defect in their page at all. Three stacked causes: `HOME`
+  is `/app` but only `/app/instance` and `/app/.gunicorn` were chowned, so npm
+  could not create its cache at `/app/.npm`; `@axe-core/cli` was never installed
+  in the image, so `npx axe` tried to download it at scan time, which is exactly
+  what needed that cache; and the image had no browser for axe to drive. Every
+  audit had therefore been running heuristics only. The cache directory is now
+  created and owned by the runtime user, the axe CLI and Chromium are installed
+  at build time, and axe runs with the flags a container needs. A scanner
+  outage is no longer reported as a finding against the audited site: it is one
+  run-level notice, in plain language, saying what could not run and what that
+  means for the results, with the raw error tucked into a collapsed "technical
+  details" section for whoever maintains the server.
+  ([Dockerfile](web/Dockerfile), [site_audit.py](web/src/acb_large_print_web/site_audit.py))
 - **The audio transcription queue is shared across workers.** Three defects came out of reviewing what had been dismissed as a per-worker design detail. Jobs could be stranded: `_dispatch_queued_jobs()` only drained the calling worker's local queue, so once the concurrency gate became global (above), a slot released on one worker never woke a job waiting on the other -- it could sit at "Queued..." while capacity was idle. The depth cap was per-worker, so the real queue was the configured depth times the worker count. And the queue position shown to a waiting user was the local index, so someone told they were second in line could actually be fifth -- a misleading wait for anyone, and a genuine accessibility problem for a screen reader user sitting on a long transcription. The queue is now one shared FIFO (Redis ZSET scored by enqueue time): an atomic enqueue makes the depth cap exact, `ZRANK` gives the true global position, and an atomic claim plus a per-worker sweeper lets any worker start any waiting job the moment capacity frees anywhere -- possible because job state and the audio file already live on shared storage. Without Redis it falls back to the original local queue. ([routes/whisperer.py](web/src/acb_large_print_web/routes/whisperer.py))
 - **Site Audit submissions are bounded.** The anonymous submit endpoint had no rate limit and spawned an unbounded thread per submission, each making up to `max_pages` outbound fetches -- one HTTP request became a crawler, and a burst became many. Submissions are now rate limited (6/min), and the number of scans running at once is capped (`GLOW_MAX_CONCURRENT_SITE_AUDITS`, default 4); a submission past the cap waits briefly for a slot and then reports a retryable "capacity is busy" state instead of parking a thread indefinitely. ([routes/site_audit.py](web/src/acb_large_print_web/routes/site_audit.py))
 - **SSRF DNS-rebinding closed.** The Site Audit and PageFlow fetch paths validated the target host name before fetching, but DNS could rebind to an internal address between that check and the socket connect. Both now fetch through a guarded session whose connections validate the actual peer IP inside `connect()` -- TOCTOU-free -- refusing loopback/private/link-local/reserved addresses at connect time without changing TLS/SNI/certificate behavior. ([site_audit.py](web/src/acb_large_print_web/site_audit.py), [listen_later.py](web/src/acb_large_print_web/listen_later.py))
