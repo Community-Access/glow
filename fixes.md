@@ -278,10 +278,50 @@ implementation agents, each with regression tests. The full web suite is green
   tests need no Redis and an outage never 500s a request. The public interface
   (`ai_gate`/`audio_gate`/`vision_gate`/`get_capacity_metrics`) is unchanged.
 
-Nothing from the original audit remains open. Per-worker *queue ordering* (which
-worker picks up an overflowed job) is unchanged by design — the cap that
-protects upstream spend/rate-limits is now enforced globally, which was the
-point.
+### Fifth pass — the queue, and a correction
+
+I had described the per-worker audio queue as "a design property rather than a
+defect." That was wrong, and reviewing it properly turned up three real bugs —
+one of which the Redis gate change had just made *worse*:
+
+1. **Stranded jobs (introduced by making the gate global).** `_dispatch_queued_jobs()`
+   only ever popped from the calling worker's local deque. Once the gate became
+   global, a slot released on worker B no longer woke worker A, so a job could sit
+   at "Queued…" indefinitely while capacity sat idle. Before the gate change a
+   worker's own release always paired with its own dispatch, so this specific
+   stall was newly possible — my change created it.
+2. **Queue depth was per-worker**, so the real global depth was the configured
+   depth times the worker count, and "the queue is full" was decided on half the
+   picture.
+3. **The queue position shown to a waiting user was the local index.** Someone
+   told "you are #2 in line" could actually be #5. For a screen reader user
+   waiting on a long transcription, a wrong wait estimate is a real usability
+   harm, not a cosmetic one.
+
+Fixed by making the queue genuinely shared rather than papering over ordering:
+a Redis ZSET scored by enqueue time gives global FIFO, an atomic Lua enqueue
+enforces the depth cap exactly, `ZRANK` gives the true position, and an atomic
+claim (only one worker can win a given job) plus a per-worker sweeper means any
+worker can pick up any queued job the moment capacity frees anywhere. This was
+only possible because the job state and the audio file already live on shared
+storage from the earlier passes. With no Redis configured it falls back to the
+original local deque, so dev and tests are unchanged.
+
+- **Site Audit submissions are bounded.** Also from the original audit and not
+  actually closed until now: the anonymous submit endpoint had no rate limit and
+  spawned an unbounded thread per submission, each making up to `max_pages`
+  outbound fetches. Submissions are now rate limited (6/min) and concurrent scans
+  are capped (`GLOW_MAX_CONCURRENT_SITE_AUDITS`, default 4), with a submission
+  past the cap reporting a retryable "busy" state rather than parking a thread.
+- **Rate-limit test isolation.** The limiter is a process-wide singleton and every
+  test client presents the same address, so adding a limit to any route could make
+  an unrelated test fail with a spurious 429 depending on ordering. `conftest.py`
+  now resets the limiter per test, removing that whole class of flakiness.
+
+Nothing from the original audit remains open. What is genuinely unchanged by
+design: a job runs to completion on whichever worker claimed it, and if that
+worker dies mid-run the job stays "running" until its gate slot TTL expires —
+the same behavior as before, and the reason the slot TTL exists.
 
 ---
 

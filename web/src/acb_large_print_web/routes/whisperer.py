@@ -29,6 +29,7 @@ import secrets
 import shutil
 import subprocess
 import threading
+import time
 import uuid
 from collections import deque
 from dataclasses import dataclass
@@ -329,6 +330,327 @@ def _delete_job_store(job_id: str) -> None:
     except (ValueError, OSError):
         return
     shutil.rmtree(d, ignore_errors=True)
+
+
+# ---------------------------------------------------------------------------
+# Shared, cross-worker audio queue (Redis ZSET, local deque fallback)
+# ---------------------------------------------------------------------------
+#
+# The audio concurrency gate is now GLOBAL (see gating.py: a Redis-backed
+# distributed semaphore). The waiting line in front of it was not: ``_audio_queue``
+# is a per-process deque, which produced three defects under gunicorn:
+#
+#   1. STALL -- worker B finishing a job releases a *global* slot and dispatches
+#      from its own (possibly empty) deque, while worker A's queued jobs sleep
+#      forever at "Queued..." with capacity sitting idle.
+#   2. GLOBAL DEPTH -- ``_MAX_AUDIO_QUEUE_DEPTH`` measured one worker's deque, so
+#      the real cap was depth x worker-count and "queue is full" was decided on
+#      half the picture.
+#   3. MISLEADING POSITION -- the position shown to a waiting user (and to the
+#      admin queue page) was the index in the local deque. Someone told "#2 in
+#      line" could really be #5. Screen reader users wait on these estimates.
+#
+# The fix is one shared FIFO in Redis: ZSET ``glow:queue:audio``, member = job id,
+# score = enqueue unix time. Enqueue (with an exact global depth cap) and claim
+# (pop-lowest-score) are single Lua scripts so they are atomic -- two workers can
+# never claim the same job. Any worker can run any job because the input audio
+# lives on the shared upload volume and the job's state lives in the shared job
+# store above.
+#
+# Redis is optional. With no Redis configured (dev, tests) every helper degrades
+# to the original local deque with the original semantics, and a Redis error at
+# runtime degrades the same way after logging one warning.
+
+_AUDIO_QUEUE_KEY = "glow:queue:audio"
+# Housekeeping TTL so an abandoned deployment cannot leak the key forever. It is
+# refreshed on every enqueue; a day is far longer than any transcription.
+_AUDIO_QUEUE_TTL_SECONDS = 86_400
+# How often each worker re-checks the shared queue so a slot released on ANOTHER
+# worker is noticed (defect 1). 0 disables the sweeper.
+_AUDIO_SWEEP_SECONDS = float(os.environ.get("GLOW_AUDIO_SWEEP_SECONDS", "5"))
+
+_queue_redis_lock = threading.Lock()
+_queue_redis_client = None
+_queue_redis_resolved = False
+
+# Test hook: anything other than the sentinel is returned verbatim by
+# _queue_client() (a fake client, or None to force the local deque path).
+_QUEUE_TEST_CLIENT_UNSET = object()
+_queue_test_client = _QUEUE_TEST_CLIENT_UNSET
+
+_queue_scripts: dict[int, dict[str, object]] = {}
+
+_queue_warned: set[str] = set()
+_queue_warn_lock = threading.Lock()
+
+# Enqueue one job iff the shared queue has room. Atomic, so the depth cap is
+# exact and global rather than per-worker.
+#   KEYS[1] = queue key (ZSET)   ARGV[1] = job id
+#   ARGV[2] = score (unix time)  ARGV[3] = max depth   ARGV[4] = key TTL
+# Returns 1 when queued (or already queued), 0 when the queue is full.
+_LUA_ENQUEUE = """
+local key = KEYS[1]
+local job = ARGV[1]
+local score = tonumber(ARGV[2])
+local max = tonumber(ARGV[3])
+local ttl = tonumber(ARGV[4])
+if redis.call('ZSCORE', key, job) then
+  return 1
+end
+if redis.call('ZCARD', key) >= max then
+  return 0
+end
+redis.call('ZADD', key, score, job)
+redis.call('EXPIRE', key, ttl)
+return 1
+"""
+
+# Claim the head of the queue (lowest score = earliest enqueue). ZPOPMIN
+# semantics; atomic, so two workers never claim the same job id.
+#   KEYS[1] = queue key
+# Returns the job id, or false (-> None in the client) when the queue is empty.
+_LUA_CLAIM = """
+local key = KEYS[1]
+local head = redis.call('ZRANGE', key, 0, 0)
+if not head or #head == 0 then
+  return false
+end
+redis.call('ZREM', key, head[1])
+return head[1]
+"""
+
+
+def set_queue_redis_client_for_test(client) -> None:
+    """Inject a Redis client (or None) for the shared queue in tests."""
+    global _queue_test_client, _queue_redis_client, _queue_redis_resolved
+    with _queue_redis_lock:
+        _queue_test_client = client
+        _queue_redis_client = None
+        _queue_redis_resolved = False
+        _queue_scripts.clear()
+    with _queue_warn_lock:
+        _queue_warned.clear()
+
+
+def reset_queue_redis_client_for_test() -> None:
+    """Undo :func:`set_queue_redis_client_for_test`, restoring env resolution."""
+    global _queue_test_client, _queue_redis_client, _queue_redis_resolved
+    with _queue_redis_lock:
+        _queue_test_client = _QUEUE_TEST_CLIENT_UNSET
+        _queue_redis_client = None
+        _queue_redis_resolved = False
+        _queue_scripts.clear()
+
+
+def _queue_warn_once(key: str, message: str) -> None:
+    with _queue_warn_lock:
+        if key in _queue_warned:
+            return
+        _queue_warned.add(key)
+    try:
+        current_app.logger.warning(message)
+    except RuntimeError:  # no app context (worker thread / sweeper)
+        import logging
+
+        logging.getLogger(__name__).warning(message)
+
+
+def _create_queue_redis_client():
+    # Same URL precedence as gating.py / app.py -- resolved there so there is one
+    # definition of "where is Redis".
+    from ..gating import _resolve_redis_url
+
+    url = _resolve_redis_url()
+    if not url:
+        return None
+    try:
+        import redis  # imported lazily so the package works without redis installed
+
+        client = redis.from_url(url)
+        client.ping()
+        return client
+    except Exception as exc:  # noqa: BLE001 - any failure means "use the local deque"
+        _queue_warn_once(
+            "queue-redis-connect",
+            f"whisperer: Redis unavailable ({exc!r}); the audio queue is "
+            "per-worker. Queue depth and position are this worker's view only.",
+        )
+        return None
+
+
+def _queue_client():
+    """Return the shared-queue Redis client, or None to use the local deque."""
+    if _queue_test_client is not _QUEUE_TEST_CLIENT_UNSET:
+        return _queue_test_client
+    global _queue_redis_client, _queue_redis_resolved
+    if _queue_redis_resolved:
+        return _queue_redis_client
+    with _queue_redis_lock:
+        if not _queue_redis_resolved:
+            _queue_redis_client = _create_queue_redis_client()
+            _queue_redis_resolved = True
+        return _queue_redis_client
+
+
+def _queue_script(client, name: str):
+    scripts = _queue_scripts.get(id(client))
+    if scripts is None:
+        scripts = {
+            "enqueue": client.register_script(_LUA_ENQUEUE),
+            "claim": client.register_script(_LUA_CLAIM),
+        }
+        _queue_scripts[id(client)] = scripts
+    return scripts[name]
+
+
+def _queue_score(job: _WhisperJob | None) -> float:
+    """FIFO score for a job: its original enqueue time when we know it.
+
+    Re-enqueueing with the ORIGINAL score is what keeps a job that had to give
+    its slot back (GatingError) at the head of the line instead of sending it to
+    the back -- the shared-queue equivalent of ``deque.appendleft``.
+    """
+    if job is not None and job.queued_at is not None:
+        try:
+            return job.queued_at.timestamp()
+        except (OverflowError, OSError, ValueError):
+            pass
+    return time.time()
+
+
+def _shared_enqueue(job_id: str, score: float, *, force: bool = False) -> bool | None:
+    """Add *job_id* to the shared queue.
+
+    Returns True when queued, False when the queue is globally full, and None
+    when there is no usable Redis (caller falls back to the local deque).
+    ``force=True`` bypasses the depth cap; used only to give back a slot a job
+    already held, which never grows the queue beyond its previous size.
+    """
+    client = _queue_client()
+    if client is None:
+        return None
+    try:
+        if force:
+            client.zadd(_AUDIO_QUEUE_KEY, {job_id: score})
+            return True
+        result = _queue_script(client, "enqueue")(
+            keys=[_AUDIO_QUEUE_KEY],
+            args=[job_id, score, _MAX_AUDIO_QUEUE_DEPTH, _AUDIO_QUEUE_TTL_SECONDS],
+        )
+        return bool(result and int(result) == 1)
+    except Exception as exc:  # noqa: BLE001 - degrade to the local deque
+        _queue_warn_once(
+            "queue-redis-enqueue",
+            f"whisperer: Redis error queuing audio job ({exc!r}); using this "
+            "worker's local queue for it.",
+        )
+        return None
+
+
+def _shared_claim() -> str | None:
+    """Atomically pop the head job id from the shared queue, or None."""
+    client = _queue_client()
+    if client is None:
+        return None
+    try:
+        result = _queue_script(client, "claim")(keys=[_AUDIO_QUEUE_KEY])
+    except Exception as exc:  # noqa: BLE001 - degrade to the local deque
+        _queue_warn_once(
+            "queue-redis-claim",
+            f"whisperer: Redis error claiming an audio job ({exc!r}); this "
+            "worker will dispatch from its local queue only.",
+        )
+        return None
+    if not result:
+        return None
+    if isinstance(result, bytes):
+        return result.decode("utf-8", "replace")
+    return str(result)
+
+
+def _shared_remove(job_id: str) -> bool:
+    """Drop *job_id* from the shared queue. True when it was actually queued."""
+    client = _queue_client()
+    if client is None:
+        return False
+    try:
+        return int(client.zrem(_AUDIO_QUEUE_KEY, job_id) or 0) > 0
+    except Exception as exc:  # noqa: BLE001 - removal must never break a request
+        _queue_warn_once(
+            "queue-redis-remove",
+            f"whisperer: Redis error removing an audio job ({exc!r}).",
+        )
+        return False
+
+
+def _shared_depth() -> int | None:
+    client = _queue_client()
+    if client is None:
+        return None
+    try:
+        return int(client.zcard(_AUDIO_QUEUE_KEY) or 0)
+    except Exception:  # noqa: BLE001 - callers fall back to the local view
+        return None
+
+
+def _shared_order() -> list[str] | None:
+    """Return the shared queue in FIFO order, or None when Redis is unusable."""
+    client = _queue_client()
+    if client is None:
+        return None
+    try:
+        members = client.zrange(_AUDIO_QUEUE_KEY, 0, -1) or []
+    except Exception:  # noqa: BLE001
+        return None
+    return [m.decode("utf-8", "replace") if isinstance(m, bytes) else str(m) for m in members]
+
+
+# -- cross-worker wake-up ----------------------------------------------------
+#
+# A slot freed on worker B has to wake worker A's queued jobs. Event-driven
+# dispatch (still done, for low latency) cannot do that on its own, so each
+# worker runs ONE daemon sweeper that re-dispatches every few seconds. It is
+# started lazily and only when Redis is actually in use, so single-process dev
+# and the test suite behave exactly as before.
+
+_sweeper_thread: threading.Thread | None = None
+_sweeper_lock = threading.Lock()
+
+
+def _queue_sweeper_loop() -> None:  # pragma: no cover - timing loop
+    while True:
+        time.sleep(_AUDIO_SWEEP_SECONDS)
+        try:
+            _dispatch_queued_jobs()
+        except Exception:  # noqa: BLE001 - the sweeper must never die
+            try:
+                _queue_warn_once(
+                    "queue-sweeper-error",
+                    "whisperer: audio queue sweeper hit an error; continuing.",
+                )
+            except Exception:  # noqa: BLE001
+                pass
+
+
+def _ensure_queue_sweeper() -> None:
+    """Start this worker's sweeper thread once, only when Redis is active."""
+    global _sweeper_thread
+    if _AUDIO_SWEEP_SECONDS <= 0:
+        return
+    thread = _sweeper_thread
+    if thread is not None and thread.is_alive():
+        return
+    with _sweeper_lock:
+        thread = _sweeper_thread
+        if thread is not None and thread.is_alive():
+            return
+        if _queue_client() is None:
+            return
+        thread = threading.Thread(
+            target=_queue_sweeper_loop, name="whisperer-queue-sweeper", daemon=True
+        )
+        _sweeper_thread = thread
+        thread.start()
 
 
 def _find_job_by_retrieval_token(token: str) -> _WhisperJob | None:
@@ -783,11 +1105,81 @@ def _get_job(job_id: str) -> _WhisperJob | None:
 
 
 def _delete_job(job_id: str) -> None:
+    # Also drop it from the shared queue so a job that was downloaded, expired,
+    # or rolled back can never be claimed and started by another worker.
+    _shared_remove(job_id)
     with _jobs_lock:
         _jobs.pop(job_id, None)
 
 
+def _enqueue_job(job_id: str, job: _WhisperJob | None = None) -> bool:
+    """Put a job in line for the audio gate. False means the queue is full.
+
+    With Redis the depth cap is enforced atomically across every worker (defect
+    2); without it, this is the original local deque check-and-append.
+    """
+    shared = _shared_enqueue(job_id, _queue_score(job))
+    if shared is not None:
+        if shared:
+            _ensure_queue_sweeper()
+        return shared
+    with _jobs_lock:
+        if job_id in _audio_queue:
+            return True
+        if len(_audio_queue) >= _MAX_AUDIO_QUEUE_DEPTH:
+            return False
+        _audio_queue.append(job_id)
+    return True
+
+
+def _requeue_job_at_head(job_id: str, job: _WhisperJob | None = None) -> None:
+    """Give a job back its place at the head after it had to release its slot."""
+    shared = _shared_enqueue(job_id, _queue_score(job), force=True)
+    if shared:
+        _ensure_queue_sweeper()
+        return
+    with _jobs_lock:
+        if job_id not in _audio_queue:
+            _audio_queue.appendleft(job_id)
+
+
+def _queue_depth() -> int:
+    """Current queue depth -- global when Redis is active, local otherwise."""
+    depth = _shared_depth()
+    if depth is not None:
+        return depth
+    with _jobs_lock:
+        return len(_audio_queue)
+
+
+def _is_queued(job_id: str) -> bool:
+    client = _queue_client()
+    if client is not None:
+        try:
+            return client.zscore(_AUDIO_QUEUE_KEY, job_id) is not None
+        except Exception:  # noqa: BLE001 - fall through to the local view
+            pass
+    with _jobs_lock:
+        return job_id in _audio_queue
+
+
 def _queue_position(job_id: str) -> int | None:
+    """Position in line, 1-based. Global (ZRANK) when Redis is active.
+
+    Defect 3: this number is read out to the waiting user, so it has to reflect
+    the whole deployment's queue, not just the worker that answered the poll.
+    """
+    client = _queue_client()
+    if client is not None:
+        try:
+            rank = client.zrank(_AUDIO_QUEUE_KEY, job_id)
+            return None if rank is None else int(rank) + 1
+        except Exception as exc:  # noqa: BLE001 - degrade to the local view
+            _queue_warn_once(
+                "queue-redis-rank",
+                f"whisperer: Redis error reading queue position ({exc!r}); "
+                "reporting this worker's position.",
+            )
     with _jobs_lock:
         try:
             return list(_audio_queue).index(job_id) + 1
@@ -968,15 +1360,88 @@ def _cleanup_unretrieved_job(job_id: str) -> None:
     _delete_job_store(job.job_id)
 
 
+def _claim_job_for_start(job_id: str) -> _WhisperJob | None:
+    """Prepare a claimed job to run here, or None when it must not be started.
+
+    The job may have been accepted by a DIFFERENT worker, in which case it is
+    absent from this process's ``_jobs`` and is rebuilt from the shared store
+    (its audio lives on the shared upload volume, so any worker can run it).
+
+    The stored status is the guard: a job that was cancelled, already started,
+    or has vanished from the store is dropped instead of being run twice.
+    """
+    with _jobs_lock:
+        job = _jobs.get(job_id)
+
+    stored = _load_job_from_store(job_id)
+    if job is None:
+        if stored is None:
+            return None
+        job = stored
+        with _jobs_lock:
+            existing = _jobs.get(job_id)
+            if existing is not None:
+                job = existing
+            else:
+                _jobs[job_id] = job
+
+    status = stored.status if stored is not None else job.status
+    if status != "queued":
+        return None
+
+    with _jobs_lock:
+        job.status = "running"
+        job.progress = 1
+        job.message = "Initializing transcription..."
+        job.started_at = datetime.now(UTC)
+    return job
+
+
+def _dispatch_shared_queue(capacity: int) -> int:
+    """Claim and start up to *capacity* jobs from the shared queue."""
+    started = 0
+    for _ in range(capacity):
+        job_id = _shared_claim()
+        if job_id is None:
+            break
+        job = _claim_job_for_start(job_id)
+        if job is None:
+            # Cancelled, already running, or gone: the atomic claim already
+            # removed it, so it simply leaves the queue.
+            continue
+
+        _write_job_status(job)
+
+        if job.notify_email:
+            _send_job_email(job, "started")
+
+        thread = threading.Thread(target=_run_whisper_job, args=(job_id,), daemon=True)
+        thread.start()
+        started += 1
+    return started
+
+
 def _dispatch_queued_jobs() -> None:
-    """Start queued jobs while audio gate capacity is available."""
+    """Start queued jobs while audio gate capacity is available.
+
+    With Redis this drains the SHARED queue, so a slot released on any worker
+    starts the globally-oldest waiting job (defect 1). Any job that landed in
+    this worker's local deque (a Redis blip during enqueue) is drained after.
+    """
     from ..gating import get_capacity_metrics
 
     capacity = get_capacity_metrics().get("audio", {}).get("available", 0)
     if capacity <= 0:
         return
 
-    for _ in range(int(capacity)):
+    capacity = int(capacity)
+    if _queue_client() is not None:
+        _ensure_queue_sweeper()
+        capacity -= _dispatch_shared_queue(capacity)
+        if capacity <= 0:
+            return
+
+    for _ in range(capacity):
         with _jobs_lock:
             if not _audio_queue:
                 return
@@ -1000,8 +1465,11 @@ def _dispatch_queued_jobs() -> None:
 
 def get_admin_queue_snapshot(limit_recent: int = 100) -> list[dict]:
     """Return queue/running/completed/failed snapshot for admin dashboard."""
+    # Global order when Redis is active, so the admin sees the real line rather
+    # than this worker's slice of it (defect 3).
+    shared_order = _shared_order()
     with _jobs_lock:
-        queue_order = list(_audio_queue)
+        queue_order = shared_order if shared_order is not None else list(_audio_queue)
         rows: list[dict] = []
         for job in _jobs.values():
             queue_position = None
@@ -1036,9 +1504,15 @@ def admin_cancel_queued_job(job_id: str) -> tuple[bool, str]:
         job = _jobs.get(job_id)
         if job is None:
             return False, "Job not found."
-        if job_id not in _audio_queue:
-            return False, "Only queued jobs can be canceled."
-        _audio_queue.remove(job_id)
+        was_local = job_id in _audio_queue
+        if was_local:
+            _audio_queue.remove(job_id)
+    # Remove from the shared queue too, so no worker can claim it later.
+    was_shared = _shared_remove(job_id)
+    if not (was_local or was_shared):
+        return False, "Only queued jobs can be canceled."
+
+    with _jobs_lock:
         job.status = "failed"
         job.progress = 0
         job.message = "Canceled by admin before processing."
@@ -1057,24 +1531,35 @@ def admin_requeue_failed_job(job_id: str) -> tuple[bool, str]:
             return False, "Job not found."
         if job.status != "failed":
             return False, "Only failed jobs can be re-queued."
-        if job_id in _audio_queue:
-            return False, "Job is already queued."
-        if len(_audio_queue) >= _MAX_AUDIO_QUEUE_DEPTH:
-            return False, "Queue is full."
+    # Membership and depth are read against the shared queue when Redis is
+    # active; the enqueue below is what actually enforces the cap, atomically.
+    if _is_queued(job_id):
+        return False, "Job is already queued."
+    if _queue_depth() >= _MAX_AUDIO_QUEUE_DEPTH:
+        return False, "Queue is full."
 
-        temp_dir = get_temp_dir(job.token)
-        if temp_dir is None or not job.saved_path.exists():
-            return False, "Cannot re-queue because source audio is no longer available."
+    temp_dir = get_temp_dir(job.token)
+    if temp_dir is None or not job.saved_path.exists():
+        return False, "Cannot re-queue because source audio is no longer available."
 
+    with _jobs_lock:
+        previous = (job.status, job.progress, job.message, job.error)
         job.status = "queued"
         job.progress = 0
         job.message = "Queued..."
         job.error = None
         job.started_at = None
         job.completed_at = None
-        _audio_queue.append(job_id)
 
+    # Publish "queued" BEFORE enqueuing: another worker may claim it the instant
+    # it appears, and the claim guard reads the stored status.
     _write_job_status(job)
+    if not _enqueue_job(job_id, job):
+        with _jobs_lock:
+            job.status, job.progress, job.message, job.error = previous
+        _write_job_status(job)
+        return False, "Queue is full."
+
     _dispatch_queued_jobs()
     return True, "Failed job re-queued."
 
@@ -1122,14 +1607,27 @@ def _run_whisper_job(job_id: str) -> None:
                 _touch_token_dir(job.token)
         except GatingError:
             with _jobs_lock:
-                _audio_queue.appendleft(job_id)
-                job = _jobs.get(job_id)
-                if job is not None:
-                    job.status = "queued"
-                    job.progress = 0
-                    job.message = "Queued... waiting for audio capacity."
-            if job is not None:
-                _write_job_status(job)
+                local_job = _jobs.get(job_id)
+                if local_job is not None:
+                    local_job.status = "queued"
+                    local_job.progress = 0
+                    local_job.message = "Queued... waiting for audio capacity."
+            if local_job is not None:
+                # Persist "queued" first: with a shared queue another worker can
+                # claim this job as soon as it is re-listed, and the claim guard
+                # reads the stored status.
+                _write_job_status(local_job)
+            else:
+                _patch_job_status(
+                    job_id,
+                    status="queued",
+                    progress=0,
+                    message="Queued... waiting for audio capacity.",
+                )
+            # Re-enter the line at the job's ORIGINAL enqueue time so giving the
+            # slot back does not send it to the back of the queue.
+            _requeue_job_at_head(job_id, local_job or job)
+            job = local_job if local_job is not None else job
             requeued = True
             return
 
@@ -1634,15 +2132,15 @@ def whisperer_start_job():
         )
         _set_job(job)
 
-        with _jobs_lock:
-            queue_full = len(_audio_queue) >= _MAX_AUDIO_QUEUE_DEPTH
-            if not queue_full:
-                _audio_queue.append(job_id)
+        # Atomic global enqueue when Redis is active: the depth cap counts every
+        # worker's waiting jobs, not just this one's (defect 2).
+        queue_full = not _enqueue_job(job_id, job)
         if queue_full:
-            # Do not call the lock-taking helpers while holding _jobs_lock:
-            # _jobs_lock is a plain (non-reentrant) Lock, so _delete_job would
-            # deadlock the worker and, through it, every route that touches
-            # the lock (progress polling, dispatch, the admin queue page).
+            # Roll back outside any lock: _jobs_lock is a plain (non-reentrant)
+            # Lock, so calling these lock-taking helpers while holding it would
+            # deadlock the worker and, through it, every route that touches the
+            # lock (progress polling, dispatch, the admin queue page).
+            # _delete_job also drops the id from the shared queue.
             _delete_job(job_id)
             _delete_job_store(job_id)
             cleanup_token(token)

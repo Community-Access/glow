@@ -22,12 +22,22 @@ from typing import Any
 from flask import Blueprint, Response, abort, current_app, jsonify, redirect, render_template, request, send_file, session, url_for
 from werkzeug.security import check_password_hash, generate_password_hash
 
+from ..app import limiter
 from ..async_orchestration import deadline_exceeded, load_policy
 from ..feature_flags import get_flag
 from ..site_audit import SiteAuditOptions, get_run_dir, parse_input_urls, run_site_audit
 
 
 log = logging.getLogger(__name__)
+
+# A submitted scan runs on its own thread and makes up to ``max_pages`` outbound
+# fetches with generous timeouts. Without a bound, an anonymous caller could
+# spawn threads (and outbound load) without limit. Cap how many scans actually
+# run at once; submissions past the cap wait briefly for a slot and then report
+# a retryable "busy" state rather than holding a thread indefinitely.
+_MAX_CONCURRENT_SCANS = int(os.environ.get("GLOW_MAX_CONCURRENT_SITE_AUDITS", "4"))
+_SCAN_SLOT_WAIT_SECONDS = int(os.environ.get("GLOW_SITE_AUDIT_SLOT_WAIT_SECONDS", "30"))
+_scan_slots = threading.BoundedSemaphore(_MAX_CONCURRENT_SCANS)
 
 site_audit_bp = Blueprint("site_audit", __name__)
 
@@ -441,7 +451,22 @@ def _start_site_audit_job(*, job: _SiteAuditJob, sources: list[str], options: Si
 
     def _worker() -> None:
         with app.app_context():
-            _run_site_audit_job(job=job, sources=sources, options=options)
+            # Bound concurrent outbound scanning. Waiting briefly keeps a burst
+            # of submissions from turning into a burst of crawlers; giving up
+            # after the wait frees the thread instead of parking it forever.
+            if not _scan_slots.acquire(timeout=_SCAN_SLOT_WAIT_SECONDS):
+                with _jobs_lock:
+                    job.status = "failed"
+                    job.retryable = True
+                    job.error = "Scan capacity is busy."
+                    job.message = "Too many scans in progress -- retry in a moment"
+                    job.completed_at = datetime.now(UTC)
+                _persist_job(job)
+                return
+            try:
+                _run_site_audit_job(job=job, sources=sources, options=options)
+            finally:
+                _scan_slots.release()
 
     thread = threading.Thread(target=_worker, daemon=True)
     with _jobs_lock:
@@ -547,6 +572,7 @@ def site_audit_form():
 
 
 @site_audit_bp.route("/", methods=["POST"])
+@limiter.limit("6 per minute")
 def site_audit_submit():
     if not _enabled():
         abort(404)

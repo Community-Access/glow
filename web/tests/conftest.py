@@ -32,6 +32,25 @@ def _isolate_support_hub_env(monkeypatch):
         monkeypatch.delenv(name, raising=False)
 
 
+@pytest.fixture(autouse=True)
+def _isolate_rate_limits():
+    """Give every test its own rate-limit budget.
+
+    The limiter is a module-level singleton with process-wide storage, and every
+    test client presents the same remote address, so requests accumulate across
+    test files. Without this, adding a rate limit to any route can make an
+    unrelated test fail with a spurious 429 depending purely on ordering. Tests
+    that mean to exercise throttling still can -- they just start from clean.
+    """
+    from acb_large_print_web.app import limiter
+
+    try:
+        limiter.reset()
+    except Exception:
+        pass
+    yield
+
+
 def _ai_available() -> bool:
     try:
         return ai_features.ai_chat_enabled()
