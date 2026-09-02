@@ -601,6 +601,10 @@ def test_run_axe_uses_resolved_npx_path(monkeypatch, tmp_path):
 
     def _fake_run(command, **kwargs):
         captured["command"] = command
+        # axe writes <--dir>/<--save>; _run_axe now verifies that file exists.
+        (Path(command[command.index("--dir") + 1]) / command[command.index("--save") + 1]).write_text(
+            "[]", encoding="utf-8"
+        )
         return _Proc()
 
     monkeypatch.setattr(site_audit.subprocess, "run", _fake_run)
@@ -1121,6 +1125,10 @@ def test_run_axe_prefers_installed_binary_over_npx(monkeypatch, tmp_path):
 
     def _fake_run(command, **kwargs):
         captured["command"] = command
+        # axe writes <--dir>/<--save>; _run_axe now verifies that file exists.
+        (Path(command[command.index("--dir") + 1]) / command[command.index("--save") + 1]).write_text(
+            "[]", encoding="utf-8"
+        )
         return _Proc()
 
     monkeypatch.setattr(site_audit.subprocess, "run", _fake_run)
@@ -1167,3 +1175,58 @@ def test_image_only_heading_is_silent_only_when_alt_is_empty():
     assert "HEURISTIC-HEADING-EMPTY" in {
         f["rule_id"] for f in site_audit._heading_findings("https://example.com/", silent)
     }
+
+
+def test_run_axe_passes_dir_and_bare_filename_not_an_absolute_path(monkeypatch, tmp_path):
+    # axe resolves --save against --dir, so an absolute path became
+    # /app/app/instance/... It failed to write and still exited 0, leaving every
+    # page looking unscanned. --dir must carry the directory, --save the name.
+    monkeypatch.setattr(
+        site_audit.shutil,
+        "which",
+        lambda name: {"axe": "/usr/bin/axe", "chromedriver": "/usr/bin/chromedriver"}.get(name),
+    )
+    captured = {}
+
+    class _Proc:
+        returncode = 0
+        stderr = ""
+        stdout = ""
+
+    def _fake_run(command, **kwargs):
+        captured["command"] = command
+        (Path(command[command.index("--dir") + 1]) / command[command.index("--save") + 1]).write_text(
+            "[]", encoding="utf-8"
+        )
+        return _Proc()
+
+    monkeypatch.setattr(site_audit.subprocess, "run", _fake_run)
+    out = tmp_path / "pages" / "some-page" / "axe.json"
+    out.parent.mkdir(parents=True)
+    site_audit._run_axe("https://example.com/", out)
+
+    command = captured["command"]
+    assert command[command.index("--dir") + 1] == str(out.parent)
+    assert command[command.index("--save") + 1] == "axe.json"
+    # The bug: the full path must never be handed to --save.
+    assert str(out) not in command
+    assert out.exists()
+
+
+def test_run_axe_raises_when_axe_exits_zero_but_saves_nothing(monkeypatch, tmp_path):
+    # The real failure mode: exit 0, "Unable to save file!" on stdout, no file.
+    # Left unchecked this is indistinguishable from "the scanner never ran".
+    monkeypatch.setattr(
+        site_audit.shutil, "which", lambda name: "/usr/bin/axe" if name == "axe" else None
+    )
+
+    class _Proc:
+        returncode = 0
+        stdout = "42 Accessibility issues detected.\nUnable to save file!\nError: ENOENT"
+        stderr = ""
+
+    monkeypatch.setattr(site_audit.subprocess, "run", lambda command, **kw: _Proc())
+    with pytest.raises(RuntimeError) as excinfo:
+        site_audit._run_axe("https://example.com/", tmp_path / "axe.json")
+    assert "saved no results" in str(excinfo.value)
+    assert "Unable to save file!" in str(excinfo.value)

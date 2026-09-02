@@ -1604,12 +1604,18 @@ def _run_axe(url: str, output_path: Path) -> None:
             raise RuntimeError("axe executable not found on PATH")
         command = [npx, "axe"]
 
+    # --save takes a bare filename resolved against --dir, NOT a path. Passing
+    # an absolute path made axe resolve it against its working directory
+    # (/app/instance/... became /app/app/instance/...), fail to write, and still
+    # exit 0 -- so no results were ever saved and every page looked unscanned.
     command += [
         url,
         "--tags",
         ",".join(WCAG_TAGS),
+        "--dir",
+        str(output_path.parent),
         "--save",
-        str(output_path),
+        output_path.name,
     ]
     # Chrome cannot use its sandbox inside an unprivileged container, and the
     # default /dev/shm is too small there; without these it exits before axe
@@ -1624,6 +1630,14 @@ def _run_axe(url: str, output_path: Path) -> None:
     if proc.returncode != 0:
         err = proc.stderr.strip() or proc.stdout.strip() or f"exit code {proc.returncode}"
         raise RuntimeError(err)
+    # axe reports a failed write on stdout and still exits 0. Without this check
+    # the missing file is indistinguishable from "the scanner never ran", which
+    # is how a silent save failure would be misreported to a site owner.
+    if not output_path.exists():
+        combined = f"{proc.stdout}\n{proc.stderr}".strip()
+        marker = "Unable to save file!"
+        detail = combined[combined.find(marker):].strip() if marker in combined else combined[-300:]
+        raise RuntimeError(f"axe ran but saved no results to {output_path}. {detail}".strip())
 
 
 # Single severity vocabulary shared by axe and heuristic findings, most to
