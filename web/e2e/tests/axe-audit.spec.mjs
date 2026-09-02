@@ -18,6 +18,8 @@
 
 import fs from 'node:fs';
 import path from 'node:path';
+import { randomUUID } from 'node:crypto';
+import { fileURLToPath } from 'node:url';
 import { test, expect } from '@playwright/test';
 import { AxeBuilder } from '@axe-core/playwright';
 
@@ -26,6 +28,14 @@ import { AxeBuilder } from '@axe-core/playwright';
 // ---------------------------------------------------------------------------
 
 const ARTIFACTS_DIR = path.resolve('e2e/artifacts');
+
+// Flask's instance path for the server Playwright starts. Resolved from this
+// file rather than process.cwd() so it holds wherever the suite is invoked.
+const E2E_INSTANCE_DIR = path.resolve(
+  path.dirname(fileURLToPath(import.meta.url)),
+  '..',
+  'instance',
+);
 
 const DEFAULT_AXE_TAGS = [
   'wcag2a',
@@ -168,6 +178,110 @@ async function auditPage(page, url) {
   };
 }
 
+/**
+ * A Site Audit summary.json exercising every branch of the results template:
+ * the run-level scanner notice with its collapsed technical detail, a WCAG
+ * conformance finding, and a best-practice finding with its "(Best practice)"
+ * marker and plain-language guidance. Mirrors the shape written by
+ * site_audit.run_site_audit().
+ */
+function seededRunSummary(runId) {
+  const pageUrl = 'https://example.org/projects';
+  return {
+    run_id: runId,
+    started_utc: '2026-01-01T00:00:00Z',
+    elapsed_ms: 4200,
+    options: {
+      max_pages: 10,
+      crawl_links: true,
+      crawl_depth: 1,
+      include_subdomains: false,
+      same_path_only: false,
+      exclude_url_patterns: [],
+      strict_open_source_only: false,
+      force: false,
+      check_heading_structure: true,
+      check_title_quality: true,
+    },
+    totals: { pages_total: 1, scanned: 1, failed: 0, skipped: 0, findings: 2 },
+    cancelled: false,
+    notices: [
+      {
+        id: 'deep-scan-unavailable',
+        level: 'warning',
+        title: 'Some automated checks could not run',
+        message:
+          'The deep scanner could not start because of a file-permission problem on the '
+          + 'GLOW server. Nothing is wrong with your page. This affected 1 page in this scan.',
+        consequence:
+          'The checks listed below still ran, but this scan did not include the deeper '
+          + 'automated tests (colour contrast, form labels, ARIA, and similar).',
+        detail: 'npm ERR! code EACCES npm ERR! syscall mkdir npm ERR! path /app/.npm',
+        affected_pages: 1,
+      },
+    ],
+    wcag_rollup: { wcag111: 4, wcag2410: 1 },
+    pages: [
+      {
+        url: pageUrl,
+        final_url: pageUrl,
+        result: 'ok',
+        status_code: 200,
+        title: 'Example Projects',
+        doc_lang: 'en',
+        index: 1,
+        finding_count: 2,
+        wcag_tags: { wcag111: 4 },
+        deep_scan: { ok: false },
+        findings: [
+          {
+            page_url: pageUrl,
+            rule_id: 'HEURISTIC-IMG-ALT',
+            severity: 'serious',
+            message: 'Detected 4 image element(s) missing alt text.',
+            location: 'img',
+            help_url: '',
+            wcag_criteria: ['1.1.1'],
+            guidance:
+              'Add alt text describing what each image shows. If an image is purely '
+              + 'decorative, give it an empty alt="" so screen readers skip it.',
+            best_practice: false,
+            resources: [
+              {
+                title: 'W3C Understanding SC 1.1.1',
+                url: 'https://www.w3.org/WAI/WCAG22/Understanding/non-text-content.html',
+                source: 'W3C',
+              },
+            ],
+          },
+          {
+            page_url: pageUrl,
+            rule_id: 'HEURISTIC-HEADING-SPARSE',
+            severity: 'moderate',
+            message:
+              'This page has roughly 960 words of content but only 2 heading(s). A page '
+              + 'this size normally needs at least 4 to be skimmed or navigated by section.',
+            location: 'body',
+            help_url: '',
+            wcag_criteria: ['2.4.10'],
+            guidance:
+              'This page has a lot of content but almost no headings, so there is no way '
+              + 'to skim or skip ahead. Add an <h2> at the start of each section.',
+            best_practice: true,
+            resources: [
+              {
+                title: 'W3C Tutorial: Headings',
+                url: 'https://www.w3.org/WAI/tutorials/page-structure/headings/',
+                source: 'W3C',
+              },
+            ],
+          },
+        ],
+      },
+    ],
+  };
+}
+
 // ---------------------------------------------------------------------------
 // Pages to audit
 // ---------------------------------------------------------------------------
@@ -180,6 +294,11 @@ const STATIC_PAGES = [
   { label: 'template form', path: '/template/' },
   { label: 'speech studio', path: '/speech/' },
   { label: 'braille studio', path: '/braille/' },
+  // GLOW's own accessibility scanner. Its results are read by the people least
+  // able to work around a broken page, yet these routes were the last tool
+  // surface absent from this suite. The results and job pages need a run to
+  // exist first, so they are audited in the interactive-states block below.
+  { label: 'site audit form', path: '/site-audit/' },
   { label: 'settings', path: '/settings/' },
   { label: 'guidelines', path: '/guidelines/' },
   { label: 'user guide', path: '/guide/' },
@@ -421,6 +540,98 @@ test.describe('GLOW axe-core — interactive states', () => {
       ['critical', 'serious'].includes(v.impact)
     );
     expect(blocking, `Audit form (accordions open) has ${blocking.length} blocking violation(s): ${blocking.map((v) => v.id).join(', ')}`).toHaveLength(0);
+  });
+
+  // The two Site Audit pages that only exist once a scan has been submitted.
+  // Both carry markup no other page has -- the run-level notice banner, the
+  // best-practice finding markers, and the live job status region -- so a
+  // static sweep of the form alone would leave all of it unaudited.
+  //
+  // The results page is seeded from disk rather than by running a real scan.
+  // The SSRF guard refuses private addresses, so a scan aimed at this test
+  // server is always refused: the page renders, but with an empty findings
+  // table and no notice, and an audit of it would pass without ever touching
+  // the markup this test exists to cover.
+  test('site audit results page is accessible (populated)', async ({ page }) => {
+    const runId = randomUUID();
+    const runDir = path.join(E2E_INSTANCE_DIR, 'site_audit_runs', runId);
+    fs.mkdirSync(runDir, { recursive: true });
+    fs.writeFileSync(
+      path.join(runDir, 'summary.json'),
+      JSON.stringify(seededRunSummary(runId), null, 2),
+      'utf-8',
+    );
+
+    try {
+      await page.goto(`/site-audit/runs/${runId}`);
+      await ensureConsent(page);
+      await expect(page.getByRole('heading', { level: 1, name: /Site Audit Results/i }))
+        .toBeVisible({ timeout: 30000 });
+
+      // Guard against a silently empty page: this test is only meaningful if
+      // the notice banner and both finding kinds actually rendered.
+      await expect(page.getByRole('heading', { level: 2, name: /Some automated checks could not run/i })).toBeVisible();
+      await expect(page.getByText('(Best practice)').first()).toBeVisible();
+      await expect(page.getByText(/What to do:/).first()).toBeVisible();
+
+      // Expand every disclosure, including the notice's "technical details",
+      // so collapsed content is audited rather than skipped as hidden.
+      const summaries = page.locator('details > summary');
+      const count = await summaries.count();
+      for (let i = 0; i < count; i++) {
+        const detail = summaries.nth(i).locator('..');
+        const isOpen = await detail.evaluate((el) => el.open);
+        if (!isOpen) await summaries.nth(i).click();
+      }
+      await page.waitForLoadState('load');
+
+      let builder = new AxeBuilder({ page }).withTags(AXE_TAGS);
+      builder = builder.exclude('script, template, [hidden]');
+      if (!AXE_STRICT) builder = builder.disableRules(['color-contrast']);
+      const result = await builder.analyze();
+
+      const blocking = result.violations.filter((v) =>
+        ['critical', 'serious'].includes(v.impact)
+      );
+      expect(blocking, `Site audit results page has ${blocking.length} blocking violation(s): ${blocking.map((v) => v.id).join(', ')}`).toHaveLength(0);
+    } finally {
+      fs.rmSync(runDir, { recursive: true, force: true });
+    }
+  });
+
+  test('site audit background job page is accessible', async ({ page, baseURL }) => {
+    test.setTimeout(120000);
+
+    await page.goto('/site-audit/');
+    await ensureConsent(page);
+
+    // Background mode is checked by default, so this is the page most people
+    // actually land on after submitting a scan.
+    await page.locator('#sources').fill(`${baseURL}/about/`);
+    const crawlLinks = page.locator('input[name="crawl_links"]');
+    if (await crawlLinks.count()) await crawlLinks.uncheck();
+    const runInBackground = page.locator('input[name="run_in_background"]');
+    if (await runInBackground.count()) await runInBackground.check();
+    await page.locator('#max_pages').fill('1');
+    await page.getByRole('button', { name: /Run Site Audit/i }).click();
+
+    // Assert the specific page, not just "a heading": if submission failed we
+    // would still be on the form, and this test would pass against the wrong
+    // page while reporting the job page as audited.
+    await expect(page.getByRole('heading', { level: 1, name: /Site Audit Job Status/i }))
+      .toBeVisible({ timeout: 60000 });
+    await page.waitForLoadState('load');
+    await page.waitForTimeout(400);
+
+    let builder = new AxeBuilder({ page }).withTags(AXE_TAGS);
+    builder = builder.exclude('script, template, [hidden]');
+    if (!AXE_STRICT) builder = builder.disableRules(['color-contrast']);
+    const result = await builder.analyze();
+
+    const blocking = result.violations.filter((v) =>
+      ['critical', 'serious'].includes(v.impact)
+    );
+    expect(blocking, `Site audit job page has ${blocking.length} blocking violation(s): ${blocking.map((v) => v.id).join(', ')}`).toHaveLength(0);
   });
 
   test('dark mode — no critical/serious violations', async ({ browser }) => {
