@@ -48,11 +48,37 @@ jobs:
         with:
           python-version: "3.13"
 
-      - name: Install the web package
-        working-directory: web
+      - name: Install dependencies
+        # Same shape as tests.yml: quill-glow-core is not on PyPI, so it comes
+        # from git, and network installs get a retry because a flaky mirror
+        # should not read as a failed rehearsal.
         run: |
           python -m pip install --upgrade pip
-          pip install -e .
+
+          install_with_retry() {
+            local max_attempts="$1"
+            shift
+            local attempt=1
+            local delay=5
+            while true; do
+              if "$@"; then
+                return 0
+              fi
+              if [ "$attempt" -ge "$max_attempts" ]; then
+                echo "Command failed after ${attempt} attempts: $*"
+                return 1
+              fi
+              echo "Attempt ${attempt} failed. Retrying in ${delay}s: $*"
+              sleep "$delay"
+              attempt=$((attempt + 1))
+              delay=$((delay * 2))
+            done
+          }
+
+          install_with_retry 4 python -m pip install --upgrade --force-reinstall \
+            "git+https://github.com/Community-Access/quill-glow-core.git@main"
+          install_with_retry 4 python -m pip install -e ./desktop
+          install_with_retry 4 python -m pip install -e ./web
 
       - name: Run the rehearsal
         run: |
