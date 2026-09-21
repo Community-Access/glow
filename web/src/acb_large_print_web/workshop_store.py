@@ -13,6 +13,7 @@ import os
 import re
 import secrets
 import sqlite3
+import threading
 from datetime import UTC, datetime, timedelta
 from html import escape
 from io import BytesIO
@@ -33,12 +34,45 @@ def _db_path() -> Path:
     return p / "workshop_mode.db"
 
 
+# Schema setup is idempotent but not free: eight CREATE TABLE statements,
+# several PRAGMA table_info calls, a duplicate-collapsing migration with a
+# window function over every submission, and a unique index build. Running
+# that on every connection cost a 30-participant load rehearsal 40 "database
+# is locked" errors and a 14.7 second worst case, because a thousand requests
+# meant a thousand migrations queueing for the same write lock.
+#
+# Keyed on the database path rather than a bare boolean: tests point each app
+# at its own instance directory, and a fresh database still needs its tables.
+_SCHEMA_READY: set[str] = set()
+_SCHEMA_LOCK = threading.Lock()
+
+
 def _conn() -> sqlite3.Connection:
-    conn = sqlite3.connect(str(_db_path()))
+    path = _db_path()
+    key = str(path)
+
+    # Wait for a writer rather than failing instantly. A room of thirty people
+    # saving at the end of an activity is bursty by nature, and a participant
+    # would far rather wait 200ms than lose an answer.
+    conn = sqlite3.connect(str(path), timeout=30.0)
     conn.row_factory = sqlite3.Row
-    conn.execute("PRAGMA journal_mode=WAL")
-    _ensure_schema(conn)
+    conn.execute("PRAGMA busy_timeout=30000")
+
+    if key not in _SCHEMA_READY:
+        with _SCHEMA_LOCK:
+            if key not in _SCHEMA_READY:
+                # WAL is a property of the file, so it only has to be set once.
+                conn.execute("PRAGMA journal_mode=WAL")
+                _ensure_schema(conn)
+                _SCHEMA_READY.add(key)
+
     return conn
+
+
+def reset_schema_cache() -> None:
+    """Forget which databases have been prepared. For tests only."""
+    with _SCHEMA_LOCK:
+        _SCHEMA_READY.clear()
 
 
 def _ensure_schema(conn: sqlite3.Connection) -> None:
