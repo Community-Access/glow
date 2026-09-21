@@ -125,7 +125,7 @@ def run_participant(index: int, client_factory, code: str, results: Results, app
         started = time.perf_counter()
         try:
             response = fn()
-        except Exception as exc:  # pragma: no cover - reported, not raised
+        except Exception as exc:  # noqa: BLE001 - a probe reports every failure, it does not crash
             results.fail(f"{label} {name}: {exc}")
             return None
         elapsed = time.perf_counter() - started
@@ -175,7 +175,6 @@ def build_in_process(code: str):
 def build_http(base_url: str):
     """Run against a deployment. Needs `requests`."""
     import requests
-
     from acb_large_print_web.routes import workshop as workshop_routes
 
     class HttpClient:
@@ -192,7 +191,7 @@ def build_http(base_url: str):
     return HttpClient, workshop_routes, ""
 
 
-def summarise(results: Results, participants: int, elapsed: float, in_process: bool) -> int:
+def summarise(results: Results, participants: int, elapsed: float, in_process: bool, gate: str = "all") -> int:
     samples = results.samples
     if not samples:
         print("No samples recorded. Something is wrong with the harness.")
@@ -224,8 +223,13 @@ def summarise(results: Results, participants: int, elapsed: float, in_process: b
         print("  OK    no request was rate limited")
 
     if results.slow:
-        pass_criteria = False
-        print(f"  FAIL  {len(results.slow)} request(s) over {SLOW_REQUEST_SECONDS:.0f}s")
+        if gate == "all":
+            pass_criteria = False
+        print(
+            f"  {'FAIL' if gate == 'all' else 'NOTE'}  "
+            f"{len(results.slow)} request(s) over {SLOW_REQUEST_SECONDS:.0f}s"
+            + ("" if gate == "all" else "  (not gated: --gate contention)")
+        )
         worst = sorted(results.slow, key=lambda s: -s.seconds)[:5]
         for sample in worst:
             print(f"          {sample.seconds * 1000:.0f}ms  {sample.label}")
@@ -247,7 +251,8 @@ def summarise(results: Results, participants: int, elapsed: float, in_process: b
             print(f"          {message}")
 
     print()
-    print("  " + ("PASS - the room is survivable at this size."
+    gate_note = " (contention only)" if gate == "contention" else ""
+    print("  " + (f"PASS{gate_note} - the room is survivable at this size."
                   if pass_criteria else
                   "FAIL - see above. This is the rehearsal doing its job."))
 
@@ -278,6 +283,17 @@ def main() -> int:
     parser.add_argument("--code", default="load-rehearsal")
     parser.add_argument("--base-url", default="", help="Run against a deployment instead of in-process.")
     parser.add_argument("--json", default="", help="Write the samples to this path.")
+    parser.add_argument(
+        "--gate",
+        choices=("all", "contention"),
+        default="all",
+        help=(
+            "What decides the exit code. 'all' includes latency and is the "
+            "right choice for a deliberate run. 'contention' checks only lock "
+            "errors, 429s and error statuses -- use it in CI, where latency "
+            "measures the runner rather than the app."
+        ),
+    )
     args = parser.parse_args()
 
     if args.base_url:
@@ -316,7 +332,10 @@ def main() -> int:
         )
         print(f"Samples written to {args.json}")
 
-    return summarise(results, args.participants, elapsed, in_process=not args.base_url)
+    return summarise(
+        results, args.participants, elapsed,
+        in_process=not args.base_url, gate=args.gate,
+    )
 
 
 if __name__ == "__main__":

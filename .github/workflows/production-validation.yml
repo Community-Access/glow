@@ -1,0 +1,56 @@
+name: Production Validation
+
+# Is the deployed site actually ready to run a workshop day?
+#
+# The pre-flight page answers that from inside the app. This answers it from
+# outside, against whatever is really deployed: health, the deploy state, the
+# workshop feature flags, the MCP backend, every front-facing surface, and
+# whether the worksheet pack is a real .docx rather than an error page served
+# with a 200.
+#
+# **Read-only.** No session is created and no row is written -- which matters,
+# because merely visiting /workshop/?code=X calls ensure_session() and would
+# leave a real session behind in production.
+#
+# Runs after every production deploy, so a green deploy is followed by an
+# independent check that the deploy did what it claimed, and daily, so that a
+# surface which quietly stops serving is noticed before a conference morning
+# rather than during one.
+
+on:
+  workflow_run:
+    workflows: ["Deploy Web App"]
+    types: [completed]
+  schedule:
+    # 07:05 UTC daily. Early enough to be read with coffee.
+    - cron: "5 7 * * *"
+  workflow_dispatch:
+    inputs:
+      base_url:
+        description: "Base URL to validate"
+        required: false
+        default: "https://letitglow.app"
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    # After a deploy, only bother if the deploy actually succeeded. A failed
+    # deploy has already reported itself; a second red check adds noise.
+    if: >
+      github.event_name != 'workflow_run' ||
+      github.event.workflow_run.conclusion == 'success'
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.13"
+
+      - name: Validate the deployment
+        run: |
+          python scripts/validate_production.py \
+            --base-url "${{ github.event.inputs.base_url || 'https://letitglow.app' }}"
