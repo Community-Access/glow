@@ -1,0 +1,70 @@
+name: Workshop Load Rehearsal
+
+# Thirty simulated participants through all eleven activities, in-process.
+#
+# This exists because the first time Workshop Mode was measured at room scale
+# it failed: _ensure_schema() ran on every database connection, producing 29
+# "database is locked" errors and a 14.7 second worst case (fixed in #112).
+# Nothing in the test suite would have caught that, because nothing in the
+# test suite runs thirty clients at once.
+#
+# It gates on **contention only** -- lock errors, 429s and error statuses --
+# and deliberately not on latency. In-process, thirty threads share one GIL,
+# and on a shared runner the timings measure the runner. A latency gate here
+# would be flaky, and a flaky gate is one people learn to ignore. Latency is
+# still printed in the log, and `--gate all` is what a person runs
+# deliberately before a conference.
+
+on:
+  pull_request:
+    paths:
+      - "web/src/acb_large_print_web/workshop_*.py"
+      - "web/src/acb_large_print_web/routes/workshop.py"
+      - "web/src/acb_large_print_web/routes/shortlinks.py"
+      - "scripts/workshop_load_rehearsal.py"
+      - ".github/workflows/workshop-load-rehearsal.yml"
+  schedule:
+    # Mondays, 06:20 UTC. Weekly is enough for a check whose job is to catch
+    # a regression before a conference, not to watch a dashboard.
+    - cron: "20 6 * * 1"
+  workflow_dispatch:
+    inputs:
+      participants:
+        description: "Simulated participants"
+        required: false
+        default: "30"
+
+jobs:
+  rehearse:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.13"
+
+      - name: Install the web package
+        working-directory: web
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e .
+
+      - name: Run the rehearsal
+        run: |
+          python scripts/workshop_load_rehearsal.py \
+            --participants "${{ github.event.inputs.participants || 30 }}" \
+            --gate contention \
+            --json rehearsal-samples.json
+
+      - name: Keep the samples
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: load-rehearsal-samples
+          path: rehearsal-samples.json
+          if-no-files-found: ignore
