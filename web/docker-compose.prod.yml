@@ -7,7 +7,7 @@
 #     * FEEDBACK_PASSWORD - Password for /feedback/review dashboard
 #     * FEEDBACK_GITHUB_TOKEN - GitHub PAT for feedback-to-issue automation
 #     * FEEDBACK_GITHUB_REPO, FEEDBACK_GITHUB_ASSIGNEE, FEEDBACK_GITHUB_LABELS (optional)
-#   - web/Caddyfile with your domain configuration
+#   - web/caddy/Caddyfile with your domain configuration
 #   - web/www/ directory for the main site static files
 #   - desktop/ directory at ../desktop/ (needed for Docker build)
 #
@@ -195,7 +195,10 @@ services:
       - "443:443"
       - "443:443/udp"
     volumes:
-      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      # A directory, not the single file: a file bind mount pins the inode, so
+      # an editor or `git pull` that replaces web/caddy/Caddyfile leaves Caddy
+      # reading the old copy and `caddy reload` silently changes nothing.
+      - ./caddy:/etc/caddy:ro
       - ./www:/srv/www:ro
       - caddy_data:/data
       - caddy_config:/config

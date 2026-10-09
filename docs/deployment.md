@@ -836,14 +836,14 @@ The Caddyfile configures Caddy to serve both the main website and the Flask appl
 If the repository includes `web/Caddyfile.example`, copy and edit it:
 
 ```bash
-cp ~/app/web/Caddyfile.example ~/app/web/Caddyfile
-nano ~/app/web/Caddyfile
+mkdir -p ~/app/web/caddy && cp ~/app/web/Caddyfile.example ~/app/web/caddy/Caddyfile
+nano ~/app/web/caddy/Caddyfile
 ```
 
 Otherwise, create it from scratch:
 
 ```bash
-nano ~/app/web/Caddyfile
+nano ~/app/web/caddy/Caddyfile
 ```
 
 Paste the following content. If your domains differ from `csedesigns.com` and `glow.bits-acb.org`, replace them:
@@ -969,7 +969,7 @@ services:
       - "443:443"
       - "443:443/udp"
     volumes:
-      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - ./caddy:/etc/caddy:ro
       - ./www:/srv/www:ro
       - caddy_data:/data
       - caddy_config:/config
@@ -1143,7 +1143,7 @@ Place your certificate files in `~/app/web/certs/` and add a volume mount to the
 ```yaml
   caddy:
     volumes:
-      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - ./caddy:/etc/caddy:ro
       - ./certs:/etc/caddy/certs:ro
       - ./www:/srv/www:ro
       - caddy_data:/data
@@ -1304,7 +1304,7 @@ sftp> exit
 
 ```bash
 sftp deploy@YOUR_SERVER_IP
-sftp> put ./Caddyfile /home/deploy/app/web/Caddyfile
+sftp> put ./Caddyfile /home/deploy/app/web/caddy/Caddyfile
 sftp> exit
 ```
 
@@ -2189,7 +2189,7 @@ echo ""
 
 # Check required files
 MISSING=0
-for F in "$WEB_ROOT/$COMPOSE_FILE" "$WEB_ROOT/.env" "$WEB_ROOT/Caddyfile" "$WEB_ROOT/Dockerfile"; do
+for F in "$WEB_ROOT/$COMPOSE_FILE" "$WEB_ROOT/.env" "$WEB_ROOT/caddy/Caddyfile" "$WEB_ROOT/Dockerfile"; do
     if [[ ! -f "$F" ]]; then
         echo "ERROR: Required file missing: $F"
         MISSING=1
@@ -2735,7 +2735,7 @@ This file ships with the repository at `web/docker-compose.prod.yml`. See Phase 
 
 ### Caddyfile template (Caddyfile.example)
 
-This file ships with the repository at `web/Caddyfile.example`. Copy it to `Caddyfile` and replace the domain names. See Phase 4.3.
+This file ships with the repository at `web/Caddyfile.example`. Copy it to `caddy/Caddyfile` and replace the domain names. See Phase 4.3.
 
 ### Dockerfile
 

@@ -244,7 +244,7 @@ helpdesk.community-access.org {
 # Caddy site block for the QUILL AI Gateway.
 #
 # Append this to the Caddyfile the shared host already uses --
-# on lp.csedesigns.com ("bishoplink") that is /home/jeffbis/app/web/Caddyfile,
+# on lp.csedesigns.com ("bishoplink") that is /home/jeffbis/app/web/caddy/Caddyfile,
 # mounted into the `web-caddy-1` container -- then reload:
 #
 #     docker exec web-caddy-1 caddy reload --config /etc/caddy/Caddyfile

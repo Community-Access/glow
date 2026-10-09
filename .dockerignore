@@ -64,6 +64,7 @@ web/tests/
 web/.dockerignore
 web/docker-compose*.yml
 web/Caddyfile*
+web/caddy/
 web/www/
 web/.env*
 web/README.md

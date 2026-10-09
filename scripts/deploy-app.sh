@@ -392,7 +392,7 @@ PYEOF
 
 # Check required files
 MISSING=0
-for F in "$WEB_ROOT/$COMPOSE_FILE" "$WEB_ROOT/Caddyfile" "$WEB_ROOT/Dockerfile"; do
+for F in "$WEB_ROOT/$COMPOSE_FILE" "$WEB_ROOT/caddy/Caddyfile" "$WEB_ROOT/Dockerfile"; do
     if [[ ! -f "$F" ]]; then
         log_ts "ERROR: Required file missing: $F"
         MISSING=1
@@ -610,7 +610,7 @@ if [[ "$HEALTHY" -eq 1 ]]; then
     # running with stale config even though the file on disk has changed.
     log_ts "--- Validating Caddy configuration ---"
     docker run --rm \
-        -v "$WEB_ROOT/Caddyfile:/etc/caddy/Caddyfile:ro" \
+        -v "$WEB_ROOT/caddy:/etc/caddy:ro" \
         caddy:2-alpine \
         caddy validate --config /etc/caddy/Caddyfile
 
