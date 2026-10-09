@@ -134,13 +134,12 @@ jobs:
             git fetch origin
             # Use the branch that triggered the workflow (main or release/**).
             #
-            # Fast-forward, never reset --hard. The production checkout carries
-            # uncommitted operational config that exists nowhere in this repo:
-            # web/Caddyfile holds the helpdesk.community-access.org block and the
-            # Community Picks /submit/* endpoint. A hard reset deletes both
-            # silently, and the first green deploy after a red streak is exactly
-            # when nobody is reading the log. --ff-only keeps local edits and
-            # fails loudly if an incoming commit would overwrite one.
+            # Fast-forward, never reset --hard. web/caddy/Caddyfile is now fully
+            # tracked, but a hotfix made on the box before it is committed would
+            # be deleted silently by a hard reset, and the first green deploy
+            # after a red streak is exactly when nobody is reading the log.
+            # --ff-only keeps local edits and fails loudly if an incoming
+            # commit would overwrite one.
             git checkout ${{ github.ref_name }}
             git merge --ff-only origin/${{ github.ref_name }}
             bash scripts/deploy-app.sh

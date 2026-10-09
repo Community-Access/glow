@@ -1,8 +1,8 @@
-# Caddyfile.example -- Copy to Caddyfile and replace domain names
+# Caddyfile.example -- Copy to caddy/Caddyfile and replace domain names
 #
 # Usage:
-#   cp Caddyfile.example Caddyfile
-#   nano Caddyfile    # replace csedesigns.com with your domain
+#   mkdir -p caddy && cp Caddyfile.example caddy/Caddyfile
+#   nano caddy/Caddyfile    # replace csedesigns.com with your domain
 #
 # This configures:
 #   - csedesigns.com / www.csedesigns.com -- static site from ./www/

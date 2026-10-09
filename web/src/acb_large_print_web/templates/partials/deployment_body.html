@@ -869,11 +869,11 @@ ADMIN_LOCAL_PASSWORD=YOUR_BOOTSTRAP_PASSWORD
 <h3 id="43-create-the-caddyfile">4.3 Create the Caddyfile</h3>
 <p>The Caddyfile configures Caddy to serve both the main website and the Flask application.</p>
 <p>If the repository includes <code>web/Caddyfile.example</code>, copy and edit it:</p>
-<pre><code class="language-bash">cp ~/app/web/Caddyfile.example ~/app/web/Caddyfile
-nano ~/app/web/Caddyfile
+<pre><code class="language-bash">mkdir -p ~/app/web/caddy &amp;&amp; cp ~/app/web/Caddyfile.example ~/app/web/caddy/Caddyfile
+nano ~/app/web/caddy/Caddyfile
 </code></pre>
 <p>Otherwise, create it from scratch:</p>
-<pre><code class="language-bash">nano ~/app/web/Caddyfile
+<pre><code class="language-bash">nano ~/app/web/caddy/Caddyfile
 </code></pre>
 <p>Paste the following content. If your domains differ from <code>csedesigns.com</code> and <code>glow.bits-acb.org</code>, replace them:</p>
 <pre><code># Main website -- static files
@@ -988,7 +988,7 @@ services:
       - &quot;443:443&quot;
       - &quot;443:443/udp&quot;
     volumes:
-      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - ./caddy:/etc/caddy:ro
       - ./www:/srv/www:ro
       - caddy_data:/data
       - caddy_config:/config
@@ -1111,7 +1111,7 @@ docker compose -f docker-compose.prod.yml restart caddy
 <p>Place your certificate files in <code>~/app/web/certs/</code> and add a volume mount to the <code>caddy</code> service in the compose file:</p>
 <pre><code class="language-yaml">  caddy:
     volumes:
-      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - ./caddy:/etc/caddy:ro
       - ./certs:/etc/caddy/certs:ro
       - ./www:/srv/www:ro
       - caddy_data:/data
@@ -1255,7 +1255,7 @@ sftp&gt; exit
 </code></pre>
 <h3 id="replacing-a-configuration-file">Replacing a configuration file</h3>
 <pre><code class="language-bash">sftp deploy@YOUR_SERVER_IP
-sftp&gt; put ./Caddyfile /home/deploy/app/web/Caddyfile
+sftp&gt; put ./Caddyfile /home/deploy/app/web/caddy/Caddyfile
 sftp&gt; exit
 </code></pre>
 <p>Then restart Caddy to pick up the change:</p>
@@ -2305,7 +2305,7 @@ echo &quot;&quot;
 
 # Check required files
 MISSING=0
-for F in &quot;$WEB_ROOT/$COMPOSE_FILE&quot; &quot;$WEB_ROOT/.env&quot; &quot;$WEB_ROOT/Caddyfile&quot; &quot;$WEB_ROOT/Dockerfile&quot;; do
+for F in &quot;$WEB_ROOT/$COMPOSE_FILE&quot; &quot;$WEB_ROOT/.env&quot; &quot;$WEB_ROOT/caddy/Caddyfile&quot; &quot;$WEB_ROOT/Dockerfile&quot;; do
     if [[ ! -f &quot;$F&quot; ]]; then
         echo &quot;ERROR: Required file missing: $F&quot;
         MISSING=1

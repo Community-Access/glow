@@ -10,7 +10,7 @@ set -euo pipefail
 
 APP_ROOT="${APP_ROOT:-$HOME/app}"
 WEB_ROOT="${WEB_ROOT:-$APP_ROOT/web}"
-CADDYFILE="${CADDYFILE:-$WEB_ROOT/Caddyfile}"
+CADDYFILE="${CADDYFILE:-$WEB_ROOT/caddy/Caddyfile}"
 COMPOSE_FILE="docker-compose.prod.yml"
 
 # --- Pre-flight checks ---
