@@ -48,6 +48,41 @@ lp.csedesigns.com, glow.bits-acb.org, www.letitglow.app {
         reverse_proxy feedback-hub-submit:8095
     }
 
+    # Clipman Server -- self-hosted encrypted clipboard sync (~/app/clipman).
+    #
+    # Pinned to lp.csedesigns.com for the same reason as @picks_submit above:
+    # this site block covers three hostnames and a personal clipboard server
+    # has no business on the other two.
+    #
+    # ABOVE the redir below, or every client request would 301 to letitglow.app.
+    #
+    # `uri strip_prefix` rather than `handle_path`: handle_path would do the
+    # same stripping, but it only accepts an inline path matcher, and the host
+    # pin above requires a named one. Clipman Server serves /api/v1/* and
+    # /setup/* at its own root, so /clipman has to come off before the request
+    # reaches it. Clients carry the prefix in their configured base address.
+    @clipman {
+        host lp.csedesigns.com
+        path /clipman/*
+    }
+    handle @clipman {
+        uri strip_prefix /clipman
+        reverse_proxy clipman-server:8080
+    }
+
+    # QUILL testing downloads for the mailing list (2026-10-05): signed
+    # installers and portables served from www/quill-testing, before they are
+    # published on GitHub. ABOVE the redir below, or every request would 301
+    # to letitglow.app. Pinned to lp.csedesigns.com like the blocks above.
+    @quill_testing {
+        host lp.csedesigns.com
+        path /quill-testing /quill-testing/*
+    }
+    handle @quill_testing {
+        root * /srv/www
+        file_server
+    }
+
     handle {
         redir https://letitglow.app{uri} 301
     }
@@ -73,18 +108,25 @@ letitglow.app {
     # inspection buffers small SSE writes (heartbeats, progress deltas) until
     # the upstream closes. Splitting these paths into a dedicated handle keeps
     # the stream untouched between gunicorn and the browser.
+    #
+    # Both GLOW upstreams below dial the container name, not the service name
+    # `web`. Other stacks on this host (quill-ai-gateway, askbits) also name a
+    # service `web` and join web_default, so `web:8000` round-robined across
+    # all three and about a third of GLOW requests got another app's 404 --
+    # which left the consent page without consent.js and a Continue button
+    # that never enabled (2026-10-09).
     @sse path /job/*/status /playground/stream
     handle @sse {
         # Flask emits X-Content-Type-Options / X-Frame-Options / Referrer-Policy
         # per response; only transport-level HSTS is added here.
         header Strict-Transport-Security "max-age=63072000; includeSubDomains"
-        reverse_proxy web:8000 {
+        reverse_proxy web-web-1:8000 {
             flush_interval -1
         }
     }
 
     handle {
-        reverse_proxy web:8000 {
+        reverse_proxy web-web-1:8000 {
             flush_interval -1
         }
 
@@ -197,4 +239,66 @@ helpdesk.community-access.org {
 			roll_keep 5
 		}
 	}
+}
+
+# Caddy site block for the QUILL AI Gateway.
+#
+# Append this to the Caddyfile the shared host already uses --
+# on lp.csedesigns.com ("bishoplink") that is /home/jeffbis/app/web/Caddyfile,
+# mounted into the `web-caddy-1` container -- then reload:
+#
+#     docker exec web-caddy-1 caddy reload --config /etc/caddy/Caddyfile
+#
+# Do not reload until the DNS record resolves. Caddy asks Let's Encrypt for a
+# certificate the moment the block loads, and a name that does not yet point at
+# this machine fails that challenge, backs off, and retries on a lengthening
+# timer -- so the site stays broken for a while after DNS is fixed.
+#
+# ---------------------------------------------------------------------------
+# A SUBDOMAIN OF ITS OWN, NOT A PATH UNDER lp.csedesigns.com
+# ---------------------------------------------------------------------------
+# lp.csedesigns.com is already a permanent-redirect block pointing at
+# letitglow.app, with a couple of path matchers pinned inside it for the
+# feedback and picks endpoints. Hanging an API off another path in there means
+# every new route has to out-rank a `redir` that matches everything -- which is
+# exactly the trap that cost an afternoon when the picks endpoint went in. A
+# separate name has no ordering to reason about, gets its own certificate, and
+# can be moved to another machine later by changing one DNS record.
+
+ai.community-access.org {
+    encode gzip
+
+    # `quill-ai-gateway-web-1` is the container name docker compose gives the
+    # `web` service under the project name set in docker-compose.prod.yml.
+    # Caddy resolves it over the shared `web_default` network, the same way it
+    # already reaches askbits-web.
+    reverse_proxy quill-ai-gateway-web-1:8000
+
+    header {
+        X-Content-Type-Options nosniff
+        X-Frame-Options SAMEORIGIN
+        Referrer-Policy strict-origin-when-cross-origin
+        # The dashboard's session cookie is already Secure, HttpOnly and
+        # SameSite=Lax (app/config.py). HSTS is the additional, server-level
+        # guarantee that a browser never even attempts plain HTTP -- which
+        # matters here because the thing being carried is a bearer token.
+        Strict-Transport-Security "max-age=31536000; includeSubDomains"
+    }
+
+    # The sign-up throttle in app/limits.py counts per client address, and it
+    # reads X-Forwarded-For. That header is only trustworthy because this block
+    # is the sole route in: Caddy overwrites it with the real peer. If the
+    # container is ever published on a host port as well, the header becomes
+    # attacker-controlled and the throttle becomes decorative.
+
+    log {
+        output file /var/log/caddy/quill-ai-gateway.log {
+            roll_size 10MiB
+            roll_keep 5
+        }
+        # Bearer tokens travel in the Authorization header and device codes in
+        # request bodies. Neither is logged by Caddy's default common_log
+        # format, and neither should be added to it.
+        format console
+    }
 }
