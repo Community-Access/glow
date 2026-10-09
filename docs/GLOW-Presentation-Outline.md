@@ -1,4 +1,11 @@
-# Presentation: GLOW -- Magical Large Print Workflows
+# Conference Talk (45 min): GLOW -- Magical Large Print Workflows
+
+> **This is not the AHG workshop deck.** It is a separate 45-minute talk,
+> written before Workshop Mode existed, and the site address in it is stale.
+> The all-day workshop deck is served by the app at `/workshop/deck` (or
+> `/workshop/session/<code>/deck` with a room's code in it), and the agenda
+> behind it is `docs/ahg-2026/run-of-show.md`.
+
 **Duration:** 45 Min Presentation | 15 Min Q&A
 **Theme:** Accessibility isn't a chore; it's a superpower.
 

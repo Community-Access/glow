@@ -351,6 +351,15 @@ const WORKSHOP_PAGES = [
   { label: 'workshop return link refused', path: '/workshop/return/axe-not-a-real-token' },
   // Renders the facilitator unlock prompt for an unauthenticated visitor.
   { label: 'workshop facilitator gate', path: `/workshop/session/${WORKSHOP_SESSION}/facilitator` },
+  // The projected deck. It is the one page in the room that everybody looks
+  // at, it carries its own styles and script rather than the site shell, and
+  // it is the page a participant is most likely to re-read later on a phone.
+  { label: 'workshop deck', path: '/workshop/deck' },
+  { label: 'workshop deck for a session', path: `/workshop/session/${WORKSHOP_SESSION}/deck` },
+  // Pre-flight renders the same unlock prompt without a facilitator key, so
+  // this audits the gate rather than the table; the table shares the site
+  // shell and table markup already covered above.
+  { label: 'workshop preflight gate', path: `/workshop/session/${WORKSHOP_SESSION}/preflight` },
 ];
 
 const ALL_PAGES = [...STATIC_PAGES, ...WORKSHOP_PAGES];

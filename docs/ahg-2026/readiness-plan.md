@@ -8,6 +8,19 @@
 hardening and rehearsal — is what remains, plus two credentials and the event
 configuration.
 
+**Update, 21 September 2026 — the delivery pack now exists.**
+`docs/ahg-2026/` holds the run of show, the pocket card, and an index. The
+deck is no longer a file: the app serves it at
+`/workshop/session/<code>/deck`, carrying this room's join address and the
+live agenda, and it downloads as one self-contained file for a dead network.
+`/workshop/session/<code>/preflight` answers "is this deployment ready?" on
+one screen — including the case that hid here for weeks, a valid AI key
+beside three AI feature flags that were all off. The day itself is now
+defined once, in `web/src/acb_large_print_web/workshop_agenda.py`, and a test
+fails if the agenda table, the activity pages, the exercise pack and the deck
+drift apart. What remains is exactly what section 2.2 said: configuration and
+rehearsal, none of it code.
+
 **How to use this document:** section 0 is the ordered checklist. Everything
 after it is the detail behind an item, and each checklist entry says where to
 look.
@@ -211,7 +224,34 @@ explanation.
 
 ## 2. What remains
 
-### 2.1 Ship what exists
+### 2.0 What production actually looks like, 21 September 2026
+
+Observed read-only against `letitglow.app`. No writes, no session created.
+
+| Check | State |
+|---|---|
+| `/health` | `ok`. Last deploy 2 September, `post_deploy_complete`, WCAG 2.2 AA gate passed |
+| Workshop flags | All four on: mode, lab hub, gallery, peer review |
+| `/workshop/`, `/workshop/guide`, `/workshop/worksheets.docx` | 200 |
+| `/mcp/health` | `backend: glow` - the shared core is correctly wired |
+| AI flags | `GLOW_ENABLE_AI` and all six AI features **off**. This now matches the plan (L1) rather than contradicting it |
+| `/workshop/deck`, `/workshop/preflight` | 404 - this session's work is not deployed yet |
+
+**Two corrections to earlier sections of this document.**
+
+1. **The CI deploy key is fixed.** Section 2.1 item 4 says GitHub Actions
+   cannot deploy. `gh run list --workflow=deploy.yml` shows deploys
+   succeeding through 2 September. Landing on `main` now deploys on its own.
+2. **The AI key situation resolved itself in the right direction.** Section
+   2.1 item 5 treats the unset `OPENROUTER_API_KEY` as a blocker. Under the
+   September plan it is the intended state, and production already matches.
+
+**One thing worth a look:** `/health` takes about 2.2 seconds on a single
+uncontended request. It runs live probes, so it is expected to be slower than
+a page, but it is the number a monitor would trip on and it is worth knowing
+before assuming the deployment has headroom.
+
+## 2.1 Ship what exists
 
 Done on 21 August: merged to main, deployed to production by hand, and the
 MCP container rebuilt in the same deploy (`/mcp/health` now reports
@@ -237,8 +277,9 @@ This is the whole remaining risk. None of it is code.
 
 | Item | Why it matters | Done when |
 |---|---|---|
-| Load rehearsal, 30 simulated participants | Nothing here has been tested at room scale. The rate-limit fix makes it survivable in theory; nobody has measured it | A 30-client run completes with no 429s and no request over 2s |
+| Load rehearsal, 30 simulated participants | **Harness built and run, 21 September.** `web/scripts/workshop_load_rehearsal.py`. Found and fixed a real defect: every database connection ran the full schema migration, giving 40 "database is locked" errors and a 14.7s worst case at 30 participants. Now 0 lock errors, 0 rate limits, 0 error responses | Latency still needs a run against the deployment: in-process, 30 threads share one GIL and queue in a way gunicorn does not |
 | Screen reader run-through: NVDA, JAWS, VoiceOver | axe passing is necessary, not sufficient. The live gallery, the copy buttons and the scenario picker are where automated and lived results diverge most | Each of the eleven activities completed end to end by ear |
+| Structural accessibility gate | Added 21 September. 30 pages parsed on every test run: heading order, accessible names, table scope. Catches the regressions that are invisible until somebody navigates by headings | **Done** - `test_workshop_page_structure.py` |
 | AI spend estimate, approved | The caps exist; the numbers behind them are guesses | A figure written down and agreed, and caps set to match |
 | Full rehearsal with Tier 1 AI switched off | The day must run on Tiers 0 and 2 alone | A complete activity run with `OPENROUTER_API_KEY` unset |
 | Offline / degraded-network rehearsal | Conference wifi is a real risk | Worksheet packs printed; the day demonstrably runs from paper |
@@ -283,7 +324,8 @@ This is the whole remaining risk. None of it is code.
   than gates (`REQUIRE_MODEL_READINESS=1` restores gating).
 - **`review.md` is untracked at the repository root.** Commit it, move it into
   `docs/`, or delete it -- but decide, because root clutter is what it warns
-  about itself.
+  about itself. (`x.md`, which this document used to be, is now
+  `docs/ahg-2026/readiness-plan.md`.)
 - **The merged `workshop-ahg-readiness` branch** can be deleted from the
   remote once it has been reviewed. Everything on it is in `main`.
 - **Whatever is deleting things on this machine.** The Playwright browser
@@ -830,7 +872,7 @@ Postmark mail, a nudge command.
 | Live updates | `web/src/acb_large_print_web/static/workshop-live.js` |
 | Tests | `web/tests/test_workshop_*.py` |
 | Accessibility CI | `web/e2e/tests/axe-audit.spec.mjs` |
-| Facilitator runbook | `docs/workshop-mode-facilitator-runbook.md` |
-| WCAG checklist | `docs/workshop-mode-wcag-checklist.md` |
+| Facilitator runbook | `workshop-mode-facilitator-runbook.md` |
+| WCAG checklist | `workshop-mode-wcag-checklist.md` |
 | Email | `web/src/acb_large_print_web/email.py` |
 | MCP server | `mcp_server/main.py` |

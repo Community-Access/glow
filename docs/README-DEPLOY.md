@@ -32,7 +32,7 @@ Postmark is configured, which sender and stream are in use, and offers a test
 send that changes nothing.
 
 Full setup path, including DKIM and Return-Path records and leaving the
-Postmark sandbox: `x.md` section 6. Passport behaviour and privacy rules:
+Postmark sandbox: `docs/ahg-2026/readiness-plan.md` section 6. Passport behaviour and privacy rules:
 `docs/PASSPORT.md`.
 
 ---

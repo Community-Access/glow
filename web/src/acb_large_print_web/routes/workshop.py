@@ -27,6 +27,8 @@ from flask import (
 )
 from markupsafe import Markup, escape
 
+from .. import workshop_agenda as agenda
+from .. import workshop_deck as deck
 from ..app import limiter
 from ..email import (
     email_configured,
@@ -37,7 +39,6 @@ from ..feature_flags import get_flag
 from ..passport_store import COOKIE_NAME as PASSPORT_COOKIE
 from ..passport_store import get_passport as _get_passport
 from ..passport_store import update_passport as _update_passport
-from ..workshop_ai_budget import session_usage
 from ..workshop_artifact import (
     Artifact,
     ArtifactSection,
@@ -46,6 +47,8 @@ from ..workshop_artifact import (
     build_artifact_text,
 )
 from ..workshop_scenarios import get_scenario, pick_scenario, scenarios_for
+from ..workshop_prompt_cards import CARDS as PROMPT_CARDS, cards_for
+from ..workshop_specimens import pick_specimen_set
 from ..workshop_skills import (
     build_activity_prompt,
     build_copy_prompt,
@@ -130,28 +133,34 @@ ACTIVITY_PROMPTS = {
     "lab_remediation_plan": "Make a remediation plan for a real document, slide, or course page. List the barriers you find. Put the fixes in order, most important first. Then write how you would coach the owner, so the next version is better.",
     "champion_studio": "Design a workflow you can use again and again. It should teach your partners to own the work. Say who does each step. Name the point where a person must review the result before it goes out.",
     "capstone_shareout": "Sum up your workflow in a few sentences. Say who it helps and what they learn. Then explain how it keeps accessibility work going after today.",
-    "action_plan_30_day": "Choose one workflow to try in the next 30 days. Choose one partner or team to help. Choose one safeguard you will use every time. Then name the first step you will take.",
+    "action_plan_30_day": "Plan how this gets used where you work. Choose one workflow to try in the next 30 days, one partner or team to try it with, and one safeguard you will use every time. Name the first step, small enough to do this week. Then name who needs to know or approve it, and say in one sentence what it will look like if it worked.",
     "lab_run_your_agent": "Take the agent you designed and run it, either by pasting your prompt into an assistant you already use or by loading your downloaded skill into a client that supports them. Give it one real piece of work. Then write down what it got right, what it got wrong, and what you would change about your own design.",
 }
 
-ACTIVITY_META = {
-    "journey_check_in": {"title": "Accessibility Journey Check-In", "time": "20 minutes", "badge": "Journey Mapper"},
-    "problem_statement": {"title": "What Problem Are We Solving?", "time": "35 minutes", "badge": "Problem Framer"},
-    "teach_vs_fix": {"title": "Fix It for Me vs Teach Me to Improve It", "time": "35 minutes", "badge": "Coaching Catalyst"},
-    "ai_boundary_map": {"title": "Helpful, Risky, or Human Required?", "time": "35 minutes", "badge": "Boundary Builder"},
-    "agent_formula": {"title": "Accessibility Agent Formula", "time": "35 minutes", "badge": "Agent Architect"},
-    "lab_accessible_communication": {"title": "GLOW Lab 1: Accessible Communications", "time": "55 minutes", "badge": "Communication Coach"},
-    "lab_alt_text_decision": {"title": "GLOW Lab 2: Alt Text and Human Judgment", "time": "50 minutes", "badge": "Meaning Mapper"},
-    "lab_remediation_plan": {"title": "GLOW Lab 3: Remediation Planning", "time": "50 minutes", "badge": "Remediation Planner"},
-    "champion_studio": {"title": "Accessibility Champion Studio", "time": "45 minutes", "badge": "Champion Designer"},
-    "capstone_shareout": {"title": "Capstone Share-Out", "time": "25 minutes", "badge": "Story Sharer"},
-    "action_plan_30_day": {"title": "30-Day Action Plan", "time": "15 minutes", "badge": "Momentum Builder"},
-    "lab_run_your_agent": {
-        "title": "Optional Lab: Run Your Agent",
-        "time": "20 minutes, optional",
-        "badge": "Agent Runner",
-    },
+ACTIVITY_META: dict[str, dict[str, str]] = {
+    "journey_check_in": {"title": "Accessibility Journey Check-In", "badge": "Journey Mapper"},
+    "problem_statement": {"title": "What Problem Are We Solving?", "badge": "Problem Framer"},
+    "teach_vs_fix": {"title": "Fix It for Me vs Teach Me to Improve It", "badge": "Coaching Catalyst"},
+    "ai_boundary_map": {"title": "Helpful, Risky, or Human Required?", "badge": "Boundary Builder"},
+    "agent_formula": {"title": "Accessibility Agent Formula", "badge": "Agent Architect"},
+    "lab_accessible_communication": {"title": "GLOW Lab 1: Accessible Communications", "badge": "Communication Coach"},
+    "lab_alt_text_decision": {"title": "GLOW Lab 2: Alt Text and Human Judgment", "badge": "Meaning Mapper"},
+    "lab_remediation_plan": {"title": "GLOW Lab 3: Remediation Planning", "badge": "Remediation Planner"},
+    "champion_studio": {"title": "Accessibility Champion Studio", "badge": "Champion Designer"},
+    "capstone_shareout": {"title": "Capstone Share-Out", "badge": "Story Sharer"},
+    "action_plan_30_day": {"title": "Engagement Plan", "badge": "Momentum Builder"},
+    "lab_run_your_agent": {"title": "Optional Lab: Run Your Agent", "badge": "Agent Runner"},
 }
+
+# Suggested lengths are never written here. They come from the agenda, which
+# is the one place the day is described, so the page a participant reads and
+# the clock a facilitator runs cannot drift apart.
+for _meta_key, _meta in ACTIVITY_META.items():
+    _meta["time"] = (
+        agenda.OPTIONAL_LENGTH_LABEL
+        if _meta_key in OPTIONAL_ACTIVITY_ORDER
+        else agenda.activity_length_label(_meta_key)
+    )
 
 # Activities where an assistant can genuinely help. Each names the field
 # holding the participant's own human-review step, which is written into the
@@ -245,66 +254,91 @@ ACTIVITY_FIELDS = {
         {"name": "partner_team_30", "label": "One partner or team to support", "rows": 2, "required": True},
         {"name": "safeguard_30", "label": "One safeguard to include every time", "rows": 2, "required": True},
         {"name": "first_step_30", "label": "The first step you will take", "rows": 2, "required": True},
+        {
+            "name": "who_approves_30",
+            "label": "Who needs to know, or approve it",
+            "rows": 2,
+            "required": True,
+            "help": "A manager, a communications lead, an IT policy. A workflow nobody approved is a workflow nobody adopts.",
+        },
+        {
+            "name": "what_worked_30",
+            "label": "What it will look like if it worked, in one sentence",
+            "rows": 2,
+            "required": True,
+            "help": "Something you could say to the person above. Something you would notice by yourself in a month.",
+        },
     ],
 }
 
-EXERCISE_PACK = [
+EXERCISE_PACK: list[dict[str, str]] = [
   {
-    "name": "Accessibility Journey Check-In",
-    "time": "20 minutes",
+    "activity": "journey_check_in",
     "purpose": "Help participants locate themselves in the accessibility journey and identify partner support needs.",
     "output": "Accessibility journey notes and shared barriers list.",
   },
   {
-    "name": "What Problem Are We Solving?",
-    "time": "35 minutes",
+    "activity": "problem_statement",
     "purpose": "Train teams to start with the accessibility problem before selecting tools.",
     "output": "Problem statement with capacity-building focus.",
   },
   {
-    "name": "Fix It for Me vs Teach Me to Improve It",
-    "time": "40 minutes",
+    "activity": "teach_vs_fix",
     "purpose": "Practice converting urgent fix requests into teachable coaching responses.",
     "output": "Coaching response patterns for partner ownership.",
   },
   {
-    "name": "Helpful, Risky, or Human Required",
-    "time": "40 minutes",
+    "activity": "ai_boundary_map",
     "purpose": "Establish practical responsible-AI boundaries for accessibility tasks.",
     "output": "AI boundary map with review safeguards.",
   },
   {
-    "name": "Accessibility Agent Formula",
-    "time": "45 minutes",
+    "activity": "agent_formula",
     "purpose": "Build non-technical agent concepts using a repeatable formula.",
     "output": "Role + Task + Guidance + Output + Human Review draft.",
   },
   {
-    "name": "GLOW Lab 1: Accessible Communications",
-    "time": "60 minutes",
+    "activity": "lab_accessible_communication",
     "purpose": "Improve real communication artifacts while teaching reusable accessibility patterns.",
     "output": "Revised communication and human-review checklist.",
   },
   {
-    "name": "GLOW Lab 2: Alt Text and Human Judgment",
-    "time": "55 minutes",
+    "activity": "lab_alt_text_decision",
     "purpose": "Use AI support without losing human control of image purpose and meaning.",
     "output": "Image purpose decision checklist with verification questions.",
   },
   {
-    "name": "GLOW Lab 3: Remediation Planning",
-    "time": "55 minutes",
+    "activity": "lab_remediation_plan",
     "purpose": "Turn large remediation requests into practical coaching workflows.",
     "output": "Prioritized remediation coaching template.",
   },
   {
-    "name": "Accessibility Champion Studio",
-    "time": "50 minutes",
+    "activity": "champion_studio",
     "purpose": "Design reusable partner-facing workflows for local institutional needs.",
     "output": "Draft champion workflow artifact.",
   },
+  {
+    "activity": "capstone_shareout",
+    "purpose": "Say the workflow out loud in four sentences, then assemble the take-home artifact.",
+    "output": "Capstone summary and a printable artifact.",
+  },
+  {
+    "activity": "action_plan_30_day",
+    "purpose": "Commit to one workflow, one partner, one safeguard, and one first step.",
+    "output": "30-day action plan, quoted back in the follow-up a month later.",
+  },
 ]
 
+# Names and lengths come from the same two places the rest of the site reads:
+# the activity metadata and the agenda. The pack used to carry its own copies
+# of both, and all three drifted.
+for _exercise in EXERCISE_PACK:
+    _exercise["name"] = ACTIVITY_META[_exercise["activity"]]["title"]
+    _exercise["time"] = ACTIVITY_META[_exercise["activity"]]["time"]
+
+# Served from docs/ahg-2026/, where the whole workshop pack lives. The value
+# is the bare filename: it is also the name the participant's download is
+# given, and "ahg-2026/workshop-frontfacing-guide.md" is not a filename.
 RESOURCE_FILES = {
   "guide": "workshop-frontfacing-guide.md",
   "exercises": "workshop-frontfacing-exercises.md",
@@ -342,10 +376,10 @@ MAGIC_SCENARIOS = [
         "id": "alt-text-judgment",
         "title": "Alt Text and Human Judgment",
         "goal": "Practice purpose-first image decisions with explicit human verification.",
-        "tokens": ["GLOW:ALT_TEXT", "GLOW:CHAT", "GLOW:TEMPLATE"],
+        "tokens": ["GLOW:AUDIT", "GLOW:TEMPLATE"],
         "sample_slug": "board-agenda-html",
         "activity_key": "lab_alt_text_decision",
-        "workflow_text": "Use [[GLOW:ALT_TEXT]] for first-draft guidance, pressure-test language in [[GLOW:CHAT]], and package a checklist in [[GLOW:TEMPLATE]].",
+        "workflow_text": "Run [[GLOW:AUDIT]] to list every image and find the ones with no alt text, decide what each one is for, then package your checklist in [[GLOW:TEMPLATE]].",
     },
     {
         "id": "remediation-prioritization",
@@ -363,13 +397,6 @@ MAGIC_SCENARIOS = [
 # an empty string to generate skills with no tool layer at all -- the skill is
 # still valid and still works, which is the point of the degradation story.
 DEFAULT_MCP_BASE_URL = "https://letitglow.app/mcp"
-
-
-def _mcp_base_url() -> str:
-    configured = os.environ.get("GLOW_MCP_BASE_URL")
-    if configured is None:
-        return DEFAULT_MCP_BASE_URL
-    return configured.strip()
 
 
 FACILITATOR_SESSION_PREFIX = "workshop_facilitator:"
@@ -801,19 +828,7 @@ def workshop_home():
                 session_code = code
                 join_mode = True
 
-    schedule = [
-        {"time": "8:30-8:50", "title": "Welcome and Accessibility Journey Check-In", "mode": "Reflection and group share"},
-        {"time": "8:50-9:25", "title": "What Problem Are We Solving?", "mode": "Problem framing"},
-        {"time": "9:25-10:00", "title": "From Fixing Everything to Teaching Partners to Fish", "mode": "Coaching practice"},
-        {"time": "10:10-10:45", "title": "Human-Centered AI Boundaries", "mode": "Helpful, risky, human-required map"},
-        {"time": "10:45-11:20", "title": "Accessibility Agents in Plain Language", "mode": "Role, task, guidance, output, human review"},
-        {"time": "11:20-12:15", "title": "GLOW Lab 1: Accessible Communications", "mode": "Hands-on lab"},
-        {"time": "1:15-2:05", "title": "GLOW Lab 2: Alt Text and Human Judgment", "mode": "Hands-on lab"},
-        {"time": "2:05-2:55", "title": "GLOW Lab 3: Remediation Planning", "mode": "Hands-on lab"},
-        {"time": "3:05-3:50", "title": "Accessibility Champion Studio", "mode": "Workflow design"},
-        {"time": "3:50-4:15", "title": "Peer Review and Scaling Path", "mode": "Feedback and refinement"},
-        {"time": "4:15-4:30", "title": "Capstone and 30-Day Action Plan", "mode": "Commitment and share-out"},
-    ]
+    schedule = agenda.schedule_rows()
 
     outcomes = [
         "Frame accessibility work around a real human problem before selecting tools.",
@@ -1190,6 +1205,14 @@ def workshop_activity(session_code: str, activity_key: str):
         copy_prompt=copy_prompt,
         adopted=adopted if adopted and existing else None,
         adopted_author=adopted["author"] if adopted else "",
+        prompt_cards=(
+            PROMPT_CARDS if activity_key == "agent_formula" else cards_for(activity_key)
+        ),
+        specimen_set=pick_specimen_set(
+            activity_key,
+            str((participant or {}).get("participant_key", "")) or code,
+            scenario_id=scenario_id or "",
+        ),
         scenario_cards=_scenario_cards(activity_key, code, selected_id=scenario_id),
         scenario=_scenario_detail(scenario, code, activity_key=activity_key) if scenario else None,
         scenario_id=scenario_id,
@@ -1520,7 +1543,6 @@ def workshop_champion_skill(session_code: str):
             author=author,
             event_name=event_name,
             trusted_guidance=trusted_guidance,
-            mcp_base_url=_mcp_base_url(),
         ),
         copy_prompt=build_copy_prompt(values, trusted_guidance=trusted_guidance),
         has_guidance=bool(trusted_guidance.strip()),
@@ -1545,7 +1567,6 @@ def workshop_champion_skill_download(session_code: str):
         author=author,
         event_name=str(session_meta.get("event_name", "")).strip(),
         trusted_guidance=trusted_guidance,
-        mcp_base_url=_mcp_base_url(),
     )
     return Response(
         payload,
@@ -1927,7 +1948,7 @@ def workshop_facilitator(session_code: str):
 
     return render_template(
         "workshop/facilitator.html",
-        ai_usage=session_usage(code),
+        agenda_rows=agenda.facilitator_rows(),
         pulse=_pulse_payload(code),
         activity_order=ACTIVITY_ORDER,
         session_code=code,
@@ -1955,6 +1976,281 @@ def workshop_facilitator_unlock(session_code: str):
         session[FACILITATOR_SESSION_PREFIX + code] = expected
         return redirect(url_for("workshop.workshop_facilitator", session_code=code))
     return _facilitator_unlock_response(code, error="That facilitator key was not recognized for this session.")
+
+
+# ---------------------------------------------------------------------------
+# Pre-flight
+# ---------------------------------------------------------------------------
+
+OK, WARN, FAIL = "ok", "warn", "fail"
+
+
+def _check(key: str, label: str, state: str, detail: str, fix: str = "") -> dict[str, str]:
+    return {"key": key, "label": label, "state": state, "detail": detail, "fix": fix}
+
+
+def _preflight_checks(code: str | None) -> list[dict[str, str]]:
+    """Is this deployment ready to run a workshop day?
+
+    The answer used to live in four places -- ``/health`` for the AI key, the
+    admin queue for mail, the container environment for the feature flags,
+    and a JSON file for the conference code -- which is exactly how the three
+    AI flags sat at zero on production for weeks with a valid key beside
+    them. One screen, one answer, and nothing secret on it.
+
+    These are configuration checks, deliberately not network probes: this
+    page must answer instantly in a room that is filling up. ``/health`` is
+    linked for the live reachability answer.
+    """
+    checks: list[dict[str, str]] = []
+
+    flags = [
+        ("GLOW_ENABLE_WORKSHOP_MODE", _workshop_enabled(), "Workshop Mode"),
+        ("GLOW_ENABLE_WORKSHOP_LAB_HUB", _lab_hub_enabled(), "Activities, gallery and exports"),
+        ("GLOW_ENABLE_WORKSHOP_GALLERY", _gallery_enabled(), "Shared gallery"),
+        ("GLOW_ENABLE_WORKSHOP_PEER_REVIEW", _peer_review_enabled(), "Peer feedback"),
+    ]
+    for name, enabled, label in flags:
+        checks.append(_check(
+            name, label,
+            OK if enabled else FAIL,
+            "on" if enabled else "off",
+            "" if enabled else f"Set {name}=1 and restart web.",
+        ))
+
+    # The event configuration.
+    if code:
+        session_meta = get_session(code) or {}
+        checks.append(_check(
+            "session", "Session exists",
+            OK, f"{code} — {session_meta.get('title', 'untitled')}",
+        ))
+        key_set = bool(_expected_facilitator_key(code))
+        checks.append(_check(
+            "facilitator_key", "Facilitator key",
+            OK if key_set else WARN,
+            "configured" if key_set else "not configured — facilitator tools are admin-only",
+            "" if key_set else "Set facilitator_key in the conference code entry, or GLOW_WORKSHOP_FACILITATOR_KEY.",
+        ))
+    else:
+        checks.append(_check(
+            "session", "Session", WARN, "no session chosen — checking deployment settings only",
+        ))
+
+    codes_configured = bool(
+        (os.environ.get("WORKSHOP_CONFERENCE_CODES_JSON") or "").strip()
+    ) or _resolve_asset("workshop_conference_codes.json") is not None
+    checks.append(_check(
+        "conference_codes", "Conference access code",
+        OK if codes_configured else WARN,
+        "configured" if codes_configured else "none configured — participants must type the session code",
+        "" if codes_configured else "Set WORKSHOP_CONFERENCE_CODES_JSON, or add instance/workshop_conference_codes.json.",
+    ))
+
+    # Mail is recommended, not required (plan.md L14). Without it the app
+    # degrades correctly -- the return-link form is replaced and the artifact
+    # page points at its download links. What it costs is the safety net:
+    # since we stopped printing, a participant's work lives in one browser
+    # cookie, and email is the only way to get it onto a second device.
+    mail = email_configured()
+    checks.append(_check(
+        "email", "Outbound mail (Postmark) — recommended",
+        OK if mail else WARN,
+        "configured"
+        if mail
+        else "not set. Nothing breaks: return links and the artifact email become download prompts, and the 30-day nudge cannot run",
+        ""
+        if mail
+        else "Optional. If you skip it, say 'download your work before you leave' twice, because there is no paper backstop.",
+    ))
+
+    return checks
+
+
+def _render_preflight(code: str | None):
+    checks = _preflight_checks(code)
+    worst = FAIL if any(c["state"] == FAIL for c in checks) else (
+        WARN if any(c["state"] == WARN for c in checks) else OK
+    )
+    return render_template(
+        "workshop/preflight.html",
+        checks=checks,
+        session_code=code,
+        overall=worst,
+        counts={
+            OK: sum(1 for c in checks if c["state"] == OK),
+            WARN: sum(1 for c in checks if c["state"] == WARN),
+            FAIL: sum(1 for c in checks if c["state"] == FAIL),
+        },
+    )
+
+
+@workshop_bp.route("/preflight", methods=["GET"])
+def workshop_preflight():
+    """Deployment-wide readiness. Administrators only: it names configuration."""
+    if not _workshop_enabled():
+        abort(404)
+    if not is_authenticated_admin():
+        abort(404)
+    return _render_preflight(None)
+
+
+@workshop_bp.route("/session/<session_code>/preflight", methods=["GET"])
+def workshop_session_preflight(session_code: str):
+    if not _workshop_enabled():
+        abort(404)
+    code = _require_session(session_code)
+    if not _is_facilitator(code):
+        return _facilitator_unlock_response(code)
+    return _render_preflight(code)
+
+
+# ---------------------------------------------------------------------------
+# The projected deck
+# ---------------------------------------------------------------------------
+
+DECK_FILENAME = "glow-workshop-deck"
+
+
+def _deck_context(code: str | None) -> deck.DeckContext:
+    """What the deck needs to know about the room it is being shown in."""
+    code_label = code or "your-code"
+    return deck.DeckContext(
+        code_label=code_label,
+        join_display=f"{request.host}/w/{code_label}",
+        activity_times=tuple(ACTIVITY_META[key]["time"] for key in ACTIVITY_ORDER),
+    )
+
+
+def _deck_download_urls(code: str | None) -> dict[str, str]:
+    if code:
+        return {
+            "html": url_for("workshop.workshop_session_deck", session_code=code, download=1),
+            "md": url_for("workshop.workshop_session_deck_markdown", session_code=code),
+            "docx": url_for("workshop.workshop_session_deck_docx", session_code=code),
+            "pptx": url_for("workshop.workshop_session_deck_pptx", session_code=code),
+        }
+    return {
+        "html": url_for("workshop.workshop_deck", download=1),
+        "md": url_for("workshop.workshop_deck_markdown"),
+        "docx": url_for("workshop.workshop_deck_docx"),
+        "pptx": url_for("workshop.workshop_deck_pptx"),
+    }
+
+
+def _render_deck(code: str | None):
+    """The opening deck, with this room's join address already in it.
+
+    The deck used to be a file on a laptop with the session code typed into
+    it by hand, which is one more thing to get wrong at 8:25 in a room that
+    is filling up. Served from here it carries the live code, the live
+    agenda, and the same suggested lengths the activity pages show.
+
+    It is public on purpose: it contains nothing but the facilitator's own
+    material, and a participant who wants to re-read it in March should be
+    able to.
+    """
+    ctx = _deck_context(code)
+    html = render_template(
+        "workshop/deck.html",
+        deck_title=f"{deck.DECK_TITLE} - workshop deck",
+        slides=deck.build_slides(ctx),
+        download_urls=_deck_download_urls(code),
+    )
+    if not request.args.get("download"):
+        return html
+
+    # One self-contained file: the projector fallback, and the copy that
+    # still opens when the conference wifi does not.
+    resp = make_response(html)
+    resp.headers["Content-Type"] = "text/html; charset=utf-8"
+    resp.headers["Content-Disposition"] = f'attachment; filename="{DECK_FILENAME}.html"'
+    return resp
+
+
+def _deck_file(code: str | None, fmt: str):
+    """The deck as Markdown, Word or PowerPoint.
+
+    Four formats because an institution's answer to "send me the slides" is
+    never the same twice, and because a deck that only exists as a web page
+    cannot be opened by the person who needs it in Word with their own
+    screen reader settings applied.
+    """
+    ctx = _deck_context(code)
+    if fmt == "md":
+        payload = deck.build_deck_markdown(ctx).encode("utf-8")
+        mimetype = "text/markdown"
+    elif fmt == "docx":
+        payload = deck.build_deck_docx_bytes(ctx)
+        mimetype = "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+    else:
+        payload = deck.build_deck_pptx_bytes(ctx)
+        mimetype = "application/vnd.openxmlformats-officedocument.presentationml.presentation"
+
+    return send_file(
+        BytesIO(payload),
+        mimetype=mimetype,
+        as_attachment=True,
+        download_name=f"{DECK_FILENAME}.{fmt}",
+    )
+
+
+@workshop_bp.route("/deck", methods=["GET"])
+def workshop_deck():
+    """The deck without a session, for reading and printing before the day."""
+    if not _workshop_enabled():
+        abort(404)
+    return _render_deck(None)
+
+
+@workshop_bp.route("/deck.md", methods=["GET"])
+def workshop_deck_markdown():
+    if not _workshop_enabled():
+        abort(404)
+    return _deck_file(None, "md")
+
+
+@workshop_bp.route("/deck.docx", methods=["GET"])
+def workshop_deck_docx():
+    if not _workshop_enabled():
+        abort(404)
+    return _deck_file(None, "docx")
+
+
+@workshop_bp.route("/deck.pptx", methods=["GET"])
+def workshop_deck_pptx():
+    if not _workshop_enabled():
+        abort(404)
+    return _deck_file(None, "pptx")
+
+
+@workshop_bp.route("/session/<session_code>/deck", methods=["GET"])
+def workshop_session_deck(session_code: str):
+    if not _workshop_enabled():
+        abort(404)
+    code = _require_session(session_code)
+    return _render_deck(code)
+
+
+@workshop_bp.route("/session/<session_code>/deck.md", methods=["GET"])
+def workshop_session_deck_markdown(session_code: str):
+    if not _workshop_enabled():
+        abort(404)
+    return _deck_file(_require_session(session_code), "md")
+
+
+@workshop_bp.route("/session/<session_code>/deck.docx", methods=["GET"])
+def workshop_session_deck_docx(session_code: str):
+    if not _workshop_enabled():
+        abort(404)
+    return _deck_file(_require_session(session_code), "docx")
+
+
+@workshop_bp.route("/session/<session_code>/deck.pptx", methods=["GET"])
+def workshop_session_deck_pptx(session_code: str):
+    if not _workshop_enabled():
+        abort(404)
+    return _deck_file(_require_session(session_code), "pptx")
 
 
 # ---------------------------------------------------------------------------
@@ -2058,13 +2354,20 @@ def _artifact_for(code: str, participant: dict) -> Artifact:
 
     plan_items = labelled(
         "action_plan_30_day",
-        ["workflow_30", "partner_team_30", "safeguard_30", "first_step_30"],
+        [
+            "workflow_30",
+            "partner_team_30",
+            "safeguard_30",
+            "first_step_30",
+            "who_approves_30",
+            "what_worked_30",
+        ],
     )
     if plan_items:
         sections.append(
             ArtifactSection(
-                heading="My next 30 days",
-                intro="Written on the day, by me.",
+                heading="How this gets used where I work",
+                intro="Written on the day, by me. Nobody is going to chase me about it.",
                 items=plan_items,
             )
         )
@@ -2203,7 +2506,6 @@ def workshop_artifact_email(session_code: str):
             author=author,
             event_name=artifact.event_name,
             trusted_guidance=trusted_guidance,
-            mcp_base_url=_mcp_base_url(),
         )
         attachments.append((filename, payload, "application/zip"))
 
@@ -2584,7 +2886,7 @@ def workshop_resource_download(slug: str):
     if not filename:
         abort(404)
 
-    path = _resolve_asset("docs", filename)
+    path = _resolve_asset("docs", "ahg-2026", filename)
     if path is None:
         current_app.logger.error(
             "Workshop resource %r missing; searched roots: %s",
