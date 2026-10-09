@@ -79,3 +79,15 @@ web/post_findings.json
 
 # Temporary migration and diagnostics workspace
 tmp/**
+
+# Production host (lp.csedesigns.com) runtime state that lives beside the
+# checkout in ~/app. Keeps `git status` clean there; none of it is source.
+/ggg/
+/clipman/
+/backups/
+/web/www/
+/instance/deploy-status.json
+/web/keycloak/glow-realm.json
+/web/keycloak/import/
+*.bak.*
+*.bak-*
