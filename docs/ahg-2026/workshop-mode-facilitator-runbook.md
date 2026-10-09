@@ -199,10 +199,14 @@ and a link back to everything else.
 Make time for this. It is the thing that gets forwarded to a director on
 Monday, and it takes two minutes.
 
-At 4:25, project **the commitment wall** (`/workshop/session/<code>/wall`).
+At 4:20, project **the commitment wall** (`/workshop/session/<code>/wall`).
 Every 30-day commitment in the room on one screen, anonymous by design --
 a promise made in front of strangers should not carry a name unless its
-author decides to say it out loud. Read a few aloud. It is a good way to end.
+author decides to say it out loud. Read a few aloud.
+
+At 4:25, hand over to the proctor for the AHG session evaluation, and stop
+talking while people fill it in. The conference asks every speaker to save
+this time, and its feedback decides next year's program.
 
 ### Thirty days later
 

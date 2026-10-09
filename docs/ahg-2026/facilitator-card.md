@@ -12,7 +12,9 @@ before you leave for the conference.
 - Doors / setup from: TIME
 - Wifi network and password: NETWORK / PASSWORD
 - Projector input: HDMI or USB-C - CONFIRM
-- Venue AV contact: NAME, PHONE
+- Venue AV contact: NAME, PHONE (Peak AV runs the room tech)
+- Proctor: NAME - introduces the session and runs the evaluation at 4:25
+- Times on this card are Mountain Time
 
 ## The addresses
 
@@ -24,7 +26,7 @@ before you leave for the conference.
 | Facilitator dashboard | `letitglow.app/workshop/session/SESSION/facilitator` |
 | Gallery | `letitglow.app/workshop/session/SESSION/gallery` |
 | Take-home artifact | `letitglow.app/workshop/session/SESSION/artifact` |
-| Commitment wall, 4:25 | `letitglow.app/workshop/session/SESSION/wall` |
+| Commitment wall, 4:20 | `letitglow.app/workshop/session/SESSION/wall` |
 | Blank worksheets | `letitglow.app/workshop/worksheets.docx` |
 | The deck | `letitglow.app/workshop/session/SESSION/deck` |
 | Deck as PowerPoint | same address plus `.pptx` (also `.docx`, `.md`) |
@@ -44,23 +46,27 @@ before you leave for the conference.
 | 10:25 | 4. Boundary map (30) |
 | 10:55 | 5. Agent formula (35) |
 | 11:30 | Lab 1 (45) |
-| 12:15 | Lunch - check the AI usage panel |
+| 12:15 | Lunch |
 | 1:15 | Re-entry, room pulse (10) |
 | 1:25 | Lab 2, alt text (45) |
 | 2:10 | Lab 3, remediation (45) |
 | 2:55 | Break (10) |
 | 3:05 | Champion Studio (40) |
-| 3:45 | Peer review (15) |
-| 4:00 | Capstone + artifact (15) |
-| 4:15 | Engagement plan (10) |
-| 4:25 | Commitment wall (5) |
+| 3:45 | Peer review (10) |
+| 3:55 | Capstone + artifact (15) |
+| 4:10 | Engagement plan (10) |
+| 4:20 | Commitment wall (5) |
+| 4:25 | Session evaluation (5) - proctor runs it |
 
 ## Say these out loud
 
+- Before a word: mic on. Keep it on. Repeat every question and every volunteer into it.
 - First ten minutes: "Two ways today. GLOW in a browser does the whole day, no account, no AI. Your own assistant is an upgrade, never a requirement."
 - After activity 1 saves, and again at the break: "Send yourself a return link."
-- Whenever an assistant comes up: "Paste the text. Do not upload files - free accounts cap uploads and do not cap text."
-- At 4:00: "Two minutes on the artifact page. This is what you forward on Monday."
+- Whenever an assistant comes up: "Paste the text. Do not upload files - free accounts cap uploads and do not cap text. And never paste anything private."
+- Whatever you project: say what is on it. Read counts aloud.
+- At 3:55: "Two minutes on the artifact page. This is what you forward on Monday."
+- At 4:25: "Before you go: the session evaluation." Then stop talking.
 
 ## If something breaks
 
@@ -76,6 +82,9 @@ before you leave for the conference.
 - [ ] Signage printed and on the tables
 - [ ] Deck printed as a handout, and all four formats on the laptop: HTML, PowerPoint, Word, Markdown
 - [ ] `slides.pptx` on a USB stick, in case the venue projects from its own machine
+- [ ] Your own laptop, charger and adaptors - the room has a laptop, but bring yours for the deck
+- [ ] Visited the room the day before; checked mic, projector and input
+- [ ] Slides, Word deck and worksheet pack uploaded to the CVENT Speaker Resource Center (My Tasks)
 - [ ] Facilitator dashboard open and unlocked on your laptop
 - [ ] Test email sent from `/admin/queue`
 - [ ] You have joined the session yourself from a phone on cellular

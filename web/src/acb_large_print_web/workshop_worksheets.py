@@ -108,6 +108,11 @@ def build_worksheet_html(worksheets: list[Worksheet], *, event_name: str = "") -
         "paper, in a word processor, or with a screen reader. Nothing here "
         "needs the web app, an account, or an internet connection.",
         "</p>",
+        "<p>",
+        "If you paste anything from here into an AI assistant, leave out "
+        "anything private: student records, health or disability "
+        "information, and anyone's name.",
+        "</p>",
         "<h2>Contents</h2>",
         '<ol class="activities">',
     ]
@@ -124,7 +129,7 @@ def build_worksheet_html(worksheets: list[Worksheet], *, event_name: str = "") -
         parts.append(f'<p class="prompt">{escape(sheet.prompt)}</p>')
 
         if sheet.scenarios:
-            parts.append("<h3>Scenarios you can work from</h3>")
+            parts.append(f"<h3>Scenarios for {escape(sheet.title)}</h3>")
             parts.append("<ul>")
             for scenario_title, sector in sheet.scenarios:
                 parts.append(
@@ -150,25 +155,30 @@ def build_worksheet_html(worksheets: list[Worksheet], *, event_name: str = "") -
 
 
 def build_worksheet_docx_bytes(worksheets: list[Worksheet], *, event_name: str = "") -> bytes:
-    """The same pack as a Word document, in ACB large print."""
+    """The same pack as a Word document, in ACB large print.
+
+    Styled by GLOW's own ACB template code, so the handout passes GLOW's own
+    audit: Word's defaults would give it 14pt blue headings, an italic
+    Heading 4, 1.25 inch margins and no page numbers.
+    """
+    from acb_large_print.template import apply_acb_large_print  # type: ignore
     from docx import Document  # type: ignore
-    from docx.shared import Pt  # type: ignore
-
-    doc = Document()
-
-    normal = doc.styles["Normal"]
-    normal.font.name = "Arial"
-    normal.font.size = Pt(18)
-    normal.paragraph_format.space_after = Pt(12)
 
     title = "GLOW Workshop Worksheets"
     if event_name.strip():
         title = f"{title} - {event_name.strip()}"
+
+    doc = apply_acb_large_print(Document(), title=title)
     doc.add_heading(title, level=1)
     doc.add_paragraph(
         "Every activity in the workshop, with space to write. Use these on "
         "paper, in a word processor, or with a screen reader. Nothing here "
         "needs the web app, an account, or an internet connection."
+    )
+    doc.add_paragraph(
+        "If you paste anything from here into an AI assistant, leave out "
+        "anything private: student records, health or disability "
+        "information, and anyone's name."
     )
 
     doc.add_heading("Contents", level=2)
@@ -182,7 +192,7 @@ def build_worksheet_docx_bytes(worksheets: list[Worksheet], *, event_name: str =
         doc.add_paragraph(sheet.prompt)
 
         if sheet.scenarios:
-            doc.add_heading("Scenarios you can work from", level=3)
+            doc.add_heading(f"Scenarios for {sheet.title}", level=3)
             for scenario_title, sector in sheet.scenarios:
                 doc.add_paragraph(f"{scenario_title} - {sector}", style="List Bullet")
             doc.add_paragraph(

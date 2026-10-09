@@ -2532,7 +2532,7 @@ def workshop_artifact_email(session_code: str):
 
 @workshop_bp.route("/session/<session_code>/wall", methods=["GET"])
 def workshop_wall(session_code: str):
-    """Every 30-day commitment in the room, on one screen, at 4:25 PM.
+    """Every 30-day commitment in the room, on one screen, at 4:20 PM.
 
     Anonymous by default and by design: this is projected, and a commitment
     is a promise someone is making in front of strangers. Nobody's name goes

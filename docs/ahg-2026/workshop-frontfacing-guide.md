@@ -39,8 +39,9 @@ Participants will be able to:
 - produce reusable artifacts for local adoption.
 
 ## One-Day Format
+- Times are Mountain Time
 - Start: 8:30 AM
-- End: 4:30 PM
+- End: 4:30 PM, with the last five minutes for the session evaluation
 - Lunch: 12:15 PM to 1:15 PM
 - Two breaks, at 10:10 and 2:55
 - Seven working workshop hours plus lunch
@@ -61,15 +62,17 @@ Workshop artifacts can now be exported directly from GLOW in Markdown, JSON, HTM
 Use the new Follow-Through page to save coaching templates, checklists, and 30-day commitments from workshop outputs.
 
 ## Product Surfaces During Delivery
-- **Coach mode** (`/workshop/session/<code>/coach`) reinforces teaching language and partner-centered support.
-- **Review mode** (`/workshop/session/<code>/review`) reinforces human accountability checkpoints before deployment.
-- **Share mode** (`/workshop/session/<code>/share`) packages artifacts for downstream adoption and team dissemination.
-- **Facilitator dashboard** (`/workshop/session/<code>/facilitator`) provides participation and peer-feedback coverage snapshots in real time.
+- Coach mode (`/workshop/session/<code>/coach`) reinforces teaching language and partner-centered support.
+- Review mode (`/workshop/session/<code>/review`) reinforces human accountability checkpoints before deployment.
+- Share mode (`/workshop/session/<code>/share`) packages artifacts for downstream adoption and team dissemination.
+- Facilitator dashboard (`/workshop/session/<code>/facilitator`) provides participation and peer-feedback coverage snapshots in real time.
 
 ## Responsible AI Boundary
 AI supports analysis and drafting.
 
 Humans retain accountability for final accessibility decisions, especially where purpose, meaning, context, and user impact require judgment.
+
+If you use your own assistant: paste text rather than uploading files, and never paste anything private - student records, health or disability information, or anyone's name. A free assistant may keep what is pasted into it.
 
 ## Conference-Ready Delivery Principles
 - Practical and encouraging facilitation tone

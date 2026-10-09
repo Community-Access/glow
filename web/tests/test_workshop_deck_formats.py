@@ -68,8 +68,29 @@ def test_every_format_renders_the_same_thirty_slides(ctx: deck.DeckContext):
 
 def test_the_agenda_slide_is_built_from_the_agenda(ctx: deck.DeckContext):
     markdown = deck.build_deck_markdown(ctx)
-    for block in agenda.AGENDA:
-        assert block.clock in markdown
+    for block in agenda.blocks_of_kind(agenda.BREAK) + agenda.blocks_of_kind(agenda.LUNCH):
+        assert block.starts_at in markdown
+
+
+def test_the_agenda_slide_is_chunked_not_a_wall_of_text(ctx: deck.DeckContext):
+    """AHG speaker guidance: avoid walls of text, chunk the content."""
+    slide = next(s for s in deck.build_slides(ctx) if s.id == "s9")
+    assert not any(isinstance(b, deck.Table) for b in slide.blocks)
+    (chunks,) = [b for b in slide.blocks if isinstance(b, deck.Definitions)]
+    assert len(chunks.items) == 3
+    assert "session evaluation" in chunks.items[-1][1]
+
+
+def test_the_day_ends_with_the_session_evaluation():
+    """AHG asks speakers to save time for the session evaluation."""
+    assert agenda.AGENDA[-1].title == "Session evaluation"
+    assert agenda.AGENDA[-1].minutes >= 5
+
+
+def test_the_paste_rule_says_never_paste_anything_private(ctx: deck.DeckContext):
+    slide = next(s for s in deck.build_slides(ctx) if s.id == "s2")
+    text = " ".join(getattr(b, "text", "") for b in slide.blocks)
+    assert "never paste anything private" in text
 
 
 def test_this_room_s_addresses_reach_every_format(ctx: deck.DeckContext):
@@ -90,13 +111,13 @@ def test_markdown_uses_headings_and_lists_not_layout(ctx: deck.DeckContext):
     assert "\n- " in markdown
     assert "\n1. " in markdown
     # Pipe table with a header separator, not spaces pretending to be columns.
-    assert "| Time | What |" in markdown
+    assert "| Pile | Example |" in markdown
     assert "|---|---|" in markdown
 
 
 def test_markdown_keeps_the_speaker_notes(ctx: deck.DeckContext):
     markdown = deck.build_deck_markdown(ctx)
-    assert "**Speaker notes**" in markdown
+    assert "### Speaker notes, slide 2" in markdown
     assert "An instruction that fails at 1:40" in markdown
 
 
@@ -203,7 +224,50 @@ def test_powerpoint_tables_carry_alt_text_and_a_header_row(ctx: deck.DeckContext
             assert shape.table.first_row is True
             descr = shape._element.nvGraphicFramePr.cNvPr.get("descr")
             assert descr, "a table with no alt text"
-    assert found >= 2, "the agenda table and the three piles table"
+    assert found >= 1, "the three piles table"
+
+
+def test_powerpoint_has_no_text_under_18pt(ctx: deck.DeckContext):
+    from pptx import Presentation
+
+    prs = Presentation(BytesIO(deck.build_deck_pptx_bytes(ctx)))
+    small = []
+    for number, slide in enumerate(prs.slides, start=1):
+        for shape in slide.shapes:
+            frames = []
+            if shape.has_text_frame:
+                frames.append(shape.text_frame)
+            if getattr(shape, "has_table", False) and shape.has_table:
+                frames.extend(cell.text_frame for row in shape.table.rows for cell in row.cells)
+            for frame in frames:
+                for paragraph in frame.paragraphs:
+                    for run in paragraph.runs:
+                        if run.font.size is not None and run.font.size.pt < 18:
+                            small.append((number, run.text[:30], run.font.size.pt))
+    assert not small, small
+
+
+def test_word_passes_glow_s_own_audit(ctx: deck.DeckContext, tmp_path):
+    """Use a checker, fix what it finds - the deck is held to GLOW's own bar."""
+    from acb_large_print.auditor import audit_document
+
+    path = tmp_path / "deck.docx"
+    path.write_bytes(deck.build_deck_docx_bytes(ctx))
+    result = audit_document(path)
+    serious = [
+        f for f in result.findings
+        if str(f.severity).split(".")[-1] in {"CRITICAL", "HIGH", "MEDIUM"}
+    ]
+    assert not serious, [(f.rule_id, f.message) for f in serious]
+
+
+def test_powerpoint_passes_glow_s_own_audit(ctx: deck.DeckContext, tmp_path):
+    from acb_large_print.pptx_auditor import audit_presentation
+
+    path = tmp_path / "deck.pptx"
+    path.write_bytes(deck.build_deck_pptx_bytes(ctx))
+    result = audit_presentation(path)
+    assert not result.findings, [(f.rule_id, f.message) for f in result.findings]
 
 
 def test_powerpoint_declares_its_title_and_language(ctx: deck.DeckContext):

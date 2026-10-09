@@ -4,9 +4,9 @@
 
 A hands-on GLOW workshop for human-centered accessibility workflows
 
-**Event:** Accessing Higher Ground 2026  
-**Presenter:** Jeff Bishop - BITS, an affiliate of the American Council of the Blind  
-**Join:** letitglow.app/w/ahg-2026
+- Event: Accessing Higher Ground 2026
+- Presenter: Jeff Bishop - BITS, an affiliate of the American Council of the Blind
+- Join: letitglow.app/w/ahg-2026
 
 Speaker notes are included under each slide. Thirty slides.
 
@@ -14,7 +14,7 @@ Speaker notes are included under each slide. Thirty slides.
 
 ## 1. Accessibility Agents in Action
 
-*Accessing Higher Ground 2026*
+Accessing Higher Ground 2026
 
 A hands-on GLOW workshop for human-centered accessibility workflows
 
@@ -22,56 +22,62 @@ Helping everyone become an accessibility champion.
 
 Jeff Bishop - BITS, an affiliate of the American Council of the Blind - letitglow.app
 
-**Speaker notes**
+### Speaker notes, slide 1
 
 > Do not start with the tool. Start with the room. Ask nothing yet - let people sit down, find power, and settle.
 >
-> Open with the promise on the next slide before anything else. It is the sentence that lets the person with no laptop stay in the room.
+> The proctor introduces the session. Put the microphone on before you say a word, and keep it on all day: when a volunteer speaks, pass them a mic or say what they said back into yours before you answer. Some people in this room hear you only through it.
+>
+> Say the key point once, before any logistics, in one sentence: the work is not fixing documents, it is making more people who can. Then the promise on the next slide.
 
 ---
 
 ## 2. Two ways, and the first one is enough
 
-*The promise*
+The promise
 
 1. GLOW, in a browser. The whole day. No account, no sign-in, no AI.
 2. Plus your own assistant, if you already have one. An upgrade on the same exercise, never a different one.
 
-**Nothing today needs an account with anyone.**
+Nothing today needs an account with anyone.
 
-One rule if you use an assistant: paste the text. Do not upload files - free accounts limit uploads and do not limit text.
+One rule if you use an assistant: paste text, never upload files - and never paste anything private.
 
-**Speaker notes**
+### Speaker notes, slide 2
 
 > Say this in the first ten minutes, exactly once, and mean it. Everything later in the day depends on the room believing it.
 >
 > The upload rule matters: free accounts allow roughly two image uploads a day and do not publish the number. An instruction that fails at 1:40 is worse than one nobody followed.
+>
+> The privacy half matters more. Say what private means here: student records, health or disability information, anyone's name. A free assistant may keep what is pasted into it. Use the scenarios, or strip the details out first.
 
 ---
 
 ## 3. How today runs
 
-*Housekeeping*
+Housekeeping
 
 - 8:30 to 4:30. Lunch at 12:15. Breaks at 10:10 and 2:55.
 - Eleven activities. Nothing is graded, and nothing is collected without you choosing to share it.
-- You need a device - a phone is fine. The worksheet pack was published before today if you would rather work from your own printout.
+- Any device, a phone included. Nothing to install, so a locked-down work laptop is fine.
 - Everything you write is yours, and you leave with all of it.
-- Ask for anything you need at any time - large print, a different seat, a pause, a repeat. That is not an interruption of this workshop. It is this workshop.
+- Ask for anything, any time - large print, a seat, a pause, a repeat.
 
-**Speaker notes**
+### Speaker notes, slide 3
 
 > Name the exits and the bathrooms, physically pointing. Some people will not ask.
 >
 > If anyone arrived without the worksheet pack, the links are on the workshop home page and work on a phone. We do not hand out paper.
 >
-> Say the last bullet slowly. It sets the tone for whether anyone asks for anything all day.
+> Say the last bullet slowly, then add: that is not an interruption of this workshop - it is this workshop. It sets the tone for whether anyone asks for anything all day.
+>
+> The worksheet pack was published before today for anyone who wanted to print their own. Say so for the person who did.
 
 ---
 
 ## 4. One address, all day
 
-*Join the room*
+Join the room
 
 ### letitglow.app/w/ahg-2026
 
@@ -79,9 +85,11 @@ The same address is on the card at every table, in large type, with a QR code be
 
 Each activity has its own short address: slash 1, slash 2, and so on, numbered the way I will say them out loud.
 
-**Speaker notes**
+### Speaker notes, slide 4
 
 > Read the address out twice, letter by letter, then wait. Do not move on until people are in. The code on this slide is the live one for this session - there is nothing to replace.
+>
+> Say what is on the screen: the address and nothing else. The QR code is on the table cards, not here, so nobody hunts the slide for it.
 >
 > Signage is printed from the facilitator dashboard: session, then signage.
 
@@ -89,7 +97,7 @@ Each activity has its own short address: slash 1, slash 2, and so on, numbered t
 
 ## 5. So you never lose your work
 
-*Do this early*
+Do this early
 
 Your work is held against this browser on this device. Switch to a phone, or clear your cookies, and it is gone.
 
@@ -99,7 +107,7 @@ On My workshop content, under Work on another device, give an email address and 
 - The address is used for that one message and never appears anywhere else.
 - The link lasts 45 days, which outlives your 30-day plan.
 
-**Speaker notes**
+### Speaker notes, slide 5
 
 > Give this twice: once now, once at the 10:10 break, when there is something worth keeping.
 >
@@ -109,13 +117,13 @@ On My workshop content, under Work on another device, give an email address and 
 
 ## 6. Accessibility does not scale by fixing
 
-*Why we are here*
+Why we are here
 
 If you are the person who fixes everything, then accessibility in your institution is exactly as large as your calendar.
 
-**The work is not fixing documents. The work is making more people who can.**
+The work is not fixing documents. The work is making more people who can.
 
-**Speaker notes**
+### Speaker notes, slide 6
 
 > This is the pivot of the whole day. Let it sit. Some people in this room are exhausted by being the only one.
 >
@@ -123,16 +131,16 @@ If you are the person who fixes everything, then accessibility in your instituti
 
 ---
 
-## 7. G L O W
+## 7. The GLOW framework
 
-*The framework*
+Four words for the day
 
-- **G - Ground** - Ground the work in a real accessibility problem, not a tool.
-- **L - Learn** - Learn what the people around you actually need to understand.
-- **O - Organize** - Organize it into a workflow that repeats without you.
-- **W - Walk** - Walk forward as champions, plural.
+- G - Ground: Ground the work in a real accessibility problem, not a tool.
+- L - Learn: Learn what the people around you actually need to understand.
+- O - Organize: Organize it into a workflow that repeats without you.
+- W - Walk: Walk forward as champions, plural.
 
-**Speaker notes**
+### Speaker notes, slide 7
 
 > Map the day onto this once, here, and then stop talking about the acronym. It is scaffolding, not content.
 
@@ -140,17 +148,21 @@ If you are the person who fixes everything, then accessibility in your instituti
 
 ## 8. AI drafts. People decide.
 
-*The boundary*
+The boundary
 
 Every activity today has a human-review step that you write yourself, in your own words, for your own context.
 
 Not because AI is dangerous in the abstract - because purpose, meaning, context and harm are judgments, and judgments have owners.
 
-**If nobody is named, nobody reviewed it.**
+If nobody is named, nobody reviewed it.
 
-**Speaker notes**
+### Speaker notes, slide 8
 
 > This is the slide institutional leadership cares about. It is also the honest one.
+>
+> Set the AI context here, in under a minute. What this session covers: where AI can help in accessibility work, and the human review that has to follow it. What it does not: comparing vendors, building software, or requiring anyone to use AI at all.
+>
+> Say what makes it different from the other AI sessions this week: it is about people making more people who can, and AI stays optional throughout. Name the reasons people hesitate - privacy, accuracy, other people's jobs - without dwelling on them. The boundary on this slide is the answer to each.
 >
 > The generated prompts put the participant's own review step inside the prompt as an instruction, not as a closing remark. Mention that at activity 5, not here.
 
@@ -158,48 +170,29 @@ Not because AI is dangerous in the abstract - because purpose, meaning, context 
 
 ## 9. Where we are going
 
-*The shape of the day*
+The shape of the day
 
-*Today, by the clock. Breaks and lunch included, so nobody has to ask.*
+- Morning, 8:30-12:15: Why this work matters, five short activities, and Lab 1. Break at 10:10.
+- Afternoon, 1:15-3:05: Two labs: alt text, then remediation planning. Break at 2:55.
+- Close, 3:05-4:30: Your workflow, your take-home artifact, your 30-day plan, and the session evaluation.
 
-| Time | What |
-|---|---|
-| 8:30-8:50 | Welcome and how the day works |
-| 8:50-9:10 | Accessibility Journey Check-In |
-| 9:10-9:40 | What Problem Are We Solving? |
-| 9:40-10:10 | Fix It for Me vs Teach Me to Improve It |
-| 10:10-10:25 | Break |
-| 10:25-10:55 | Helpful, Risky, or Human Required? |
-| 10:55-11:30 | Accessibility Agent Formula |
-| 11:30-12:15 | GLOW Lab 1: Accessible Communications |
-| 12:15-1:15 | Lunch |
-| 1:15-1:25 | Re-entry and room pulse |
-| 1:25-2:10 | GLOW Lab 2: Alt Text and Human Judgment |
-| 2:10-2:55 | GLOW Lab 3: Remediation Planning |
-| 2:55-3:05 | Break |
-| 3:05-3:45 | Accessibility Champion Studio |
-| 3:45-4:00 | Peer review round |
-| 4:00-4:15 | Capstone Share-Out |
-| 4:15-4:25 | 30-Day Action Plan |
-| 4:25-4:30 | The commitment wall |
+### Speaker notes, slide 9
 
-**Speaker notes**
-
-> Thirty seconds. Do not narrate the table; people can read it. Point at the last two rows and say "that is what you take home".
+> Thirty seconds. Read the three parts out loud - not everyone can read the screen. Then say "the last part is what you take home".
 >
-> This table is generated from the workshop agenda, so it cannot drift from the time each activity page shows a participant.
+> The full timetable, every break included, is on the workshop home page on every device. These times come from the workshop agenda, so they cannot drift from what each activity page shows.
 
 ---
 
 ## 10. Accessibility Journey Check-In
 
-*Activity 1 - 20 minutes - /w/ahg-2026/1*
+Activity 1 - 20 minutes - /w/ahg-2026/1
 
 What accessibility work do you actually do? Where do your partners get stuck - the same place, over and over?
 
 What would change if more of them became champions?
 
-**Speaker notes**
+### Speaker notes, slide 10
 
 > No sharing pressure. Writing, then a table conversation if the table wants one.
 >
@@ -209,15 +202,15 @@ What would change if more of them became champions?
 
 ## 11. What problem are we solving?
 
-*Activity 2 - 30 minutes - /w/ahg-2026/2*
+Activity 2 - 30 minutes - /w/ahg-2026/2
 
 Start with the problem you can see today.
 
 Then name the deeper one behind it. Who needs to learn this work, or own part of it?
 
-**What does success look like if it happens again and again, without you?**
+What does success look like if it happens again and again, without you?
 
-**Speaker notes**
+### Speaker notes, slide 11
 
 > Watch for tool-first answers - "we need a checker". Push back gently: a checker is an answer, not a problem.
 
@@ -225,7 +218,7 @@ Then name the deeper one behind it. Who needs to learn this work, or own part of
 
 ## 12. Fix it for me, or teach me?
 
-*Activity 3 - 30 minutes - /w/ahg-2026/3*
+Activity 3 - 30 minutes - /w/ahg-2026/3
 
 Take a real request that said "just fix it for me."
 
@@ -233,7 +226,7 @@ Write the reply that does both: solves it today, and teaches it for next time.
 
 > The pattern: I have done X for you. Here is the one thing that caused it. Next time, do Y - it takes about a minute, and here is where it lives.
 
-**Speaker notes**
+### Speaker notes, slide 12
 
 > The hard part is tone, not content. Nobody learns from a reply that makes them feel caught.
 >
@@ -243,11 +236,11 @@ Write the reply that does both: solves it today, and teaches it for next time.
 
 ## 13. Back at 10:25
 
-*Break - 15 minutes*
+Break - 15 minutes
 
 If you have not sent yourself a return link yet, now is the moment. My workshop content, then Work on another device.
 
-**Speaker notes**
+### Speaker notes, slide 13
 
 > Project the room pulse during the break. Counts only - it is safe on a screen.
 >
@@ -257,11 +250,11 @@ If you have not sent yourself a return link yet, now is the moment. My workshop 
 
 ## 14. Helpful, risky, or human required?
 
-*Activity 4 - 30 minutes - /w/ahg-2026/4*
+Activity 4 - 30 minutes - /w/ahg-2026/4
 
 Sort your own tasks into three piles. Then write the safeguard that makes the middle pile safe.
 
-*The three piles*
+The three piles
 
 | Pile | Example |
 |---|---|
@@ -269,7 +262,7 @@ Sort your own tasks into three piles. Then write the safeguard that makes the mi
 | Risky without review | Summarising a policy document |
 | Human required | Deciding what an image is for |
 
-**Speaker notes**
+### Speaker notes, slide 14
 
 > The examples are deliberately arguable. If a table disagrees about which pile something is in, that argument is the exercise.
 
@@ -277,17 +270,17 @@ Sort your own tasks into three piles. Then write the safeguard that makes the mi
 
 ## 15. The Accessibility Agent Formula
 
-*Activity 5 - 35 minutes - /w/ahg-2026/5*
+Activity 5 - 35 minutes - /w/ahg-2026/5
 
-- **Role** - Who is it being, and for whom?
-- **Task** - One job, said plainly.
-- **Trusted guidance** - Whose rules - WCAG, ACB large print, your own style guide?
-- **Output format** - What comes back, in what shape, so a person can use it?
-- **Human review** - Who checks what, before it goes out?
+- Role: Who is it being, and for whom?
+- Task: One job, said plainly.
+- Trusted guidance: Whose rules - WCAG, ACB large print, your own style guide?
+- Output format: What comes back, in what shape, so a person can use it?
+- Human review: Who checks what, before it goes out?
 
 You are not writing code. You are writing instructions for a colleague who is fast, literal, and has never met your institution.
 
-**Speaker notes**
+### Speaker notes, slide 15
 
 > This is the technical peak of the day and it is still five sentences on a page. Say so.
 >
@@ -297,7 +290,7 @@ You are not writing code. You are writing instructions for a colleague who is fa
 
 ## 16. GLOW Lab 1: Accessible Communications
 
-*Lab 1 - 45 minutes - /w/ahg-2026/6*
+Lab 1 - 45 minutes - /w/ahg-2026/6
 
 Rewrite a real message so more people can read it.
 
@@ -308,7 +301,7 @@ Rewrite a real message so more people can read it.
 
 Bring your own message if you have one. The scenarios are a net, not a rail.
 
-**Speaker notes**
+### Speaker notes, slide 16
 
 > Four scenarios from four sectors, plus "Surprise me", which is deterministic per person - two people at a table will rarely get the same brief, and you can walk anyone back through what they were given.
 >
@@ -318,29 +311,29 @@ Bring your own message if you have one. The scenarios are a net, not a rail.
 
 ## 17. Back at 1:15
 
-*Lunch - 12:15-1:15*
+Lunch - 12:15-1:15
 
 Nothing is due. Nothing is graded.
 
 If you want more: the optional Run Your Agent lab is open, and it is genuinely optional.
 
-**Speaker notes**
+### Speaker notes, slide 17
 
-> Check the AI usage panel before you eat. If the room is burning through the budget, you want to know at lunch and not at three o'clock.
+> Eat. Nothing in the afternoon depends on a model answering, so there is nothing to watch over lunch.
 
 ---
 
 ## 18. Where the room is
 
-*1:15 - Re-entry*
+1:15 - Re-entry
 
 Here is what the room has finished so far. No names, just counts.
 
-**Nobody is behind. There is no behind.**
+Nobody is behind. There is no behind.
 
-**Speaker notes**
+### Speaker notes, slide 18
 
-> Project the facilitator dashboard. Counts only - it never carries anyone's work.
+> Project the facilitator dashboard. Counts only - it never carries anyone's work. Read the counts aloud; the screen is not the only way into the room.
 >
 > Nothing in the afternoon depends on a model answering, so there is no bad news to deliver here. Say that once if the room looks anxious about it.
 
@@ -348,15 +341,15 @@ Here is what the room has finished so far. No names, just counts.
 
 ## 19. GLOW Lab 2: Alt Text and Human Judgment
 
-*Lab 2 - 45 minutes - /w/ahg-2026/7*
+Lab 2 - 45 minutes - /w/ahg-2026/7
 
 A machine can tell you what is in the picture.
 
-**Only you can say what the picture is for.**
+Only you can say what the picture is for.
 
 So this lab gives you the context in words, and descriptions somebody already wrote. Your job is to judge them.
 
-**Speaker notes**
+### Speaker notes, slide 19
 
 > Nobody uploads anything. Purpose lives in the words around an image, not in the pixels - a lab built on 'upload it and see' teaches the opposite.
 >
@@ -366,7 +359,7 @@ So this lab gives you the context in words, and descriptions somebody already wr
 
 ## 20. Four questions, in this order
 
-*Lab 2 - the method*
+Lab 2 - the method
 
 1. Why is this image here? If you cannot answer, it may not need to be.
 2. What must a reader know about it to follow the page?
@@ -375,7 +368,7 @@ So this lab gives you the context in words, and descriptions somebody already wr
 
 Generated descriptions are confident and sometimes wrong. Question four is the whole job.
 
-**Speaker notes**
+### Speaker notes, slide 20
 
 > If you have one, show a generated description that is fluent and factually wrong. It teaches more than any slide.
 >
@@ -385,15 +378,15 @@ Generated descriptions are confident and sometimes wrong. Question four is the w
 
 ## 21. GLOW Lab 3: Remediation Planning
 
-*Lab 3 - 45 minutes - /w/ahg-2026/8*
+Lab 3 - 45 minutes - /w/ahg-2026/8
 
 Take a real document, slide deck, or course page. List what is broken. Then put the fixes in order.
 
-**Order by who is blocked, not by what is easy.**
+Order by who is blocked, not by what is easy.
 
 Then write how you would coach the owner, so the next version starts better.
 
-**Speaker notes**
+### Speaker notes, slide 21
 
 > Everyone sorts by effort first. The reorder, once someone says "but this one blocks a student on Monday", is the lesson.
 
@@ -401,11 +394,11 @@ Then write how you would coach the owner, so the next version starts better.
 
 ## 22. Back at 3:05
 
-*Break - 10 minutes*
+Break - 10 minutes
 
 The last stretch is the one you take home.
 
-**Speaker notes**
+### Speaker notes, slide 22
 
 > Short break on purpose. Protect the last 85 minutes; that is where the artifact comes from.
 
@@ -413,7 +406,7 @@ The last stretch is the one you take home.
 
 ## 23. Accessibility Champion Studio
 
-*Studio - 40 minutes - /w/ahg-2026/9*
+Studio - 40 minutes - /w/ahg-2026/9
 
 Design one workflow you can hand to someone else.
 
@@ -421,9 +414,9 @@ Design one workflow you can hand to someone else.
 - Where is the point a person must review before anything goes out?
 - What does the partner learn by doing it, that they did not know before?
 
-**Build the workflow that still works when you are on holiday.**
+Build the workflow that still works when you are on holiday.
 
-**Speaker notes**
+### Speaker notes, slide 23
 
 > Workflows shared to the gallery carry a "Start from this workflow" link. It fills an empty form only; it never writes over someone's own answers. Anonymous submitters stay anonymous in the attribution.
 
@@ -431,7 +424,7 @@ Design one workflow you can hand to someone else.
 
 ## 24. Three sentences for someone else
 
-*Peer review - 15 minutes - gallery*
+Peer review - 10 minutes - gallery
 
 1. One thing that is strong.
 2. One risk or missing safeguard.
@@ -439,7 +432,7 @@ Design one workflow you can hand to someone else.
 
 Supportive, specific, and short. You are reviewing a workflow, not a person.
 
-**Speaker notes**
+### Speaker notes, slide 24
 
 > The gallery announces new work as a count and waits for the reader to press "Show new submissions". Nothing appears underneath anyone mid-read. Say that out loud - it will be noticed in this room, and it should be.
 
@@ -447,13 +440,13 @@ Supportive, specific, and short. You are reviewing a workflow, not a person.
 
 ## 25. Say it in four sentences
 
-*Capstone - 15 minutes - /w/ahg-2026/10*
+Capstone - 15 minutes - /w/ahg-2026/10
 
 What is your workflow? Who does it help? What do they learn?
 
 And how does it keep going after today?
 
-**Speaker notes**
+### Speaker notes, slide 25
 
 > Take three or four out loud, from volunteers. Then send everyone to the artifact page - that is the next slide and it needs two full minutes.
 
@@ -461,16 +454,16 @@ And how does it keep going after today?
 
 ## 26. My take-home artifact
 
-*Take it with you*
+Take it with you
 
 One page, assembled from what you wrote today: your workflow, who it helps, the human-review gate in your own words, and your 30-day commitment.
 
 - Print it, or download it as a single file that still opens years from now.
 - Email it to yourself with your agent package and a link back to everything else.
 
-**This is the thing you forward to a director on Monday.**
+This is the thing you forward to a director on Monday.
 
-**Speaker notes**
+### Speaker notes, slide 26
 
 > Do not rush this. Two minutes each, and it is the highest-value two minutes of the day.
 >
@@ -480,16 +473,16 @@ One page, assembled from what you wrote today: your workflow, who it helps, the 
 
 ## 27. How this gets used where you work
 
-*Activity 11 - 10 minutes - /w/ahg-2026/11*
+Activity 11 - 10 minutes - /w/ahg-2026/11
 
-- **One workflow** - that you will actually try.
-- **One partner** - or team you will try it with.
-- **One safeguard** - you will use every single time.
-- **One first step** - small enough to do this week.
-- **Who needs to know** - or approve it - a manager, a comms lead, an IT policy.
-- **What it looks like if it worked** - in one sentence you could say to them.
+- One workflow: that you will actually try.
+- One partner: or team you will try it with.
+- One safeguard: you will use every single time.
+- One first step: small enough to do this week.
+- Who needs to know: or approve it - a manager, a comms lead, an IT policy.
+- What it looks like if it worked: in one sentence you could say to them.
 
-**Speaker notes**
+### Speaker notes, slide 27
 
 > Small is the point. "Rewrite one email template" beats "audit the LMS".
 >
@@ -501,23 +494,23 @@ One page, assembled from what you wrote today: your workflow, who it helps, the 
 
 ## 28. The commitment wall
 
-*4:25*
+4:20
 
 Every commitment in this room, on one screen, with no names on it.
 
 A promise made in front of strangers should not carry a name unless the person who made it decides to say it out loud.
 
-**Speaker notes**
+### Speaker notes, slide 28
 
 > Project it. Read three aloud. Do not comment on them, do not rank them, do not add a moral.
 >
-> Then say thank you and stop. Ending early is a gift.
+> Then go straight to what happens next. The last five minutes belong to the session evaluation.
 
 ---
 
 ## 29. What happens next
 
-*After today*
+After today
 
 - Within 48 hours: a resource packet, and your exports in Markdown, JSON, HTML and Word.
 - In 30 days: one message quoting your own commitment back to you, with a link to your follow-through log.
@@ -526,7 +519,7 @@ A promise made in front of strangers should not carry a name unless the person w
 
 ### letitglow.app
 
-**Speaker notes**
+### Speaker notes, slide 29
 
 > Nobody is emailed twice, nobody who did not give an address is on the list, and the nudge is a command a person runs after looking at what is about to go out.
 
@@ -534,16 +527,20 @@ A promise made in front of strangers should not carry a name unless the person w
 
 ## 30. Go make one more champion
 
-*Thank you*
+Thank you
 
 You came in as the person who fixes things.
 
-**You are leaving as the person who makes more people who can.**
+You are leaving as the person who makes more people who can.
+
+Before you go: the session evaluation. It shapes next year's conference.
 
 GLOW is a community project of BITS, an affiliate of the American Council of the Blind.
 
-**Speaker notes**
+### Speaker notes, slide 30
 
-> Last slide. Say it, thank them, and let them go. Do not add a Q and A block here - answer at the tables while people pack up.
+> Last slide. Say it, thank them, and hand over to the proctor for the session evaluation. Then stop talking while people fill it in - the five minutes are theirs.
+>
+> Do not add a Q and A block here - answer at the tables while people pack up.
 
 ---

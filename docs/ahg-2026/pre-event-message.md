@@ -12,46 +12,54 @@ first six lines, and the rest is there for the person who reads on.
 
 ## Subject
 
-Accessibility Agents in Action — what to bring on the day
+Accessibility Agents in Action - what to bring on the day
 
 ## Body
 
 Hello,
 
-You are booked into **Accessibility Agents in Action**, an all-day hands-on
-workshop at Accessing Higher Ground. Here is everything you need.
+You are booked into Accessibility Agents in Action, an all-day hands-on
+workshop at Accessing Higher Ground, 8:30 AM to 4:30 PM Mountain Time. Here
+is everything you need.
 
-**Bring a device.** A laptop, a tablet or a phone — any of them works.
-Everything runs in a browser. There is nothing to install, no account to
-create, and no sign-in.
+### Bring a device
 
-**You do not need an AI account.** The whole day works without one. If you
-already use ChatGPT or something like it, you can use it to go a step deeper
-on some activities, but nothing requires it and nothing is missing if you
-never open it.
+A laptop, a tablet or a phone - any of them works. Everything runs in a
+browser. There is nothing to install, no account to create, and no sign-in,
+so a work laptop without admin rights is fine.
 
-**Download the worksheet pack before you travel:**
+### You do not need an AI account
+
+The whole day works without one. If you already use ChatGPT or something like
+it, you can use it to go a step deeper on some activities, but nothing
+requires it and nothing is missing if you never open it. One rule if you do:
+paste text rather than uploading files, and never paste anything private -
+student records, health or disability information, or anyone's name.
+
+### Download the worksheet pack before you travel
 
 - Word: `letitglow.app/workshop/worksheets.docx`
 - Web page: `letitglow.app/workshop/worksheets.html`
 
 The pack has every activity with space to write. If you would rather work on
-paper, **print it yourself before you come** — we are not printing copies at
-the event. Downloading it also means you still have the whole day's material
-if the conference network has a bad morning.
+paper, print it yourself before you come; we are not printing copies at the
+event. Downloading it also means you still have the whole day's material if
+the conference network has a bad morning.
 
-**On the day**, join at the address on the card on your table. We will say it
-out loud and it will be on the screen.
+### On the day
+
+Join at the address on the card on your table. We will say it out loud and it
+will be on the screen.
 
 ### What you will leave with
 
 One workflow you can use at work, written by you, with a review step in your
-own words — and a one-page artifact you could show a director on Monday.
+own words, and a one-page artifact you could show a director on Monday.
 
 ### If you need anything
 
 Reply to this message, or write to `support@community-access.org`. Large print
-materials, a particular seat, a pause, a repeat — ask for any of it, before or
+materials, a particular seat, a pause, a repeat - ask for any of it, before or
 during. That is not an interruption of this workshop; it is the point of it.
 
 See you there,

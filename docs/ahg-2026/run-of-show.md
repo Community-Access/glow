@@ -2,7 +2,7 @@
 
 **Session:** Accessibility Agents in Action - A Hands-On GLOW Workshop
 **Event:** Accessing Higher Ground, November 2026
-**Format:** All-day pre-conference workshop, 8:30 AM to 4:30 PM
+**Format:** All-day pre-conference workshop, 8:30 AM to 4:30 PM Mountain Time, bring your own device
 **Facilitator:** Jeff Bishop
 **Platform:** letitglow.app, Workshop Mode (GLOW 8.0.0)
 **Status of this document:** the prose copy of the definitive agenda. The
@@ -21,7 +21,7 @@ The day works two ways, and the first one is complete on its own:
 1. **In a browser, with GLOW.** Every activity, plus real audits on real documents. No account, no sign-in, no AI.
 2. **Plus your own assistant, if you have one.** Paste the prompt the day builds for you. An upgrade on the same exercise, never a different one.
 
-And one rule that holds all day: **paste text, never upload a file.** Free accounts cap uploads at a couple a day and do not cap text.
+And one rule that holds all day: **paste text, never upload a file, and never paste anything private.** Free accounts cap uploads at a couple a day and do not cap text, and a free assistant may keep what is pasted into it. Private means student records, health or disability information, and anyone's name.
 
 Say this out loud in the first ten minutes. It is the promise that makes the
 room relax, and it is the promise that makes a bad wifi day survivable.
@@ -63,13 +63,18 @@ column is the sentence that opens the block, not a script.
 | 2:10 | 45 | Lab 3: Remediation Planning | `/w/<code>/8` | "Order the fixes by who is blocked, not by what is easy." |
 | 2:55 | 10 | Break | - | - |
 | 3:05 | 40 | Accessibility Champion Studio | `/w/<code>/9` | "Build the workflow that still works when you are on holiday." |
-| 3:45 | 15 | Peer review round | `/workshop/session/<code>/gallery` | "One strength, one missing safeguard, one way to reuse it." |
-| 4:00 | 15 | Capstone share-out and take-home artifact | `/w/<code>/10`, then `/workshop/session/<code>/artifact` | "Two minutes on the artifact page. This is the thing you forward on Monday." |
-| 4:15 | 10 | 30-Day Action Plan | `/w/<code>/11` | "One workflow, one partner, one safeguard, one first step." |
-| 4:25 | 5 | The commitment wall | `/workshop/session/<code>/wall` | Read three aloud. Do not name anyone. End there. |
+| 3:45 | 10 | Peer review round | `/workshop/session/<code>/gallery` | "One strength, one missing safeguard, one way to reuse it." |
+| 3:55 | 15 | Capstone share-out and take-home artifact | `/w/<code>/10`, then `/workshop/session/<code>/artifact` | "Two minutes on the artifact page. This is the thing you forward on Monday." |
+| 4:10 | 10 | 30-Day Action Plan | `/w/<code>/11` | "One workflow, one partner, one safeguard, one first step." |
+| 4:20 | 5 | The commitment wall | `/workshop/session/<code>/wall` | Read three aloud. Do not name anyone. |
+| 4:25 | 5 | Session evaluation | the proctor runs it | "Before you go: the session evaluation. It shapes next year." Then stop talking. |
 
-**Totals:** activities 360 minutes, welcome 20, breaks 25, re-entry 10,
-wall 5 = 420. Lunch is the 60 on top.
+**Totals:** activities 345 minutes, peer review 10, welcome 20, breaks 25,
+re-entry 10, wall 5, session evaluation 5 = 420. Lunch is the 60 on top.
+
+The evaluation slot is new for AHG, which asks every speaker to save time for
+its session survey. Its five minutes came from the peer review round, the one
+block the pacing rules below already allowed to shrink.
 
 ### Optional Lab: Run Your Agent
 
@@ -87,14 +92,34 @@ Mention it once, at the end of block 5, as somewhere to go at lunch or after
 - **The three 30-minute morning blocks are the compressible ones.** If the room
   is running long, take five from each of blocks 2, 3 and 4 before you take a
   minute from any lab.
-- **Never compress the last thirty minutes.** Capstone, artifact, action plan
-  and wall are what the day is for. If something has to go, cut the peer review
-  round to ten minutes and take five from Champion Studio.
+- **Never compress the last thirty-five minutes.** Capstone, artifact, action
+  plan, wall and the session evaluation are what the day is for. If something
+  has to go, cut the peer review round to five minutes and take five from
+  Champion Studio. Never cut the evaluation.
 - **Lab 2 needs no AI from anyone.** It shows output written to be judged,
   with the context in words. If someone wants to use their own assistant, it is
   a text-only critique of what they already wrote.
 - **Return links, twice.** Once right after activity 1 saves, once at the 10:10
   break. Anyone who switches laptop to phone without one loses their day.
+
+### Delivery, from the AHG speaker orientation
+
+The conference's own guidance, applied to this room. The full mapping, with
+where each point is met, is `ahg-speaker-guidance.md` in this folder.
+
+- **Wear the mic, all day.** When a volunteer speaks, pass a mic or say what
+  they said back into yours before answering. Some people hear only the mic.
+- **Slow down; talk for a third.** Every block is mostly participant time.
+  If you notice you have talked for more than a third of one, stop and hand
+  it back.
+- **Describe what you project.** Read the room pulse counts and the wall
+  aloud. Say what is on a slide before talking about it.
+- **Key point first.** Before logistics: the work is not fixing documents,
+  it is making more people who can.
+- **Set the AI context early** (slide 8): what the day covers, what it does
+  not, how it differs from the other AI sessions, and the privacy rule.
+- **Save the last five minutes for the session evaluation.** The proctor
+  runs it.
 
 ---
 
@@ -133,9 +158,9 @@ Everything here is configuration or rehearsal. None of it is code.
 | # | Item | Done when |
 |---|---|---|
 | 1 | `WORKSHOP_CONFERENCE_CODES_JSON` set with the AHG access code, session code, title, event name and facilitator key | `/w/<code>` joins the real session from a phone on cellular |
-| 2 | `OPENROUTER_API_KEY` in `~/app/web/.env` **and** `GLOW_ENABLE_AI_ALT_TEXT`, `GLOW_ENABLE_AI_CHAT`, `GLOW_ENABLE_AI_WHISPERER` all set to `1` | `/health` reports `key_set: true` and `status: ready` for vision |
+| 2 | The workshop provides no AI of its own (plan L1). The day needs no AI key and no AI feature flag | You have run an activity end to end with AI off, and nothing asked for a key |
 | 3 | *Recommended, not blocking:* `POSTMARK_SERVER_TOKEN` and `POSTMARK_FROM_EMAIL`. Without it nothing breaks, but return links and the artifact email are replaced by download prompts, and the 30-day nudge cannot run | The Email panel on `/admin/queue` sends you a test message |
-| 4 | AI caps set from an agreed spend figure: `GLOW_WORKSHOP_AI_PARTICIPANT_CAP`, `GLOW_WORKSHOP_AI_SESSION_CAP` | A number is written down, and you have seen the cap message yourself |
+| 4 | Materials uploaded to the CVENT Speaker Resource Center, under My Tasks: `slides.pptx`, `slides.docx` and the worksheet pack. DOC, DOCX, PPTX or PDF only, under 250 MB | The upload shows in My Tasks, and the session details there match the printed program |
 | 5 | Walk all eleven activities on the deployed site, not locally | You have personally done the whole day at letitglow.app |
 | 6 | Open `/workshop/session/<code>/preflight` | Every row reads OK, or you know why it does not |
 
@@ -145,7 +170,7 @@ Everything here is configuration or rehearsal. None of it is code.
 |---|---|---|
 | 6 | Load rehearsal, 30 simulated participants | No 429s, no request over two seconds |
 | 7 | Screen reader pass: NVDA, then JAWS, then VoiceOver | Each of the eleven activities completed end to end by ear |
-| 8 | Full run with `OPENROUTER_API_KEY` unset | A complete activity run on Tiers 0 and 2 alone |
+| 8 | Full run on one phone, with no AI account anywhere | A complete day on GLOW alone |
 | 9 | Degraded-network run, and one run from paper alone | Both completed |
 | 10 | Timed facilitator dry run against **this** agenda, room pulse open, with a second person playing the awkward participant | A run-through with real minutes written beside section 2 |
 | 11 | Read all twelve scenarios aloud; cut anything that sounds like software wrote it | You would say each one to a room |

@@ -3,7 +3,7 @@
 This pack maps directly to conference delivery and can be used in guided
 forms, printable worksheets, or facilitator-led group practice.
 
-**Times are suggestions, and they come from one place.** The activity pages,
+Times are suggestions, and they come from one place. The activity pages,
 the agenda, the deck and this pack all show the same number, because all four
 read it from the same definition. Nobody is behind if they take longer.
 
@@ -60,10 +60,10 @@ workshop promised.
 - Output: draft champion workflow artifact.
 
 ## Peer Review and Refinement
-- Time: 15 minutes
+- Time: 10 minutes
 - Focus: strengthen trust, safeguards, and reuse quality.
 - Output: revised workflow and scaling path.
-- **Not a numbered activity.** There is no `/w/<code>/` address for this
+- Not a numbered activity. There is no `/w/<code>/` address for this
   round. Peer feedback is a form attached to each submission in the shared
   gallery, so send the room to the gallery and give them the three sentences
   below.

@@ -14,6 +14,7 @@ left elsewhere in `docs/`.
 | 3 | `facilitator-card.md` | The pocket card. Print it, fill in the blanks, fold it |
 | 4 | `pre-event-message.md` | What registered participants are sent before the day. Load-bearing now that we do not print |
 | 5 | `readiness-plan.md` | The longer readiness plan and path to golden (this was `x.md` at the repo root) |
+| 6 | `ahg-speaker-guidance.md` | Every recommendation from the AHG speaker orientation, where this workshop meets it, and what only a person can still do |
 
 ## The deck, in four formats
 

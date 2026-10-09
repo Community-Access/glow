@@ -43,9 +43,13 @@ def test_the_deck_carries_this_session_code(client):
 
 
 def test_the_deck_agenda_comes_from_the_agenda_module(client):
+    """The agenda slide is three chunks, but every time on it is the module's."""
     body = client.get(f"/workshop/session/{CODE}/deck").get_data(as_text=True)
-    for block in agenda.AGENDA:
-        assert block.clock in body
+    first, last = agenda.AGENDA[0], agenda.AGENDA[-1]
+    assert f"Morning, {first.starts_at}-" in body
+    assert f"-{last.resume}" in body
+    for block in agenda.blocks_of_kind(agenda.BREAK) + agenda.blocks_of_kind(agenda.LUNCH):
+        assert block.starts_at in body
 
 
 def test_activity_lengths_on_the_deck_match_the_activity_pages(client):

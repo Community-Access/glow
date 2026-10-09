@@ -174,6 +174,20 @@ def test_docx_pack_leaves_room_to_write(app: Flask):
     assert len(rules) >= total_fields * 3
 
 
+def test_docx_pack_passes_glow_s_own_audit(app: Flask, tmp_path):
+    """A handout from an accessibility workshop is held to GLOW's own bar."""
+    from acb_large_print.auditor import audit_document
+
+    path = tmp_path / "worksheets.docx"
+    path.write_bytes(build_worksheet_docx_bytes(_pack(app)))
+    result = audit_document(path)
+    serious = [
+        f for f in result.findings
+        if str(f.severity).split(".")[-1] in {"CRITICAL", "HIGH", "MEDIUM"}
+    ]
+    assert not serious, [(f.rule_id, f.message) for f in serious]
+
+
 # ---------------------------------------------------------------------------
 # Routes
 # ---------------------------------------------------------------------------

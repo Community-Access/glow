@@ -84,7 +84,7 @@ AGENDA: tuple[Block, ...] = (
         start=8 * 60 + 30, minutes=20,
         title="Welcome and how the day works",
         mode="Orientation", kind=WELCOME,
-        note="Three ways to do everything today. All three are first class.",
+        note="Two ways today, and the first one is enough.",
     ),
     Block(
         start=8 * 60 + 50, minutes=20,
@@ -132,7 +132,7 @@ AGENDA: tuple[Block, ...] = (
         start=12 * 60 + 15, minutes=LUNCH_MINUTES,
         title="Lunch",
         mode="Break", kind=LUNCH,
-        note="Check the AI usage panel before you eat, not at three o'clock.",
+        note="Nothing in the afternoon depends on a model answering.",
     ),
     Block(
         start=13 * 60 + 15, minutes=10,
@@ -164,28 +164,37 @@ AGENDA: tuple[Block, ...] = (
         kind=ACTIVITY, activity_key="champion_studio",
     ),
     Block(
-        start=15 * 60 + 45, minutes=15,
+        start=15 * 60 + 45, minutes=10,
         title="Peer review round",
         mode="Feedback and refinement", kind=PEER_REVIEW,
         note="Peer feedback is a form on gallery submissions, not a numbered activity.",
     ),
     Block(
-        start=16 * 60, minutes=15,
+        start=15 * 60 + 55, minutes=15,
         title="Capstone Share-Out",
         mode="Share-out and take-home artifact",
         kind=ACTIVITY, activity_key="capstone_shareout",
     ),
     Block(
-        start=16 * 60 + 15, minutes=10,
+        start=16 * 60 + 10, minutes=10,
         title="30-Day Action Plan",
         mode="Commitment",
         kind=ACTIVITY, activity_key="action_plan_30_day",
     ),
     Block(
-        start=16 * 60 + 25, minutes=5,
+        start=16 * 60 + 20, minutes=5,
         title="The commitment wall",
         mode="Close", kind=CLOSE,
-        note="Read three aloud. Do not name anyone. End there.",
+        note="Read three aloud. Do not name anyone.",
+    ),
+    # AHG asks every speaker to save time for its session evaluation, and the
+    # proctor runs it. Five minutes at the end, taken from the peer review
+    # round -- the one block the pacing rules already allow to shrink.
+    Block(
+        start=16 * 60 + 25, minutes=5,
+        title="Session evaluation",
+        mode="Close", kind=CLOSE,
+        note="Hand over to the proctor. Stop talking while people fill it in.",
     ),
 )
 

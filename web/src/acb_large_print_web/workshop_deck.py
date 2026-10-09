@@ -123,14 +123,32 @@ class DeckContext:
         return f"{length} - /w/{self.code_label}/{number}"
 
 
-def _agenda_table() -> Table:
-    rows = tuple((row["time"], row["title"]) for row in agenda.schedule_rows())
-    return Table(
-        caption="Today, by the clock. Breaks and lunch included, so nobody has to ask.",
-        headers=("Time", "What"),
-        rows=rows,
-        compact=True,
-    )
+def _day_in_three_parts() -> Definitions:
+    """The day as three chunks, with every break and lunch named.
+
+    Not the full timetable. Eighteen rows projected is a wall of text, and
+    a wall of text is exactly what the AHG speaker guidance asks presenters
+    not to put on a screen; three chunks is what a listener can hold. The
+    full table is on the workshop home page, on every participant's device.
+    The times are still read from the agenda, so the slide cannot drift.
+    """
+    blocks = agenda.deck_blocks()
+    break_1, break_2, lunch = blocks["break_1"], blocks["break_2"], blocks["lunch"]
+    first, last = agenda.AGENDA[0], agenda.AGENDA[-1]
+    return Definitions(items=(
+        (
+            f"Morning, {first.starts_at}-{lunch.starts_at}",
+            f"Why this work matters, five short activities, and Lab 1. Break at {break_1.starts_at}.",
+        ),
+        (
+            f"Afternoon, {lunch.resume}-{break_2.resume}",
+            f"Two labs: alt text, then remediation planning. Break at {break_2.starts_at}.",
+        ),
+        (
+            f"Close, {break_2.resume}-{last.resume}",
+            "Your workflow, your take-home artifact, your 30-day plan, and the session evaluation.",
+        ),
+    ))
 
 
 # ---------------------------------------------------------------------------
@@ -157,7 +175,8 @@ def build_slides(ctx: DeckContext) -> list[Slide]:
             ),
             notes=(
                 "Do not start with the tool. Start with the room. Ask nothing yet - let people sit down, find power, and settle.",
-                "Open with the promise on the next slide before anything else. It is the sentence that lets the person with no laptop stay in the room.",
+                "The proctor introduces the session. Put the microphone on before you say a word, and keep it on all day: when a volunteer speaks, pass them a mic or say what they said back into yours before you answer. Some people in this room hear you only through it.",
+                "Say the key point once, before any logistics, in one sentence: the work is not fixing documents, it is making more people who can. Then the promise on the next slide.",
             ),
         ),
         Slide(
@@ -170,13 +189,14 @@ def build_slides(ctx: DeckContext) -> list[Slide]:
                 )),
                 Para("Nothing today needs an account with anyone.", big=True),
                 Para(
-                    "One rule if you use an assistant: paste the text. Do not upload files - "
-                    "free accounts limit uploads and do not limit text.",
+                    "One rule if you use an assistant: paste text, never upload files - "
+                    "and never paste anything private.",
                 ),
             ),
             notes=(
                 "Say this in the first ten minutes, exactly once, and mean it. Everything later in the day depends on the room believing it.",
                 "The upload rule matters: free accounts allow roughly two image uploads a day and do not publish the number. An instruction that fails at 1:40 is worse than one nobody followed.",
+                "The privacy half matters more. Say what private means here: student records, health or disability information, anyone's name. A free assistant may keep what is pasted into it. Use the scenarios, or strip the details out first.",
             ),
         ),
         Slide(
@@ -185,15 +205,16 @@ def build_slides(ctx: DeckContext) -> list[Slide]:
                 Bullets(items=(
                     f"8:30 to 4:30. Lunch at {lunch.starts_at}. Breaks at {break_1.starts_at} and {break_2.starts_at}.",
                     "Eleven activities. Nothing is graded, and nothing is collected without you choosing to share it.",
-                    "You need a device - a phone is fine. The worksheet pack was published before today if you would rather work from your own printout.",
+                    "Any device, a phone included. Nothing to install, so a locked-down work laptop is fine.",
                     "Everything you write is yours, and you leave with all of it.",
-                    "Ask for anything you need at any time - large print, a different seat, a pause, a repeat. That is not an interruption of this workshop. It is this workshop.",
+                    "Ask for anything, any time - large print, a seat, a pause, a repeat.",
                 )),
             ),
             notes=(
                 "Name the exits and the bathrooms, physically pointing. Some people will not ask.",
                 "If anyone arrived without the worksheet pack, the links are on the workshop home page and work on a phone. We do not hand out paper.",
-                "Say the last bullet slowly. It sets the tone for whether anyone asks for anything all day.",
+                "Say the last bullet slowly, then add: that is not an interruption of this workshop - it is this workshop. It sets the tone for whether anyone asks for anything all day.",
+                "The worksheet pack was published before today for anyone who wanted to print their own. Say so for the person who did.",
             ),
         ),
         Slide(
@@ -208,6 +229,7 @@ def build_slides(ctx: DeckContext) -> list[Slide]:
             ),
             notes=(
                 "Read the address out twice, letter by letter, then wait. Do not move on until people are in. The code on this slide is the live one for this session - there is nothing to replace.",
+                "Say what is on the screen: the address and nothing else. The QR code is on the table cards, not here, so nobody hunts the slide for it.",
                 "Signage is printed from the facilitator dashboard: session, then signage.",
             ),
         ),
@@ -241,7 +263,7 @@ def build_slides(ctx: DeckContext) -> list[Slide]:
             ),
         ),
         Slide(
-            id="s7", section="Opening", kicker="The framework", title="G L O W",
+            id="s7", section="Opening", kicker="Four words for the day", title="The GLOW framework",
             blocks=(
                 Definitions(items=(
                     ("G - Ground", "Ground the work in a real accessibility problem, not a tool."),
@@ -263,15 +285,17 @@ def build_slides(ctx: DeckContext) -> list[Slide]:
             ),
             notes=(
                 "This is the slide institutional leadership cares about. It is also the honest one.",
+                "Set the AI context here, in under a minute. What this session covers: where AI can help in accessibility work, and the human review that has to follow it. What it does not: comparing vendors, building software, or requiring anyone to use AI at all.",
+                "Say what makes it different from the other AI sessions this week: it is about people making more people who can, and AI stays optional throughout. Name the reasons people hesitate - privacy, accuracy, other people's jobs - without dwelling on them. The boundary on this slide is the answer to each.",
                 "The generated prompts put the participant's own review step inside the prompt as an instruction, not as a closing remark. Mention that at activity 5, not here.",
             ),
         ),
         Slide(
             id="s9", section="Opening", kicker="The shape of the day", title="Where we are going",
-            blocks=(_agenda_table(),),
+            blocks=(_day_in_three_parts(),),
             notes=(
-                "Thirty seconds. Do not narrate the table; people can read it. Point at the last two rows and say \"that is what you take home\".",
-                "This table is generated from the workshop agenda, so it cannot drift from the time each activity page shows a participant.",
+                "Thirty seconds. Read the three parts out loud - not everyone can read the screen. Then say \"the last part is what you take home\".",
+                "The full timetable, every break included, is on the workshop home page on every device. These times come from the workshop agenda, so they cannot drift from what each activity page shows.",
             ),
         ),
         Slide(
@@ -388,7 +412,7 @@ def build_slides(ctx: DeckContext) -> list[Slide]:
                 Para("If you want more: the optional Run Your Agent lab is open, and it is genuinely optional."),
             ),
             notes=(
-                "Check the AI usage panel before you eat. If the room is burning through the budget, you want to know at lunch and not at three o'clock.",
+                "Eat. Nothing in the afternoon depends on a model answering, so there is nothing to watch over lunch.",
             ),
         ),
         Slide(
@@ -399,7 +423,7 @@ def build_slides(ctx: DeckContext) -> list[Slide]:
                 Para("Nobody is behind. There is no behind.", big=True),
             ),
             notes=(
-                "Project the facilitator dashboard. Counts only - it never carries anyone's work.",
+                "Project the facilitator dashboard. Counts only - it never carries anyone's work. Read the counts aloud; the screen is not the only way into the room.",
                 "Nothing in the afternoon depends on a model answering, so there is no bad news to deliver here. Say that once if the room looks anxious about it.",
             ),
         ),
@@ -542,7 +566,7 @@ def build_slides(ctx: DeckContext) -> list[Slide]:
             ),
             notes=(
                 "Project it. Read three aloud. Do not comment on them, do not rank them, do not add a moral.",
-                "Then say thank you and stop. Ending early is a gift.",
+                "Then go straight to what happens next. The last five minutes belong to the session evaluation.",
             ),
         ),
         Slide(
@@ -565,10 +589,12 @@ def build_slides(ctx: DeckContext) -> list[Slide]:
             blocks=(
                 Para("You came in as the person who fixes things.", lead=True),
                 Para("You are leaving as the person who makes more people who can.", big=True),
+                Para("Before you go: the session evaluation. It shapes next year's conference."),
                 Para("GLOW is a community project of BITS, an affiliate of the American Council of the Blind.", small=True),
             ),
             notes=(
-                "Last slide. Say it, thank them, and let them go. Do not add a Q and A block here - answer at the tables while people pack up.",
+                "Last slide. Say it, thank them, and hand over to the proctor for the session evaluation. Then stop talking while people fill it in - the five minutes are theirs.",
+                "Do not add a Q and A block here - answer at the tables while people pack up.",
             ),
         ),
     ]
@@ -580,15 +606,20 @@ def build_slides(ctx: DeckContext) -> list[Slide]:
 
 
 def build_deck_markdown(ctx: DeckContext) -> str:
-    """The deck as Markdown: headings, lists, pipe tables, nothing clever."""
+    """The deck as Markdown: headings, lists, pipe tables, nothing clever.
+
+    No bold and no italic. Structure carries the emphasis -- a heading for
+    each slide and for its notes -- which is what GLOW's own Markdown audit
+    asks of everybody else's documents.
+    """
     lines: list[str] = [
         f"# {DECK_TITLE}",
         "",
         f"{DECK_SUBTITLE}",
         "",
-        f"**Event:** {DECK_EVENT}  ",
-        f"**Presenter:** {DECK_BYLINE}  ",
-        f"**Join:** {ctx.join_display}",
+        f"- Event: {DECK_EVENT}",
+        f"- Presenter: {DECK_BYLINE}",
+        f"- Join: {ctx.join_display}",
         "",
         "Speaker notes are included under each slide. Thirty slides.",
         "",
@@ -600,12 +631,12 @@ def build_deck_markdown(ctx: DeckContext) -> str:
         lines.append(f"## {index}. {slide.title}")
         lines.append("")
         if slide.kicker:
-            lines.append(f"*{slide.kicker}*")
+            lines.append(slide.kicker)
             lines.append("")
         for block in slide.blocks:
             lines.extend(_markdown_block(block))
         if slide.notes:
-            lines.append("**Speaker notes**")
+            lines.append(f"### Speaker notes, slide {index}")
             lines.append("")
             for note in slide.notes:
                 lines.append(f"> {note}")
@@ -621,7 +652,7 @@ def build_deck_markdown(ctx: DeckContext) -> str:
 
 def _markdown_block(block: Content) -> list[str]:
     if isinstance(block, Para):
-        return [f"**{block.text}**" if block.big else block.text, ""]
+        return [block.text, ""]
     if isinstance(block, Url):
         return [f"### {block.text}", ""]
     if isinstance(block, Bullets):
@@ -631,7 +662,7 @@ def _markdown_block(block: Content) -> list[str]:
         out.append("")
         return out
     if isinstance(block, Definitions):
-        out = [f"- **{term}** - {meaning}" for term, meaning in block.items]
+        out = [f"- {term}: {meaning}" for term, meaning in block.items]
         out.append("")
         return out
     if isinstance(block, Panel):
@@ -639,7 +670,7 @@ def _markdown_block(block: Content) -> list[str]:
         out.append("")
         return out
     if isinstance(block, Table):
-        out = [f"*{block.caption}*", ""]
+        out = [block.caption, ""]
         out.append("| " + " | ".join(block.headers) + " |")
         out.append("|" + "|".join(["---"] * len(block.headers)) + "|")
         for row in block.rows:
@@ -662,31 +693,25 @@ def build_deck_docx_bytes(ctx: DeckContext) -> bytes:
     header row on each table; and a declared language so a screen reader
     does not guess at pronunciation.
     """
+    from acb_large_print.template import apply_acb_large_print  # type: ignore
     from docx import Document  # type: ignore
-    from docx.enum.text import WD_ALIGN_PARAGRAPH  # type: ignore
     from docx.oxml.ns import qn  # type: ignore
-    from docx.shared import Pt  # type: ignore
 
-    doc = Document()
+    # GLOW's own ACB styles, so the deck passes GLOW's own audit: 22pt and
+    # 20pt headings, no italic, one-inch margins, page numbers, a title and
+    # a language. Emphasis comes from structure, not from bold body text.
+    doc = apply_acb_large_print(Document(), title=DECK_TITLE)
 
-    normal = doc.styles["Normal"]
-    normal.font.name = "Arial"
-    normal.font.size = Pt(18)  # ACB large print
-    normal.paragraph_format.space_after = Pt(12)
-    normal.paragraph_format.alignment = WD_ALIGN_PARAGRAPH.LEFT
-
-    # Declare the language on the default style rather than per run.
-    rpr = normal.element.get_or_add_rPr()
+    # Also on the Normal style itself, for readers that ignore docDefaults.
+    rpr = doc.styles["Normal"].element.get_or_add_rPr()
     lang = rpr.find(qn("w:lang"))
     if lang is None:
         lang = rpr.makeelement(qn("w:lang"), {})
         rpr.append(lang)
     lang.set(qn("w:val"), "en-US")
 
-    doc.core_properties.title = DECK_TITLE
     doc.core_properties.subject = DECK_SUBTITLE
     doc.core_properties.author = DECK_BYLINE
-    doc.core_properties.language = "en-US"
 
     doc.add_heading(DECK_TITLE, level=1)
     doc.add_paragraph(DECK_SUBTITLE)
@@ -706,7 +731,9 @@ def build_deck_docx_bytes(ctx: DeckContext) -> bytes:
         for block in slide.blocks:
             _docx_block(doc, block)
         if slide.notes:
-            doc.add_heading("Speaker notes", level=3)
+            # Numbered, so a heading list reads "Speaker notes, slide 4"
+            # rather than thirty identical entries.
+            doc.add_heading(f"Speaker notes, slide {index}", level=3)
             for note in slide.notes:
                 doc.add_paragraph(note)
 
@@ -717,27 +744,16 @@ def build_deck_docx_bytes(ctx: DeckContext) -> bytes:
 
 def _docx_block(doc, block: Content) -> None:
     from docx.oxml.ns import qn  # type: ignore
-    from docx.shared import Pt  # type: ignore
 
+    # Every paragraph is body text at the style's 18pt. Larger or bold body
+    # text is what GLOW's auditor reports as a faux heading, and on paper it
+    # is one: a reader cannot tell a big line from a section break.
     if isinstance(block, Para):
-        paragraph = doc.add_paragraph(block.text)
-        if block.big:
-            for run in paragraph.runs:
-                run.bold = True
-                run.font.size = Pt(24)
-        elif block.lead:
-            for run in paragraph.runs:
-                run.font.size = Pt(20)
-        elif block.small:
-            for run in paragraph.runs:
-                run.font.size = Pt(14)
+        doc.add_paragraph(block.text)
         return
 
     if isinstance(block, Url):
-        paragraph = doc.add_paragraph(block.text)
-        for run in paragraph.runs:
-            run.bold = True
-            run.font.size = Pt(28)
+        doc.add_paragraph(f"Address: {block.text}")
         return
 
     if isinstance(block, Bullets):
@@ -748,17 +764,13 @@ def _docx_block(doc, block: Content) -> None:
 
     if isinstance(block, Definitions):
         for term, meaning in block.items:
-            paragraph = doc.add_paragraph(style="List Bullet")
-            run = paragraph.add_run(f"{term}: ")
-            run.bold = True
-            paragraph.add_run(meaning)
+            doc.add_paragraph(f"{term}: {meaning}", style="List Bullet")
         return
 
     if isinstance(block, Panel):
         for line in block.lines:
-            paragraph = doc.add_paragraph(line, style="Intense Quote")
-            if not paragraph.runs:  # pragma: no cover - style always yields a run
-                paragraph.add_run(line)
+            # Not "Intense Quote": Word's version is italic, blue and centred.
+            doc.add_paragraph(line)
         return
 
     if isinstance(block, Table):
@@ -768,9 +780,6 @@ def _docx_block(doc, block: Content) -> None:
         header_cells = table.rows[0].cells
         for position, heading in enumerate(block.headers):
             header_cells[position].text = heading
-            for paragraph in header_cells[position].paragraphs:
-                for run in paragraph.runs:
-                    run.bold = True
         # Mark the header row so it repeats across pages and is announced as
         # a header row rather than data.
         tr_pr = table.rows[0]._tr.get_or_add_trPr()
@@ -823,6 +832,17 @@ def build_deck_pptx_bytes(ctx: DeckContext) -> bytes:
         layout = title_only if has_table else title_and_content
         slide = prs.slides.add_slide(layout)
 
+        # The default layouts are drawn for 4:3. Stretch the title and body
+        # placeholders across the 16:9 slide, or text wraps at two thirds of
+        # the width and the title sits off centre.
+        # Setting one coordinate on an inherited placeholder zeroes the rest,
+        # so all four are set.
+        for placeholder in slide.placeholders:
+            is_title = placeholder.placeholder_format.idx == 0
+            placeholder.left = Inches(0.6)
+            placeholder.width = Inches(12.1)
+            placeholder.top = Inches(0.4) if is_title else Inches(1.7)
+            placeholder.height = Inches(1.2) if is_title else Inches(5.4)
         slide.shapes.title.text = slide_data.title
         for paragraph in slide.shapes.title.text_frame.paragraphs:
             for run in paragraph.runs:
@@ -847,6 +867,8 @@ def build_deck_pptx_bytes(ctx: DeckContext) -> bytes:
 
 def _pptx_body_slide(slide, slide_data: Slide, Pt) -> None:
     """Fill the layout's body placeholder. Never a floating text box."""
+    from pptx.oxml.ns import qn  # type: ignore
+
     body = None
     for placeholder in slide.placeholders:
         if placeholder.placeholder_format.idx != 0:
@@ -859,31 +881,43 @@ def _pptx_body_slide(slide, slide_data: Slide, Pt) -> None:
     frame.word_wrap = True
     first = True
 
-    def _para(text: str, *, level: int = 0, size: int = 20, bold: bool = False):
+    def _para(text: str, *, level: int = 0, size: int = 20, bold: bool = False, marker: bool | None = None):
         nonlocal first
         paragraph = frame.paragraphs[0] if first else frame.add_paragraph()
         first = False
         paragraph.text = text
         paragraph.level = level
+        if marker is None:
+            marker = level > 0
+        if not marker:
+            # Without this the body layout puts a bullet on every line: a
+            # dash before "1." on a numbered item, and on a plain paragraph a
+            # list that a screen reader announces as one.
+            p_pr = paragraph._p.get_or_add_pPr()
+            if level == 0:
+                p_pr.set("marL", "0")
+                p_pr.set("indent", "0")
+            p_pr.insert(0, p_pr.makeelement(qn("a:buNone"), {}))
         for run in paragraph.runs:
             run.font.size = Pt(size)
             run.font.name = "Arial"
             run.font.bold = bold
         return paragraph
 
+    # 18pt is the floor for anything on a slide, kicker included.
     if slide_data.kicker:
-        _para(slide_data.kicker, size=16)
+        _para(slide_data.kicker, size=18)
 
     for block in slide_data.blocks:
         if isinstance(block, Para):
-            size = 28 if block.big else (24 if block.lead else (16 if block.small else 20))
+            size = 28 if block.big else (24 if block.lead else 20)
             _para(block.text, size=size, bold=block.big)
         elif isinstance(block, Url):
             _para(block.text, size=32, bold=True)
         elif isinstance(block, Bullets):
             for position, item in enumerate(block.items, start=1):
                 text = f"{position}. {item}" if block.ordered else item
-                _para(text, level=1)
+                _para(text, level=1, marker=not block.ordered)
         elif isinstance(block, Definitions):
             for term, meaning in block.items:
                 _para(f"{term}: {meaning}", level=1)
@@ -906,23 +940,25 @@ def _pptx_table_slide(slide, slide_data: Slide, Inches, Pt) -> None:
 
     top = Inches(1.6)
     if slide_data.kicker or intro or caption:
-        box = slide.shapes.add_textbox(Inches(0.6), top, Inches(12.1), Inches(0.9))
+        box = slide.shapes.add_textbox(Inches(0.6), top, Inches(12.1), Inches(0.45 * 3))
         frame = box.text_frame
         frame.word_wrap = True
         lines = ([slide_data.kicker] if slide_data.kicker else []) + intro + ([caption] if caption else [])
-        frame.text = " ".join(lines)
+        frame.text = lines[0]
+        for line in lines[1:]:
+            frame.add_paragraph().text = line
         for paragraph in frame.paragraphs:
             for run in paragraph.runs:
-                run.font.size = Pt(16)
+                run.font.size = Pt(18)
                 run.font.name = "Arial"
-        top = Inches(2.5)
+        top = Inches(1.6 + 0.45 * len(lines) + 0.3)
 
     if table_block is None:  # pragma: no cover - only table slides come here
         return
 
     rows = len(table_block.rows) + 1
     cols = len(table_block.headers)
-    height = Inches(min(4.6, 0.32 * rows + 0.3))
+    height = Inches(min(4.6, 0.45 * rows + 0.3))
     graphic_frame = slide.shapes.add_table(rows, cols, Inches(0.6), top, Inches(12.1), height)
     table = graphic_frame.table
     table.first_row = True  # header row, announced as one
@@ -932,7 +968,7 @@ def _pptx_table_slide(slide, slide_data: Slide, Inches, Pt) -> None:
         cell.text = heading
         for paragraph in cell.text_frame.paragraphs:
             for run in paragraph.runs:
-                run.font.size = Pt(14)
+                run.font.size = Pt(18)
                 run.font.bold = True
                 run.font.name = "Arial"
 
@@ -942,7 +978,7 @@ def _pptx_table_slide(slide, slide_data: Slide, Inches, Pt) -> None:
             cell.text = value
             for paragraph in cell.text_frame.paragraphs:
                 for run in paragraph.runs:
-                    run.font.size = Pt(14)
+                    run.font.size = Pt(18)
                     run.font.name = "Arial"
 
     _set_alt_text(graphic_frame, caption or f"Table: {slide_data.title}")

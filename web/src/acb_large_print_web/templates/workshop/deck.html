@@ -126,8 +126,8 @@
   }
 
   .kicker {
-    font-size: 1.05rem; letter-spacing: 0.14em; word-spacing: normal;
-    text-transform: uppercase; color: var(--accent); font-weight: 700;
+    font-size: 1.5rem; letter-spacing: 0.02em; word-spacing: normal;
+    color: var(--accent); font-weight: 700;
     margin: 0 0 0.5rem;
   }
   .slide h2 {
@@ -161,10 +161,10 @@
 
   table {
     border-collapse: collapse; width: 100%; max-width: 46rem;
-    font-size: 1.2rem; word-spacing: normal; margin-bottom: 1rem;
+    font-size: 1.5rem; word-spacing: normal; margin-bottom: 1rem;
   }
-  table.agenda { font-size: 1.05rem; }
-  table.agenda tr.rest { color: var(--muted); font-style: italic; }
+  table.agenda { font-size: 1.5rem; }
+  table.agenda tr.rest { color: var(--muted); }
   caption { text-align: left; font-weight: 700; padding-bottom: 0.5rem; }
   th, td { border: 2px solid var(--rule); padding: 0.5rem 0.7rem; text-align: left; vertical-align: top; }
   thead th { background: var(--panel); }
@@ -174,11 +174,10 @@
     max-width: 42rem;
     margin-top: 1.5rem; padding: 1rem 1.25rem;
     border: 3px dashed var(--rule); background: var(--panel);
-    font-size: 1.2rem; word-spacing: normal;
+    font-size: 1.5rem; word-spacing: normal;
   }
   .notes h3 {
-    font-size: 1.1rem; margin: 0 0 0.5rem;
-    text-transform: uppercase; letter-spacing: 0.1em;
+    font-size: 1.6rem; margin: 0 0 0.5rem;
   }
   .notes p:last-child, .notes ul:last-child { margin-bottom: 0; }
   body[data-notes="off"] .notes { display: none; }
@@ -191,7 +190,7 @@
 
   [hidden] { display: none !important; }
 
-  .slide-no { color: var(--muted); font-size: 1.05rem; word-spacing: normal; }
+  .slide-no { color: var(--muted); font-size: 1.5rem; word-spacing: normal; }
 
   @media (prefers-reduced-motion: no-preference) {
     html { scroll-behavior: smooth; }
@@ -199,14 +198,14 @@
 
   @media print {
     .bar, .skip, #announcer { display: none !important; }
-    body { font-size: 12pt; background: #fff; color: #000; }
+    body { font-size: 18pt; background: #fff; color: #000; }
     .slide { display: block !important; min-height: 0 !important;
              page-break-after: always; break-after: page;
              border-bottom: none; max-width: none; padding: 0 0 1rem; }
     .slide[hidden] { display: block !important; }
     .notes { display: block !important; border: 1pt solid #000; background: #fff; }
     .slide h2 { font-size: 22pt; }
-    .url { font-size: 20pt; }
+    .url { font-size: 22pt; }
     a { color: #000; }
   }
 </style>
