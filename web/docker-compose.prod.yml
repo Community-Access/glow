@@ -77,7 +77,8 @@ services:
       - ./keycloak/import:/opt/keycloak/data/import:ro
     restart: unless-stopped
     healthcheck:
-      test: ["CMD-SHELL", "curl -fsS http://localhost:8080/auth/health/ready >/dev/null"]
+      # The Keycloak image ships without curl, so probe over bash's /dev/tcp.
+      test: ["CMD", "bash", "-c", "exec 3<>/dev/tcp/127.0.0.1/8080 && printf 'GET /auth/health/ready HTTP/1.1\\r\\nHost: localhost\\r\\nConnection: close\\r\\n\\r\\n' >&3 && head -1 <&3 | grep -q ' 200'"]
       interval: 20s
       timeout: 5s
       retries: 20
