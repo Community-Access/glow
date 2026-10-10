@@ -200,3 +200,14 @@ def test_no_text_file_in_the_workshop_carries_control_characters():
         if re.search(r"[\x00-\x08\x0b\x0c\x0e-\x1f]", text):
             bad.append(str(path.relative_to(REPO)))
     assert not bad, bad
+
+
+def test_the_share_page_can_be_rehearsed_against_a_test_fork(client):
+    body = client.get("/workshop/ahg-2026/share").get_data(as_text=True)
+    assert 'params.get("repo")' in body
+    assert "Community-Access/accessibility-agents/new/main" in body, "the real target stays the default"
+
+
+def test_the_coordinator_can_run_the_whole_room_s_agents():
+    text = (KIT / ".github" / "agents" / "office-coordinator.agent.md").read_text(encoding="utf-8")
+    assert "room/<name>/SKILL.md" in text

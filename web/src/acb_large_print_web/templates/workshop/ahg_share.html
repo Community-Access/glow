@@ -71,7 +71,14 @@ started from an example.</p>
 <script nonce="{{ csp_nonce }}">
 (function () {
   "use strict";
-  var REPO = "https://github.com/Community-Access/accessibility-agents/new/main";
+  // For rehearsals only: ?repo=owner/name&branch=main sends the agent to a
+  // test fork instead of the real project. Anything else is ignored.
+  var params = new URLSearchParams(window.location.search);
+  var testRepo = /^[A-Za-z0-9-]+\/[A-Za-z0-9._-]+$/.test(params.get("repo") || "") ? params.get("repo") : "";
+  var testBranch = /^[A-Za-z0-9._\/-]+$/.test(params.get("branch") || "") ? params.get("branch") : "main";
+  var REPO = testRepo
+    ? "https://github.com/" + testRepo + "/new/" + testBranch
+    : "https://github.com/Community-Access/accessibility-agents/new/main";
   var FOLDER = "community/ahg-2026/";
   var MAX_URL = 7500;
 

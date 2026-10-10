@@ -411,6 +411,9 @@ def _check_links(lines: list[str], result: AuditResult) -> None:
         # Bare URLs (not inside markdown link syntax)
         cleaned = _MD_LINK_RE.sub("", line)
         cleaned = _MD_IMAGE_RE.sub("", cleaned)
+        # An address in inline code is shown as an address on purpose, for
+        # someone to type or paste; it is not link text.
+        cleaned = _INLINE_CODE_RE.sub(" ", cleaned)
         for m in _BARE_URL_RE.finditer(cleaned):
             result.add(
                 "MD-BARE-URL",

@@ -64,7 +64,9 @@ Working time is 300 minutes, plus the hour for lunch.
   each name and agent title aloud.
 - In block 6, everyone runs their own team first. The projector run with
   every merged agent comes at the end of the block, as a bonus, never as a
-  substitute.
+  substitute. For it, copy each merged `community/ahg-2026/<name>/` folder
+  into a `room/` folder in your kit; the coordinator adds every agent there
+  to the team.
 
 ## 4. Delivery, from the AHG speaker orientation
 

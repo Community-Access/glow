@@ -2954,7 +2954,7 @@ def ahg_home():
 
 
 @workshop_bp.route("/ahg-2026/kit.zip", methods=["GET"])
-@limiter.limit("30 per minute")
+@limiter.limit("300 per minute")  # a whole room shares one conference IP
 def ahg_kit_zip():
     if not _workshop_enabled():
         abort(404)

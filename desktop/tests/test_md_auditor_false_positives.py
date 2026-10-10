@@ -65,3 +65,13 @@ def test_a_described_table_may_have_a_blank_line_before_it(tmp_path: Path) -> No
 def test_a_table_straight_after_a_heading_is_still_undescribed(tmp_path: Path) -> None:
     rules = _rules(tmp_path, "# Data\n\n| A | B |\n|---|---|\n| 1 | 2 |\n")
     assert "MD-TABLE-NO-DESCRIPTION" in rules
+
+
+def test_an_address_in_inline_code_is_not_a_bare_url(tmp_path: Path) -> None:
+    rules = _rules(tmp_path, "# Setup\n\nOpen `https://example.com/setup` in your browser.\n")
+    assert "MD-BARE-URL" not in rules
+
+
+def test_a_bare_url_in_prose_is_still_caught(tmp_path: Path) -> None:
+    rules = _rules(tmp_path, "# Setup\n\nOpen https://example.com/setup in your browser.\n")
+    assert "MD-BARE-URL" in rules
