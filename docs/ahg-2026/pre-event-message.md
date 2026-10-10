@@ -1,68 +1,74 @@
 # Pre-event message
 
-Send this to registered participants roughly a week before, and again two days
-before. It is load-bearing: once we stopped printing handouts (`plan.md`, L4
-and L8), the joining instructions became the thing that decides whether
-somebody with no device, or a blocked network, can take part.
+Send this to registered participants by 20 October, again on 6 November, and
+again two days before. It is the setup checklist for the day, so it has to be
+short, numbered and impossible to misread.
 
-Keep it short. People skim conference mail. Everything essential is in the
-first six lines, and the rest is there for the person who reads on.
+Keep the first screen to what to do. Everything else comes after.
 
 ---
 
 ## Subject
 
-Accessibility Agents in Action - what to bring on the day
+Accessibility Agents workshop, 16 November: four setup steps, about 20 minutes
 
 ## Body
 
 Hello,
 
-You are booked into Accessibility Agents in Action, an all-day hands-on
-workshop at Accessing Higher Ground, 8:30 AM to 4:30 PM Mountain Time. Here
-is everything you need.
+You are booked into Accessibility Agents: Building Human-Centered AI
+Workflows, the full-day workshop at Accessing Higher Ground on Monday 16
+November, 10:30 AM to 4:30 PM Mountain Time, in Matchless.
 
-### Bring a device
+By the end of the day you will have designed your own accessibility agent,
+added it to a team of agents that works through a whole course, and
+contributed it to an open-source project with your name on it. You do not
+need to be a developer. You do not need to have used VS Code or GitHub
+before. Every step on the day comes with a step card and a helper.
 
-A laptop, a tablet or a phone - any of them works. Everything runs in a
-browser. There is nothing to install, no account to create, and no sign-in,
-so a work laptop without admin rights is fine.
+### Before the day: four steps, about 20 minutes
 
-### You do not need an AI account
+1. Make a free GitHub account at github.com, then turn on Copilot Free
+   (Settings, then Copilot). Use your work email if your institution allows
+   it.
+2. Install VS Code from code.visualstudio.com. On Windows it installs
+   without administrator rights.
+3. Open the AHG 2026 profile link: PROFILE-LINK. VS Code asks whether to
+   import it. Say yes. That installs everything else.
+4. Open the ready check: READY-CHECK-LINK. It takes two minutes and tells you
+   whether you are set.
 
-The whole day works without one. If you already use ChatGPT or something like
-it, you can use it to go a step deeper on some activities, but nothing
-requires it and nothing is missing if you never open it. One rule if you do:
-paste text rather than uploading files, and never paste anything private -
-student records, health or disability information, or anyone's name.
+If a step does not work, write to support@community-access.org before the
+day, or come to the setup table outside the room from 10:00 on the day.
+Locked-down work laptop? Write to us; we will sort it out together, and
+nobody is left out on the day.
 
-### Download the worksheet pack before you travel
+### Bring
 
-- Word: `letitglow.app/workshop/worksheets.docx`
-- Web page: `letitglow.app/workshop/worksheets.html`
+- A Windows or Mac laptop and its charger.
+- Headphones, if you use a screen reader.
+- One real accessibility problem from your job. Nothing private: no student
+  names, records or accommodation details. You will work on a sample course,
+  and your problem is what makes your agent yours.
 
-The pack has every activity with space to write. If you would rather work on
-paper, print it yourself before you come; we are not printing copies at the
-event. Downloading it also means you still have the whole day's material if
-the conference network has a bad morning.
+### What the day looks like
 
-### On the day
-
-Join at the address on the card on your table. We will say it out loud and it
-will be on the screen.
-
-### What you will leave with
-
-One workflow you can use at work, written by you, with a review step in your
-own words, and a one-page artifact you could show a director on Monday.
+- Morning: design your agent in plain English, and see it work on a course
+  document with GitHub Copilot.
+- After lunch: ground it in real evidence from GLOW, axe and Accessibility
+  Insights, so it cites WCAG 2.2 instead of guessing.
+- Afternoon: share it on GitHub with a pull request, then add it to an agent
+  team in VS Code and watch the team work through the whole course.
+- The last five minutes are the session evaluation. It shapes next year's
+  conference.
 
 ### If you need anything
 
-Reply to this message, or write to `support@community-access.org`. Large print
-materials, a particular seat, a pause, a repeat - ask for any of it, before or
-during. That is not an interruption of this workshop; it is the point of it.
+Large print, a particular seat, a pause, a repeat: ask for any of it, before
+or during. That is not an interruption of this workshop; it is the point of
+it.
 
-See you there,
+See you in Denver,
 
 Jeff Bishop
 BITS, an affiliate of the American Council of the Blind
@@ -71,16 +77,10 @@ BITS, an affiliate of the American Council of the Blind
 
 ## Notes for whoever sends this
 
-- **Replace the join address** on the day-of version once the session code is
-  set, or leave it as "the card on your table" as written here. Do not send a
-  code that might change.
-- **Send twice.** A week out, for the people who plan; two days out, for
-  everyone else. The second send can be three lines: bring a device, download
-  the pack, here is the support address.
-- **If the conference offers a print desk**, use it for the worksheet pack.
-  That is the venue printing, not us, and it closes the one gap this decision
-  opens.
-- **Check the two worksheet links** in a private window before each send. They
-  need no account, and that is exactly the kind of thing that quietly breaks.
-- Do not mention AI vendors by name beyond the one example. Do not mention
-  anything a participant would have to install.
+- Replace PROFILE-LINK and READY-CHECK-LINK before the first send, and test
+  both in a private window on Windows and on a Mac.
+- Second send (6 November): the same four steps, plus "if you have done
+  these, open the ready check once more."
+- Last send (two days before): three lines. Bring your laptop and charger;
+  open the ready check; the setup table opens at 10:00.
+- Keep the privacy line. Nothing private goes into any AI, ever.

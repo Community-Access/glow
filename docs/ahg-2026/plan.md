@@ -1,572 +1,382 @@
-# Simplification plan: Accessibility Agents in Action
+# AHG 2026 workshop plan: Accessibility Agents for higher education
 
-**Status:** decided and being built. All decisions closed 21 September 2026.
-**Written:** 21 September 2026. Revised the same day after a scoping pass.
-**Decides:** what the day depends on, what participants are never asked to
-know, what gets deleted, and how follow-through works when we are not the ones
-doing it.
+Status: draft for review, 9 October 2026. Nothing in the app, the deck or the
+Accessibility Agents repository changes until this plan is approved.
 
----
+This plan replaces the September plan, kept as `plan-2026-09-glow-only.md`.
+That plan was built around a different promise: no AI, no development tools,
+a phone is enough. The program AHG published says otherwise. The rule now:
+keep every promise the program makes, in the simplest way that keeps it.
 
-## 1. The goal, stated as a test
+## 1. What the program promises
 
-Reduce what the day depends on without reducing what it delivers.
+From the session page on accessinghigherground.org (session 42876), which is
+what participants read when they registered:
 
-A change is good if it removes a dependency, a configuration item, a rehearsal
-or a failure mode **and** leaves all five of these true:
+- Title: Accessibility Agents: Building Human-Centered AI Workflows for
+  Trusted Accessibility Automation at Scale.
+- Monday 16 November 2026, 10:30 AM, room Matchless, Hilton Denver City
+  Center. One day. The page also says "2-day"; that is the conference's error
+  and we will ask them to correct it.
+- Bring a Windows or Mac laptop, and headphones if you use a screen reader.
+  Beginner level.
+- The problem: higher education accessibility teams facing WCAG 2.2 and the
+  new Title II requirements, who need to scale while keeping quality,
+  accountability and transparency.
+- Agents analyze content, identify barriers and generate remediation guidance
+  grounded in authoritative standards. They extend professionals; they do
+  not replace them.
+- Participants "learn to build agent teams using Visual Studio Code, GitHub
+  and Copilot", and "explore how accessibility agents can be created using
+  modern development tools such as Visual Studio Code and GitHub Copilot while
+  collaborating through open-source workflows on GitHub".
+- axe-core and Accessibility Insights keep the analysis grounded in trusted
+  standards.
+- Agent teams: coordinated specialists that analyze, gather evidence and cite
+  authoritative resources.
+- Capstone: each participant designs an accessibility agent and commits it to
+  the open-source Accessibility Agents repository.
+- Key points: cognitive and learning accessibility, student success,
+  alternate formats.
 
-1. A participant with **one device and a browser** - a phone counts - completes
-   the entire day and leaves with an artifact they would show a director.
-2. No exercise requires an AI assistant, an account with any AI vendor, or any
-   software installation.
-3. No exercise requires a participant to know what MCP, a CLI, an IDE or a
-   plugin is.
-4. Every exercise ends in a human-review gate the participant wrote themselves.
-5. Nobody is asked to be a developer.
+## 2. Who is in the room
 
-The proposal's promise is the source of these: *"Participants do not need to be
-AI scientists, AI developers, or programmers. They are met where they are."*
+Disability resource staff, IT accessibility staff, instructional designers,
+faculty developers, communications and web staff, and some managers. Most are
+not developers. Some use screen readers or magnification.
 
-**Invariant 1 has changed, and the change is deliberate.** It previously read
-"no laptop", carried by printed worksheet packs. We are not printing. See
-section 3.
+Four rules follow from that.
 
----
+1. Meet people where they are. An agent is a set of plain-English
+   instructions. Writing one is writing, not coding. No installs, no
+   terminal, no code.
+2. Show the destination first. People see the finished outcome before they
+   start every step, and always know where they are on the journey.
+3. Never start from a blank page. Every step starts from a worked example and
+   has a catch-up file.
+4. Real higher education work. The material is a course full of documents,
+   because that is where most campus accessibility work is.
 
-## 2. Decisions now locked
+## 3. What a participant needs
 
-Recorded here so the plan is not re-litigated:
+Keeping every promise means every participant builds with VS Code, GitHub and
+Copilot. We make that as small as it can be.
+
+1. A laptop with a browser, and headphones if they use a screen reader.
+2. A free GitHub account, with Copilot Free turned on. Copilot is their AI
+   for the whole day, in the browser and in VS Code.
+3. VS Code, plus the AHG 2026 profile, which installs everything else in one
+   step: Copilot Chat, GitHub Pull Requests, GitHub Repositories (so nobody
+   needs Git), and the axe Accessibility Linter, with large text and screen
+   reader settings already on.
+
+That is all. No terminal, no command line, no Git install, no code. Anyone
+who prefers another AI assistant for the morning, such as their campus
+Copilot or free ChatGPT, may use it; the afternoon is in VS Code with GitHub
+Copilot for everyone.
+
+Anyone who cannot install VS Code pairs with a neighbor for the afternoon
+and still submits their own agent from the browser.
+
+## 4. Decisions
+
+These replace L1 to L14 in the September plan.
 
 | # | Decision |
 |---|---|
-| L1 | **No house AI.** GLOW provides no free AI capability to the workshop. Participants who want AI use free ChatGPT, entirely at their option |
-| L2 | **GLOW is the integral tool**, and it needs no account and no AI to do real work |
-| L3 | **Third-party tools are optional**, never assumed, never required to complete anything |
-| L4 | **No printed handouts from us.** Electronic copies only |
-| L5 | **MCP, CLIs, IDEs and plugins are invisible to participants.** Not on a slide, not in the agenda, not in the artifact |
-| L6 | **No vendor-specific tooling in the room** - not Gemini, Copilot, VS Code, or any other |
-| L7 | **Follow-through is self-directed, and support is guaranteed on request.** We do not chase anyone, but anyone who writes to `support@community-access.org` gets help. Decided 21 September 2026 |
-| L9 | **Designed for both a conference and a class** (was D2). The day is identical either way; see section 6 for why self-directed follow-through makes the distinction stop mattering |
-| L10 | **Keep the 30-day nudge**, reworded as a reminder rather than an offer of support (was D3) |
-| L11 | **Do the prompt-card derivation** from the twelve usable agent definitions (was D4). Not optional |
-| L13 | **Room signage stays** (was D1a). A dozen sheets for the tables is room furniture, not a per-attendee handout, and it protects the join address - the one thing that must not fail at 8:35 |
-| L14 | **Postmark is recommended, not required.** Decided 21 September 2026. The app degrades correctly without it. Two consequences, both accepted: losing your work becomes recoverable only by downloading before you leave, and L10's 30-day nudge cannot run |
-| L12 | **Text only into ChatGPT. Never an upload.** Free-tier file and image uploads are capped at roughly two or three per day, unpublished and variable; text is unlimited. Every optional AI step in the day is copy-and-paste text (was D5) |
-| L8 | **A participant needs a device.** Decided 21 September 2026 (was D1). A phone counts. "No laptop, no device" is no longer a supported case, and the pre-event message must say so |
+| D1 | One day, Monday 16 November, 10:30 AM to 4:30 PM Mountain Time. Lunch 12:15 to 1:15, to confirm with AHG |
+| D2 | A Windows or Mac laptop, as the program says, with headphones for screen reader users |
+| D3 | Every participant uses GitHub Copilot through their own free GitHub account. Other assistants are welcome in the morning. GLOW provides no AI and holds no AI key |
+| D4 | Text only into an assistant, never an upload. Free tiers cap uploads and do not cap text, and a document's text report keeps the document itself out of the AI |
+| D5 | No student records, accommodation details, health information or names go into any AI tool. All work uses the sample course |
+| D6 | Grounding comes from checkers, not from the AI: GLOW for documents, Accessibility Insights FastPass and axe-core for the web page. Agents must cite WCAG and the sources the Accessibility Agents citation policy names |
+| D7 | Every agent has a human review step the participant writes. Nothing an agent produces goes anywhere without a named person approving it |
+| D8 | Every participant builds the agent team in VS Code with Copilot: they add their own specialist to the ready-made office and run the team across the sample course |
+| D9 | Every participant commits their own agent to the Accessibility Agents repository from their own GitHub account, by pull request, using buttons only |
+| D10 | The facilitator reviews and merges the room's pull requests live, so everyone sees the open-source workflow, then runs the merged team on the projector |
+| D15 | Setup is one VS Code profile, the AHG 2026 profile, plus the agent kit. The kit's own settings recommend the same extensions, as a safety net if the profile does not import |
+| D11 | Documents are the center of the day. The sample course is three documents and one web page |
+| D12 | Nothing taught depends on GLOW. Every step names the general skill and shows it working with tools people already have, so the day still pays off if GLOW is never opened again |
+| D13 | Support on request at support@community-access.org, before and after the day |
+| D14 | The last five minutes are the AHG session evaluation |
 
----
+## 5. Every promise, and where it is kept
 
-## 3. The consequence of not printing, stated plainly
+If a block is cut, this table shows which promise breaks.
 
-The proposal currently promises an offline paper path, and the runbook and
-utilization guide both say to print worksheet packs and keep them as the
-fallback. Dropping printing removes that fallback, and three things follow:
-
-1. **Every participant needs a device.** A phone is enough - GLOW's pages are
-   responsive and the workshop forms work on a small screen - but "no laptop,
-   no device" is no longer a supported case.
-2. **A dead network becomes a real failure**, not an inconvenience. Previously
-   paper carried the day. Now the mitigation is that participants download the
-   electronic pack *before* they arrive, and that the pack is usable offline
-   once downloaded.
-3. **The pre-event message becomes load-bearing.** It must say: bring a device,
-   download the pack in advance, print it yourself if you prefer paper.
-
-**Recommendation.** Publish the pack in advance and say so twice - in the
-conference description and in any pre-event mail. Keep the Word and HTML packs
-(they already exist and cost nothing to serve). If AHG offers a handout service
-or a print desk, use it; that is the venue printing, not us.
-
-**This is the one place where simplification genuinely costs something**, and
-it was taken as an explicit decision rather than a side effect: **yes, decided
-21 September 2026.** What it now forces is in section 8, item 9 - the
-propagation list. Nine documents and the deck currently promise a paper path
-that will not exist.
-
-One thing it does **not** change: ACB large print typography, the take-home
-artifact being printable *by the participant*, and the facilitator printing
-their own pocket card and deck handout. Those are not attendee handouts from
-us.
-
----
-
-## 4. What participants see, and what they never see
-
-### They see
-
-- **GLOW**, in a browser, with no account and no sign-in.
-- **A workflow they design**, in plain language, with a review step in their
-  own words.
-- **A prompt they can paste** into free ChatGPT if they want to - and a day
-  that is complete if they never do.
-- **Real accessibility findings** on real documents, produced by GLOW's audit,
-  which is deterministic and involves no AI at all.
-
-### They never see
-
-- The letters M, C and P in that order.
-- A command line, an IDE, an extension, a plugin, a config file, or `npm`.
-- A vendor name attached to a requirement.
-- A request for an API key, an account, or a card.
-
-This is not condescension. It is scope. A disability services coordinator
-adopting a repeatable workflow does not need the plumbing, and every piece of
-plumbing on a slide is a piece of the audience deciding this is not for them.
-
-**One exception, and it is a door rather than a corridor.** A single optional
-appendix in the take-home artifact, for the minority who are technical: *"If
-you work with developers, there is a deeper integration - here is where to
-read about it."* One link. Never a slide, never in the agenda, never a
-prerequisite.
-
----
-
-## 5. The design
-
-### 5.1 GLOW is the common denominator
-
-The reason GLOW can carry the day is that its core is **deterministic, not
-AI**. Verified in the source rather than assumed:
-
-| Tool | AI involved? | Evidence |
-|---|---|---|
-| **Audit** | No | The only AI in the audit blueprint is a separate endpoint, `/audit/suggest-alt-text`, gated behind `ai_alt_text_enabled()`. Running an audit never touches it |
-| **Fix** | Only if ticked | `use_ai = form.get("use_ai") == "on" and ai_heading_fix_enabled()` (`routes/fix.py:349`). Unticked, or unconfigured, and no model runs |
-| **Convert** | No | No AI in the route. MarkItDown LLM enhancement is a separately gated flag |
-| **Report, reading order** | No | Deterministic throughout |
-
-So AI in GLOW is **strictly additive and opt-in**, not woven through. Same
-document in, same findings out, no key, no account, no cost. That is a rare
-thing to be able to put in front of a room whose access you cannot predict, and
-it is the single fact this whole plan rests on.
-
-GLOW is therefore not "the platform the workshop happens to run on". It is the
-tool the workshop teaches, and the exercises produce real output from real
-documents the participants bring.
-
-### 5.2 Two paths, not four tiers
-
-1. **GLOW in a browser.** Everything. The whole day. No account, no AI.
-2. **Plus free ChatGPT, if you want it.** Paste the prompt the day builds for
-   you. An upgrade that deepens the same exercise; never a different exercise,
-   never a required one.
-
-Simple enough to say in ten seconds and true enough to hold all day.
-
-### 5.3 The specimen bank carries the AI lesson
-
-With no house AI and third-party AI optional, the "judge the machine" lesson
-cannot depend on anybody generating anything. So we show what a machine
-produced instead.
-
-Each scenario gains two or three captured AI outputs: one good, one fluent and
-confidently wrong, one that hedges and says nothing useful. Participants judge
-them.
-
-This is better teaching than live generation, not a consolation prize:
-
-- The wrong answer is wrong **on purpose**, chosen to make the point, rather
-  than whatever a model happened to emit at 1:40 PM in front of forty people.
-- Everyone argues over the **same** artifact, so the discussion converges.
-- It cannot fail, cost money, hit a limit, or embarrass anyone on a projector.
-- Someone using free ChatGPT does the same exercise one level deeper: generate
-  your own, then compare it to ours. Same worksheet, same review gate.
-
-### 5.4 What an "agent" is in this room
-
-Not a plugin. Not an install. **A prompt, a workflow, and a named human-review
-gate** - a repeatable way of working that the participant can hand to a
-colleague. It is useful three ways, and each one needs less than the last:
-
-| Form | What it needs |
+| Promise | Where it is kept |
 |---|---|
-| A workflow card: who does what, where the review happens | Nothing |
-| A GLOW recipe: exact steps and addresses, no login | A browser |
-| A pasteable prompt | Free ChatGPT, if they want it |
+| Higher education, WCAG 2.2, Title II, scale | Block 1 opens with it; the sample course is a course backlog in miniature |
+| Agents analyze content, find barriers, generate remediation guidance | Blocks 2 and 3 |
+| Grounded in authoritative standards; axe-core and Accessibility Insights | Block 4: evidence from GLOW, Accessibility Insights and axe-core, with citations required |
+| Human-centered, extending experts | The review step in every agent, and the named reviewer in the team report |
+| VS Code, GitHub and Copilot | Every participant: Copilot all day, VS Code in block 6, GitHub in block 5 |
+| Learn to build agent teams | Block 6: each participant adds their specialist to the office team and runs the team themselves |
+| Agent teams of coordinated specialists | Block 6: the coordinator routes the course to specialists, including the participant's own |
+| At scale | Block 6: one team run across the whole course, one prioritized report |
+| Quality, accountability, transparency | The team report: every finding has evidence, a citation and a named reviewer |
+| Open-source collaboration; capstone commit | Block 5: each participant opens their own pull request; the facilitator merges them live |
+| Cognitive and learning accessibility, alternate formats, student success | The alternate format role card, and the plain language specialist in the team |
+| Beginner, bring a laptop | The setup message, the step cards, the helpers |
 
-### 5.4a How much of Accessibility Agents this audience can actually use
+No promise depends on a demonstration alone. The live team run on the
+projector is a bonus at the end, with everyone's merged agents in it, not a
+substitute for anyone's own hands-on work.
 
-An earlier draft of this plan implied more than exists. Corrected, with the
-repository checked rather than assumed.
+## 6. The journey
 
-**The integration runs one way only.** `s:\code\agents` has
-`mcp-server/tools/glow-tools.js`, which calls GLOW. **GLOW consumes nothing
-from the agents project** - a search of `web/src`, `mcp_server` and `docs`
-returns zero references. There is no "GLOW learns from the agents" today, and
-building one is not a November-sized piece of work.
+One map, on the first slide and the first page of every handout, shown again
+at the start of each block with "you are here".
 
-**Most of the catalogue is for a different audience.** Of 80 agents, about
-twelve are usable with a documents-and-communications room:
+1. The problem: a course full of barriers, and a team too small.
+2. Your agent: five plain-English answers.
+3. Your agent at work: your AI uses it on one course document.
+4. Your agent, grounded: real evidence in, cited answers out.
+5. Your agent, shared: committed to an open-source project with your name.
+6. Your agent in the team: the whole course, at once.
+7. Your campus: a 30-day plan.
 
-`document-accessibility-wizard`, `word-accessibility`,
-`powerpoint-accessibility`, `excel-accessibility`, `pdf-accessibility`,
-`office-remediator`, `epub-accessibility`, `markdown-a11y-assistant`,
-`wcag-guide`, `accessibility-statement`, `media-accessibility`,
-`cognitive-accessibility`.
+## 7. The sample course
 
-The remaining ~68 are for developers and repositories: `aria-specialist`,
-`web-component-specialist`, `python-specialist`, `wxpython-specialist`,
-`nvda-addon-specialist`, `playwright-scanner`, `lighthouse-bridge`, twenty
-GitHub workflow managers, and so on. Correct, valuable, and wrong for this
-room.
+Built: `sample-course/`, generated by `scripts/build_ahg_sample_course.py`,
+with every planted barrier listed in `sample-course/answer-key.md`.
 
-**Three of the ones we would most want are scoped to web code**, and would need
-rewriting before a documents audience could use them:
+One course everyone works on: "PSY 101: Introduction to Psychology", Fall
+2026, Dr. Dana Whitfield, Mesa Ridge State University. All fictional, all
+original writing. The running joke is a course about memory and
+procrastination that keeps forgetting things and running late.
 
-- `alt-text-headings` - "for web applications". Lab 2 is the alt-text lab, so
-  this is the single most wanted agent in the catalogue and it is aimed
-  elsewhere.
-- `text-quality-reviewer` - also "for web applications".
-- `screen-reader-lab` - parses HTML and JSX.
+| Item | Format | A few of its planted barriers | GLOW score |
+|---|---|---|---|
+| Syllabus | Word | Bold text instead of headings, a layout table, "click here" links, required readings shown only in red, the accommodations statement last in 8pt gray and contradicted in capitals | 0 |
+| Week 3 lecture | PowerPoint | Untitled slides, reading order 3-2-1, "image.png" as alt text, a chart that is only a picture, myth or fact answered by red and green | 58 |
+| Gradebook | Excel | Merged headers, status shown only by fill color, sheets named "Sheet" and "Sheet2" | 54 |
+| Required reading | Scanned PDF | Pictures of text with no text layer: the alternate format case | 50 |
+| Lab handout | PDF with a form | Untagged, unlabeled form fields, and an exercise that depends on seeing color | 50 |
+| Course announcement | Web page | Low contrast, vague links, a clickable div for a button, an image with no alt | axe: 6 rules fail |
+| Lecture captions | WebVTT | "herman ebb in house" for Hermann Ebbinghaus, no speaker labels, an undescribed graph | none |
 
-Two more read well but are not what their names suggest here:
-`email-accessibility` audits HTML email *templates* under client rendering
-constraints, not "write a clearer email"; `pdf-remediator` generates scripts.
-`document-inventory` is explicitly an internal helper invoked by other agents.
+Documents are five of the seven items, on purpose.
 
-### 5.4b What this means for the title
+Every file has at least one barrier no checker finds, so the day shows why
+grounding needs judgment and a human reviewer on top.
 
-"Accessibility Agents in Action" has to cash, and on the facts above it does
-not cash by itself: participants install nothing, and GLOW does not use the
-agents. Two things make it honest, and both are cheap:
+## 8. Three role cards
 
-**Say what an agent is, out loud, in the first ten minutes.** The definition
-above - role, task, trusted guidance, output format, human review - is the
-curriculum already. The Accessibility Agents project is then the worked example
-of the same idea built at industrial scale, shown once, not a dependency.
+Each participant picks one. Each card has a finished example agent, a sample
+input from the course, and the output it produces.
 
-**Derive the prompt cards from those twelve agent definitions, by hand.** This
-is the only thing that makes "learning from those components" true rather than
-aspirational. It is authoring work, not integration: take the WCAG guidance
-inside `word-accessibility.md`, `powerpoint-accessibility.md`,
-`document-accessibility-wizard.md` and the rest, and turn it into
-participant-facing cards that work in a browser or in free ChatGPT. Roughly two
-days. It also gives those twelve a second life outside a developer tool, which
-is worth something to the agents project independently of this workshop.
+| Card | The problem | The agent they write | What they see it produce |
+|---|---|---|---|
+| Documents and alternate formats | A student's accommodation needs the scanned reading in large print and plain language; the backlog is Word and PowerPoint | Alternate format planner, or document triage | A plan for the reading with a review checklist, or a prioritized fix list for the lecture |
+| Course content and faculty coaching | Faculty make the content, and fixing it all yourself does not scale | Faculty coach | A short, kind note to the syllabus owner that teaches the one habit behind the barriers |
+| Compliance and procurement | Title II needs evidence, and vendors say their products are accessible | Remediation log keeper, or vendor report reader | A dated, prioritized log for the course, or questions to send a vendor |
 
-If we do not do the derivation, we should stop claiming the day draws on the
-agents project and let the title stand on the concept alone. Either is
-defensible. Claiming it without doing it is not.
+## 9. The worked examples
 
-### 5.5 Exercise by exercise
+Built: `worked-examples/`, one per role card, each with all seven artifacts:
+Maria Alvarez (alternate formats), Jordan Lee (faculty coaching) and Sam
+Okafor (compliance). Each shows a weak answer before grounding and a good one
+after, using GLOW's real findings on the sample course.
 
-| # | Activity | Change | Needs AI? | Needs an account? |
-|---|---|---|---|---|
-| 1 | Journey Check-In | Unchanged | No | No |
-| 2 | What Problem Are We Solving? | Unchanged | No | No |
-| 3 | Fix It for Me vs Teach Me | Unchanged | No | No |
-| 4 | Helpful, Risky, Human Required | Sort **real captured outputs** into the three piles, then your own tasks | No | No |
-| 5 | Agent Formula | Build the five-part workflow; adapt a ready-made prompt card rather than starting blank | No | No |
-| 6 | Lab 1: Communications | Rewrite a real message, then **run GLOW's audit on it** and read real findings | No | No |
-| 7 | Lab 2: Alt Text | **Context in text, not an upload** (section 5.6): judge the specimen, then write your own. Optional ChatGPT step is text-only critique | No | No |
-| 8 | Lab 3: Remediation | Plan from **real GLOW audit findings**, ordered by who is blocked | No | No |
-| 9 | Champion Studio | Design the workflow; the output is a card, a GLOW recipe and a prompt | No | No |
-| 10 | Capstone Share-Out | Unchanged | No | No |
-| 11 | Engagement Plan (was 30-Day Action Plan) | Rewritten - see section 6 | No | No |
+Maria, from disability resources, works one step ahead of the room all day.
+Her finished work is shown before anyone starts theirs.
 
-Every row is No twice. That is the test from section 1, met line by line.
+1. Her problem: a student needs the scanned reading in large print.
+2. Her five answers.
+3. Her agent, and her AI's first answer.
+4. Her agent's answer before grounding and after, side by side.
+5. Her agent in the repository.
+6. Her agent's section of the team report.
+7. Her 30-day plan.
 
-### 5.6 Lab 2 without an image upload
+Each role card has the same seven artifacts.
 
-The free-tier check (D5) rules out asking anyone to upload an image. It also
-rules out uploading a *document*, since the same three-file cap applies. So the
-rule for the whole day is simple and worth saying to the room once: **paste
-text, never upload.**
+## 10. The day
 
-That sounds like a constraint on Lab 2. It is actually a better lab.
+10:30 AM to 4:30 PM, 300 working minutes, lunch 12:15 to 1:15 (to confirm).
 
-**Alt text is a judgment about purpose, and purpose lives in the context, not
-in the pixels.** An image on a page does not tell you why it is there; the
-surrounding text, the document's job and the reader's task do. A lab built on
-"upload the picture and see what the machine says" quietly teaches the opposite
-lesson - that description is a vision problem.
+| Time | Minutes | Block | What the participant has at the end |
+|---|---|---|---|
+| 10:30 | 20 | 1. Why we are here, and the finished result shown first | The journey, and the team report they are working toward |
+| 10:50 | 60 | 2. Design your agent | Five answers, and the agent file built from them |
+| 11:50 | 25 | 3. Your agent at work | Copilot's answer, using their agent, on one course document |
+| 12:15 | 60 | Lunch | |
+| 1:15 | 55 | 4. Ground it | A before and after: the same agent, with evidence and citations |
+| 2:10 | 10 | Break | |
+| 2:20 | 40 | 5. Share it | Their own pull request in the Accessibility Agents repository |
+| 3:00 | 45 | 6. Build the office, at scale | In VS Code: their specialist added to the team, the team run across the course, then everyone's merged agents run once on the projector |
+| 3:45 | 30 | 7. Take it home | A 30-day plan and a one-page artifact |
+| 4:15 | 10 | Commitments | The commitment wall, anonymous |
+| 4:25 | 5 | Session evaluation | |
 
-So Lab 2 gives every participant, on screen and in the pack:
+## 11. Tone
 
-1. **The context, in text.** Where the image sits, what the paragraph around it
-   says, what the document is for, who reads it. GLOW extracts this
-   deterministically today - `visual_items.py` is pure parsing with zero AI in
-   it - so the platform can produce it from a real document the participant
-   brings.
-2. **The specimens.** Two or three captured descriptions: one good, one fluent
-   and confidently wrong, one that hedges.
-3. **The four questions**, applied to the specimens and then to their own.
+Warm, a little funny, and professional. The humor is aimed at situations
+everyone in higher education recognizes: the broken coffee machine, the
+spreadsheet named FINAL_final_v3, the syllabus that says late work is fine
+because the procrastination unit needs data. It is never aimed at a student,
+a disability, a colleague, or the people in the room. Every joke sits next
+to a real point, and the examples always end with real work done.
 
-The optional ChatGPT step becomes **text-only critique**: paste the context and
-your candidate alt text, and ask for a critique against the four questions.
-Unlimited on the free tier, works on a phone, and needs no upload from anyone.
+## 11a. How every block runs
 
-Someone who *does* have an image and a spare upload can still try one. It is a
-bonus at the end of the lab, never the spine of it.
+The same seven steps every time, so nobody learns a new way of working twice.
 
----
+1. Where we are: the journey map, this step marked.
+2. What you will have at the end: the finished outcome, shown first.
+3. Watch me: a live demo, every step said out loud, every visual described.
+4. Your turn: a step card in the order things appear on screen, with
+   keyboard and screen reader keys, and what you should see after each step.
+5. Check: "you are on track if", with one clear sign.
+6. Catch-up: the finished result for this step, so nobody falls off.
+7. Without GLOW: the same step with tools you already have, and where it
+   goes on Monday.
 
-### 5.7 Showing what investment buys, without selling
+## 12. Value without GLOW
 
-Open question, raised 21 September 2026: should the day include a rich
-demonstration of what becomes possible with tools a department would have to
-buy - Copilot and its equivalents - as something to take to a budget holder?
+The day has to be worth it to someone who never opens GLOW again. What they
+take away is a way of working, not a product.
 
-**Yes, and it does not breach L5 or L6.** Those decisions say nobody is
-*required* to have a vendor tool and nobody has to meet plumbing to finish the
-day. Showing the ceiling to people who will have to argue for a budget is a
-different act from making them depend on it. The audience for "should we
-invest in this" is not in the room; it is the director they report to on
-Monday. Which means the demonstration has to travel.
-
-Four constraints on doing it well:
-
-1. **Record it. Do not run it live.** A live demo needs the network, the
-   vendor's service, and luck, in front of forty people, at the end of a long
-   day. A recording is captioned, audio-described, pausable, repeatable, and
-   it goes home in the artifact where the budget holder can watch it. At an
-   accessibility conference an uncaptioned live demo would also be its own
-   embarrassment.
-2. **Not at the close.** 4:25 is the commitment wall, and that is the emotional
-   end of the day. A product demonstration after it turns a workshop into a
-   pitch on the way out. Put it before the capstone, or offer it at lunch and
-   after 4:30 as a door rather than a corridor.
-3. **Name the category, show one example.** "Assistants that work inside your
-   editor, such as..." rather than a single vendor's name on a slide at a
-   community conference. The example can be concrete; the framing should not
-   read as an endorsement.
-4. **Show the ceiling *and* the floor.** The honest demonstration includes what
-   it still gets wrong and where a person still decides - the same judgment the
-   whole day teaches. A demo that only shows the magic contradicts every other
-   hour of the workshop.
-
-**Recommendation:** produce it as a recorded segment, ship it with the
-take-home artifact alongside a one-page "what this would cost and what it would
-change" note, and give it an optional ten-minute slot before the capstone. That
-serves the person who has to make the case without spending the close on it,
-and without anyone in the room needing a licence to have had a complete day.
-
-Still to decide: who records it, against what document, and whether the
-one-page cost note is ours to write or theirs.
-
-## 6. Follow-through, when we are not doing it
-
-Follow-through is self-directed. That makes **planning** it the last real
-exercise of the day rather than an afterthought, because nobody is going to
-chase anyone.
-
-Activity 11 becomes an **engagement plan**: how this gets used in their
-organisation, with or without GLOW. Four questions currently; six, and sharper:
-
-1. **One workflow** you will use in the next thirty days.
-2. **One partner or team** you will use it with.
-3. **One safeguard** you will apply every time.
-4. **The first step**, small enough to do this week.
-5. **Who needs to know or approve** - the manager, the comms lead, the IT
-   policy that may or may not permit an AI tool.
-6. **What "it worked" looks like**, in one sentence you could say to that
-   person.
-
-Five and six are the additions, and they are the difference between a good
-intention and something that survives contact with an institution. A workflow
-nobody approved and nobody measured does not get adopted; it gets forgotten.
-
-The take-home artifact then carries everything needed to act alone:
-
-- the workflow card,
-- the GLOW recipe, with exact addresses and no login,
-- the prompt, for anyone who wants to use free ChatGPT,
-- the human-review gate in their own words,
-- the engagement plan,
-- and one line: questions go to `support@community-access.org`.
-
-**The support line is a commitment, not a footnote.** "Write to
-`support@community-access.org` and you will get help" is going to be said from
-the front of the room, printed in the artifact, and carried home by everyone
-who attends. It is the right offer and it is worth making. It also needs an
-owner and a rough response expectation before it is said out loud, because the
-audience most likely to take it up is the one least well served by being
-ignored. One named person and "we answer within a week" is enough; silence
-after a promise is worse than never promising.
-
-**On the automated 30-day nudge.** It still works and it costs one command.
-With support now guaranteed on request, the nudge is no longer carrying any
-support weight - it is simply a reminder that quotes someone's own commitment
-back to them and points at the support address. My recommendation is to keep
-it: opt-in, fires once, and the replies are the only evidence any of this
-stuck.
-
-**Email stays, and it is self-service, not support.** Return links let someone
-move from laptop to phone without losing their work, and the artifact email is
-how the day leaves the building. With no printed fallback, both matter more
-than they did, not less.
-
----
-
-## 7. What gets deleted
-
-| Deleted | Why it can go |
+| They learn | They can do it Monday with |
 |---|---|
-| `workshop_ai_budget.py` and its request hook | Nothing to ration |
-| `GLOW_WORKSHOP_AI_PARTICIPANT_CAP`, `GLOW_WORKSHOP_AI_SESSION_CAP` | Same |
-| The cap-reached page and the dashboard AI usage panel | Same |
-| The room-wide "pause the built-in AI" switch | Built this session; meaningless without a house AI |
-| `OPENROUTER_API_KEY` and three AI flags, from workshop pre-flight | No longer blocking |
-| The AI spend estimate and its approval | No spend |
-| Rehearsal: hitting a cap | No caps |
-| Rehearsal: a full run with the key unset | That run becomes the only run |
-| The MCP tool section in generated agent packages | Plumbing, and L5 says participants never see it |
-| Four-tier language, everywhere | Two paths |
+| Writing an agent: role, task, trusted guidance, output format, human review | Any AI assistant, including the Copilot their campus licenses |
+| Grounding: give the AI a checker's findings, not just the file, and make it cite the standard | Word's, PowerPoint's and Acrobat's built-in checkers, Accessibility Insights, axe |
+| Human review as a written step, with a name on it | Their own office's process |
+| Agent teams: split a big job into specialists and a coordinator | Any assistant, one specialist at a time, or Accessibility Agents in VS Code |
+| Triage at scale: what to fix first, and why, with a defensible log | A spreadsheet |
+| Their agent | Kept in the open-source repository, where anyone can use and improve it |
 
-Blocking pre-flight drops from five rows to one: the session configuration.
-Postmark is recommended, not blocking (L14).
+Block 4 shows grounding twice: once with GLOW's report and once with Word's
+own Accessibility Checker, so people see the skill is the evidence, not the
+tool.
 
-**Scope note:** this is the workshop only. GLOW's own alt-text helper, document
-chat and transcription elsewhere on the site are untouched and unaffected.
+## 13. What GLOW provides
 
----
+Small additions, no AI, no key.
 
-## 8. What gets built
+1. The evidence: each sample-course document's audit report as clean text,
+   ready to copy.
+2. The agent builder: the five answers become an agent file in the
+   Accessibility Agents skill format, checked against that repository's own
+   rules so the pull request lands cleanly. GLOW already builds a skill file
+   from the formula; this extends it.
+3. The share button: opens GitHub with the participant's agent already
+   filled in, in the right folder of the Accessibility Agents repository.
+   They press "Propose changes" and "Create pull request" on their own
+   account; GitHub makes the fork for them. GLOW holds no GitHub token.
+4. The prompt cards, refreshed against the current Accessibility Agents
+   specialists they came from.
 
-Ordered by value per unit of work.
+## 14. The agent kit and the profile
 
-| # | Work | Size |
-|---|---|---|
-| 1 | Specimen bank: captured AI outputs per scenario, in the worksheet packs and on screen | Medium - the real work |
-| 2 | Engagement plan: rewrite activity 11 and the artifact section that carries it | Small |
-| 3 | Delete the AI budget subsystem and its surfaces | Small, mostly removal |
-| 4 | Strip MCP and tooling language from generated packages and the deck | Small |
-| 5 | Labs 1 and 3 anchored on real GLOW audit runs | Small - the tools exist |
-| 6 | **Prompt cards derived by hand from the twelve usable agent definitions** (section 5.4a). The only thing that makes "draws on Accessibility Agents" true | Medium - about two days of authoring |
-| 7 | Deck, runbook, exercises: two paths, electronic handouts, support address | Small |
-| 8 | Pre-event message: bring a device, download the pack, print it yourself if you want paper | Small, and it must not be forgotten |
-| 9 | Lab 2 rebuilt on text context from `visual_items.py` plus specimens; no upload anywhere in the day | Small - the extraction exists |
-| A1 | **Accessibility Agents: fix the stale GLOW base URL** (`glow-tools.js`, `mcp-server/README.md` point at `glow.bits-acb.org`) | 2 lines |
-| A2 | **Accessibility Agents: strip 70 byte-order marks** (`check-skill-conformance.mjs --fix-bom`) | Minutes |
-| A3 | **Accessibility Agents: 79 frontmatter names to their folder slug**, plus 3 files with no frontmatter | An afternoon |
-| A4 | **Accessibility Agents: add the two unscanned trees to `validate-agents.js`** so it cannot regress | Small, and it must come after A2 and A3 or CI goes red |
-| 10 | **Propagate L8** through everything that still promises paper: the guide's "offline fallback worksheets", the utilization guide's "keep backup offline worksheets available", the runbook's "print a dozen" and its backup-worksheet incident step, the run of show's fallback ladder and pre-flight, the pocket card's print checklist, the readiness plan's paper-only rehearsal, and deck slides 2 and 3 which say "on paper, printed packs at the back" | Small each, nine places, easy to miss one |
+Built: `kit/`, what participants download and open in VS Code.
 
----
+- `kit/ahg-2026.code-profile`: the AHG 2026 VS Code profile. It installs
+  GitHub Copilot Chat, GitHub Pull Requests, GitHub Repositories and the axe
+  Accessibility Linter, and turns on 18pt text, word wrap and screen reader
+  support.
+- `kit/.vscode/`: the same settings and extension recommendations, so
+  opening the kit offers to install them even if the profile was skipped.
+- `kit/README.md`: the welcome page VS Code opens first, with the keys that
+  matter and the two rules.
+- `kit/my-agent/SKILL.md`: the agent template, in the Accessibility Agents
+  skill format, with the never-do list built in.
+- Still to add: the sample course, the worked examples, and the office team
+  copied from the Accessibility Agents specialists, once the walkthrough
+  shows which ones work under Copilot.
 
-## 9. Open decisions
+## 14a. The hand-holding kit
 
-**D1. Do we accept that a participant now needs a device? DECIDED: yes,
-21 September 2026.** Recorded as L8. The propagation work it forces is section
-8 item 9.
+- Step cards for every block, in large print, as accessible Word files and
+  web pages, tested with NVDA, JAWS and VoiceOver.
+- The outcome gallery: every finished example output on one page.
+- Catch-up results for every step and every role card.
+- The answer key for the sample course, for facilitators.
+- Helpers: at least one per ten participants.
+- A help table from 10:00.
 
-**D1a. Does "no printing" include the room signage? DECIDED: signage stays,
-21 September 2026.** Recorded as L13. Original reasoning below.
+## 15. Before the day
 
-Narrow, and it changes
-the room setup. The worksheet packs are clearly attendee handouts and they are
-now electronic only. Room signage is less clear: `/workshop/session/<code>/signage`
-prints one card per activity with the join address in large type and a QR code,
-for the tables. It is room furniture rather than a handout, and it is the only
-thing that helps someone who arrives late, looks away, or is sitting too far
-back to read the projector. If signage also goes, the join address exists only
-on the deck and in whatever people typed correctly the first time.
+The setup message goes out by 20 October, again on 6 November, and two days
+before. It is a short numbered list.
 
-**D2. Conference, class, or both? DECIDED: both, one design,
-21 September 2026.** Recorded as L9.
+1. Make a free GitHub account, and turn on Copilot Free.
+2. Install VS Code. On Windows it installs without administrator rights.
+3. Open the AHG 2026 profile link, and press Import. That installs everything
+   else.
+4. Download the agent kit and open it in VS Code. A welcome page appears.
+5. Open the ready check page. It takes two minutes and tells you that you
+   are set.
+6. Stuck? Write to support@community-access.org, or come to the setup table
+   from 10:00 on the day.
 
-The decision on follow-through is what collapses this question. Once
-follow-through is self-directed with support guaranteed on request, the answer
-is the same for a conference and for a class: you plan it yourself, and help is
-there if you ask. Seeing a class again next week becomes a bonus the facilitator
-can use, not a different design. Activity 11 needs no branch.
+It says, plainly, that nobody needs to know VS Code or GitHub already, and
+that every step on the day comes with a step card and a helper.
 
-**D3. Keep or retire the 30-day nudge?**
-Recommendation: keep, reworded as a reminder rather than an offer of support.
+## 16. What has to be proven first
 
-**D4. Do we do the prompt-card derivation, or drop the claim?**
-Section 5.4b. About two days of authoring turns twelve developer-facing agent
-definitions into participant-facing cards, and is the only thing that makes the
-day genuinely draw on the Accessibility Agents project. The alternative is to
-let the title stand on the concept of an agent alone and stop saying the day
-uses that work. Both are defensible; claiming it without doing it is not.
-Recommendation: do it, because `alt-text-headings` being web-scoped means Lab 2
-needs a documents-oriented card written anyway.
+Before anything participant-facing is written, a walkthrough of the exact
+path:
 
-**D5. Free ChatGPT specifics. CHECKED 21 September 2026. Recorded as L12.**
+1. The AHG 2026 profile imports cleanly on Windows and Mac, and the kit's
+   recommended extensions are the fallback if it does not.
+2. Copilot in VS Code picks up the office team and the participant's agent
+   from the kit, with no command line. Some Accessibility Agents specialists
+   may expect scanning tools to be installed; any that do not work are
+   dropped from the office.
+3. A GLOW audit report, pasted into Copilot with a sample agent, gives cited,
+   useful answers, inside Copilot Free's monthly allowance.
+4. The share button, the automatic fork and the pull request, start to
+   finish, with GitHub Repositories instead of Git.
+5. Every participant step with NVDA, JAWS and VoiceOver.
 
-What the check found:
+## 17. What carries over from the September build
 
-- **Text messages are unlimited** on the free tier as of September 2026.
-- **Image and file uploads are not.** Third-party trackers report roughly two
-  image uploads per rolling 24 hours, and about three file uploads total
-  (images, PDFs and documents combined).
-- **OpenAI does not publish the numbers.** Engadget, reporting in August 2026,
-  states plainly that OpenAI does not share exact limits; users can see their
-  remaining usage in Settings, and the thresholds move with load.
+| September | Now |
+|---|---|
+| Problem statement | Block 1 and the role cards |
+| Fix it for me, or teach me | The faculty coach card |
+| Helpful, risky or human required | The review step in every agent |
+| Agent formula and the skill builder | Block 2, unchanged at heart |
+| Prompt cards | The worked examples, refreshed |
+| 30-day plan, commitment wall, take-home artifact | Block 7 |
+| Agenda module, deck renderer, GLOW audit tests, conformance checker | Kept, with the content and the checker's rules rewritten |
 
-**Consequence: Lab 2 cannot be built on image uploads.** Two per day,
-unpublished, variable, and quite possibly already spent before the session -
-an optional path that silently fails for half the people who try it is worse
-than not offering one. See section 5.6 for how Lab 2 works instead.
+The privacy rule, the session evaluation, the ACB large print fixes and the
+AHG speaker guidance mapping from 9 October all stay.
 
----
+## 18. Risks
 
-## 10. Build status, 21 September 2026
+| Risk | What we do |
+|---|---|
+| Accessibility Agents specialists do not run well under Copilot on documents | Proven first; the live team is trimmed to what works |
+| Free AI tools give different answers | Checks ask "did it find these barriers and cite the standard", not "does it match the screen" |
+| Free AI tools keep what is pasted | No private data, ever; we show where to turn training off |
+| Thirty pull requests at once | Pull requests open from 2:20; merges batched and shown live; everyone's own team run does not wait for a merge |
+| People arrive without setup done | Three setup messages, the ready check, the setup table at 10:00, pairing |
+| The profile does not import on someone's laptop | The kit recommends the same extensions when it opens; a helper installs them with the person |
+| Wifi | Sample course and audit text downloadable in advance; the live team run is on the facilitator's laptop |
+| Screen reader barriers | Found in the walkthrough; step cards route around them |
 
-**Production hotfix awaiting review: [PR #112](https://github.com/Community-Access/glow/pull/112).**
-The schema-per-connection fix, isolated in a clean worktree from `origin/main`
-so none of the in-progress Postmark work rides along. All four checks pass,
-including the Playwright and axe gate. Branch protection requires one
-approving review; merging it deploys to production automatically, which is
-what puts the fix on the server.
+## 19. Open decisions
 
+1. Lunch and end times: assumed 12:15 and 4:30. Confirm with AHG.
+2. The folder in the Accessibility Agents repository for workshop
+   contributions, its checks, and who merges.
+3. Helpers: who, and how many.
+4. Maria as the persona, or someone else.
 
-| # | Item | Status |
-|---|---|---|
-| 1 | Specimen bank | **Done** - `workshop_specimens.py`, four sets, shown on Lab 2 and activity 4, provenance labelled |
-| 2 | Engagement plan | **Done** - two new fields, help text wired through `aria-describedby`, carried into the artifact |
-| 3 | Delete the AI budget subsystem | **Done** - module, hook, caps, cap page, usage panel and pause switch all removed |
-| 4 | Strip plumbing from generated packages | **Done** - and a test now fails if any of sixteen plumbing words reappears |
-| 5 | Labs 1 and 3 on real audit runs | **Done** - both already linked to Audit; Lab 2 and the launchpad repointed off the disabled AI tools |
-| 6 | Prompt cards from the agent definitions | **Done** - eight cards in `workshop_prompt_cards.py`, shown on five activities, every one a complete five-part formula |
-| 7 | Deck, runbook, exercises: two paths | **Done** |
-| 8 | Pre-event message | **Done** - `pre-event-message.md` |
-| 9 | Lab 2 without an upload | **Done** |
-| 10 | Propagate L8 | **Done** - guide, utilization, runbook, run of show, pocket card, deck |
-| A1-A4 | Accessibility Agents pre-conference fixes | **Done 21 September** - 152 violations to 0; conformance now gated on every PR. One editorial decision left, recorded in the audit |
-| - | **Lab 2 and launchpad pointed at disabled AI tools** | **Fixed** - found while building item 5; every Lab 2 scenario offered a link to a feature L1 switched off |
+## 20. Order of work
 
-### Why the Accessibility Agents items are on this list
-
-They are here rather than on a separate track because they are visible to
-attendees. The session is named after that project, the take-home artifact
-points people at it, and the follow-through design assumes somebody curious
-will look. Today, an attendee who installs the Gemini extension on Monday gets
-70 skills whose frontmatter no strict parser can see. That is a workshop
-quality problem wearing another repository's clothes.
-
-A1 to A4 are the attendee-visible subset of
-`agents/docs/CONFORMANCE-AUDIT-2026-09.md`. Everything else in that audit -
-tool annotations, structured output, the SDK v2 migration - waits until
-December, because none of it is reachable by anyone in the room.
-
-**Deadline: mid-October, or defer all four to December.** Two days of
-mechanical work eight weeks out is free. The same two days in the final
-fortnight competes with the timed dry run, and the freeze rule says ship
-nothing new in the final week. If mid-October passes without them, say so and
-move them; nothing is lost.
-
-**And the thing that actually decides November is neither list.** Phase 5 of
-the readiness plan - load rehearsal at 30 participants, NVDA then JAWS then
-VoiceOver, the degraded-network run, the timed facilitator dry run against
-this agenda, freeze week - has had no progress since 21 August and is
-entirely outstanding. It cannot be compressed, because it needs a room, a
-calendar and other people. Every scheduling decision above should be read
-against that.
-
-## 11. Sequence
-
-1. Answer D1 to D5.
-2. Write the specimen bank. Longest lead time, so start it first.
-3. Delete the AI budget subsystem; strip MCP and tooling language.
-4. Rewrite activity 11 as the engagement plan, and the artifact that carries it.
-5. Anchor Labs 1 and 3 on real audit runs.
-6. If D4 is yes, derive the twelve prompt cards. Independent of the code
-   work, so it can run in parallel.
-7. Rewrite the deck, runbook and exercises to two paths and electronic packs.
-8. Draft the pre-event message.
-8a. Accessibility Agents A1 to A4, if mid-October has not passed. Independent
-    of everything else, so it can run in parallel.
-9. Regenerate the deck in all four formats; re-run the accessibility sweep.
-10. Dry run against the real agenda, on a phone, with the specimens on screen.
+| By | What |
+|---|---|
+| 13 October | Plan approved; note to AHG about the length and lunch |
+| 16 October | The walkthrough in section 16; the sample course and answer key |
+| 20 October | First setup message; ready check page live |
+| 27 October | GLOW additions in section 13; worked examples and the outcome gallery |
+| 31 October | Step cards; the deck rebuilt from the agenda; the repository folder |
+| 6 November | Second setup message; screen reader passes of the whole day |
+| 9 November | Timed dry run with a second person; freeze |
+| 14 November | Last setup message |
+| 16 November | The day |

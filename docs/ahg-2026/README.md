@@ -5,16 +5,22 @@ left elsewhere in `docs/`.
 
 ## Read in this order
 
-| # | File | What it is |
+On 9 October 2026 the workshop was redesigned to keep every promise in the
+published AHG program. `plan.md` is the current plan. Documents marked
+"September" describe the earlier design and are being rewritten;
+`scripts/check_material_conformance.py` lists what still disagrees with the
+program.
+
+| # | File or folder | What it is |
 |---|---|---|
-| 0 | `status-2026-09-21.md` | **Start here.** Where things actually stand: what is deployed, what is uncommitted, what is at risk, and what only a person can do next |
-| 0 | `plan.md` | The decisions and why they were taken, L1 to L13, plus what is built and what is not. Read this first if you are deciding, not delivering |
-| 1 | `run-of-show.md` | **The definitive agenda**, by the clock, with pacing rules, the fallback ladder, pre-flight and open decisions |
-| 2 | `slides.md` | The deck as Markdown - the fastest way to read all 30 slides and their speaker notes |
-| 3 | `facilitator-card.md` | The pocket card. Print it, fill in the blanks, fold it |
-| 4 | `pre-event-message.md` | What registered participants are sent before the day. Load-bearing now that we do not print |
-| 5 | `readiness-plan.md` | The longer readiness plan and path to golden (this was `x.md` at the repo root) |
-| 6 | `ahg-speaker-guidance.md` | Every recommendation from the AHG speaker orientation, where this workshop meets it, and what only a person can still do |
+| 1 | `plan.md` | The current plan: every promise in the program and where it is kept, the decisions D1 to D15, the day, and the order of work |
+| 2 | `sample-course/` | PSY 101, the course everyone works on, with barriers planted on purpose. `answer-key.md` lists every one |
+| 3 | `worked-examples/` | Three finished agents, one per role card, each with all seven steps and a before and after |
+| 4 | `kit/` | What participants open in VS Code: the AHG 2026 profile, the welcome page and the agent template |
+| 5 | `pre-event-message.md` | The setup checklist participants are sent |
+| 6 | `ahg-speaker-guidance.md` | Every recommendation from the AHG speaker orientation, and where it is met |
+| 7 | `run-of-show.md`, `facilitator-card.md`, `slides.*` | September; being rewritten for the new day |
+| 8 | `plan-2026-09-glow-only.md`, `status-2026-09-21.md`, `readiness-plan.md` | Records of the September design |
 
 ## The deck, in four formats
 

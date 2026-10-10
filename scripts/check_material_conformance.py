@@ -1,12 +1,16 @@
 #!/usr/bin/env python
-"""Do the workshop materials still say what the plan decided?
+"""Do the workshop materials keep the promises the program made?
 
-Thirteen decisions were locked in ``docs/ahg-2026/plan.md`` (L1-L13). Several
-of them are about what participants are told: no house AI, no printed
-handouts, no plumbing, paste text rather than upload, two paths rather than
-four tiers. Materials drift back toward the old story one helpful sentence at
-a time, and the drift is invisible until somebody reads a handout aloud in a
-room.
+The AHG program promises a full-day, laptop, hands-on workshop in which
+participants build accessibility agents and agent teams with VS Code, GitHub
+and Copilot, grounded in axe-core and Accessibility Insights, and commit an
+agent to the open-source Accessibility Agents repository. ``plan.md`` records
+how each promise is kept (D1 to D15).
+
+The September plan said the opposite in several places: no AI, no
+development tools, a phone is enough, no account. Materials written then
+drift back one helpful sentence at a time, and the drift is invisible until
+somebody reads a handout aloud in a room.
 
 So this checks the documents and templates a participant or facilitator
 actually meets, against the decisions, and says where they disagree.
@@ -44,6 +48,11 @@ MATERIALS = [
     AHG / "pre-event-message.md",
     AHG / "slides.md",
     AHG / "README.md",
+    AHG / "kit" / "README.md",
+    AHG / "kit" / "my-agent" / "SKILL.md",
+    AHG / "worked-examples" / "maria-alternate-format-planner.md",
+    AHG / "worked-examples" / "jordan-faculty-coach.md",
+    AHG / "worked-examples" / "sam-remediation-log-keeper.md",
 ]
 
 # Records of how we got here. Free to describe the past.
@@ -53,6 +62,8 @@ HISTORY = {
     "readiness-plan.md",
     "RELEASE-v7.3.0-WORKSHOP-MODE.md",
     "workshop-mode-implementation-plan.md",
+    "plan-2026-09-glow-only.md",
+    "answer-key.md",
 }
 
 
@@ -80,38 +91,33 @@ class Rule:
 
 RULES = [
     Rule(
-        "L1: no house AI",
+        "D3: no house AI",
         r"\b(built-in AI|house AI|GLOW's own AI|our AI|AI allowance|AI budget|AI cap)\b",
-        "The workshop provides no AI of its own.",
+        "The workshop provides no AI of its own; each participant's Copilot is theirs.",
     ),
     Rule(
-        "L1: no AI tiers",
-        r"\bTier [0-3]\b|\bfour tiers\b|\bthree ways\b",
-        "Two paths: GLOW in a browser, and your own assistant if you have one.",
+        "D3: the September tiers are gone",
+        r"\bTier [0-3]\b|\bfour tiers\b|\bthree ways\b|\btwo ways\b",
+        "One path: Copilot all day, VS Code and GitHub in the afternoon.",
     ),
     Rule(
-        "L4/L8: electronic handouts only",
-        r"\bprint (a dozen|the worksheet|worksheets)\b|\bprinted packs\b|\bpacks at the back\b",
-        "We do not print handouts. Participants download, and print their own if they want paper.",
-        allow=("we do not print", "not printing", "print it yourself", "print their own"),
+        "D2: a laptop is required",
+        r"\bphone (is fine|is enough|counts|included)\b|\ba phone counts\b|\bany device\b",
+        "The program says bring a Windows or Mac laptop.",
     ),
     Rule(
-        "L5: no plumbing",
-        r"\b(MCP|model context protocol|/mcp\b|npm\b|command line|stdio)\b",
-        "Participants never meet plumbing.",
+        "D3/D9: participants use their own GitHub account",
+        r"\bno account\b|\bwithout an account\b|\bno sign-in\b|\bno AI\b",
+        "Every participant has a free GitHub account with Copilot Free.",
     ),
     Rule(
-        "L6: no vendor tooling requirement",
-        r"\b(VS Code|Claude Code|Gemini CLI|Codex CLI|Copilot)\b",
-        "No vendor-specific tooling in the room.",
-        # L6 forbids *requiring* a vendor tool. Naming assistants a
-        # participant may already have, in a sentence that says "whatever you
-        # already use", is the case it explicitly permits -- and refusing to
-        # name any would leave people guessing what we mean.
-        allow=("already use", "already have", "you already"),
+        "D2/D15: no command line, no installs beyond VS Code",
+        r"\b(MCP|model context protocol|/mcp\b|npm\b|command line|stdio|git clone|terminal)\b",
+        "Participants never meet a terminal; the profile installs everything.",
+        allow=("no terminal", "never meet a terminal", "no command line"),
     ),
     Rule(
-        "L12: text only, never upload",
+        "D4: text only, never upload",
         r"\bupload (the |an |your )?(image|images|file|files|document)\b",
         "Free accounts cap uploads and do not cap text. Paste text instead.",
         allow=("do not upload", "never upload", "without uploading", "rather than uploading"),
@@ -120,8 +126,18 @@ RULES = [
 
 # Things that must be present somewhere in the material set.
 REQUIRED_SOMEWHERE = [
-    ("support@community-access.org", "L7: the support address participants are given"),
-    ("letitglow.app", "L2: GLOW is the tool the day uses"),
+    ("support@community-access.org", "D13: the support address participants are given"),
+    ("VS Code", "Promise: agents and teams built with Visual Studio Code"),
+    ("Copilot", "Promise: agents and teams built with GitHub Copilot"),
+    ("GitHub", "Promise: open-source collaboration on GitHub"),
+    ("pull request", "Promise: participants commit an agent to the repository"),
+    ("Accessibility Agents", "Promise: the open-source Accessibility Agents repository"),
+    ("axe", "Promise: axe-core grounding"),
+    ("Accessibility Insights", "Promise: Accessibility Insights grounding"),
+    ("agent team", "Promise: agent teams of coordinated specialists"),
+    ("Title II", "Promise: the higher education Title II context"),
+    ("WCAG 2.2", "Promise: grounded in WCAG 2.2"),
+    ("session evaluation", "D14: time saved for the AHG session evaluation"),
 ]
 
 
@@ -148,7 +164,7 @@ def main() -> int:
     parser.add_argument("--verbose", action="store_true")
     args = parser.parse_args()
 
-    print("Checking workshop materials against the decisions in plan.md")
+    print("Checking workshop materials against the program's promises (plan.md, D1 to D15)")
     print("=" * 74)
 
     problems: list[str] = []
