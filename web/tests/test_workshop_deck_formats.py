@@ -57,28 +57,45 @@ def client(app: Flask):
 # ---------------------------------------------------------------------------
 
 
-def test_every_format_renders_the_same_thirty_slides(ctx: deck.DeckContext):
+def test_every_format_renders_the_same_slides(ctx: deck.DeckContext):
     slides = deck.build_slides(ctx)
-    assert len(slides) == 30
+    assert len(slides) == 26
 
     markdown = deck.build_deck_markdown(ctx)
     for slide in slides:
         assert slide.title in markdown
 
 
-def test_the_agenda_slide_is_built_from_the_agenda(ctx: deck.DeckContext):
+def test_the_title_is_the_program_title():
+    """AHG's top attendee complaint is a title that does not match the content."""
+    assert f"{deck.DECK_TITLE}: {deck.DECK_SUBTITLE}" == (
+        "Accessibility Agents: Building Human-Centered AI Workflows for "
+        "Trusted Accessibility Automation at Scale"
+    )
+
+
+def test_every_block_opens_by_saying_where_we_are(ctx: deck.DeckContext):
+    kickers = [s.kicker for s in deck.build_slides(ctx)]
+    for number in range(2, 8):
+        assert any(k.startswith(f"Block {number} of 7") for k in kickers)
+
+
+def test_the_day_is_the_ahg_day(ctx: deck.DeckContext):
+    assert agenda.validate_ahg_day() == []
     markdown = deck.build_deck_markdown(ctx)
-    for block in agenda.blocks_of_kind(agenda.BREAK) + agenda.blocks_of_kind(agenda.LUNCH):
-        assert block.starts_at in markdown
+    for block in agenda.AHG_DAY:
+        if block.kind in (agenda.BREAK, agenda.LUNCH):
+            assert block.starts_at in markdown
 
 
-def test_the_agenda_slide_is_chunked_not_a_wall_of_text(ctx: deck.DeckContext):
-    """AHG speaker guidance: avoid walls of text, chunk the content."""
-    slide = next(s for s in deck.build_slides(ctx) if s.id == "s9")
-    assert not any(isinstance(b, deck.Table) for b in slide.blocks)
-    (chunks,) = [b for b in slide.blocks if isinstance(b, deck.Definitions)]
-    assert len(chunks.items) == 3
-    assert "session evaluation" in chunks.items[-1][1]
+def test_no_slide_is_a_wall_of_text(ctx: deck.DeckContext):
+    """AHG speaker guidance: avoid walls of text."""
+    for slide in deck.build_slides(ctx):
+        for block in slide.blocks:
+            if isinstance(block, deck.Bullets):
+                assert len(block.items) <= 7, slide.id
+            if isinstance(block, deck.Table):
+                assert len(block.rows) <= 9, slide.id
 
 
 def test_the_day_ends_with_the_session_evaluation():
@@ -87,15 +104,23 @@ def test_the_day_ends_with_the_session_evaluation():
     assert agenda.AGENDA[-1].minutes >= 5
 
 
-def test_the_paste_rule_says_never_paste_anything_private(ctx: deck.DeckContext):
-    slide = next(s for s in deck.build_slides(ctx) if s.id == "s2")
-    text = " ".join(getattr(b, "text", "") for b in slide.blocks)
-    assert "never paste anything private" in text
+def test_the_privacy_rule_is_on_a_slide(ctx: deck.DeckContext):
+    slide = next(s for s in deck.build_slides(ctx) if s.id == "s6")
+    text = " ".join(getattr(b, "text", "") or " ".join(getattr(b, "items", ())) for b in slide.blocks)
+    assert "Never paste anything private" in text
+
+
+def test_every_promise_is_named_on_a_slide(ctx: deck.DeckContext):
+    markdown = deck.build_deck_markdown(ctx)
+    for promise in ("VS Code", "Copilot", "GitHub", "pull request", "Accessibility Agents",
+                    "axe", "Accessibility Insights", "WCAG 2.2", "Title II", "team",
+                    "session evaluation"):
+        assert promise in markdown, promise
 
 
 def test_this_room_s_addresses_reach_every_format(ctx: deck.DeckContext):
     markdown = deck.build_deck_markdown(ctx)
-    assert f"/w/{CODE}/7" in markdown
+    assert f"letitglow.app/w/{CODE}/11" in markdown
     assert f"letitglow.app/w/{CODE}" in markdown
 
 
@@ -106,19 +131,21 @@ def test_this_room_s_addresses_reach_every_format(ctx: deck.DeckContext):
 
 def test_markdown_uses_headings_and_lists_not_layout(ctx: deck.DeckContext):
     markdown = deck.build_deck_markdown(ctx)
-    assert markdown.startswith("# Accessibility Agents in Action")
-    assert "## 1. Accessibility Agents in Action" in markdown
+    lines = markdown.splitlines()
+    assert lines[0] == "---" and lines[1].startswith("title: ")
+    assert "# Accessibility Agents" in lines
+    assert "## 1. Accessibility Agents" in markdown
     assert "\n- " in markdown
     assert "\n1. " in markdown
     # Pipe table with a header separator, not spaces pretending to be columns.
-    assert "| Pile | Example |" in markdown
+    assert "| Specialist | Takes |" in markdown
     assert "|---|---|" in markdown
 
 
 def test_markdown_keeps_the_speaker_notes(ctx: deck.DeckContext):
     markdown = deck.build_deck_markdown(ctx)
     assert "### Speaker notes, slide 2" in markdown
-    assert "An instruction that fails at 1:40" in markdown
+    assert "Let the laugh happen" in markdown
 
 
 # ---------------------------------------------------------------------------
@@ -133,7 +160,7 @@ def test_word_uses_real_heading_and_list_styles(ctx: deck.DeckContext):
     styles = [p.style.name for p in doc.paragraphs]
 
     assert styles.count("Heading 1") == 1, "one document title"
-    assert styles.count("Heading 2") == 30, "one heading per slide"
+    assert styles.count("Heading 2") == len(deck.build_slides(ctx)), "one heading per slide"
     assert "List Bullet" in styles
     assert "List Number" in styles
     assert "Heading 3" in styles, "speaker notes get their own heading level"
@@ -204,11 +231,11 @@ def test_powerpoint_notes_go_in_the_notes_slide(ctx: deck.DeckContext):
 
     prs = Presentation(BytesIO(deck.build_deck_pptx_bytes(ctx)))
     notes = [s.notes_slide.notes_text_frame.text for s in prs.slides]
-    assert any("An instruction that fails at 1:40" in n for n in notes)
+    assert any("Let the laugh happen" in n for n in notes)
     # Notes must not have been dumped onto the slide surface instead.
     for slide in prs.slides:
         body = " ".join(sh.text_frame.text for sh in slide.shapes if sh.has_text_frame)
-        assert "An instruction that fails at 1:40" not in body
+        assert "Let the laugh happen" not in body
 
 
 def test_powerpoint_tables_carry_alt_text_and_a_header_row(ctx: deck.DeckContext):

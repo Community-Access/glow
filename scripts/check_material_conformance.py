@@ -50,9 +50,14 @@ MATERIALS = [
     AHG / "README.md",
     AHG / "kit" / "README.md",
     AHG / "kit" / "my-agent" / "SKILL.md",
-    AHG / "worked-examples" / "maria-alternate-format-planner.md",
-    AHG / "worked-examples" / "jordan-faculty-coach.md",
-    AHG / "worked-examples" / "sam-remediation-log-keeper.md",
+    AHG / "kit" / "examples" / "maria-alternate-format-planner.md",
+    AHG / "kit" / "examples" / "jordan-faculty-coach.md",
+    AHG / "kit" / "examples" / "sam-remediation-log-keeper.md",
+    AHG / "kit" / ".github" / "copilot-instructions.md",
+    AHG / "kit" / ".github" / "agents" / "office-coordinator.agent.md",
+    *sorted((AHG / "kit" / ".github" / "prompts").glob("*.prompt.md")),
+    *sorted((AHG / "kit" / "step-cards").glob("*.md")),
+    AHG / "ahg-speaker-guidance.md",
 ]
 
 # Records of how we got here. Free to describe the past.
@@ -97,18 +102,18 @@ RULES = [
     ),
     Rule(
         "D3: the September tiers are gone",
-        r"\bTier [0-3]\b|\bfour tiers\b|\bthree ways\b|\btwo ways\b",
+        r"\bTier [0-3]\b|\bfour tiers\b|\bthree ways\b|\btwo ways today\b|\bthe first one is enough\b",
         "One path: Copilot all day, VS Code and GitHub in the afternoon.",
     ),
     Rule(
         "D2: a laptop is required",
-        r"\bphone (is fine|is enough|counts|included)\b|\ba phone counts\b|\bany device\b",
+        r"\bphone (is fine|is enough|counts|included)\b|\ba phone counts\b|\bany device, a phone\b",
         "The program says bring a Windows or Mac laptop.",
     ),
     Rule(
         "D3/D9: participants use their own GitHub account",
-        r"\bno account\b|\bwithout an account\b|\bno sign-in\b|\bno AI\b",
-        "Every participant has a free GitHub account with Copilot Free.",
+        r"\bnothing today needs an account\b|\byou do not need an? (AI|GitHub) account\b|\bno AI account\b|\bno GitHub account\b|\bthe whole day works without (one|an? AI|AI)\b",
+        "Every participant has a free GitHub account with Copilot Free. GLOW itself still needs no account; that is fine to say.",
     ),
     Rule(
         "D2/D15: no command line, no installs beyond VS Code",

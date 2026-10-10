@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Share your agent - AHG 2026</title>
+<style>
+  :root { --fg: #111; --bg: #fff; --accent: #0b4f8a; --panel: #eef3f8; --focus: #b45309; }
+  @media (prefers-color-scheme: dark) {
+    :root { --fg: #f2f2f2; --bg: #121212; --accent: #8cc4ff; --panel: #1e2a36; --focus: #fbbf24; }
+  }
+  body { font-family: Arial, Helvetica, sans-serif; font-size: 1.5rem; line-height: 1.5;
+         color: var(--fg); background: var(--bg); margin: 0 auto; max-width: 46rem; padding: 1.5rem 1rem 4rem; }
+  h1 { font-size: 2.2rem; line-height: 1.2; }
+  h2 { font-size: 1.8rem; margin-top: 2rem; }
+  label { display: block; font-weight: 700; margin-top: 1.25rem; }
+  .hint { margin: 0.25rem 0 0.5rem; }
+  input[type="text"], input[type="file"], textarea { font: inherit; width: 100%; box-sizing: border-box;
+         padding: 0.5rem; border: 2px solid var(--fg); background: var(--bg); color: var(--fg); }
+  textarea { min-height: 12rem; }
+  button { font: inherit; font-weight: 700; margin-top: 1.5rem; padding: 0.6rem 1.2rem;
+           background: var(--accent); color: var(--bg); border: 2px solid var(--accent); cursor: pointer; }
+  :focus-visible { outline: 4px solid var(--focus); outline-offset: 3px; }
+  .panel { background: var(--panel); border-left: 8px solid var(--accent); padding: 1rem 1.25rem; margin-top: 1.5rem; }
+  a { color: var(--accent); }
+  @media (prefers-reduced-motion: no-preference) { html { scroll-behavior: smooth; } }
+</style>
+</head>
+<body>
+<main>
+<h1>Share your agent</h1>
+<p>This page puts your agent into the open-source Accessibility Agents project,
+under your own GitHub account, with your name on it. It takes about three
+minutes. Nothing here is sent anywhere until you press the green button on
+GitHub yourself.</p>
+
+<form id="share-form" novalidate>
+  <label for="agent-file">Your agent file</label>
+  <p class="hint" id="agent-file-hint">Choose <code>my-agent/SKILL.md</code> from the kit folder. Or skip this and paste it into the box below.</p>
+  <input type="file" id="agent-file" accept=".md,text/markdown,text/plain" aria-describedby="agent-file-hint">
+
+  <label for="agent-text">Your agent, as text</label>
+  <p class="hint" id="agent-text-hint">Filled in for you when you choose the file. You can also paste it here.</p>
+  <textarea id="agent-text" aria-describedby="agent-text-hint"></textarea>
+
+  <label for="agent-name">Your agent's short name</label>
+  <p class="hint" id="agent-name-hint">Lowercase words joined by hyphens, like <code>alternate-format-planner</code>. Filled in from the file when it can be.</p>
+  <input type="text" id="agent-name" autocomplete="off" aria-describedby="agent-name-hint">
+
+  <button type="submit">Open GitHub with my agent</button>
+</form>
+
+<div id="result" class="panel" role="status" aria-live="polite" hidden></div>
+
+<h2>What happens on GitHub</h2>
+<ol>
+  <li>GitHub opens a new file, already filled in, in the workshop folder of the Accessibility Agents project.</li>
+  <li>GitHub says you need your own copy of the project to propose a change. That is called a fork, and GitHub makes it for you.</li>
+  <li>Scroll to the bottom and press <strong>Propose changes</strong>.</li>
+  <li>On the next page, press <strong>Create pull request</strong>, then <strong>Create pull request</strong> again.</li>
+</ol>
+<p>That is your pull request. Your agent is now part of an open-source
+project, and it will be merged on the projector this afternoon. Well done.</p>
+
+<h2>If anything goes wrong</h2>
+<p>Raise a hand, or use the ready-made agent you started from in
+<code>examples/agents/</code>. Every pull request counts, including one that
+started from an example.</p>
+</main>
+
+<script>
+(function () {
+  "use strict";
+  var REPO = "https://github.com/Community-Access/accessibility-agents/new/main";
+  var FOLDER = "community/ahg-2026/";
+  var MAX_URL = 7500;
+
+  var form = document.getElementById("share-form");
+  var fileInput = document.getElementById("agent-file");
+  var text = document.getElementById("agent-text");
+  var nameInput = document.getElementById("agent-name");
+  var result = document.getElementById("result");
+
+  function slug(value) {
+    return (value || "").toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "").slice(0, 60);
+  }
+
+  function nameFromText(value) {
+    var match = /^name:\s*(.+)$/m.exec(value || "");
+    return match ? slug(match[1]) : "";
+  }
+
+  function say(html) {
+    result.hidden = false;
+    result.innerHTML = html;
+  }
+
+  fileInput.addEventListener("change", function () {
+    var file = fileInput.files && fileInput.files[0];
+    if (!file) { return; }
+    var reader = new FileReader();
+    reader.onload = function () {
+      text.value = String(reader.result || "");
+      var found = nameFromText(text.value);
+      if (found && !nameInput.value) { nameInput.value = found; }
+      say("Your agent file is loaded" + (found ? ", and its name is " + found : "") + ".");
+    };
+    reader.readAsText(file);
+  });
+
+  form.addEventListener("submit", function (event) {
+    event.preventDefault();
+    var body = text.value.trim();
+    var name = slug(nameInput.value) || nameFromText(body);
+    if (!body) {
+      say("Your agent is empty. Choose your <code>SKILL.md</code> file, or paste it in.");
+      text.focus();
+      return;
+    }
+    if (!name || name === "my-agent-name") {
+      say("Give your agent a short name of its own, like <code>faculty-coach</code>.");
+      nameInput.focus();
+      return;
+    }
+    var url = REPO + "?filename=" + encodeURIComponent(FOLDER + name + "/SKILL.md") +
+              "&value=" + encodeURIComponent(body + "\n");
+    if (url.length > MAX_URL) {
+      say("Your agent is longer than GitHub accepts in one link. On GitHub, open the project, " +
+          "choose Add file, then Create new file, name it <code>" + FOLDER + name + "/SKILL.md</code>, and paste your agent in.");
+      return;
+    }
+    window.open(url, "_blank", "noopener");
+    say("GitHub is open in a new tab, with your agent filled in. Follow the four steps below. " +
+        "If no tab opened, <a href=\"" + url + "\" target=\"_blank\" rel=\"noopener\">open GitHub with your agent</a>.");
+  });
+}());
+</script>
+</body>
+</html>

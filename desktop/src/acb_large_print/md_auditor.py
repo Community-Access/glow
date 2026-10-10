@@ -24,7 +24,13 @@ from .auditor import AuditResult
 _ATX_HEADING_RE = re.compile(r"^(#{1,6})\s*(.*)$")
 _ATX_HEADING_STRICT_RE = re.compile(r"^(#{1,6})\s+(.+)$")
 _ITALIC_SINGLE_RE = re.compile(r"(?<!\*)\*(?!\*)(.+?)(?<!\*)\*(?!\*)")
-_ITALIC_UNDER_RE = re.compile(r"(?<!_)_(?!_)(.+?)(?<!_)_(?!_)")
+# CommonMark never treats an underscore inside a word as emphasis, so
+# ``acb_large_print`` and ``AHG_DAY`` are names, not italics.
+_ITALIC_UNDER_RE = re.compile(r"(?<![\w_])_(?![_\s])(.+?)(?<![_\s])_(?![\w_])")
+# Inline code spans and bare URLs are literal text: emphasis and capitals
+# inside them are names, not formatting.
+_INLINE_CODE_RE = re.compile(r"(`+)(.+?)\1")
+_URL_RE = re.compile(r"https?://\S+")
 _BOLD_RE = re.compile(r"\*\*(.+?)\*\*")
 _ENTIRE_LINE_BOLD_RE = re.compile(r"^\s*\*\*.+\*\*\s*$")
 _BARE_URL_RE = re.compile(r"(?<!\()\bhttps?://\S+(?!\))")
@@ -87,11 +93,18 @@ _FENCED_CODE_LANG_RE = re.compile(r"^```(\S+)?")
 
 # Fake list patterns
 _FAKE_BULLET_CHARS = frozenset("\u2022\u25e6\u25aa\u2023\u25cf\u25cb")
-_FAKE_NUMBERED_RE = re.compile(r"^\s{0,2}\d{1,2}\.\s+\S")
+# "1. item" is Markdown's own ordered list syntax, so it is never "fake".
+# A manually numbered list is one Markdown does not recognise: "(1) item",
+# "1 - item", "1: item".
+_ORDERED_ITEM_RE = re.compile(r"^\d{1,9}[.)]\s+\S")
+_FAKE_NUMBERED_RE = re.compile(r"^\s{0,2}(\(\d{1,2}\)|\d{1,2}\s*[-:\u2013])\s+\S")
 _INLINE_BULLET_RE = re.compile(r"\S\s*[\u2022\u25e6\u25aa\u2023\u25cf\u25cb]\s+\S")
 
 # ALL CAPS: three or more consecutive uppercase letters (skip code/URLs/acronyms)
-_ALLCAPS_WORD_RE = re.compile(r"\b[A-Z]{4,}\b")
+# Five letters or more: four-letter acronyms (WCAG, HDMI, VPAT) are names,
+# not shouting, and are far commoner in accessibility writing than shouted
+# four-letter words.
+_ALLCAPS_WORD_RE = re.compile(r"\b[A-Z]{5,}\b")
 # Heading ends with terminal punctuation
 _HEADING_TRAIL_PUNCT_RE = re.compile(r"[.;:]$")
 # YAML front matter fence
@@ -222,7 +235,7 @@ def _check_headings(lines: list[str], result: AuditResult) -> None:
             return False
         if text.startswith(("#", ">", "- ", "* ", "+ ")):
             return False
-        if _FAKE_NUMBERED_RE.match(text):
+        if _FAKE_NUMBERED_RE.match(text) or _ORDERED_ITEM_RE.match(text):
             return False
         if _TABLE_LINE_RE.match(text) or _TABLE_SEP_RE.match(text):
             return False
@@ -337,11 +350,16 @@ def _check_headings(lines: list[str], result: AuditResult) -> None:
             )
 
 
+def _literal_free(line: str) -> str:
+    """The line with inline code spans and URLs blanked out."""
+    return _URL_RE.sub(" ", _INLINE_CODE_RE.sub(" ", line))
+
+
 def _check_emphasis(lines: list[str], result: AuditResult) -> None:
     """Check for italic and bold-as-emphasis violations."""
     in_code_block = False
-    for i, line in enumerate(lines, 1):
-        stripped = line.strip()
+    for i, raw_line in enumerate(lines, 1):
+        stripped = raw_line.strip()
         if stripped.startswith("```"):
             in_code_block = not in_code_block
             continue
@@ -349,6 +367,7 @@ def _check_emphasis(lines: list[str], result: AuditResult) -> None:
             continue
         if stripped.startswith("#"):
             continue
+        line = _literal_free(raw_line)
 
         # Italic: *text* (not **bold**)
         for m in _ITALIC_SINGLE_RE.finditer(line):
@@ -529,10 +548,17 @@ def _check_tables(lines: list[str], result: AuditResult) -> None:
 
         if is_table_line and not in_table:
             in_table = True
-            # Check the line before the table for descriptive text
+            # Check for descriptive text before the table. A blank line
+            # between the description and the table is ordinary Markdown
+            # style, so look back past blank lines; a heading or another
+            # table directly above is what counts as "no description".
             if i >= 2:
-                prev = lines[i - 2].strip()
-                if not prev or _TABLE_LINE_RE.match(prev) or _TABLE_SEP_RE.match(prev):
+                back = i - 2
+                while back > 0 and not lines[back].strip():
+                    back -= 1
+                prev = lines[back].strip()
+                if (not prev or prev.startswith("#") or _TABLE_LINE_RE.match(prev)
+                        or _TABLE_SEP_RE.match(prev)):
                     result.add(
                         "MD-TABLE-NO-DESCRIPTION",
                         "Table has no preceding text description.",
@@ -764,8 +790,9 @@ def _check_whitespace(lines: list[str], result: AuditResult) -> None:
 def _check_allcaps(lines: list[str], result: AuditResult) -> None:
     """Check for ALL CAPS words in body text (ACB guideline + WCAG 1.4.8).
 
-    Allows short uppercase abbreviations (3 chars) and known acronyms.
-    Flags runs of 4+ uppercase letters that form a word.
+    Allows acronyms of up to four letters, known longer acronyms, and
+    anything inside inline code or a URL. Flags runs of 5+ uppercase letters
+    that form a word.
     """
     in_code_block = False
     # Common known acronyms to skip (extend as needed)
@@ -787,9 +814,9 @@ def _check_allcaps(lines: list[str], result: AuditResult) -> None:
         if line.strip().startswith("#"):
             continue
 
-        for m in _ALLCAPS_WORD_RE.finditer(line):
+        for m in _ALLCAPS_WORD_RE.finditer(_literal_free(line)):
             word = m.group()
-            if word not in _SKIP_CAPS and len(word) >= 4:
+            if word not in _SKIP_CAPS:
                 result.add(
                     "MD-ALLCAPS",
                     f"ALL CAPS word '{word}' found. Use mixed-case text; "

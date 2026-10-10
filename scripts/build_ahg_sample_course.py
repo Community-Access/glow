@@ -4,7 +4,7 @@
 Every file this writes is deliberately inaccessible. That is the point: the
 workshop's agents need something real to find, and facilitators need to know
 exactly what is there so they can tell whether an agent found it. The answer
-key in ``docs/ahg-2026/sample-course/answer-key.md`` lists every planted
+key in ``docs/ahg-2026/answer-key.md`` lists every planted
 barrier; keep the two in step when you change either.
 
 The course is fictional, the people are fictional, and every word of the
@@ -25,7 +25,7 @@ import random
 from pathlib import Path
 
 REPO = Path(__file__).resolve().parents[1]
-OUT = REPO / "docs" / "ahg-2026" / "sample-course"
+OUT = REPO / "docs" / "ahg-2026" / "kit" / "sample-course"
 FONTS = Path("C:/Windows/Fonts")
 
 COURSE = "PSY 101: Introduction to Psychology"

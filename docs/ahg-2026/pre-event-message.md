@@ -1,3 +1,10 @@
+---
+title: "Pre-event message"
+lang: en
+author: "Jeff Bishop, BITS"
+description: "The setup message sent to registered participants before the AHG 2026 workshop."
+---
+
 # Pre-event message
 
 Send this to registered participants by 20 October, again on 6 November, and
@@ -33,9 +40,11 @@ before. Every step on the day comes with a step card and a helper.
    it.
 2. Install VS Code from code.visualstudio.com. On Windows it installs
    without administrator rights.
-3. Open the AHG 2026 profile link: PROFILE-LINK. VS Code asks whether to
-   import it. Say yes. That installs everything else.
-4. Open the ready check: READY-CHECK-LINK. It takes two minutes and tells you
+3. Open the setup page, letitglow.app/workshop/ahg-2026, and follow step 3
+   there to import the AHG 2026 profile into VS Code. Say yes when VS Code
+   asks. That installs everything else.
+4. On the same page, download the agent kit, open it in VS Code, open
+   Copilot Chat and type /ready-check. It takes two minutes and tells you
    whether you are set.
 
 If a step does not work, write to support@community-access.org before the
@@ -77,8 +86,8 @@ BITS, an affiliate of the American Council of the Blind
 
 ## Notes for whoever sends this
 
-- Replace PROFILE-LINK and READY-CHECK-LINK before the first send, and test
-  both in a private window on Windows and on a Mac.
+- Before the first send, open the setup page in a private window on
+  Windows and on a Mac, import the profile, and run the ready check.
 - Second send (6 November): the same four steps, plus "if you have done
   these, open the ready check once more."
 - Last send (two days before): three lines. Bring your laptop and charger;

@@ -93,7 +93,16 @@ def register_cli(app: Flask) -> None:
         written.append((html_path, len(html)))
 
         md_path = out_dir / f"{BASENAME}.md"
-        md_path.write_text(GENERATED_NOTE_MD + deck.build_deck_markdown(ctx), encoding="utf-8")
+        markdown = deck.build_deck_markdown(ctx)
+        # The note goes after the front matter: front matter must be first.
+        fence = "---" + chr(10)
+        if markdown.startswith(fence):
+            closing = chr(10) + fence
+            end = markdown.index(closing, 4) + len(closing)
+            markdown = markdown[:end] + chr(10) + GENERATED_NOTE_MD + markdown[end:].lstrip(chr(10))
+        else:
+            markdown = GENERATED_NOTE_MD + markdown
+        md_path.write_text(markdown, encoding="utf-8")
         written.append((md_path, md_path.stat().st_size))
 
         docx_path = out_dir / f"{BASENAME}.docx"

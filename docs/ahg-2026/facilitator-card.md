@@ -1,97 +1,89 @@
+---
+title: "AHG 2026 pocket card"
+lang: en
+author: "Jeff Bishop, BITS"
+description: "The facilitator's pocket card for the AHG 2026 workshop."
+---
+
 # AHG 2026 pocket card
 
-Print this. Fold it once. Put it in a pocket. Fill in every ALL-CAPS blank
-before you leave for the conference.
-
----
+Print this, fold it once, and keep it in a pocket. Fill in every blank
+marked with a dash before you leave for Denver.
 
 ## The event
 
-- Date: DATE
-- Room: ROOM
-- Doors / setup from: TIME
-- Wifi network and password: NETWORK / PASSWORD
-- Projector input: HDMI or USB-C - CONFIRM
-- Venue AV contact: NAME, PHONE (Peak AV runs the room tech)
-- Proctor: NAME - introduces the session and runs the evaluation at 4:25
-- Times on this card are Mountain Time
+- Monday 16 November 2026, 10:30 AM to 4:30 PM Mountain Time
+- Matchless, Hilton Denver City Center
+- Setup table from: 10:00
+- Proctor: -
+- Peak AV contact: -
+- Wifi network and password: -
+- Projector input, HDMI or USB-C: -
 
 ## The addresses
 
+Everything participants need starts from the setup page.
+
 | What | Address |
 |---|---|
-| Join | `letitglow.app/w/CODE` |
-| Any activity | `letitglow.app/w/CODE/1` through `/11` |
-| Signage to print | `letitglow.app/workshop/session/SESSION/signage` |
-| Facilitator dashboard | `letitglow.app/workshop/session/SESSION/facilitator` |
-| Gallery | `letitglow.app/workshop/session/SESSION/gallery` |
-| Take-home artifact | `letitglow.app/workshop/session/SESSION/artifact` |
-| Commitment wall, 4:20 | `letitglow.app/workshop/session/SESSION/wall` |
-| Blank worksheets | `letitglow.app/workshop/worksheets.docx` |
-| The deck | `letitglow.app/workshop/session/SESSION/deck` |
-| Deck as PowerPoint | same address plus `.pptx` (also `.docx`, `.md`) |
-| Pre-flight | `letitglow.app/workshop/session/SESSION/preflight` |
+| Setup page, kit, profile | letitglow.app/workshop/ahg-2026 |
+| Share page | letitglow.app/workshop/ahg-2026/share |
+| Commitment for the wall | letitglow.app/w/ahg-2026/11 |
+| The wall, to project | letitglow.app/workshop/session/ahg-2026/wall |
+| The deck | letitglow.app/workshop/session/ahg-2026/deck |
+| Pull requests to merge | github.com/Community-Access/accessibility-agents/pulls |
 
-**Facilitator key: write it here, and never put it on a slide.** KEY
+Facilitator key: write it here, and never put it on a slide. -
 
 ## The clock
 
-| Time | Block |
-|---|---|
-| 8:30 | Welcome, deck slides 1-9 |
-| 8:50 | 1. Journey check-in (20) |
-| 9:10 | 2. Problem statement (30) |
-| 9:40 | 3. Teach vs fix (30) |
-| 10:10 | Break (15) - say "return links" again |
-| 10:25 | 4. Boundary map (30) |
-| 10:55 | 5. Agent formula (35) |
-| 11:30 | Lab 1 (45) |
-| 12:15 | Lunch |
-| 1:15 | Re-entry, room pulse (10) |
-| 1:25 | Lab 2, alt text (45) |
-| 2:10 | Lab 3, remediation (45) |
-| 2:55 | Break (10) |
-| 3:05 | Champion Studio (40) |
-| 3:45 | Peer review (10) |
-| 3:55 | Capstone + artifact (15) |
-| 4:10 | Engagement plan (10) |
-| 4:20 | Commitment wall (5) |
-| 4:25 | Session evaluation (5) - proctor runs it |
+The command in each row is what participants type into Copilot Chat.
+
+| Time | Block | Command |
+|---|---|---|
+| 10:30 | 1. Why we are here (20) | /ready-check |
+| 10:50 | 2. Design your agent (60) | /design-my-agent |
+| 11:50 | 3. Your agent at work (25) | /try-my-agent |
+| 12:15 | Lunch | none |
+| 1:15 | 4. Ground it (55) | /ground-my-agent |
+| 2:10 | Break (10) | none |
+| 2:20 | 5. Share it (40), merge as they arrive | share page |
+| 3:00 | 6. Build the office (45), projector run last | /run-the-office |
+| 3:45 | 7. Take it home (30) | /my-30-day-plan |
+| 4:15 | Commitments (10) | the wall |
+| 4:25 | Session evaluation (5) | proctor |
 
 ## Say these out loud
 
-- Before a word: mic on. Keep it on. Repeat every question and every volunteer into it.
-- First ten minutes: "Two ways today. GLOW in a browser does the whole day, no account, no AI. Your own assistant is an upgrade, never a requirement."
-- After activity 1 saves, and again at the break: "Send yourself a return link."
-- Whenever an assistant comes up: "Paste the text. Do not upload files - free accounts cap uploads and do not cap text. And never paste anything private."
-- Whatever you project: say what is on it. Read counts aloud.
-- At 3:55: "Two minutes on the artifact page. This is what you forward on Monday."
+- Before a word: mic on. Keep it on. Repeat every question into it.
+- First minutes: "Forty thousand files and three people. Here is where we will be at four o'clock."
+- Every block: "Here is what you will have at the end." Then show it.
+- Often: "Stuck? Start from a ready-made agent and put your name on it. That counts."
+- Whenever an assistant comes up: "Never paste anything private."
+- Whatever you project: say what is on it.
 - At 4:25: "Before you go: the session evaluation." Then stop talking.
 
 ## If something breaks
 
-1. Someone with no device: pair them at the table, or lend them yours.
-2. Wifi degraded: keep the sequence; the activities are questions and work said aloud. Point at the pack they downloaded.
-3. Site unreachable: run from the downloaded packs and the deck. Collect on paper, type up later.
-4. Projector dead: read the join address aloud; the table signage carries it too.
+1. One person stuck: a helper sits with them; a ready-made agent keeps them moving.
+2. Copilot limit reached: pair with a neighbor.
+3. Wifi slow: one block at a time, demo each step on the projector.
+4. GitHub down: collect agent files on a USB stick; open the pull requests together after.
 
 ## Before the room fills
 
-- [ ] Pre-flight page opened; every row OK, or you know why not
-- [ ] Worksheet pack links sent out in advance (we do not print them)
-- [ ] Signage printed and on the tables
-- [ ] Deck printed as a handout, and all four formats on the laptop: HTML, PowerPoint, Word, Markdown
-- [ ] `slides.pptx` on a USB stick, in case the venue projects from its own machine
-- [ ] Your own laptop, charger and adaptors - the room has a laptop, but bring yours for the deck
-- [ ] Visited the room the day before; checked mic, projector and input
-- [ ] Slides, Word deck and worksheet pack uploaded to the CVENT Speaker Resource Center (My Tasks)
-- [ ] Facilitator dashboard open and unlocked on your laptop
-- [ ] Test email sent from `/admin/queue`
-- [ ] You have joined the session yourself from a phone on cellular
+- [ ] Your laptop, charger and adaptors; the deck open; Copilot signed in
+- [ ] A test pull request merged into community/ahg-2026 this morning
+- [ ] The setup page, kit and share page open from a phone on cellular
+- [ ] Helpers briefed: who covers which tables, and the fallback ladder
+- [ ] Setup table outside the room, with two spare laptops if you can borrow them
+- [ ] slides.pptx on a USB stick in case the venue projects from its own machine
 
 ## Thirty days later
 
-    flask --app acb_large_print_web.app:create_app workshop-nudge CODE --dry-run
-    flask --app acb_large_print_web.app:create_app workshop-nudge CODE --send
+```text
+flask --app acb_large_print_web.app:create_app workshop-nudge ahg-2026 --dry-run
+flask --app acb_large_print_web.app:create_app workshop-nudge ahg-2026 --send
+```
 
 Dry run first, always. Read what is about to go out.

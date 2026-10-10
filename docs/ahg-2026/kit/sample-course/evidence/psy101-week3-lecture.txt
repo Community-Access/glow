@@ -1,0 +1,22 @@
+Evidence: GLOW accessibility audit of psy101-week3-lecture.pptx
+Score: 58 out of 100. Findings: 8.
+Checked by GLOW (letitglow.app), which applies the same rules every time.
+
+CRITICAL PPTX-SLIDE-TITLE  (2)
+         Slide has no title or the title placeholder is empty.
+HIGH     PPTX-TITLE  (1)
+         Presentation title is not set in document properties.
+MEDIUM   PPTX-READING-ORDER  (1)
+         Reading order differs from visual layout. Check Selection Pane.
+MEDIUM   PPTX-SMALL-FONT  (1)
+         Text 'Encoding, storage and retrieval are thre...' is 11.0pt (minimum 18pt recommended).
+LOW      ACB-DOC-AUTHOR  (1)
+         Presentation author is not set in document properties.
+LOW      PPTX-DUPLICATE-SLIDE-TITLE  (1)
+         Title 'memory' is used on 2 slides.
+LOW      PPTX-SPEAKER-NOTES  (1)
+         2 slide(s) with visual content but no speaker notes.
+
+What this report cannot see: anything a person has to judge, such as
+whether alt text is meaningful, whether color carries meaning, or
+whether the order of information makes sense. Ask a person.

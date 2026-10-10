@@ -1,0 +1,33 @@
+Evidence: axe-core scan of psy101-announcement.html
+axe-core 4.11.4. Accessibility Insights FastPass runs the same engine.
+Rules failed: 6.
+
+SERIOUS  color-contrast  (3 element(s))
+         Elements must meet minimum color contrast ratio thresholds
+         WCAG tags: wcag2aa, wcag143
+         at: .soft:nth-child(6)
+         at: .btn
+         at: .tiny
+MODERATE heading-order  (1 element(s))
+         Heading levels should only increase by one
+         at: h4:nth-child(5)
+SERIOUS  html-has-lang  (1 element(s))
+         <html> element must have a lang attribute
+         WCAG tags: wcag311
+         at: html
+CRITICAL image-alt  (1 element(s))
+         Images must have alternative text
+         WCAG tags: wcag111
+         at: img
+MODERATE landmark-one-main  (1 element(s))
+         Document should have one main landmark
+         at: html
+MODERATE region  (12 element(s))
+         All page content should be contained by landmarks
+         at: .header
+         at: h1
+         at: img
+
+What this scan cannot see: whether the links make sense, whether the
+"Submit reflection" box works with a keyboard, or whether "items in red"
+means anything to someone who cannot see red. Tab through it, and listen.

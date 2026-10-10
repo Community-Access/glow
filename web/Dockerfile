@@ -88,6 +88,9 @@ RUN pip install --no-cache-dir --no-deps ./web
 # the sample-download and resource-download routes 404 in the container.
 COPY samples/ /app/samples/
 COPY docs/ahg-2026/workshop-frontfacing-guide.md docs/ahg-2026/workshop-frontfacing-exercises.md docs/ahg-2026/workshop-frontfacing-utilization.md /app/docs/ahg-2026/
+# The AHG 2026 agent kit, served as a zip, a VS Code profile and step cards
+# from /workshop/ahg-2026 (routes/workshop.py resolves it relative to /app).
+COPY docs/ahg-2026/kit/ /app/docs/ahg-2026/kit/
 
 # Container health check -- used by Docker and Compose when no override is
 # given. Checks the /health endpoint every 30 s; allows 3 failures before

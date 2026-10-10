@@ -1,0 +1,5 @@
+Evidence: psy101-week3-captions.vtt
+No automated checker judges caption accuracy. This file is the evidence:
+give the captions themselves to the captions specialist, together with
+the facts you know, such as the name Hermann Ebbinghaus and the
+nonsense syllables DAX, BOK and YAT from the reading.

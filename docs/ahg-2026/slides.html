@@ -4,7 +4,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Accessibility Agents in Action - workshop deck</title>
+<title>Accessibility Agents - workshop deck</title>
 <style>
   /* GLOW deck. ACB large print baseline: Arial, 18pt (24px), flush left,
      no hyphenation, generous letter and word spacing. Single file, no
@@ -244,405 +244,431 @@
      something to nest under, and so a screen reader user arriving at the
      page is told what it is. It is not painted: the title slide says the
      same thing, larger, to the room. -->
-<h1 class="visually-hidden">Accessibility Agents in Action - workshop deck</h1>
+<h1 class="visually-hidden">Accessibility Agents - workshop deck</h1>
 
 
 
 
 <section class="slide">
   <p class="kicker">Accessing Higher Ground 2026</p>
-  <h2 id="s1" tabindex="-1">Accessibility Agents in Action</h2>
-  <p class="lead">A hands-on GLOW workshop for human-centered accessibility workflows</p><p class="lead">Helping everyone become an accessibility champion.</p><p class="slide-no">Jeff Bishop - BITS, an affiliate of the American Council of the Blind - letitglow.app</p>
+  <h2 id="s1" tabindex="-1">Accessibility Agents</h2>
+  <p class="lead">Building Human-Centered AI Workflows for Trusted Accessibility Automation at Scale</p><p>Today you build an accessibility agent. By four o&#39;clock it is part of a team, and part of an open-source project, with your name on it.</p><p class="slide-no">Jeff Bishop - BITS, an affiliate of the American Council of the Blind</p>
   
   <div class="notes">
     <h3>Speaker notes</h3>
-    <p>Do not start with the tool. Start with the room. Ask nothing yet - let people sit down, find power, and settle.</p><p>The proctor introduces the session. Put the microphone on before you say a word, and keep it on all day: when a volunteer speaks, pass them a mic or say what they said back into yours before you answer. Some people in this room hear you only through it.</p><p>Say the key point once, before any logistics, in one sentence: the work is not fixing documents, it is making more people who can. Then the promise on the next slide.</p>
+    <p>The proctor introduces the session. Put the microphone on before you say a word, and keep it on all day: when someone speaks from the floor, pass them a mic or repeat what they said into yours before you answer.</p><p>Say the key point before any logistics, in one sentence: accessibility in higher education does not scale by fixing, it scales by making more people who can, and agents are how one person&#39;s know-how reaches a whole course.</p><p>Describe the slide: the title, the subtitle from the program, and one sentence promising what they leave with.</p>
   </div>
   
 </section>
 
 <section class="slide">
-  <p class="kicker">The promise</p>
-  <h2 id="s2" tabindex="-1">Two ways, and the first one is enough</h2>
-  <ol>
-    <li>GLOW, in a browser. The whole day. No account, no sign-in, no AI.</li><li>Plus your own assistant, if you already have one. An upgrade on the same exercise, never a different one.</li>
-    </ol><p class="big">Nothing today needs an account with anyone.</p><p>One rule if you use an assistant: paste text, never upload files - and never paste anything private.</p>
+  <p class="kicker">The problem</p>
+  <h2 id="s2" tabindex="-1">Forty thousand files and three people</h2>
+  <p>WCAG 2.2 is the standard. Title II made it a deadline for public colleges and universities.</p><p>Every syllabus, slide deck, scanned reading and course page is in scope, and most of them are documents, not web pages.</p><p class="big">Nobody fixes that by working harder. The question is how to scale without losing quality, accountability or trust.</p>
   
   <div class="notes">
     <h3>Speaker notes</h3>
-    <p>Say this in the first ten minutes, exactly once, and mean it. Everything later in the day depends on the room believing it.</p><p>The upload rule matters: free accounts allow roughly two image uploads a day and do not publish the number. An instruction that fails at 1:40 is worse than one nobody followed.</p><p>The privacy half matters more. Say what private means here: student records, health or disability information, anyone&#39;s name. A free assistant may keep what is pasted into it. Use the scenarios, or strip the details out first.</p>
+    <p>Ask, warmly: who here has a backlog? Who has a spreadsheet with the word final in its name more than once? Let the laugh happen; it is recognition, not mockery.</p><p>Title II&#39;s rule points to WCAG 2.1 AA; 2.2 is the current standard and includes everything 2.1 does. Say it once and move on.</p>
+  </div>
+  
+</section>
+
+<section class="slide">
+  <p class="kicker">Where we will be at 4:00</p>
+  <h2 id="s3" tabindex="-1">The finished result, first</h2>
+  <p>This afternoon a team of agents works through a whole course and writes one report. Every finding has its evidence, its WCAG criterion, and a named person who checks it.</p><table>
+      <caption>One section of that report, from Maria&#39;s agent:</caption>
+      <thead><tr><th scope="col">Part</th><th scope="col">What it says</th></tr></thead>
+      <tbody>
+        
+        <tr><th scope="row">File</th><td>The scanned required reading</td></tr>
+        
+        <tr><th scope="row">Routed to</th><td>Alternate format planner, by Maria Alvarez</td></tr>
+        
+        <tr><th scope="row">Evidence</th><td>GLOW audit: pictures of text, no text layer, untagged</td></tr>
+        
+        <tr><th scope="row">Plan</th><td>Get a clean source, then large print and audio, and post it for every student</td></tr>
+        
+        <tr><th scope="row">Reviewer</th><td>Alternate format specialist. Status: proposed</td></tr>
+        
+      </tbody>
+    </table><p>You will build one of the agents that writes a section like this.</p>
+  
+  <div class="notes">
+    <h3>Speaker notes</h3>
+    <p>Read the table out loud, row by row. It is the destination; people relax when they can see it.</p><p>Maria is a colleague in a disability resource center. She is fictional, and she is one step ahead of the room all day.</p>
+  </div>
+  
+</section>
+
+<section class="slide">
+  <p class="kicker">The map for today</p>
+  <h2 id="s4" tabindex="-1">The journey</h2>
+  <ol>
+    <li>The problem: a course full of barriers, and a team too small.</li><li>Your agent: five plain-English answers.</li><li>Your agent at work: Copilot uses it on one course document.</li><li>Your agent, grounded: real evidence in, cited answers out.</li><li>Your agent, shared: a pull request to an open-source project, with your name on it.</li><li>Your agent in the team: the whole course, at once.</li><li>Your campus: a 30-day plan.</li>
+    </ol>
+  
+  <div class="notes">
+    <h3>Speaker notes</h3>
+    <p>Read all seven, slowly. This list comes back at the start of every block with one step marked, so nobody ever wonders where we are.</p><p>Promise them out loud: every step has a finished example to fall back on. Nobody gets stuck and stays stuck.</p>
   </div>
   
 </section>
 
 <section class="slide">
   <p class="kicker">Housekeeping</p>
-  <h2 id="s3" tabindex="-1">How today runs</h2>
+  <h2 id="s5" tabindex="-1">How today runs</h2>
   <ul>
-    <li>8:30 to 4:30. Lunch at 12:15. Breaks at 10:10 and 2:55.</li><li>Eleven activities. Nothing is graded, and nothing is collected without you choosing to share it.</li><li>Any device, a phone included. Nothing to install, so a locked-down work laptop is fine.</li><li>Everything you write is yours, and you leave with all of it.</li><li>Ask for anything, any time - large print, a seat, a pause, a repeat.</li>
+    <li>10:30 to 4:30 Mountain Time. Lunch at 12:15. A break at 2:10.</li><li>Your laptop, with VS Code, the AHG 2026 profile and your GitHub account. Not set up yet? A helper is coming to you.</li><li>Seven blocks. Every one starts by showing you the finished result.</li><li>The last five minutes, at 4:25, are the session evaluation.</li><li>Ask for anything, any time: large print, a seat, a pause, a repeat.</li>
     </ul>
   
   <div class="notes">
     <h3>Speaker notes</h3>
-    <p>Name the exits and the bathrooms, physically pointing. Some people will not ask.</p><p>If anyone arrived without the worksheet pack, the links are on the workshop home page and work on a phone. We do not hand out paper.</p><p>Say the last bullet slowly, then add: that is not an interruption of this workshop - it is this workshop. It sets the tone for whether anyone asks for anything all day.</p><p>The worksheet pack was published before today for anyone who wanted to print their own. Say so for the person who did.</p>
+    <p>Name the exits and the restrooms, physically pointing.</p><p>Say the last bullet slowly, then add: that is not an interruption of this workshop - it is this workshop.</p><p>If anyone is not set up, do not wait for them. Helpers sit with them while the room carries on; the morning is designed so they catch up by lunch.</p>
   </div>
   
 </section>
 
 <section class="slide">
-  <p class="kicker">Join the room</p>
-  <h2 id="s4" tabindex="-1">One address, all day</h2>
-  <p class="url">letitglow.app/w/ahg-2026</p><p>The same address is on the card at every table, in large type, with a QR code beside it.</p><p>Each activity has its own short address: slash 1, slash 2, and so on, numbered the way I will say them out loud.</p>
+  <p class="kicker">Two rules, all day</p>
+  <h2 id="s6" tabindex="-1">Private stays private, and people decide</h2>
+  <ol>
+    <li>Never paste anything private into any AI: student records, health or disability information, anyone&#39;s name. We use a sample course all day.</li><li>Every agent ends with a person checking its work. Agents draft. People decide.</li>
+    </ol><p class="big">If nobody is named, nobody reviewed it.</p>
   
   <div class="notes">
     <h3>Speaker notes</h3>
-    <p>Read the address out twice, letter by letter, then wait. Do not move on until people are in. The code on this slide is the live one for this session - there is nothing to replace.</p><p>Say what is on the screen: the address and nothing else. The QR code is on the table cards, not here, so nobody hunts the slide for it.</p><p>Signage is printed from the facilitator dashboard: session, then signage.</p>
+    <p>Set the AI context here, in under a minute. What today covers: agents that analyze course content, find barriers and draft fixes, grounded in checkers and cited standards. What it does not: replacing anyone, or trusting any answer without evidence.</p><p>Say what makes it different from the other AI sessions this week: it is about higher education accessibility work at scale, built by the people who do that work, and every agent is open source.</p><p>Name the reasons people hesitate - privacy, accuracy, other people&#39;s jobs - once, without dwelling. Rule one answers the first. Grounding answers the second. Rule two answers the third.</p>
   </div>
   
 </section>
 
 <section class="slide">
-  <p class="kicker">Do this early</p>
-  <h2 id="s5" tabindex="-1">So you never lose your work</h2>
-  <p>Your work is held against this browser on this device. Switch to a phone, or clear your cookies, and it is gone.</p><p>On My workshop content, under Work on another device, give an email address and you will be sent a link that restores everything, anywhere.</p><ul>
-    <li>Entirely optional. The day works without it.</li><li>The address is used for that one message and never appears anywhere else.</li><li>The link lasts 45 days, which outlives your 30-day plan.</li>
-    </ul>
-  
-  <div class="notes">
-    <h3>Speaker notes</h3>
-    <p>Give this twice: once now, once at the 10:10 break, when there is something worth keeping.</p><p>If Postmark is not configured, the form is replaced by a download prompt. Check before the room fills - it is invisible until you look for it.</p>
-  </div>
-  
-</section>
-
-<section class="slide">
-  <p class="kicker">Why we are here</p>
-  <h2 id="s6" tabindex="-1">Accessibility does not scale by fixing</h2>
-  <p>If you are the person who fixes everything, then accessibility in your institution is exactly as large as your calendar.</p><p class="big">The work is not fixing documents. The work is making more people who can.</p>
-  
-  <div class="notes">
-    <h3>Speaker notes</h3>
-    <p>This is the pivot of the whole day. Let it sit. Some people in this room are exhausted by being the only one.</p><p>Optional: ask for a show of hands on &#34;who is the only accessibility person in your unit&#34; - but only if the room is warm enough. It can land as exposure rather than solidarity.</p>
-  </div>
-  
-</section>
-
-<section class="slide">
-  <p class="kicker">Four words for the day</p>
-  <h2 id="s7" tabindex="-1">The GLOW framework</h2>
+  <p class="kicker">No code, really</p>
+  <h2 id="s7" tabindex="-1">What an agent is</h2>
   <dl class="formula">
-      <dt>G - Ground</dt><dd>Ground the work in a real accessibility problem, not a tool.</dd><dt>L - Learn</dt><dd>Learn what the people around you actually need to understand.</dd><dt>O - Organize</dt><dd>Organize it into a workflow that repeats without you.</dd><dt>W - Walk</dt><dd>Walk forward as champions, plural.</dd>
-    </dl>
+      <dt>Role</dt><dd>Who it is, and who it works for.</dd><dt>Task</dt><dd>The one job it does.</dd><dt>Trusted guidance</dt><dd>The standards and policies it must cite: WCAG 2.2, your own procedures.</dd><dt>Output format</dt><dd>What comes back, in a shape a busy person can use.</dd><dt>Human review</dt><dd>Who checks it before anything goes out.</dd>
+    </dl><p class="big">An agent is those five answers, written in plain English. Writing one is writing, not coding.</p>
   
   <div class="notes">
     <h3>Speaker notes</h3>
-    <p>Map the day onto this once, here, and then stop talking about the acronym. It is scaffolding, not content.</p>
+    <p>This is the slide that lowers the shoulders. Say it twice: if you can write instructions for a new colleague, you can write an agent.</p><p>The file format is the same one the open-source Accessibility Agents project uses, which is why their agents and yours can work in the same team this afternoon.</p>
   </div>
   
 </section>
 
 <section class="slide">
-  <p class="kicker">The boundary</p>
-  <h2 id="s8" tabindex="-1">AI drafts. People decide.</h2>
-  <p>Every activity today has a human-review step that you write yourself, in your own words, for your own context.</p><p>Not because AI is dangerous in the abstract - because purpose, meaning, context and harm are judgments, and judgments have owners.</p><p class="big">If nobody is named, nobody reviewed it.</p>
-  
-  <div class="notes">
-    <h3>Speaker notes</h3>
-    <p>This is the slide institutional leadership cares about. It is also the honest one.</p><p>Set the AI context here, in under a minute. What this session covers: where AI can help in accessibility work, and the human review that has to follow it. What it does not: comparing vendors, building software, or requiring anyone to use AI at all.</p><p>Say what makes it different from the other AI sessions this week: it is about people making more people who can, and AI stays optional throughout. Name the reasons people hesitate - privacy, accuracy, other people&#39;s jobs - without dwelling on them. The boundary on this slide is the answer to each.</p><p>The generated prompts put the participant&#39;s own review step inside the prompt as an instruction, not as a closing remark. Mention that at activity 5, not here.</p>
-  </div>
-  
-</section>
-
-<section class="slide">
-  <p class="kicker">The shape of the day</p>
-  <h2 id="s9" tabindex="-1">Where we are going</h2>
-  <dl class="formula">
-      <dt>Morning, 8:30-12:15</dt><dd>Why this work matters, five short activities, and Lab 1. Break at 10:10.</dd><dt>Afternoon, 1:15-3:05</dt><dd>Two labs: alt text, then remediation planning. Break at 2:55.</dd><dt>Close, 3:05-4:30</dt><dd>Your workflow, your take-home artifact, your 30-day plan, and the session evaluation.</dd>
-    </dl>
-  
-  <div class="notes">
-    <h3>Speaker notes</h3>
-    <p>Thirty seconds. Read the three parts out loud - not everyone can read the screen. Then say &#34;the last part is what you take home&#34;.</p><p>The full timetable, every break included, is on the workshop home page on every device. These times come from the workshop agenda, so they cannot drift from what each activity page shows.</p>
-  </div>
-  
-</section>
-
-<section class="slide">
-  <p class="kicker">Activity 1 - 20 minutes - /w/ahg-2026/1</p>
-  <h2 id="s10" tabindex="-1">Accessibility Journey Check-In</h2>
-  <p>What accessibility work do you actually do? Where do your partners get stuck - the same place, over and over?</p><p>What would change if more of them became champions?</p>
-  
-  <div class="notes">
-    <h3>Speaker notes</h3>
-    <p>No sharing pressure. Writing, then a table conversation if the table wants one.</p><p>When the first submissions land, point people at the return link. This is the moment they have something to lose.</p>
-  </div>
-  
-</section>
-
-<section class="slide">
-  <p class="kicker">Activity 2 - 30 minutes - /w/ahg-2026/2</p>
-  <h2 id="s11" tabindex="-1">What problem are we solving?</h2>
-  <p>Start with the problem you can see today.</p><p>Then name the deeper one behind it. Who needs to learn this work, or own part of it?</p><p class="big">What does success look like if it happens again and again, without you?</p>
-  
-  <div class="notes">
-    <h3>Speaker notes</h3>
-    <p>Watch for tool-first answers - &#34;we need a checker&#34;. Push back gently: a checker is an answer, not a problem.</p>
-  </div>
-  
-</section>
-
-<section class="slide">
-  <p class="kicker">Activity 3 - 30 minutes - /w/ahg-2026/3</p>
-  <h2 id="s12" tabindex="-1">Fix it for me, or teach me?</h2>
-  <p>Take a real request that said &#34;just fix it for me.&#34;</p><p>Write the reply that does both: solves it today, and teaches it for next time.</p><div class="panel"><p>The pattern: I have done X for you. Here is the one thing that caused it. Next time, do Y - it takes about a minute, and here is where it lives.</p></div>
-  
-  <div class="notes">
-    <h3>Speaker notes</h3>
-    <p>The hard part is tone, not content. Nobody learns from a reply that makes them feel caught.</p><p>Ask for one volunteer to read theirs aloud. One is enough.</p>
-  </div>
-  
-</section>
-
-<section class="slide">
-  <p class="kicker">Break - 15 minutes</p>
-  <h2 id="s13" tabindex="-1">Back at 10:25</h2>
-  <p>If you have not sent yourself a return link yet, now is the moment. My workshop content, then Work on another device.</p>
-  
-  <div class="notes">
-    <h3>Speaker notes</h3>
-    <p>Project the room pulse during the break. Counts only - it is safe on a screen.</p><p>Walk the room. The person who has not typed anything is the one to sit with, quietly.</p>
-  </div>
-  
-</section>
-
-<section class="slide">
-  <p class="kicker">Activity 4 - 30 minutes - /w/ahg-2026/4</p>
-  <h2 id="s14" tabindex="-1">Helpful, risky, or human required?</h2>
-  <p>Sort your own tasks into three piles. Then write the safeguard that makes the middle pile safe.</p><table>
-      <caption>The three piles</caption>
-      <thead><tr><th scope="col">Pile</th><th scope="col">Example</th></tr></thead>
+  <p class="kicker">Agents in action</p>
+  <h2 id="s8" tabindex="-1">Your accessibility office</h2>
+  <table>
+      <caption>The agent team you will join this afternoon. A coordinator routes each file to these specialists.</caption>
+      <thead><tr><th scope="col">Specialist</th><th scope="col">Takes</th></tr></thead>
       <tbody>
         
-        <tr><th scope="row">Helpful for AI</th><td>Drafting alt text for a chart you wrote</td></tr>
+        <tr><th scope="row">Word documents</th><td>Syllabi, handouts</td></tr>
         
-        <tr><th scope="row">Risky without review</th><td>Summarising a policy document</td></tr>
+        <tr><th scope="row">PowerPoint slides</th><td>Lecture decks</td></tr>
         
-        <tr><th scope="row">Human required</th><td>Deciding what an image is for</td></tr>
+        <tr><th scope="row">Excel workbooks</th><td>Gradebooks, templates</td></tr>
+        
+        <tr><th scope="row">PDF documents</th><td>Readings, forms, scans</td></tr>
+        
+        <tr><th scope="row">Web pages</th><td>Course pages, with axe and Accessibility Insights</td></tr>
+        
+        <tr><th scope="row">Captions and media</th><td>Lecture captions</td></tr>
+        
+        <tr><th scope="row">Plain language</th><td>Anything a student must read and act on</td></tr>
+        
+        <tr><th scope="row">Standards reviewer</th><td>Everyone&#39;s findings, last</td></tr>
+        
+        <tr><th scope="row">Your agent</th><td>Whatever you build it to do</td></tr>
         
       </tbody>
     </table>
   
   <div class="notes">
     <h3>Speaker notes</h3>
-    <p>The examples are deliberately arguable. If a table disagrees about which pile something is in, that argument is the exercise.</p>
+    <p>Read the specialists down the list. Pause on the last row: the team has an empty chair, and it is theirs.</p><p>These specialists are adapted from the open-source Accessibility Agents project. That is where their agents go this afternoon too.</p>
   </div>
   
 </section>
 
 <section class="slide">
-  <p class="kicker">Activity 5 - 35 minutes - /w/ahg-2026/5</p>
-  <h2 id="s15" tabindex="-1">The Accessibility Agent Formula</h2>
-  <dl class="formula">
-      <dt>Role</dt><dd>Who is it being, and for whom?</dd><dt>Task</dt><dd>One job, said plainly.</dd><dt>Trusted guidance</dt><dd>Whose rules - WCAG, ACB large print, your own style guide?</dd><dt>Output format</dt><dd>What comes back, in what shape, so a person can use it?</dd><dt>Human review</dt><dd>Who checks what, before it goes out?</dd>
-    </dl><p>You are not writing code. You are writing instructions for a colleague who is fast, literal, and has never met your institution.</p>
+  <p class="kicker">Block 2 of 7 - 10:50-11:50 - 60 minutes</p>
+  <h2 id="s9" tabindex="-1">Design your agent</h2>
+  <p>By the end of this block: your own agent, in a file, with your name on it.</p><dl class="formula">
+      <dt>Documents and alternate formats</dt><dd>An alternate format planner, or a document triage agent.</dd><dt>Course content and faculty coaching</dt><dd>A faculty coach, or a course page coach.</dd><dt>Compliance and procurement</dt><dd>A remediation log keeper, or a vendor report reader.</dd>
+    </dl><p>Pick one card. Bring one real problem from your job, with nothing private in it.</p>
   
   <div class="notes">
     <h3>Speaker notes</h3>
-    <p>This is the technical peak of the day and it is still five sentences on a page. Say so.</p><p>Mention the optional &#34;Run your agent&#34; lab here, once. Lunch or after 4:30. A door, not a corridor.</p>
+    <p>Say where we are on the journey: step 2 of 7, &#34;Your agent: five plain-English answers.&#34; Then show what they will have at the end of this block before anyone starts.</p><p>Every card has two ready-made agents in examples/agents. Nobody starts from a blank page; everybody starts from something that already works and makes it theirs.</p>
   </div>
   
 </section>
 
 <section class="slide">
-  <p class="kicker">Lab 1 - 45 minutes - /w/ahg-2026/6</p>
-  <h2 id="s16" tabindex="-1">GLOW Lab 1: Accessible Communications</h2>
-  <p>Rewrite a real message so more people can read it.</p><ul>
-    <li>Plain words, short sentences.</li><li>Real headings, not bold text pretending to be headings.</li><li>Links that say where they go.</li><li>Words that welcome an access request instead of burying it.</li>
-    </ul><p>Bring your own message if you have one. The scenarios are a net, not a rail.</p>
+  <p class="kicker">Watch me first</p>
+  <h2 id="s10" tabindex="-1">Maria&#39;s five answers</h2>
+  <table>
+      <caption>Maria, from the Disability Resource Center, designing her alternate format planner:</caption>
+      <thead><tr><th scope="col">Question</th><th scope="col">Maria&#39;s answer</th></tr></thead>
+      <tbody>
+        
+        <tr><th scope="row">Role</th><td>An alternate format planner in a disability resource center</td></tr>
+        
+        <tr><th scope="row">Task</th><td>Plan the formats a student needs from a checker&#39;s report</td></tr>
+        
+        <tr><th scope="row">Trusted guidance</th><td>WCAG 2.2 1.4.5 and 1.1.1, ACB large print, our procedure</td></tr>
+        
+        <tr><th scope="row">Output format</th><td>Numbered steps with who does each, then a checklist</td></tr>
+        
+        <tr><th scope="row">Human review</th><td>The specialist checks page by page; the student confirms</td></tr>
+        
+      </tbody>
+    </table>
   
   <div class="notes">
     <h3>Speaker notes</h3>
-    <p>Four scenarios from four sectors, plus &#34;Surprise me&#34;, which is deterministic per person - two people at a table will rarely get the same brief, and you can walk anyone back through what they were given.</p><p>A real document of their own always beats a scenario. Say it out loud.</p>
+    <p>Read Maria&#39;s answers aloud. Then type /design-my-agent in Copilot Chat on the projector and answer as Maria, so they hear the whole conversation once before they have theirs.</p><p>Joke if the room is warm: Maria&#39;s coffee machine has been out of order since August. Her agent does not drink coffee, which is its main advantage.</p>
+  </div>
+  
+</section>
+
+<section class="slide">
+  <p class="kicker">Your turn</p>
+  <h2 id="s11" tabindex="-1">Copilot asks, you answer</h2>
+  <ol>
+    <li>Open Copilot Chat: Control+Alt+I on Windows, Command+Control+I on a Mac.</li><li>Type /design-my-agent and press Enter.</li><li>Answer the questions, one at a time. Borrow from the example whenever you like.</li><li>Copilot writes your answers into my-agent/SKILL.md and reads it back.</li>
+    </ol><p>You are on track if Copilot tells you one thing your agent does well.</p><p>Stuck? Copy a ready-made agent from examples/agents into my-agent. That counts. You are still in.</p>
+  
+  <div class="notes">
+    <h3>Speaker notes</h3>
+    <p>Helpers move now. Look for the person who has not typed anything yet, and sit with them quietly.</p><p>Step card 2 has every key and every expected screen in words, for screen reader users and anyone who prefers paper.</p>
+  </div>
+  
+</section>
+
+<section class="slide">
+  <p class="kicker">Block 3 of 7 - 11:50-12:15 - 25 minutes</p>
+  <h2 id="s12" tabindex="-1">Your agent at work</h2>
+  <p>By the end of this block: your agent&#39;s first answer on a real course document.</p><ol>
+    <li>In Copilot Chat, type /try-my-agent.</li><li>Pick a file from the PSY 101 sample course.</li><li>Read what your agent says.</li>
+    </ol><p class="big">It will guess a little. That is not a mistake. It is the setup for this afternoon.</p>
+  
+  <div class="notes">
+    <h3>Speaker notes</h3>
+    <p>Say where we are on the journey: step 3 of 7, &#34;Your agent at work: Copilot uses it on one course document.&#34; Then show what they will have at the end of this block before anyone starts.</p><p>PSY 101 is fictional: a course about memory and procrastination that keeps forgetting things and running late. The barriers in it are planted on purpose; the answer key is in the facilitator folder.</p>
+  </div>
+  
+</section>
+
+<section class="slide">
+  <p class="kicker">Watch me</p>
+  <h2 id="s13" tabindex="-1">Maria&#39;s first answer</h2>
+  <div class="panel"><p>&#34;Run Acrobat&#39;s Make Accessible action, add alternative text to all images, and increase the font size. This will make the document compliant with WCAG 2.1.&#34;</p></div><ul>
+    <li>It never saw the file, so it did not know the reading is a scan.</li><li>Alt text on pictures of text would describe the pictures, not turn them into text.</li><li>It said &#34;compliant&#34;, which her agent is told never to say.</li>
+    </ul>
+  
+  <div class="notes">
+    <h3>Speaker notes</h3>
+    <p>Read the quote in a confident voice, then the three problems in a normal one. The contrast is the joke, and the lesson.</p><p>This is a written example, labelled as one in the kit. On the day, show a real first answer from the room if someone offers one.</p>
   </div>
   
 </section>
 
 <section class="slide">
   <p class="kicker">Lunch - 12:15-1:15</p>
-  <h2 id="s17" tabindex="-1">Back at 1:15</h2>
-  <p>Nothing is due. Nothing is graded.</p><p>If you want more: the optional Run Your Agent lab is open, and it is genuinely optional.</p>
+  <h2 id="s14" tabindex="-1">Back at 1:15</h2>
+  <p>You have an agent. That was the hard part.</p><p>After lunch it stops guessing.</p>
   
   <div class="notes">
     <h3>Speaker notes</h3>
-    <p>Eat. Nothing in the afternoon depends on a model answering, so there is nothing to watch over lunch.</p>
+    <p>Say well done, and mean it. Most people in this room had never written an agent at 10:30.</p><p>Anyone still setting up: lunch is when a helper finishes it with them.</p>
   </div>
   
 </section>
 
 <section class="slide">
-  <p class="kicker">1:15 - Re-entry</p>
-  <h2 id="s18" tabindex="-1">Where the room is</h2>
-  <p>Here is what the room has finished so far. No names, just counts.</p><p class="big">Nobody is behind. There is no behind.</p>
+  <p class="kicker">Block 4 of 7 - 1:15-2:10 - 55 minutes</p>
+  <h2 id="s15" tabindex="-1">Ground it</h2>
+  <p>By the end of this block: the same agent, giving cited answers from real evidence. A before and an after.</p><ol>
+    <li>In Copilot Chat, type /ground-my-agent.</li><li>Use the same file as this morning.</li><li>Your agent reads that file&#39;s checker report from sample-course/evidence: GLOW for documents, axe for the web page.</li><li>Compare the two answers.</li>
+    </ol>
   
   <div class="notes">
     <h3>Speaker notes</h3>
-    <p>Project the facilitator dashboard. Counts only - it never carries anyone&#39;s work. Read the counts aloud; the screen is not the only way into the room.</p><p>Nothing in the afternoon depends on a model answering, so there is no bad news to deliver here. Say that once if the room looks anxious about it.</p>
+    <p>Say where we are on the journey: step 4 of 7, &#34;Your agent, grounded: real evidence in, cited answers out.&#34; Then show what they will have at the end of this block before anyone starts.</p><p>Grounding is the trusted in the session title. The checkers find; the agent explains and plans; a person decides.</p>
   </div>
   
 </section>
 
 <section class="slide">
-  <p class="kicker">Lab 2 - 45 minutes - /w/ahg-2026/7</p>
-  <h2 id="s19" tabindex="-1">GLOW Lab 2: Alt Text and Human Judgment</h2>
-  <p>A machine can tell you what is in the picture.</p><p class="big">Only you can say what the picture is for.</p><p>So this lab gives you the context in words, and descriptions somebody already wrote. Your job is to judge them.</p>
+  <p class="kicker">Watch me</p>
+  <h2 id="s16" tabindex="-1">Before and after</h2>
+  <table>
+      <caption>Maria&#39;s agent, on the scanned reading:</caption>
+      <thead><tr><th scope="col">Before evidence</th><th scope="col">After evidence</th></tr></thead>
+      <tbody>
+        
+        <tr><th scope="row">Guessed the file was an ordinary PDF</th><td>Knew it was two pages of pictures of text</td></tr>
+        
+        <tr><th scope="row">WCAG 2.1, no links</th><td>WCAG 2.2, 1.4.5 Images of Text, linked</td></tr>
+        
+        <tr><th scope="row">&#34;Compliant&#34;</th><td>What was checked, and what a person must check</td></tr>
+        
+        <tr><th scope="row">Fix the PDF</th><td>Get a clean source, then large print and audio for everyone</td></tr>
+        
+      </tbody>
+    </table>
   
   <div class="notes">
     <h3>Speaker notes</h3>
-    <p>Nobody uploads anything. Purpose lives in the words around an image, not in the pixels - a lab built on &#39;upload it and see&#39; teaches the opposite.</p><p>The descriptions are written to be argued with. One is fluent and confidently wrong; that is the one to spend time on.</p>
+    <p>Read both columns, row by row.</p><p>Then ask one volunteer to read their own before and after. One is enough, and applaud it.</p>
   </div>
   
 </section>
 
 <section class="slide">
-  <p class="kicker">Lab 2 - the method</p>
-  <h2 id="s20" tabindex="-1">Four questions, in this order</h2>
-  <ol>
-    <li>Why is this image here? If you cannot answer, it may not need to be.</li><li>What must a reader know about it to follow the page?</li><li>What can you leave out? Alt text is not an inventory.</li><li>What must a person verify before this goes live?</li>
-    </ol><p>Generated descriptions are confident and sometimes wrong. Question four is the whole job.</p>
+  <p class="kicker">The skill, not the tool</p>
+  <h2 id="s17" tabindex="-1">Any checker, and a person</h2>
+  <p>The same works with Word&#39;s and PowerPoint&#39;s own Accessibility Checker, Acrobat&#39;s checker, or Accessibility Insights. The skill is giving your agent evidence.</p><p>And some barriers no checker sees:</p><ul>
+    <li>The accommodations statement, last, in 8-point gray, contradicted two sections earlier by a no-makeup-exams rule in capitals.</li><li>Alt text that says &#34;image.png&#34;.</li><li>A lab that only works if you can see color.</li><li>Captions that turn Ebbinghaus into &#34;ebb in house&#34;.</li>
+    </ul>
   
   <div class="notes">
     <h3>Speaker notes</h3>
-    <p>If you have one, show a generated description that is fluent and factually wrong. It teaches more than any slide.</p><p>Decorative images: an empty alt is a decision, and a correct one. Say it explicitly - many people have never been told.</p>
-  </div>
-  
-</section>
-
-<section class="slide">
-  <p class="kicker">Lab 3 - 45 minutes - /w/ahg-2026/8</p>
-  <h2 id="s21" tabindex="-1">GLOW Lab 3: Remediation Planning</h2>
-  <p>Take a real document, slide deck, or course page. List what is broken. Then put the fixes in order.</p><p class="big">Order by who is blocked, not by what is easy.</p><p>Then write how you would coach the owner, so the next version starts better.</p>
-  
-  <div class="notes">
-    <h3>Speaker notes</h3>
-    <p>Everyone sorts by effort first. The reorder, once someone says &#34;but this one blocks a student on Monday&#34;, is the lesson.</p>
+    <p>If Word is handy, show Review, then Check Accessibility on the syllabus, and paste its results into Copilot with the agent. Same skill, different tool.</p><p>Those four barriers are why every agent has a human review step. Read each one; the room will recognise every one of them from their own campus.</p>
   </div>
   
 </section>
 
 <section class="slide">
   <p class="kicker">Break - 10 minutes</p>
-  <h2 id="s22" tabindex="-1">Back at 3:05</h2>
-  <p>The last stretch is the one you take home.</p>
+  <h2 id="s18" tabindex="-1">Back at 2:20</h2>
+  <p>Next, your agent goes public. Nicely.</p>
   
   <div class="notes">
     <h3>Speaker notes</h3>
-    <p>Short break on purpose. Protect the last 85 minutes; that is where the artifact comes from.</p>
+    <p>Short break on purpose. The next two blocks are where the day comes together.</p>
   </div>
   
 </section>
 
 <section class="slide">
-  <p class="kicker">Studio - 40 minutes - /w/ahg-2026/9</p>
-  <h2 id="s23" tabindex="-1">Accessibility Champion Studio</h2>
-  <p>Design one workflow you can hand to someone else.</p><ul>
-    <li>Who does each step?</li><li>Where is the point a person must review before anything goes out?</li><li>What does the partner learn by doing it, that they did not know before?</li>
-    </ul><p class="big">Build the workflow that still works when you are on holiday.</p>
+  <p class="kicker">Block 5 of 7 - 2:20-3:00 - 40 minutes</p>
+  <h2 id="s19" tabindex="-1">Share it</h2>
+  <p>By the end of this block: your own pull request in the open-source Accessibility Agents project.</p><ol>
+    <li>Open letitglow.app/workshop/ahg-2026/share in your browser, and choose your my-agent/SKILL.md.</li><li>Press Open GitHub with my agent. GitHub opens with your agent filled in.</li><li>Press Propose changes. GitHub makes your own copy, called a fork.</li><li>Press Create pull request, then Create pull request again.</li>
+    </ol><p>That is your contribution. Buttons only. No code.</p>
   
   <div class="notes">
     <h3>Speaker notes</h3>
-    <p>Workflows shared to the gallery carry a &#34;Start from this workflow&#34; link. It fills an empty form only; it never writes over someone&#39;s own answers. Anonymous submitters stay anonymous in the attribution.</p>
+    <p>Say where we are on the journey: step 5 of 7, &#34;Your agent, shared: a pull request to an open-source project, with your name on it.&#34; Then show what they will have at the end of this block before anyone starts.</p><p>Step card 5 walks the GitHub pages one control at a time, with what a screen reader announces at each step.</p>
   </div>
   
 </section>
 
 <section class="slide">
-  <p class="kicker">Peer review - 10 minutes - gallery</p>
-  <h2 id="s24" tabindex="-1">Three sentences for someone else</h2>
-  <ol>
-    <li>One thing that is strong.</li><li>One risk or missing safeguard.</li><li>One way it could be reused somewhere else.</li>
-    </ol><p>Supportive, specific, and short. You are reviewing a workflow, not a person.</p>
+  <p class="kicker">Open source, live</p>
+  <h2 id="s20" tabindex="-1">Merged, with your name on it</h2>
+  <p>As your pull requests arrive, I review and merge them, here, on the screen.</p><p class="big">Every agent merged today lives in community/ahg-2026 in the Accessibility Agents project, for anyone in higher education to use and improve.</p>
   
   <div class="notes">
     <h3>Speaker notes</h3>
-    <p>The gallery announces new work as a count and waits for the reader to press &#34;Show new submissions&#34;. Nothing appears underneath anyone mid-read. Say that out loud - it will be noticed in this room, and it should be.</p>
+    <p>Merge on the projector as they arrive, and read each name and agent title out loud. Applause is allowed and encouraged.</p><p>Started from a ready-made agent? It still counts. Say so: what matters is that it is yours now.</p>
   </div>
   
 </section>
 
 <section class="slide">
-  <p class="kicker">Capstone - 15 minutes - /w/ahg-2026/10</p>
-  <h2 id="s25" tabindex="-1">Say it in four sentences</h2>
-  <p>What is your workflow? Who does it help? What do they learn?</p><p>And how does it keep going after today?</p>
+  <p class="kicker">Block 6 of 7 - 3:00-3:45 - 45 minutes</p>
+  <h2 id="s21" tabindex="-1">Build the office</h2>
+  <p>By the end of this block: your agent working inside a team, across the whole course, and one team report.</p><ol>
+    <li>In Copilot Chat, type /run-the-office.</li><li>The coordinator sends each course file to its specialists, and yours where it fits.</li><li>The standards reviewer checks everyone&#39;s work.</li><li>You get the team report, with your agent&#39;s section in it.</li>
+    </ol>
   
   <div class="notes">
     <h3>Speaker notes</h3>
-    <p>Take three or four out loud, from volunteers. Then send everyone to the artifact page - that is the next slide and it needs two full minutes.</p>
+    <p>Say where we are on the journey: step 6 of 7, &#34;Your agent in the team: the whole course, at once.&#34; Then show what they will have at the end of this block before anyone starts.</p><p>This is building an agent team: they added a specialist, and their coordinator is running it. Copilot announces each file as it finishes, so screen reader users hear progress, not silence.</p>
   </div>
   
 </section>
 
 <section class="slide">
-  <p class="kicker">Take it with you</p>
-  <h2 id="s26" tabindex="-1">My take-home artifact</h2>
-  <p>One page, assembled from what you wrote today: your workflow, who it helps, the human-review gate in your own words, and your 30-day commitment.</p><ul>
-    <li>Print it, or download it as a single file that still opens years from now.</li><li>Email it to yourself with your agent package and a link back to everything else.</li>
-    </ul><p class="big">This is the thing you forward to a director on Monday.</p>
-  
-  <div class="notes">
-    <h3>Speaker notes</h3>
-    <p>Do not rush this. Two minutes each, and it is the highest-value two minutes of the day.</p><p>The plain text of the artifact is in the email body too, because institutional mail gateways strip attachments.</p>
-  </div>
-  
-</section>
-
-<section class="slide">
-  <p class="kicker">Activity 11 - 10 minutes - /w/ahg-2026/11</p>
-  <h2 id="s27" tabindex="-1">How this gets used where you work</h2>
-  <dl class="formula">
-      <dt>One workflow</dt><dd>that you will actually try.</dd><dt>One partner</dt><dd>or team you will try it with.</dd><dt>One safeguard</dt><dd>you will use every single time.</dd><dt>One first step</dt><dd>small enough to do this week.</dd><dt>Who needs to know</dt><dd>or approve it - a manager, a comms lead, an IT policy.</dd><dt>What it looks like if it worked</dt><dd>in one sentence you could say to them.</dd>
-    </dl>
-  
-  <div class="notes">
-    <h3>Speaker notes</h3>
-    <p>Small is the point. &#34;Rewrite one email template&#34; beats &#34;audit the LMS&#34;.</p><p>The last two are the additions, and they are the difference between a good intention and something that survives an institution. A workflow nobody approved and nobody measured gets forgotten.</p><p>Nobody is going to chase them about this. Say so, and say where help is: support@community-access.org.</p>
-  </div>
-  
-</section>
-
-<section class="slide">
-  <p class="kicker">4:20</p>
-  <h2 id="s28" tabindex="-1">The commitment wall</h2>
-  <p>Every commitment in this room, on one screen, with no names on it.</p><p>A promise made in front of strangers should not carry a name unless the person who made it decides to say it out loud.</p>
-  
-  <div class="notes">
-    <h3>Speaker notes</h3>
-    <p>Project it. Read three aloud. Do not comment on them, do not rank them, do not add a moral.</p><p>Then go straight to what happens next. The last five minutes belong to the session evaluation.</p>
-  </div>
-  
-</section>
-
-<section class="slide">
-  <p class="kicker">After today</p>
-  <h2 id="s29" tabindex="-1">What happens next</h2>
+  <p class="kicker">What scale looks like</p>
+  <h2 id="s22" tabindex="-1">One course, one report</h2>
   <ul>
-    <li>Within 48 hours: a resource packet, and your exports in Markdown, JSON, HTML and Word.</li><li>In 30 days: one message quoting your own commitment back to you, with a link to your follow-through log.</li><li>Whenever you need it: support@community-access.org. Nobody will chase you, and anybody who writes gets help.</li><li>Always: GLOW is free, open source, and built by the community it serves.</li>
-    </ul><p class="url">letitglow.app</p>
+    <li>Seven files, eight specialists, plus yours.</li><li>Every finding: evidence, a WCAG 2.2 criterion with its link, and a named reviewer.</li><li>A list of what no checker could see, for a person.</li><li>Three lines at the top that a director will actually read.</li>
+    </ul><p class="big">That is quality, accountability and transparency, at scale. It is also a Tuesday.</p>
   
   <div class="notes">
     <h3>Speaker notes</h3>
-    <p>Nobody is emailed twice, nobody who did not give an address is on the list, and the nudge is a command a person runs after looking at what is about to go out.</p>
+    <p>Ask: what would it take to run this across ten courses? Let them answer. The honest answer is a person&#39;s review time, which is exactly where it should go.</p>
   </div>
   
 </section>
 
 <section class="slide">
-  <p class="kicker">Thank you</p>
-  <h2 id="s30" tabindex="-1">Go make one more champion</h2>
-  <p class="lead">You came in as the person who fixes things.</p><p class="big">You are leaving as the person who makes more people who can.</p><p>Before you go: the session evaluation. It shapes next year&#39;s conference.</p><p class="slide-no">GLOW is a community project of BITS, an affiliate of the American Council of the Blind.</p>
+  <p class="kicker">Agents in action</p>
+  <h2 id="s23" tabindex="-1">Everyone&#39;s agents, together</h2>
+  <p>One more run, on the screen: the office team with every agent this room merged.</p><p>Listen for yours.</p>
   
   <div class="notes">
     <h3>Speaker notes</h3>
-    <p>Last slide. Say it, thank them, and hand over to the proctor for the session evaluation. Then stop talking while people fill it in - the five minutes are theirs.</p><p>Do not add a Q and A block here - answer at the tables while people pack up.</p>
+    <p>Run the merged team on the projector against the sample course. Read out each agent&#39;s name as the coordinator calls it.</p><p>If the run is slow, narrate it. If it stumbles, say what happened and why; a real failure explained well teaches more than a perfect demo.</p>
+  </div>
+  
+</section>
+
+<section class="slide">
+  <p class="kicker">Block 7 of 7 - 3:45-4:15 - 30 minutes</p>
+  <h2 id="s24" tabindex="-1">Take it home</h2>
+  <p>By the end of this block: a 30-day plan for your own campus.</p><ol>
+    <li>In Copilot Chat, type /my-30-day-plan.</li><li>Then add your one-sentence commitment at letitglow.app/w/ahg-2026/11 for the wall.</li>
+    </ol><table>
+      <caption>What you can do on Monday, with tools you already have:</caption>
+      <thead><tr><th scope="col">You learned</th><th scope="col">Monday, with</th></tr></thead>
+      <tbody>
+        
+        <tr><th scope="row">Writing an agent</th><td>Any AI assistant, including your campus Copilot</td></tr>
+        
+        <tr><th scope="row">Grounding it</th><td>Word&#39;s, PowerPoint&#39;s and Acrobat&#39;s checkers, Accessibility Insights, axe</td></tr>
+        
+        <tr><th scope="row">Human review, in writing</th><td>Your own office&#39;s process</td></tr>
+        
+        <tr><th scope="row">Agent teams</th><td>One specialist at a time, or the Accessibility Agents project</td></tr>
+        
+      </tbody>
+    </table>
+  
+  <div class="notes">
+    <h3>Speaker notes</h3>
+    <p>Say where we are on the journey: step 7 of 7, &#34;Your campus: a 30-day plan.&#34; Then show what they will have at the end of this block before anyone starts.</p><p>Small is the point. &#34;Run the planner on the next five requests&#34; beats &#34;transform our office&#34;.</p>
+  </div>
+  
+</section>
+
+<section class="slide">
+  <p class="kicker">4:15</p>
+  <h2 id="s25" tabindex="-1">The commitment wall</h2>
+  <p>Every commitment in this room, on one screen, with no names on it.</p>
+  
+  <div class="notes">
+    <h3>Speaker notes</h3>
+    <p>Project the wall from GLOW. Read three aloud. Do not comment on them, do not rank them.</p><p>Then go straight to the evaluation. The last five minutes belong to it.</p>
+  </div>
+  
+</section>
+
+<section class="slide">
+  <p class="kicker">4:25 - Thank you</p>
+  <h2 id="s26" tabindex="-1">Go make one more champion</h2>
+  <p class="lead">You came in with a problem. You are leaving with an agent, a team and a plan.</p><p>Before you go: the session evaluation. It shapes next year&#39;s conference.</p><p>Help any time, before or after today: support@community-access.org.</p><p class="slide-no">GLOW is a community project of BITS, an affiliate of the American Council of the Blind.</p>
+  
+  <div class="notes">
+    <h3>Speaker notes</h3>
+    <p>Say it, thank them, and hand over to the proctor for the evaluation. Then stop talking while people fill it in.</p><p>No question block here. Answer at the tables while people pack up.</p>
   </div>
   
 </section>

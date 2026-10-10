@@ -1,3 +1,10 @@
+---
+title: "Accessing Higher Ground 2026 - the whole workshop, in one folder"
+lang: en
+author: "Jeff Bishop, BITS"
+description: "Index of the AHG 2026 workshop folder."
+---
+
 # Accessing Higher Ground 2026 - the whole workshop, in one folder
 
 Everything for the all-day workshop lives here. Nothing workshop-related is
@@ -6,23 +13,35 @@ left elsewhere in `docs/`.
 ## Read in this order
 
 On 9 October 2026 the workshop was redesigned to keep every promise in the
-published AHG program. `plan.md` is the current plan. Documents marked
-"September" describe the earlier design and are being rewritten;
-`scripts/check_material_conformance.py` lists what still disagrees with the
-program.
+published AHG program. Everything below is current unless marked September.
+`scripts/check_material_conformance.py` checks the materials against the
+program's promises.
 
 | # | File or folder | What it is |
 |---|---|---|
-| 1 | `plan.md` | The current plan: every promise in the program and where it is kept, the decisions D1 to D15, the day, and the order of work |
-| 2 | `sample-course/` | PSY 101, the course everyone works on, with barriers planted on purpose. `answer-key.md` lists every one |
-| 3 | `worked-examples/` | Three finished agents, one per role card, each with all seven steps and a before and after |
-| 4 | `kit/` | What participants open in VS Code: the AHG 2026 profile, the welcome page and the agent template |
-| 5 | `pre-event-message.md` | The setup checklist participants are sent |
-| 6 | `ahg-speaker-guidance.md` | Every recommendation from the AHG speaker orientation, and where it is met |
-| 7 | `run-of-show.md`, `facilitator-card.md`, `slides.*` | September; being rewritten for the new day |
-| 8 | `plan-2026-09-glow-only.md`, `status-2026-09-21.md`, `readiness-plan.md` | Records of the September design |
+| 1 | `plan.md` | The plan: every promise in the program and where it is kept, decisions D1 to D15, the day, and the order of work |
+| 2 | `run-of-show.md` | The day by the clock, with the command for each block, pacing rules, the fallback ladder and pre-flight |
+| 3 | `facilitator-card.md` | The pocket card |
+| 4 | `kit/` | What every participant opens in VS Code: commands, office team, examples, ready-made agents, the sample course and its evidence, step cards. Start with `kit/README.md` |
+| 5 | `slides.*` | The deck, generated from `workshop_deck.py`, in four formats |
+| 6 | `pre-event-message.md` | The setup message participants are sent three times |
+| 7 | `answer-key.md` | Every barrier planted in the sample course. Facilitators only; not in the kit |
+| 8 | `ahg-speaker-guidance.md` | Every recommendation from the AHG speaker orientation, and where it is met |
+| 9 | `for-accessibility-agents/` | What the Accessibility Agents repository needs for the capstone pull requests, ready to copy in |
+| 10 | `workshop-frontfacing-guide.md` | The session description participants can read in GLOW |
+| 11 | `plan-2026-09-glow-only.md`, `status-2026-09-21.md`, `readiness-plan.md`, `workshop-mode-*.md`, `workshop-frontfacing-exercises.md`, `workshop-frontfacing-utilization.md` | September: Workshop Mode's eleven-activity day, which GLOW still offers for other trainings |
+
+Rebuild everything generated, in this order:
+
+```text
+python scripts/build_ahg_sample_course.py
+python scripts/build_ahg_kit.py
+flask --app acb_large_print_web.app:create_app workshop-deck --code ahg-2026
+```
 
 ## The deck, in four formats
+
+Each row is one file, and what it is for.
 
 | File | Use it for |
 |---|---|
@@ -31,10 +50,12 @@ program.
 | `slides.docx` | When someone wants it in Word with their own screen reader and font settings |
 | `slides.md` | Reviewing, diffing, and converting into whatever an institution actually uses |
 
-**All four are generated.** Edit `web/src/acb_large_print_web/workshop_deck.py`,
+All four are generated. Edit `web/src/acb_large_print_web/workshop_deck.py`,
 then regenerate:
 
-    flask --app acb_large_print_web.app:create_app workshop-deck --code <session>
+```text
+flask --app acb_large_print_web.app:create_app workshop-deck --code <session>
+```
 
 Do not edit the files in place; the next run overwrites them.
 
@@ -47,26 +68,28 @@ because it carries the room's real join address:
 
 ### What makes each format accessible
 
-- **HTML** - one heading per slide under one document heading; a "Read as one
+- HTML - one heading per slide under one document heading; a "Read as one
   page" mode that turns the deck into a linear document; focus moves to the
   new slide's heading and the change is announced politely; arrow keys, Page
   Up/Down, Home/End; `n` toggles speaker notes; dark and light both defined;
   nothing carried by colour alone; prints with notes.
-- **Word** - real Heading 1/2/3 styles, real bullet and number list styles,
+- Word - real Heading 1/2/3 styles, real bullet and number list styles,
   Arial 18pt (ACB large print), table header rows marked as headers so they
   are announced as headers and repeat across pages, and a declared document
   language.
-- **PowerPoint** - every slide has a real title placeholder and a real body
+- PowerPoint - every slide has a real title placeholder and a real body
   placeholder, filled in that order, because placeholder order is the reading
   order a screen reader announces. Nothing is a floating text box. Tables
   carry alt text and a marked header row. Speaker notes are in the notes
   slide, not dumped onto the slide. Title and language are set on the file.
-- **Markdown** - headings, lists and pipe tables only. No layout tricks, so it
+- Markdown - headings, lists and pipe tables only. No layout tricks, so it
   converts cleanly.
 
 Tests hold each of those: `web/tests/test_workshop_deck_formats.py`.
 
 ## Reference, for the room and the build
+
+Each row is one file, and what it is for.
 
 | File | What it is |
 |---|---|
@@ -94,7 +117,7 @@ it working. The rest of that audit waits until December.
 
 ## Not in this folder, on purpose
 
-`docs/GLOW-Presentation-Outline.md` is a **different session**: a 45-minute
+`docs/GLOW-Presentation-Outline.md` is a different session: a 45-minute
 conference talk that predates Workshop Mode and points at an old address. It
 is deliberately not filed here so nobody picks it up in November by mistake.
 

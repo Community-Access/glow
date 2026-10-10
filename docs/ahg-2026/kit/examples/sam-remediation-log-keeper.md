@@ -1,3 +1,10 @@
+---
+title: "Worked example: Sam's remediation log keeper"
+lang: en
+author: "Jeff Bishop, BITS"
+description: "Worked example: a remediation log keeper agent, from problem to 30-day plan."
+---
+
 # Worked example: Sam's remediation log keeper
 
 Role card: Compliance and procurement.
@@ -21,6 +28,8 @@ PSY 101 is one course. Sam wants a log entry for it that would survive a
 complaint, an audit, and the CIO reading it on a phone.
 
 ## 2. Sam's five answers
+
+Each row is one question, and the answer.
 
 | Question | Sam's answer |
 |---|---|
@@ -99,23 +108,23 @@ The evidence, from GLOW:
 
 ```text
 psy101-week3-lecture.pptx  score 58
-2  CRITICAL  PPTX-SLIDE-TITLE    Slide has no title or the title placeholder is empty
-1  MEDIUM    PPTX-READING-ORDER  Reading order differs from visual layout
+2  CRITICAL  `PPTX-SLIDE-TITLE`    Slide has no title or the title placeholder is empty
+1  MEDIUM    `PPTX-READING-ORDER`  Reading order differs from visual layout
 psy101-gradebook.xlsx  score 54
-1  MEDIUM    XLSX-COLOR-ONLY     4 empty cells with background color may convey meaning through color alone
-3  MEDIUM    XLSX-MERGED-CELLS   Merged range A1:F1 disrupts screen reader navigation
+1  MEDIUM    `XLSX-COLOR-ONLY`     4 empty cells with background color may convey meaning through color alone
+3  MEDIUM    `XLSX-MERGED-CELLS`   Merged range A1:F1 disrupts screen reader navigation
 psy101-lab1-stroop.pdf  score 50
-1  CRITICAL  PDF-TAGGED          PDF is not tagged
+1  CRITICAL  `PDF-TAGGED`          PDF is not tagged
 ```
 
 > Example answer (first rows; dated 16 November 2026):
 >
 > | File | Barrier | WCAG | Severity | Priority | Reason | Evidence | Reviewer | Status |
 > |---|---|---|---|---|---|---|---|---|
-> | Lab 1 handout | Not tagged; structure unavailable to screen readers | [1.3.1](https://www.w3.org/WAI/WCAG22/Understanding/info-and-relationships.html) | Critical | 1 | Due Friday; blocks completing graded work | GLOW PDF-TAGGED | S.O. | Proposed |
-> | Week 3 lecture | Two slides without titles | [2.4.6](https://www.w3.org/WAI/WCAG22/Understanding/headings-and-labels.html) | Critical | 2 | Posted now; slows but does not block | GLOW PPTX-SLIDE-TITLE | S.O. | Proposed |
-> | Week 3 lecture | Reading order out of sequence on one slide | [1.3.2](https://www.w3.org/WAI/WCAG22/Understanding/meaningful-sequence.html) | Medium | 2 | Same file, same fix session | GLOW PPTX-READING-ORDER | S.O. | Proposed |
-> | Gradebook | Status shown by color only | [1.4.1](https://www.w3.org/WAI/WCAG22/Understanding/use-of-color.html) | Medium | 3 | Instructor-facing template; fix before grades post | GLOW XLSX-COLOR-ONLY | S.O. | Proposed |
+> | Lab 1 handout | Not tagged; structure unavailable to screen readers | [1.3.1](https://www.w3.org/WAI/WCAG22/Understanding/info-and-relationships.html) | Critical | 1 | Due Friday; blocks completing graded work | GLOW `PDF-TAGGED` | S.O. | Proposed |
+> | Week 3 lecture | Two slides without titles | [2.4.6](https://www.w3.org/WAI/WCAG22/Understanding/headings-and-labels.html) | Critical | 2 | Posted now; slows but does not block | GLOW `PPTX-SLIDE-TITLE` | S.O. | Proposed |
+> | Week 3 lecture | Reading order out of sequence on one slide | [1.3.2](https://www.w3.org/WAI/WCAG22/Understanding/meaningful-sequence.html) | Medium | 2 | Same file, same fix session | GLOW `PPTX-READING-ORDER` | S.O. | Proposed |
+> | Gradebook | Status shown by color only | [1.4.1](https://www.w3.org/WAI/WCAG22/Understanding/use-of-color.html) | Medium | 3 | Instructor-facing template; fix before grades post | GLOW `XLSX-COLOR-ONLY` | S.O. | Proposed |
 >
 > For leadership: PSY 101 checked 16 November, 3 files, 5 finding types.
 > The one barrier that blocks graded work is first, with a fix due before
@@ -140,6 +149,8 @@ every finding to Sam's log keeper last. The office's work becomes one log,
 which is the part leadership actually reads.
 
 ## 7. Sam's 30-day plan
+
+Each row is one part of the plan, and the answer.
 
 | Question | Sam's answer |
 |---|---|

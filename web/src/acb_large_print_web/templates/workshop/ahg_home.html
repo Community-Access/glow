@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+
+{% block title %}Accessibility Agents at AHG 2026 - Setup and kit{% endblock %}
+{% block heading %}Accessibility Agents at AHG 2026{% endblock %}
+
+{% block content %}
+<p>
+  Accessibility Agents: Building Human-Centered AI Workflows for Trusted
+  Accessibility Automation at Scale. A full-day workshop at Accessing Higher
+  Ground, Monday 16 November 2026, 10:30 AM to 4:30 PM Mountain Time.
+</p>
+<p>
+  You will design your own accessibility agent, add it to a team of agents
+  that works through a whole course, and contribute it to an open-source
+  project with your name on it. You do not need to be a developer.
+</p>
+
+<h2 id="setup">Before the day: four steps, about 20 minutes</h2>
+<ol>
+  <li>Make a free GitHub account at github.com, and turn on Copilot Free in your GitHub settings.</li>
+  <li>Install VS Code from code.visualstudio.com. On Windows it installs without administrator rights.</li>
+  <li>
+    Import the AHG 2026 profile. In VS Code, open the Command Palette
+    (Control+Shift+P on Windows, Command+Shift+P on a Mac), type
+    <kbd>Profiles: Import Profile</kbd>, and paste this address:
+    <code>{{ profile_url }}</code>.
+    Or <a href="{{ url_for('workshop.ahg_profile') }}">download the AHG 2026 profile file</a> and import that.
+  </li>
+  <li>
+    <a href="{{ url_for('workshop.ahg_kit_zip') }}">Download the agent kit</a>
+    (a zip file), unzip it, and open the folder in VS Code. Then open Copilot
+    Chat and type <kbd>/ready-check</kbd>.
+  </li>
+</ol>
+<p>
+  Stuck? Write to <a href="mailto:support@community-access.org">support@community-access.org</a>,
+  or come to the setup table outside the room from 10:00 on the day.
+</p>
+
+<h2 id="on-the-day">On the day</h2>
+<ul>
+  <li><a href="{{ url_for('workshop.ahg_share') }}">Share your agent</a>: opens GitHub with your agent filled in, ready for your pull request.</li>
+  <li><a href="{{ url_for('workshop.workshop_deck') }}">The slides</a>, with speaker notes, in a reading mode for screen readers.</li>
+</ul>
+
+<h2 id="step-cards">Step cards</h2>
+<p>One card per block, in the order things appear on screen. They are also in the kit, in the step-cards folder.</p>
+<ul>
+  {% for card in step_cards %}
+  <li><a href="{{ url_for('workshop.ahg_step_card', name=card.file) }}">{{ card.title }}</a></li>
+  {% endfor %}
+</ul>
+
+<h2 id="rules">The two rules</h2>
+<ol>
+  <li>Never paste anything private into any AI: student records, health or disability information, or anyone's name.</li>
+  <li>Every agent ends with a person checking its work.</li>
+</ol>
+{% endblock %}

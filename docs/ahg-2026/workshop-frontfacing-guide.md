@@ -1,82 +1,78 @@
-# Accessibility Agents in Action
+---
+title: "Accessibility Agents: Building Human-Centered AI Workflows for Trusted Accessibility Automation at Scale"
+lang: en
+author: "Jeff Bishop, BITS"
+description: "The AHG 2026 Accessibility Agents session description for participants."
+---
 
-## A Hands-On GLOW Workshop for Human-Centered Accessibility Workflows
+# Accessibility Agents: Building Human-Centered AI Workflows for Trusted Accessibility Automation at Scale
 
-Subtitle: Helping Everyone Become an Accessibility Champion
+A full-day, hands-on workshop at Accessing Higher Ground 2026. Monday 16
+November, 10:30 AM to 4:30 PM Mountain Time, Matchless, Hilton Denver City
+Center. Bring a Windows or Mac laptop, and headphones if you use a screen
+reader. Beginner level.
 
-Prepared for conference and institutional training delivery.
+## The problem
 
-## Workshop Promise
-Participants do not need to be AI scientists, AI developers, or programmers.
+Higher education accessibility teams face WCAG 2.2 and the new Title II
+requirements with the same small staff as before. Every syllabus, slide deck,
+scanned reading and course page is in scope, and most of them are documents,
+not web pages. Nobody fixes that by working harder. The question is how to
+scale without losing quality, accountability or transparency.
 
-They are met where they are, guided through practical accessibility problems, and supported in designing repeatable workflows that help partners learn, practice, and GLOW.
+## What you will do
 
-## The GLOW Framework
-- G: Ground the work in a real accessibility problem.
-- L: Learn what people need to understand.
-- O: Organize a repeatable workflow.
-- W: Walk forward as accessibility champions.
+- Design your own accessibility agent: five plain-English answers about its
+  role, its task, the standards it must cite, what it produces, and who
+  reviews it. No code.
+- Put it to work with GitHub Copilot in VS Code, on a realistic sample
+  course full of planted barriers.
+- Ground it in real evidence from GLOW, axe-core and Accessibility Insights,
+  so it cites WCAG 2.2 instead of guessing.
+- Share it: open your own pull request to the open-source Accessibility
+  Agents repository on GitHub, with your name on it.
+- Build the office: add your agent to an agent team of coordinated
+  specialists and run the team across the whole course.
+- Leave with a 30-day plan for your own campus.
 
-## Why This Workshop Exists
-Accessibility does not scale when specialists are expected to fix everything.
+## Who it is for
 
-Sustainable accessibility requires helping partners understand the problem, learn the pattern, build confidence, and become accessibility champions.
+Accessibility professionals, disability resource staff, alternate format
+producers, instructional designers, faculty developers, IT accessibility
+staff, and the people who lead them. You do not need to be a developer, and
+you do not need to have used VS Code or GitHub before.
 
-## Intended Audience
-- Accessibility professionals
-- Disability services staff
-- Instructional designers
-- Faculty and content owners
-- Program and communications teams
-- Technology leaders and trainers
+## What you need
 
-## Learning Outcomes
-Participants will be able to:
-- frame accessibility work around real user barriers,
-- distinguish AI-helpful tasks from human-required judgment,
-- design repeatable partner-facing workflows,
-- include explicit human-review safeguards,
-- produce reusable artifacts for local adoption.
+1. A free GitHub account, with Copilot Free turned on.
+2. VS Code, with the AHG 2026 profile, which installs everything else.
+3. The agent kit, from letitglow.app/workshop/ahg-2026.
 
-## One-Day Format
-- Times are Mountain Time
-- Start: 8:30 AM
-- End: 4:30 PM, with the last five minutes for the session evaluation
-- Lunch: 12:15 PM to 1:15 PM
-- Two breaks, at 10:10 and 2:55
-- Seven working workshop hours plus lunch
+The setup takes about 20 minutes. The setup page has every step, and there
+is a setup table outside the room from 10:00 on the day.
 
-The day is defined once and every surface reads from it, so the agenda you
-read here, the suggested length on each activity page, the exercise pack and
-the projected deck always agree.
+## Learning outcomes
 
-## Artifact Outputs
-Participants leave with at least one reusable artifact:
-- GLOW-ready prompt
-- coaching checklist
-- remediation planning template
-- peer-reviewed workflow
-- 30-day action plan
+By the end of the day you will be able to:
 
-Workshop artifacts can now be exported directly from GLOW in Markdown, JSON, HTML, and DOCX formats for immediate reuse in institutional follow-up workflows.
-Use the new Follow-Through page to save coaching templates, checklists, and 30-day commitments from workshop outputs.
+1. Describe an accessibility task as an agent: role, task, trusted guidance,
+   output format and human review.
+2. Ground an agent's answers in checker evidence and cite WCAG 2.2 criteria.
+3. Name the barriers no automated checker finds, and write the human review
+   step that catches them.
+4. Explain how an agent team of specialists and a coordinator scales work
+   across a course.
+5. Contribute to an open-source project through a pull request on GitHub.
+6. Plan one workflow to try on your own campus in the next 30 days.
 
-## Product Surfaces During Delivery
-- Coach mode (`/workshop/session/<code>/coach`) reinforces teaching language and partner-centered support.
-- Review mode (`/workshop/session/<code>/review`) reinforces human accountability checkpoints before deployment.
-- Share mode (`/workshop/session/<code>/share`) packages artifacts for downstream adoption and team dissemination.
-- Facilitator dashboard (`/workshop/session/<code>/facilitator`) provides participation and peer-feedback coverage snapshots in real time.
+## Two rules, all day
 
-## Responsible AI Boundary
-AI supports analysis and drafting.
+1. Never paste anything private into any AI: student records, health or
+   disability information, or anyone's name. We use a sample course.
+2. Agents draft. People decide. Every agent ends with a named person
+   checking its work.
 
-Humans retain accountability for final accessibility decisions, especially where purpose, meaning, context, and user impact require judgment.
+## Support
 
-If you use your own assistant: paste text rather than uploading files, and never paste anything private - student records, health or disability information, or anyone's name. A free assistant may keep what is pasted into it.
-
-## Conference-Ready Delivery Principles
-- Practical and encouraging facilitation tone
-- Accessibility-first delivery in all materials
-- Keyboard and screen-reader compatible interaction paths
-- Short URLs plus QR alternatives
-- Electronic worksheet packs, published before the event so anyone who wants paper can print their own
+Help before and after the day: support@community-access.org. Large print, a
+particular seat, a pause or a repeat: ask for any of it, before or during.

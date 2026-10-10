@@ -198,6 +198,117 @@ AGENDA: tuple[Block, ...] = (
     ),
 )
 
+# ---------------------------------------------------------------------------
+# The AHG 2026 day
+# ---------------------------------------------------------------------------
+#
+# Accessing Higher Ground published this session as a one-day, laptop,
+# hands-on workshop that starts at 10:30 and has participants build agents
+# and agent teams with VS Code, GitHub and Copilot. That is a different day
+# from the eleven-activity Workshop Mode day above, which stays as it is for
+# other trainings. The deck and the run of show for AHG read this one.
+# docs/ahg-2026/plan.md maps every block to the promise it keeps.
+
+AHG_DAY_START_MINUTES = 10 * 60 + 30   # 10:30 AM, Monday 16 November 2026
+AHG_DAY_END_MINUTES = 16 * 60 + 30     # 4:30 PM
+BLOCK = "block"
+
+AHG_DAY: tuple[Block, ...] = (
+    Block(
+        start=10 * 60 + 30, minutes=20,
+        title="Why we are here",
+        mode="The problem, and the finished result shown first", kind=WELCOME,
+        note="Show the team report first. Then the journey map.",
+    ),
+    Block(
+        start=10 * 60 + 50, minutes=60,
+        title="Design your agent",
+        mode="Five plain-English answers become an agent file", kind=BLOCK,
+        note="Everyone starts from an example. Nobody starts from a blank page.",
+    ),
+    Block(
+        start=11 * 60 + 50, minutes=25,
+        title="Your agent at work",
+        mode="Copilot uses your agent on one course document", kind=BLOCK,
+        note="The first answer will not be perfect. That is the point of the afternoon.",
+    ),
+    Block(
+        start=12 * 60 + 15, minutes=LUNCH_MINUTES,
+        title="Lunch",
+        mode="Break", kind=LUNCH,
+    ),
+    Block(
+        start=13 * 60 + 15, minutes=55,
+        title="Ground it",
+        mode="Real evidence in, cited answers out", kind=BLOCK,
+        note="Before and after, side by side. Then the same with Word's own checker.",
+    ),
+    Block(
+        start=14 * 60 + 10, minutes=10,
+        title="Break",
+        mode="Break", kind=BREAK,
+    ),
+    Block(
+        start=14 * 60 + 20, minutes=40,
+        title="Share it",
+        mode="Your pull request to the Accessibility Agents repository", kind=BLOCK,
+        note="Merge on the projector as they arrive. Read each name out.",
+    ),
+    Block(
+        start=15 * 60, minutes=45,
+        title="Build the office",
+        mode="Your specialist joins the agent team; the team works the whole course", kind=BLOCK,
+        note="Everyone runs their own team. The projector run with every merged agent comes last.",
+    ),
+    Block(
+        start=15 * 60 + 45, minutes=30,
+        title="Take it home",
+        mode="Your 30-day plan and one-page artifact", kind=BLOCK,
+    ),
+    Block(
+        start=16 * 60 + 15, minutes=10,
+        title="Commitments",
+        mode="Close", kind=CLOSE,
+        note="The commitment wall, anonymous. Read three aloud.",
+    ),
+    Block(
+        start=16 * 60 + 25, minutes=5,
+        title="Session evaluation",
+        mode="Close", kind=CLOSE,
+        note="Hand over to the proctor. Stop talking while people fill it in.",
+    ),
+)
+
+
+def ahg_blocks() -> tuple[Block, ...]:
+    """The AHG day's working blocks, in order, numbered 1 to 7 on every surface."""
+    return tuple(b for b in AHG_DAY if b.kind in (WELCOME, BLOCK))
+
+
+def ahg_schedule_rows() -> list[dict[str, str]]:
+    return [
+        {"time": b.clock, "title": b.title, "mode": b.mode, "kind": b.kind}
+        for b in AHG_DAY
+    ]
+
+
+def validate_ahg_day() -> list[str]:
+    """The AHG day must be contiguous and run 10:30 to 4:30 with one lunch."""
+    problems: list[str] = []
+    if AHG_DAY[0].start != AHG_DAY_START_MINUTES:
+        problems.append(f"AHG day starts at {_clock(AHG_DAY[0].start)}")
+    if AHG_DAY[-1].end != AHG_DAY_END_MINUTES:
+        problems.append(f"AHG day ends at {_clock(AHG_DAY[-1].end)}")
+    for earlier, later in zip(AHG_DAY, AHG_DAY[1:], strict=False):
+        if earlier.end != later.start:
+            problems.append(f"gap or overlap between {earlier.title!r} and {later.title!r}")
+    if [b.kind for b in AHG_DAY].count(LUNCH) != 1:
+        problems.append("expected exactly one lunch")
+    if AHG_DAY[-1].title != "Session evaluation":
+        problems.append("the day must end with the session evaluation")
+    return problems
+
+
 # The optional lab is deliberately outside the agenda and outside the
 # passport: a participant who never opens it has missed nothing the workshop
 # promised. A door, not a corridor.

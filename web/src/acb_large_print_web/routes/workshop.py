@@ -2901,3 +2901,112 @@ def workshop_resource_download(slug: str):
         as_attachment=True,
         download_name=filename,
     )
+
+
+# ---------------------------------------------------------------------------
+# AHG 2026: setup page, agent kit, VS Code profile, share page, step cards
+# ---------------------------------------------------------------------------
+#
+# The AHG day is built in VS Code with Copilot, from a kit that lives in
+# docs/ahg-2026/kit. These routes hand that kit to participants without a
+# GitHub repository to clone: one page, one zip, one profile, one share page.
+# Nothing here calls an AI or holds a GitHub token; the share page builds a
+# link the participant opens on their own account.
+
+AHG_KIT_PARTS = ("docs", "ahg-2026", "kit")
+
+
+def _ahg_kit_dir() -> Path | None:
+    for root in _asset_roots():
+        candidate = root.joinpath(*AHG_KIT_PARTS)
+        if candidate.is_dir():
+            return candidate
+    return None
+
+
+def _ahg_step_cards() -> list[dict[str, str]]:
+    kit = _ahg_kit_dir()
+    if kit is None:
+        return []
+    cards = []
+    for path in sorted((kit / "step-cards").glob("*.docx")):
+        md = path.with_suffix(".md")
+        title = path.stem
+        if md.is_file():
+            heading = next(
+                (line for line in md.read_text(encoding="utf-8").splitlines() if line.startswith("# ")),
+                "",
+            )
+            title = heading.lstrip("# ").strip() or title
+        cards.append({"file": path.name, "title": title})
+    return cards
+
+
+@workshop_bp.route("/ahg-2026", methods=["GET"])
+def ahg_home():
+    if not _workshop_enabled():
+        abort(404)
+    return render_template(
+        "workshop/ahg_home.html",
+        profile_url=url_for("workshop.ahg_profile", _external=True),
+        step_cards=_ahg_step_cards(),
+    )
+
+
+@workshop_bp.route("/ahg-2026/kit.zip", methods=["GET"])
+@limiter.limit("30 per minute")
+def ahg_kit_zip():
+    if not _workshop_enabled():
+        abort(404)
+    kit = _ahg_kit_dir()
+    if kit is None:
+        current_app.logger.error("AHG kit missing; searched roots: %s", ", ".join(str(r) for r in _asset_roots()))
+        abort(404)
+    import zipfile
+
+    buffer = BytesIO()
+    with zipfile.ZipFile(buffer, "w", zipfile.ZIP_DEFLATED) as zf:
+        for path in sorted(kit.rglob("*")):
+            if path.is_file():
+                zf.write(path, str(Path("ahg-2026-agent-kit") / path.relative_to(kit)))
+    buffer.seek(0)
+    return send_file(
+        buffer,
+        mimetype="application/zip",
+        as_attachment=True,
+        download_name="ahg-2026-agent-kit.zip",
+    )
+
+
+@workshop_bp.route("/ahg-2026/ahg-2026.code-profile", methods=["GET"])
+def ahg_profile():
+    if not _workshop_enabled():
+        abort(404)
+    kit = _ahg_kit_dir()
+    path = kit / "ahg-2026.code-profile" if kit else None
+    if path is None or not path.is_file():
+        abort(404)
+    return send_file(str(path), mimetype="application/json", download_name="ahg-2026.code-profile")
+
+
+@workshop_bp.route("/ahg-2026/share", methods=["GET"])
+def ahg_share():
+    if not _workshop_enabled():
+        abort(404)
+    return render_template("workshop/ahg_share.html")
+
+
+@workshop_bp.route("/ahg-2026/step-cards/<name>", methods=["GET"])
+def ahg_step_card(name: str):
+    if not _workshop_enabled():
+        abort(404)
+    allowed = {card["file"] for card in _ahg_step_cards()}
+    if name not in allowed:
+        abort(404)
+    kit = _ahg_kit_dir()
+    return send_file(
+        str(kit / "step-cards" / name),
+        mimetype="application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+        as_attachment=True,
+        download_name=name,
+    )

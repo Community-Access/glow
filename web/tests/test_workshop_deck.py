@@ -37,32 +37,28 @@ def client(app: Flask):
 
 def test_the_deck_carries_this_session_code(client):
     body = client.get(f"/workshop/session/{CODE}/deck").get_data(as_text=True)
-    assert f"/w/{CODE}/7" in body
-    assert f"/w/{CODE}" in body
+    assert f"/w/{CODE}/11" in body, "the commitment address on the take-home slide"
     assert "CODE" not in body.replace("code_label", "")
 
 
 def test_the_deck_agenda_comes_from_the_agenda_module(client):
-    """The agenda slide is three chunks, but every time on it is the module's."""
+    """Every block's clock time on the deck is the AHG day's, never typed in."""
     body = client.get(f"/workshop/session/{CODE}/deck").get_data(as_text=True)
-    first, last = agenda.AGENDA[0], agenda.AGENDA[-1]
-    assert f"Morning, {first.starts_at}-" in body
-    assert f"-{last.resume}" in body
-    for block in agenda.blocks_of_kind(agenda.BREAK) + agenda.blocks_of_kind(agenda.LUNCH):
-        assert block.starts_at in body
+    for block in agenda.ahg_blocks()[1:]:
+        assert block.clock in body
 
 
-def test_activity_lengths_on_the_deck_match_the_activity_pages(client):
+def test_block_lengths_on_the_deck_match_the_agenda(client):
     body = client.get(f"/workshop/session/{CODE}/deck").get_data(as_text=True)
-    lab2 = agenda.block_for_activity("lab_alt_text_decision")
-    assert f"{lab2.minutes} minutes - /w/{CODE}/7" in body
+    ground = agenda.ahg_blocks()[3]
+    assert f"Block 4 of 7 - {ground.clock} - {ground.minutes} minutes" in body
 
 
 def test_break_slides_say_when_the_room_comes_back(client):
     body = client.get(f"/workshop/session/{CODE}/deck").get_data(as_text=True)
-    breaks = agenda.blocks_of_kind(agenda.BREAK)
-    for block in breaks:
-        assert f"Back at {block.resume}" in body
+    for block in agenda.AHG_DAY:
+        if block.kind in (agenda.BREAK, agenda.LUNCH):
+            assert f"Back at {block.resume}" in body
 
 
 def test_the_deck_downloads_as_one_self_contained_file(client):

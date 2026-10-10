@@ -1,3 +1,10 @@
+---
+title: "Worked example: Maria's alternate format planner"
+lang: en
+author: "Jeff Bishop, BITS"
+description: "Worked example: an alternate format planner agent, from problem to 30-day plan."
+---
+
 # Worked example: Maria's alternate format planner
 
 Role card: Documents and alternate formats.
@@ -22,6 +29,8 @@ Maria does not need a lecture on WCAG. She needs a plan she can act on before
 Friday, and a way to stop rebuilding the same plan by hand for every request.
 
 ## 2. Her five answers
+
+Each row is one question, and the answer.
 
 | Question | Maria's answer |
 |---|---|
@@ -182,6 +191,8 @@ Her section of the team report:
 > Reviewer: alternate format specialist. Status: waiting for review.
 
 ## 7. Her 30-day plan
+
+Each row is one part of the plan, and the answer.
 
 | Question | Maria's answer |
 |---|---|

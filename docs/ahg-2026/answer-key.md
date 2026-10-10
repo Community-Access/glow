@@ -1,3 +1,10 @@
+---
+title: "PSY 101 sample course: answer key"
+lang: en
+author: "Jeff Bishop, BITS"
+description: "Every barrier planted in the PSY 101 sample course, for facilitators."
+---
+
 # PSY 101 sample course: answer key
 
 For facilitators. Every barrier in the sample course was planted on purpose,
@@ -26,6 +33,8 @@ Each table lists one file's barriers. The last column says what finds it.
 
 ## The course files
 
+The files, and how GLOW scored each one before anyone fixed anything.
+
 | File | What it is | GLOW score |
 |---|---|---|
 | `psy101-syllabus.docx` | The syllabus, Word | 0 |
@@ -38,21 +47,23 @@ Each table lists one file's barriers. The last column says what finds it.
 
 ## Syllabus (Word)
 
+Each row is one planted barrier, who it affects, and what finds it.
+
 | Barrier | Who it affects | WCAG | Found by |
 |---|---|---|---|
-| Brain logo with no alternative text | Screen reader users | 1.1.1 | GLOW ACB-MISSING-ALT-TEXT |
-| Bold paragraphs pretending to be headings, so there is no heading structure | Screen reader users navigating by heading; anyone using the navigation pane | 1.3.1, 2.4.6 | GLOW ACB-FAUX-HEADING |
-| No document title | Screen reader users; anyone with many files open | 2.4.2 | GLOW ACB-DOC-TITLE |
+| Brain logo with no alternative text | Screen reader users | 1.1.1 | GLOW `ACB-MISSING-ALT-TEXT` |
+| Bold paragraphs pretending to be headings, so there is no heading structure | Screen reader users navigating by heading; anyone using the navigation pane | 1.3.1, 2.4.6 | GLOW `ACB-FAUX-HEADING` |
+| No document title | Screen reader users; anyone with many files open | 2.4.2 | GLOW `ACB-DOC-TITLE` |
 | A table used only for layout (instructor details) | Screen reader users, who hear a table that is not one | 1.3.1 | A person |
 | Required and optional readings shown only by red and green | People who are color blind; screen reader users | 1.4.1 | A person |
-| A typed "1)" list instead of a real numbered list | Screen reader users | 1.3.1 | GLOW ACB-FAKE-LIST |
-| "NO MAKEUP EXAMS" in capitals, which also contradicts the accommodations statement | Readers with dyslexia; any student with an accommodation | Readability, and a policy problem | A person |
+| A typed "1)" list instead of a real numbered list | Screen reader users | 1.3.1 | GLOW `ACB-FAKE-LIST` |
+| `NO MAKEUP EXAMS` in capitals, which also contradicts the accommodations statement | Readers with dyslexia; any student with an accommodation | Readability, and a policy problem | A person |
 | A long passage set in italics | Readers with low vision or dyslexia | ACB large print | A person |
-| Two links both called "click here" | Screen reader users listing links | 2.4.4 | GLOW ACB-LINK-TEXT |
+| Two links both called "click here" | Screen reader users listing links | 2.4.4 | GLOW `ACB-LINK-TEXT` |
 | Schedule table with its header row not marked | Screen reader users | 1.3.1 | A person |
 | Empty paragraphs used for spacing | Screen reader users, who hear "blank" | 1.3.1 | A person |
-| The accommodations statement last, in 8pt light gray | Everyone, and especially the students it is for | 1.4.3, ACB large print | GLOW ACB-FONT-SIZE-BODY for size; a person for contrast |
-| Body text below 18pt, Word's default styles | Readers with low vision | ACB large print | GLOW ACB-FONT-SIZE-BODY |
+| The accommodations statement last, in 8pt light gray | Everyone, and especially the students it is for | 1.4.3, ACB large print | GLOW `ACB-FONT-SIZE-BODY` for size; a person for contrast |
+| Body text below 18pt, Word's default styles | Readers with low vision | ACB large print | GLOW `ACB-FONT-SIZE-BODY` |
 
 The teachable moment: the accommodations statement. Every checker can see it
 is small. Only a person notices it is at the bottom, in gray, and contradicted
@@ -60,16 +71,18 @@ in capitals two sections earlier.
 
 ## Week 3 lecture (PowerPoint)
 
+Each row is one planted barrier, who it affects, and what finds it.
+
 | Barrier | Who it affects | WCAG | Found by |
 |---|---|---|---|
-| No presentation title | Screen reader users | 2.4.2 | GLOW PPTX-TITLE |
-| Slide 2 has no title; slide 7's title is empty | Screen reader users moving slide to slide | 2.4.6, 1.3.1 | GLOW PPTX-SLIDE-TITLE |
-| Slide 2 reads 3, 2, 1 to a screen reader | Screen reader users | 1.3.2 | GLOW PPTX-READING-ORDER |
-| Two slides both titled "Memory" | Screen reader users | 2.4.6 | GLOW PPTX-DUPLICATE-SLIDE-TITLE |
+| No presentation title | Screen reader users | 2.4.2 | GLOW `PPTX-TITLE` |
+| Slide 2 has no title; slide 7's title is empty | Screen reader users moving slide to slide | 2.4.6, 1.3.1 | GLOW `PPTX-SLIDE-TITLE` |
+| Slide 2 reads 3, 2, 1 to a screen reader | Screen reader users | 1.3.2 | GLOW `PPTX-READING-ORDER` |
+| Two slides both titled "Memory" | Screen reader users | 2.4.6 | GLOW `PPTX-DUPLICATE-SLIDE-TITLE` |
 | The memory model diagram's alternative text is "image.png" | Screen reader users | 1.1.1 | A person: GLOW counts it as present |
 | The keys chart is only a picture, its alt text is "image.png", and its red and green bars carry meaning | Screen reader users; color blind viewers | 1.1.1, 1.4.1 | A person |
 | Myth or fact answered only by red and green cells | Color blind viewers; screen reader users | 1.4.1 | A person |
-| A wall of 11pt text | Everyone at the back of the room | ACB large print | GLOW PPTX-SMALL-FONT |
+| A wall of 11pt text | Everyone at the back of the room | ACB large print | GLOW `PPTX-SMALL-FONT` |
 
 The teachable moment: "image.png". A file name as alt text passes a checker
 that only asks whether alt text exists. Ask the room how many of their own
@@ -77,23 +90,27 @@ decks would pass the same way.
 
 ## Gradebook (Excel)
 
+Each row is one planted barrier, who it affects, and what finds it.
+
 | Barrier | Who it affects | WCAG | Found by |
 |---|---|---|---|
-| Merged title and header cells | Screen reader users | 1.3.1 | GLOW XLSX-MERGED-CELLS |
-| Columns with no usable header | Screen reader users | 1.3.1 | GLOW XLSX-BLANK-COLUMN-HEADER |
-| Status shown only by a cell's fill color, the cell itself empty | Color blind users; screen reader users, who hear nothing | 1.4.1 | GLOW XLSX-COLOR-ONLY |
-| Sheets named "Sheet" and "Sheet2" | Screen reader users | 2.4.6 | GLOW XLSX-SHEET-NAME |
-| No workbook title | Screen reader users | 2.4.2 | GLOW XLSX-TITLE |
+| Merged title and header cells | Screen reader users | 1.3.1 | GLOW `XLSX-MERGED-CELLS` |
+| Columns with no usable header | Screen reader users | 1.3.1 | GLOW `XLSX-BLANK-COLUMN-HEADER` |
+| Status shown only by a cell's fill color, the cell itself empty | Color blind users; screen reader users, who hear nothing | 1.4.1 | GLOW `XLSX-COLOR-ONLY` |
+| Sheets named "Sheet" and "Sheet2" | Screen reader users | 2.4.6 | GLOW `XLSX-SHEET-NAME` |
+| No workbook title | Screen reader users | 2.4.2 | GLOW `XLSX-TITLE` |
 | A blank spacer row | Screen reader users | 1.3.1 | A person |
 | The color legend in 8pt light gray: "Green good, red bad, yellow meh" | Everyone | 1.4.3 | A person |
 
 ## Required reading (scanned PDF)
 
+Each row is one planted barrier, who it affects, and what finds it.
+
 | Barrier | Who it affects | WCAG | Found by |
 |---|---|---|---|
-| Every page is a picture of text, with no text layer | Screen reader users; anyone who needs to enlarge, search or listen | 1.4.5, 1.1.1 | GLOW PDF-NO-IMAGES-OF-TEXT |
-| Not tagged | Screen reader users | 1.3.1 | GLOW PDF-TAGGED |
-| No title, no language | Screen reader users | 2.4.2, 3.1.1 | GLOW PDF-TITLE, PDF-LANGUAGE |
+| Every page is a picture of text, with no text layer | Screen reader users; anyone who needs to enlarge, search or listen | 1.4.5, 1.1.1 | GLOW `PDF-NO-IMAGES-OF-TEXT` |
+| Not tagged | Screen reader users | 1.3.1 | GLOW `PDF-TAGGED` |
+| No title, no language | Screen reader users | 2.4.2, 3.1.1 | GLOW `PDF-TITLE`, `PDF-LANGUAGE` |
 
 The teachable moment: this is the alternate format request. Fixing the PDF is
 one answer; producing large print, plain language and audio from a clean
@@ -102,13 +119,15 @@ argument for you: a reading nobody can review is a reading everybody forgets.
 
 ## Lab handout (PDF with a form)
 
+Each row is one planted barrier, who it affects, and what finds it.
+
 | Barrier | Who it affects | WCAG | Found by |
 |---|---|---|---|
-| Not tagged, and the table is only drawn lines | Screen reader users | 1.3.1 | GLOW PDF-TAGGED; a person for the table |
+| Not tagged, and the table is only drawn lines | Screen reader users | 1.3.1 | GLOW `PDF-TAGGED`; a person for the table |
 | Three form fields with no labels | Screen reader users, who hear "edit text" three times | 1.3.1, 3.3.2, 4.1.2 | A person |
 | The exercise itself depends on seeing color | Blind students; some color blind students | 1.4.1 | A person |
-| The deadline in 7pt light gray | Everyone | 1.4.3 | GLOW PDF-FONT-SIZE for size; a person for contrast |
-| No title, no language | Screen reader users | 2.4.2, 3.1.1 | GLOW PDF-TITLE, PDF-LANGUAGE |
+| The deadline in 7pt light gray | Everyone | 1.4.3 | GLOW `PDF-FONT-SIZE` for size; a person for contrast |
+| No title, no language | Screen reader users | 2.4.2, 3.1.1 | GLOW `PDF-TITLE`, `PDF-LANGUAGE` |
 
 The teachable moment: the Stroop test cannot be fixed by editing the PDF. A
 blind student needs an alternative activity that teaches the same idea. That
@@ -116,6 +135,8 @@ is the "human required" pile, and a good agent says so instead of inventing a
 fix.
 
 ## Course announcement (web page)
+
+Each row is one planted barrier, who it affects, and what finds it.
 
 | Barrier | Who it affects | WCAG | Found by |
 |---|---|---|---|
@@ -132,6 +153,8 @@ fix.
 | No main landmark; content sits outside any region | Screen reader users jumping by landmark | 1.3.1, as a best practice | axe |
 
 ## Lecture captions (WebVTT)
+
+Each row is one planted barrier, who it affects, and what finds it.
 
 | Barrier | Who it affects | WCAG | Found by |
 |---|---|---|---|

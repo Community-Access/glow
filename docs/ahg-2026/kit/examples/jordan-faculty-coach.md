@@ -1,3 +1,10 @@
+---
+title: "Worked example: Jordan's faculty coach"
+lang: en
+author: "Jeff Bishop, BITS"
+description: "Worked example: a faculty coach agent, from problem to 30-day plan."
+---
+
 # Worked example: Jordan's faculty coach
 
 Role card: Course content and faculty coaching.
@@ -20,6 +27,8 @@ learning the one habit behind most of it, in a note short enough to be read
 between classes and kind enough to be read at all.
 
 ## 2. Jordan's five answers
+
+Each row is one question, and the answer.
 
 | Question | Jordan's answer |
 |---|---|
@@ -153,6 +162,8 @@ fix list, and the same findings to Jordan's coach for the note to the
 instructor. Two agents, one document, two different jobs. That is a team.
 
 ## 7. Jordan's 30-day plan
+
+Each row is one part of the plan, and the answer.
 
 | Question | Jordan's answer |
 |---|---|

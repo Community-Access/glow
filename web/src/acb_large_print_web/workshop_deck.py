@@ -6,8 +6,12 @@ sentences -- and four copies is how the day's timings ended up disagreeing in
 four places before ``workshop_agenda`` existed.
 
 So the slides live here as data. Every format is a renderer over the same
-list, and the agenda slide is built from ``workshop_agenda`` at render time,
-so a change to the day reaches all four formats at once.
+list, and every clock time comes from ``workshop_agenda.AHG_DAY`` at render
+time, so a change to the day reaches all four formats at once.
+
+This is the Accessing Higher Ground 2026 deck: seven blocks, 10:30 to 4:30,
+built to keep every promise in the published session description. The plan
+behind it is ``docs/ahg-2026/plan.md``.
 
 Accessibility is not a pass applied afterwards to any of them:
 
@@ -25,14 +29,15 @@ Accessibility is not a pass applied afterwards to any of them:
 
 from __future__ import annotations
 
+import re
 from dataclasses import dataclass, field
 from io import BytesIO
 from typing import ClassVar
 
 from . import workshop_agenda as agenda
 
-DECK_TITLE = "Accessibility Agents in Action"
-DECK_SUBTITLE = "A hands-on GLOW workshop for human-centered accessibility workflows"
+DECK_TITLE = "Accessibility Agents"
+DECK_SUBTITLE = "Building Human-Centered AI Workflows for Trusted Accessibility Automation at Scale"
 DECK_EVENT = "Accessing Higher Ground 2026"
 DECK_BYLINE = "Jeff Bishop - BITS, an affiliate of the American Council of the Blind"
 
@@ -123,32 +128,29 @@ class DeckContext:
         return f"{length} - /w/{self.code_label}/{number}"
 
 
-def _day_in_three_parts() -> Definitions:
-    """The day as three chunks, with every break and lunch named.
+def _block(number: int) -> agenda.Block:
+    """Block *number* of the AHG day, counting the opening as 1."""
+    return agenda.ahg_blocks()[number - 1]
 
-    Not the full timetable. Eighteen rows projected is a wall of text, and
-    a wall of text is exactly what the AHG speaker guidance asks presenters
-    not to put on a screen; three chunks is what a listener can hold. The
-    full table is on the workshop home page, on every participant's device.
-    The times are still read from the agenda, so the slide cannot drift.
-    """
-    blocks = agenda.deck_blocks()
-    break_1, break_2, lunch = blocks["break_1"], blocks["break_2"], blocks["lunch"]
-    first, last = agenda.AGENDA[0], agenda.AGENDA[-1]
-    return Definitions(items=(
-        (
-            f"Morning, {first.starts_at}-{lunch.starts_at}",
-            f"Why this work matters, five short activities, and Lab 1. Break at {break_1.starts_at}.",
-        ),
-        (
-            f"Afternoon, {lunch.resume}-{break_2.resume}",
-            f"Two labs: alt text, then remediation planning. Break at {break_2.starts_at}.",
-        ),
-        (
-            f"Close, {break_2.resume}-{last.resume}",
-            "Your workflow, your take-home artifact, your 30-day plan, and the session evaluation.",
-        ),
-    ))
+
+def _you_are_here(number: int) -> str:
+    block = _block(number)
+    return f"Block {number} of 7 - {block.clock} - {block.minutes} minutes"
+
+
+JOURNEY = (
+    "The problem: a course full of barriers, and a team too small.",
+    "Your agent: five plain-English answers.",
+    "Your agent at work: Copilot uses it on one course document.",
+    "Your agent, grounded: real evidence in, cited answers out.",
+    "Your agent, shared: a pull request to an open-source project, with your name on it.",
+    "Your agent in the team: the whole course, at once.",
+    "Your campus: a 30-day plan.",
+)
+
+
+def _journey_note(number: int) -> str:
+    return f"Say where we are on the journey: step {number} of 7, \"{JOURNEY[number - 1]}\" Then show what they will have at the end of this block before anyone starts."
 
 
 # ---------------------------------------------------------------------------
@@ -157,444 +159,418 @@ def _day_in_three_parts() -> Definitions:
 
 
 def build_slides(ctx: DeckContext) -> list[Slide]:
-    """Every slide, in order, with this room's own addresses in them."""
-    blocks = agenda.deck_blocks()
-    break_1 = blocks["break_1"]
-    break_2 = blocks["break_2"]
-    lunch = blocks["lunch"]
-    peer_review = blocks["peer_review"]
-    close_at = blocks["close_at"]
+    """Every slide of the AHG 2026 day, in order, with this room's addresses."""
+    day = agenda.AHG_DAY
+    lunch = next(b for b in day if b.kind == agenda.LUNCH)
+    rest = next(b for b in day if b.kind == agenda.BREAK)
+    commitments = next(b for b in day if b.title == "Commitments")
+    evaluation = day[-1]
 
     return [
+        # -- Block 1: why we are here ---------------------------------------
         Slide(
             id="s1", section="Opening", kicker=DECK_EVENT, title=DECK_TITLE,
             blocks=(
                 Para(DECK_SUBTITLE, lead=True),
-                Para("Helping everyone become an accessibility champion.", lead=True),
-                Para(f"{DECK_BYLINE} - letitglow.app", small=True),
+                Para("Today you build an accessibility agent. By four o'clock it is part of a team, and part of an open-source project, with your name on it."),
+                Para(f"{DECK_BYLINE}", small=True),
             ),
             notes=(
-                "Do not start with the tool. Start with the room. Ask nothing yet - let people sit down, find power, and settle.",
-                "The proctor introduces the session. Put the microphone on before you say a word, and keep it on all day: when a volunteer speaks, pass them a mic or say what they said back into yours before you answer. Some people in this room hear you only through it.",
-                "Say the key point once, before any logistics, in one sentence: the work is not fixing documents, it is making more people who can. Then the promise on the next slide.",
+                "The proctor introduces the session. Put the microphone on before you say a word, and keep it on all day: when someone speaks from the floor, pass them a mic or repeat what they said into yours before you answer.",
+                "Say the key point before any logistics, in one sentence: accessibility in higher education does not scale by fixing, it scales by making more people who can, and agents are how one person's know-how reaches a whole course.",
+                "Describe the slide: the title, the subtitle from the program, and one sentence promising what they leave with.",
             ),
         ),
         Slide(
-            id="s2", section="Opening", kicker="The promise",
-            title="Two ways, and the first one is enough",
+            id="s2", section="Opening", kicker="The problem", title="Forty thousand files and three people",
+            blocks=(
+                Para("WCAG 2.2 is the standard. Title II made it a deadline for public colleges and universities."),
+                Para("Every syllabus, slide deck, scanned reading and course page is in scope, and most of them are documents, not web pages."),
+                Para("Nobody fixes that by working harder. The question is how to scale without losing quality, accountability or trust.", big=True),
+            ),
+            notes=(
+                "Ask, warmly: who here has a backlog? Who has a spreadsheet with the word final in its name more than once? Let the laugh happen; it is recognition, not mockery.",
+                "Title II's rule points to WCAG 2.1 AA; 2.2 is the current standard and includes everything 2.1 does. Say it once and move on.",
+            ),
+        ),
+        Slide(
+            id="s3", section="Opening", kicker="Where we will be at 4:00", title="The finished result, first",
+            blocks=(
+                Para("This afternoon a team of agents works through a whole course and writes one report. Every finding has its evidence, its WCAG criterion, and a named person who checks it."),
+                Table(
+                    caption="One section of that report, from Maria's agent:",
+                    headers=("Part", "What it says"),
+                    rows=(
+                        ("File", "The scanned required reading"),
+                        ("Routed to", "Alternate format planner, by Maria Alvarez"),
+                        ("Evidence", "GLOW audit: pictures of text, no text layer, untagged"),
+                        ("Plan", "Get a clean source, then large print and audio, and post it for every student"),
+                        ("Reviewer", "Alternate format specialist. Status: proposed"),
+                    ),
+                ),
+                Para("You will build one of the agents that writes a section like this."),
+            ),
+            notes=(
+                "Read the table out loud, row by row. It is the destination; people relax when they can see it.",
+                "Maria is a colleague in a disability resource center. She is fictional, and she is one step ahead of the room all day.",
+            ),
+        ),
+        Slide(
+            id="s4", section="Opening", kicker="The map for today", title="The journey",
+            blocks=(Bullets(ordered=True, items=JOURNEY),),
+            notes=(
+                "Read all seven, slowly. This list comes back at the start of every block with one step marked, so nobody ever wonders where we are.",
+                "Promise them out loud: every step has a finished example to fall back on. Nobody gets stuck and stays stuck.",
+            ),
+        ),
+        Slide(
+            id="s5", section="Opening", kicker="Housekeeping", title="How today runs",
+            blocks=(
+                Bullets(items=(
+                    f"10:30 to 4:30 Mountain Time. Lunch at {lunch.starts_at}. A break at {rest.starts_at}.",
+                    "Your laptop, with VS Code, the AHG 2026 profile and your GitHub account. Not set up yet? A helper is coming to you.",
+                    "Seven blocks. Every one starts by showing you the finished result.",
+                    f"The last five minutes, at {evaluation.starts_at}, are the session evaluation.",
+                    "Ask for anything, any time: large print, a seat, a pause, a repeat.",
+                )),
+            ),
+            notes=(
+                "Name the exits and the restrooms, physically pointing.",
+                "Say the last bullet slowly, then add: that is not an interruption of this workshop - it is this workshop.",
+                "If anyone is not set up, do not wait for them. Helpers sit with them while the room carries on; the morning is designed so they catch up by lunch.",
+            ),
+        ),
+        Slide(
+            id="s6", section="Opening", kicker="Two rules, all day", title="Private stays private, and people decide",
             blocks=(
                 Bullets(ordered=True, items=(
-                    "GLOW, in a browser. The whole day. No account, no sign-in, no AI.",
-                    "Plus your own assistant, if you already have one. An upgrade on the same exercise, never a different one.",
+                    "Never paste anything private into any AI: student records, health or disability information, anyone's name. We use a sample course all day.",
+                    "Every agent ends with a person checking its work. Agents draft. People decide.",
                 )),
-                Para("Nothing today needs an account with anyone.", big=True),
-                Para(
-                    "One rule if you use an assistant: paste text, never upload files - "
-                    "and never paste anything private.",
-                ),
-            ),
-            notes=(
-                "Say this in the first ten minutes, exactly once, and mean it. Everything later in the day depends on the room believing it.",
-                "The upload rule matters: free accounts allow roughly two image uploads a day and do not publish the number. An instruction that fails at 1:40 is worse than one nobody followed.",
-                "The privacy half matters more. Say what private means here: student records, health or disability information, anyone's name. A free assistant may keep what is pasted into it. Use the scenarios, or strip the details out first.",
-            ),
-        ),
-        Slide(
-            id="s3", section="Opening", kicker="Housekeeping", title="How today runs",
-            blocks=(
-                Bullets(items=(
-                    f"8:30 to 4:30. Lunch at {lunch.starts_at}. Breaks at {break_1.starts_at} and {break_2.starts_at}.",
-                    "Eleven activities. Nothing is graded, and nothing is collected without you choosing to share it.",
-                    "Any device, a phone included. Nothing to install, so a locked-down work laptop is fine.",
-                    "Everything you write is yours, and you leave with all of it.",
-                    "Ask for anything, any time - large print, a seat, a pause, a repeat.",
-                )),
-            ),
-            notes=(
-                "Name the exits and the bathrooms, physically pointing. Some people will not ask.",
-                "If anyone arrived without the worksheet pack, the links are on the workshop home page and work on a phone. We do not hand out paper.",
-                "Say the last bullet slowly, then add: that is not an interruption of this workshop - it is this workshop. It sets the tone for whether anyone asks for anything all day.",
-                "The worksheet pack was published before today for anyone who wanted to print their own. Say so for the person who did.",
-            ),
-        ),
-        Slide(
-            id="s4", section="Opening", kicker="Join the room", title="One address, all day",
-            blocks=(
-                Url(ctx.join_display),
-                Para("The same address is on the card at every table, in large type, with a QR code beside it."),
-                Para(
-                    "Each activity has its own short address: slash 1, slash 2, and so on, "
-                    "numbered the way I will say them out loud."
-                ),
-            ),
-            notes=(
-                "Read the address out twice, letter by letter, then wait. Do not move on until people are in. The code on this slide is the live one for this session - there is nothing to replace.",
-                "Say what is on the screen: the address and nothing else. The QR code is on the table cards, not here, so nobody hunts the slide for it.",
-                "Signage is printed from the facilitator dashboard: session, then signage.",
-            ),
-        ),
-        Slide(
-            id="s5", section="Opening", kicker="Do this early",
-            title="So you never lose your work",
-            blocks=(
-                Para("Your work is held against this browser on this device. Switch to a phone, or clear your cookies, and it is gone."),
-                Para("On My workshop content, under Work on another device, give an email address and you will be sent a link that restores everything, anywhere."),
-                Bullets(items=(
-                    "Entirely optional. The day works without it.",
-                    "The address is used for that one message and never appears anywhere else.",
-                    "The link lasts 45 days, which outlives your 30-day plan.",
-                )),
-            ),
-            notes=(
-                f"Give this twice: once now, once at the {break_1.starts_at} break, when there is something worth keeping.",
-                "If Postmark is not configured, the form is replaced by a download prompt. Check before the room fills - it is invisible until you look for it.",
-            ),
-        ),
-        Slide(
-            id="s6", section="Opening", kicker="Why we are here",
-            title="Accessibility does not scale by fixing",
-            blocks=(
-                Para("If you are the person who fixes everything, then accessibility in your institution is exactly as large as your calendar."),
-                Para("The work is not fixing documents. The work is making more people who can.", big=True),
-            ),
-            notes=(
-                "This is the pivot of the whole day. Let it sit. Some people in this room are exhausted by being the only one.",
-                "Optional: ask for a show of hands on \"who is the only accessibility person in your unit\" - but only if the room is warm enough. It can land as exposure rather than solidarity.",
-            ),
-        ),
-        Slide(
-            id="s7", section="Opening", kicker="Four words for the day", title="The GLOW framework",
-            blocks=(
-                Definitions(items=(
-                    ("G - Ground", "Ground the work in a real accessibility problem, not a tool."),
-                    ("L - Learn", "Learn what the people around you actually need to understand."),
-                    ("O - Organize", "Organize it into a workflow that repeats without you."),
-                    ("W - Walk", "Walk forward as champions, plural."),
-                )),
-            ),
-            notes=(
-                "Map the day onto this once, here, and then stop talking about the acronym. It is scaffolding, not content.",
-            ),
-        ),
-        Slide(
-            id="s8", section="Opening", kicker="The boundary", title="AI drafts. People decide.",
-            blocks=(
-                Para("Every activity today has a human-review step that you write yourself, in your own words, for your own context."),
-                Para("Not because AI is dangerous in the abstract - because purpose, meaning, context and harm are judgments, and judgments have owners."),
                 Para("If nobody is named, nobody reviewed it.", big=True),
             ),
             notes=(
-                "This is the slide institutional leadership cares about. It is also the honest one.",
-                "Set the AI context here, in under a minute. What this session covers: where AI can help in accessibility work, and the human review that has to follow it. What it does not: comparing vendors, building software, or requiring anyone to use AI at all.",
-                "Say what makes it different from the other AI sessions this week: it is about people making more people who can, and AI stays optional throughout. Name the reasons people hesitate - privacy, accuracy, other people's jobs - without dwelling on them. The boundary on this slide is the answer to each.",
-                "The generated prompts put the participant's own review step inside the prompt as an instruction, not as a closing remark. Mention that at activity 5, not here.",
+                "Set the AI context here, in under a minute. What today covers: agents that analyze course content, find barriers and draft fixes, grounded in checkers and cited standards. What it does not: replacing anyone, or trusting any answer without evidence.",
+                "Say what makes it different from the other AI sessions this week: it is about higher education accessibility work at scale, built by the people who do that work, and every agent is open source.",
+                "Name the reasons people hesitate - privacy, accuracy, other people's jobs - once, without dwelling. Rule one answers the first. Grounding answers the second. Rule two answers the third.",
             ),
         ),
         Slide(
-            id="s9", section="Opening", kicker="The shape of the day", title="Where we are going",
-            blocks=(_day_in_three_parts(),),
-            notes=(
-                "Thirty seconds. Read the three parts out loud - not everyone can read the screen. Then say \"the last part is what you take home\".",
-                "The full timetable, every break included, is on the workshop home page on every device. These times come from the workshop agenda, so they cannot drift from what each activity page shows.",
-            ),
-        ),
-        Slide(
-            id="s10", section="Morning", kicker=f"Activity 1 - {ctx.activity(1)}",
-            title="Accessibility Journey Check-In",
+            id="s7", section="Opening", kicker="No code, really", title="What an agent is",
             blocks=(
-                Para("What accessibility work do you actually do? Where do your partners get stuck - the same place, over and over?"),
-                Para("What would change if more of them became champions?"),
-            ),
-            notes=(
-                "No sharing pressure. Writing, then a table conversation if the table wants one.",
-                "When the first submissions land, point people at the return link. This is the moment they have something to lose.",
-            ),
-        ),
-        Slide(
-            id="s11", section="Morning", kicker=f"Activity 2 - {ctx.activity(2)}",
-            title="What problem are we solving?",
-            blocks=(
-                Para("Start with the problem you can see today."),
-                Para("Then name the deeper one behind it. Who needs to learn this work, or own part of it?"),
-                Para("What does success look like if it happens again and again, without you?", big=True),
-            ),
-            notes=(
-                "Watch for tool-first answers - \"we need a checker\". Push back gently: a checker is an answer, not a problem.",
-            ),
-        ),
-        Slide(
-            id="s12", section="Morning", kicker=f"Activity 3 - {ctx.activity(3)}",
-            title="Fix it for me, or teach me?",
-            blocks=(
-                Para("Take a real request that said \"just fix it for me.\""),
-                Para("Write the reply that does both: solves it today, and teaches it for next time."),
-                Panel(lines=(
-                    "The pattern: I have done X for you. Here is the one thing that caused it. "
-                    "Next time, do Y - it takes about a minute, and here is where it lives.",
+                Definitions(items=(
+                    ("Role", "Who it is, and who it works for."),
+                    ("Task", "The one job it does."),
+                    ("Trusted guidance", "The standards and policies it must cite: WCAG 2.2, your own procedures."),
+                    ("Output format", "What comes back, in a shape a busy person can use."),
+                    ("Human review", "Who checks it before anything goes out."),
                 )),
+                Para("An agent is those five answers, written in plain English. Writing one is writing, not coding.", big=True),
             ),
             notes=(
-                "The hard part is tone, not content. Nobody learns from a reply that makes them feel caught.",
-                "Ask for one volunteer to read theirs aloud. One is enough.",
+                "This is the slide that lowers the shoulders. Say it twice: if you can write instructions for a new colleague, you can write an agent.",
+                "The file format is the same one the open-source Accessibility Agents project uses, which is why their agents and yours can work in the same team this afternoon.",
             ),
         ),
         Slide(
-            id="s13", section="Morning", kicker=f"Break - {break_1.minutes} minutes",
-            title=f"Back at {break_1.resume}",
+            id="s8", section="Opening", kicker="Agents in action", title="Your accessibility office",
             blocks=(
-                Para("If you have not sent yourself a return link yet, now is the moment. My workshop content, then Work on another device."),
-            ),
-            notes=(
-                "Project the room pulse during the break. Counts only - it is safe on a screen.",
-                "Walk the room. The person who has not typed anything is the one to sit with, quietly.",
-            ),
-        ),
-        Slide(
-            id="s14", section="Morning", kicker=f"Activity 4 - {ctx.activity(4)}",
-            title="Helpful, risky, or human required?",
-            blocks=(
-                Para("Sort your own tasks into three piles. Then write the safeguard that makes the middle pile safe."),
                 Table(
-                    caption="The three piles",
-                    headers=("Pile", "Example"),
+                    caption="The agent team you will join this afternoon. A coordinator routes each file to these specialists.",
+                    headers=("Specialist", "Takes"),
                     rows=(
-                        ("Helpful for AI", "Drafting alt text for a chart you wrote"),
-                        ("Risky without review", "Summarising a policy document"),
-                        ("Human required", "Deciding what an image is for"),
+                        ("Word documents", "Syllabi, handouts"),
+                        ("PowerPoint slides", "Lecture decks"),
+                        ("Excel workbooks", "Gradebooks, templates"),
+                        ("PDF documents", "Readings, forms, scans"),
+                        ("Web pages", "Course pages, with axe and Accessibility Insights"),
+                        ("Captions and media", "Lecture captions"),
+                        ("Plain language", "Anything a student must read and act on"),
+                        ("Standards reviewer", "Everyone's findings, last"),
+                        ("Your agent", "Whatever you build it to do"),
                     ),
                 ),
             ),
             notes=(
-                "The examples are deliberately arguable. If a table disagrees about which pile something is in, that argument is the exercise.",
+                "Read the specialists down the list. Pause on the last row: the team has an empty chair, and it is theirs.",
+                "These specialists are adapted from the open-source Accessibility Agents project. That is where their agents go this afternoon too.",
             ),
         ),
+        # -- Block 2: design your agent -------------------------------------
         Slide(
-            id="s15", section="Morning", kicker=f"Activity 5 - {ctx.activity(5)}",
-            title="The Accessibility Agent Formula",
+            id="s9", section="Design", kicker=_you_are_here(2), title="Design your agent",
             blocks=(
+                Para("By the end of this block: your own agent, in a file, with your name on it."),
                 Definitions(items=(
-                    ("Role", "Who is it being, and for whom?"),
-                    ("Task", "One job, said plainly."),
-                    ("Trusted guidance", "Whose rules - WCAG, ACB large print, your own style guide?"),
-                    ("Output format", "What comes back, in what shape, so a person can use it?"),
-                    ("Human review", "Who checks what, before it goes out?"),
+                    ("Documents and alternate formats", "An alternate format planner, or a document triage agent."),
+                    ("Course content and faculty coaching", "A faculty coach, or a course page coach."),
+                    ("Compliance and procurement", "A remediation log keeper, or a vendor report reader."),
                 )),
-                Para("You are not writing code. You are writing instructions for a colleague who is fast, literal, and has never met your institution."),
+                Para("Pick one card. Bring one real problem from your job, with nothing private in it."),
             ),
             notes=(
-                "This is the technical peak of the day and it is still five sentences on a page. Say so.",
-                "Mention the optional \"Run your agent\" lab here, once. Lunch or after 4:30. A door, not a corridor.",
+                _journey_note(2),
+                "Every card has two ready-made agents in examples/agents. Nobody starts from a blank page; everybody starts from something that already works and makes it theirs.",
             ),
         ),
         Slide(
-            id="s16", section="Morning", kicker=f"Lab 1 - {ctx.activity(6)}",
-            title="GLOW Lab 1: Accessible Communications",
+            id="s10", section="Design", kicker="Watch me first", title="Maria's five answers",
             blocks=(
-                Para("Rewrite a real message so more people can read it."),
-                Bullets(items=(
-                    "Plain words, short sentences.",
-                    "Real headings, not bold text pretending to be headings.",
-                    "Links that say where they go.",
-                    "Words that welcome an access request instead of burying it.",
-                )),
-                Para("Bring your own message if you have one. The scenarios are a net, not a rail."),
-            ),
-            notes=(
-                "Four scenarios from four sectors, plus \"Surprise me\", which is deterministic per person - two people at a table will rarely get the same brief, and you can walk anyone back through what they were given.",
-                "A real document of their own always beats a scenario. Say it out loud.",
-            ),
-        ),
-        Slide(
-            id="s17", section="Morning", kicker=f"Lunch - {lunch.clock}",
-            title=f"Back at {lunch.resume}",
-            blocks=(
-                Para("Nothing is due. Nothing is graded."),
-                Para("If you want more: the optional Run Your Agent lab is open, and it is genuinely optional."),
-            ),
-            notes=(
-                "Eat. Nothing in the afternoon depends on a model answering, so there is nothing to watch over lunch.",
-            ),
-        ),
-        Slide(
-            id="s18", section="Afternoon", kicker=f"{lunch.resume} - Re-entry",
-            title="Where the room is",
-            blocks=(
-                Para("Here is what the room has finished so far. No names, just counts."),
-                Para("Nobody is behind. There is no behind.", big=True),
-            ),
-            notes=(
-                "Project the facilitator dashboard. Counts only - it never carries anyone's work. Read the counts aloud; the screen is not the only way into the room.",
-                "Nothing in the afternoon depends on a model answering, so there is no bad news to deliver here. Say that once if the room looks anxious about it.",
-            ),
-        ),
-        Slide(
-            id="s19", section="Afternoon", kicker=f"Lab 2 - {ctx.activity(7)}",
-            title="GLOW Lab 2: Alt Text and Human Judgment",
-            blocks=(
-                Para("A machine can tell you what is in the picture."),
-                Para("Only you can say what the picture is for.", big=True),
-                Para(
-                    "So this lab gives you the context in words, and descriptions "
-                    "somebody already wrote. Your job is to judge them.",
+                Table(
+                    caption="Maria, from the Disability Resource Center, designing her alternate format planner:",
+                    headers=("Question", "Maria's answer"),
+                    rows=(
+                        ("Role", "An alternate format planner in a disability resource center"),
+                        ("Task", "Plan the formats a student needs from a checker's report"),
+                        ("Trusted guidance", "WCAG 2.2 1.4.5 and 1.1.1, ACB large print, our procedure"),
+                        ("Output format", "Numbered steps with who does each, then a checklist"),
+                        ("Human review", "The specialist checks page by page; the student confirms"),
+                    ),
                 ),
             ),
             notes=(
-                "Nobody uploads anything. Purpose lives in the words around an image, not in the pixels - a lab built on 'upload it and see' teaches the opposite.",
-                "The descriptions are written to be argued with. One is fluent and confidently wrong; that is the one to spend time on.",
+                "Read Maria's answers aloud. Then type /design-my-agent in Copilot Chat on the projector and answer as Maria, so they hear the whole conversation once before they have theirs.",
+                "Joke if the room is warm: Maria's coffee machine has been out of order since August. Her agent does not drink coffee, which is its main advantage.",
             ),
         ),
         Slide(
-            id="s20", section="Afternoon", kicker="Lab 2 - the method",
-            title="Four questions, in this order",
+            id="s11", section="Design", kicker="Your turn", title="Copilot asks, you answer",
             blocks=(
                 Bullets(ordered=True, items=(
-                    "Why is this image here? If you cannot answer, it may not need to be.",
-                    "What must a reader know about it to follow the page?",
-                    "What can you leave out? Alt text is not an inventory.",
-                    "What must a person verify before this goes live?",
+                    "Open Copilot Chat: Control+Alt+I on Windows, Command+Control+I on a Mac.",
+                    "Type /design-my-agent and press Enter.",
+                    "Answer the questions, one at a time. Borrow from the example whenever you like.",
+                    "Copilot writes your answers into my-agent/SKILL.md and reads it back.",
                 )),
-                Para("Generated descriptions are confident and sometimes wrong. Question four is the whole job."),
+                Para("You are on track if Copilot tells you one thing your agent does well."),
+                Para("Stuck? Copy a ready-made agent from examples/agents into my-agent. That counts. You are still in."),
             ),
             notes=(
-                "If you have one, show a generated description that is fluent and factually wrong. It teaches more than any slide.",
-                "Decorative images: an empty alt is a decision, and a correct one. Say it explicitly - many people have never been told.",
+                "Helpers move now. Look for the person who has not typed anything yet, and sit with them quietly.",
+                "Step card 2 has every key and every expected screen in words, for screen reader users and anyone who prefers paper.",
             ),
         ),
+        # -- Block 3: your agent at work ------------------------------------
         Slide(
-            id="s21", section="Afternoon", kicker=f"Lab 3 - {ctx.activity(8)}",
-            title="GLOW Lab 3: Remediation Planning",
+            id="s12", section="Design", kicker=_you_are_here(3), title="Your agent at work",
             blocks=(
-                Para("Take a real document, slide deck, or course page. List what is broken. Then put the fixes in order."),
-                Para("Order by who is blocked, not by what is easy.", big=True),
-                Para("Then write how you would coach the owner, so the next version starts better."),
-            ),
-            notes=(
-                "Everyone sorts by effort first. The reorder, once someone says \"but this one blocks a student on Monday\", is the lesson.",
-            ),
-        ),
-        Slide(
-            id="s22", section="Afternoon", kicker=f"Break - {break_2.minutes} minutes",
-            title=f"Back at {break_2.resume}",
-            blocks=(Para("The last stretch is the one you take home."),),
-            notes=(
-                "Short break on purpose. Protect the last 85 minutes; that is where the artifact comes from.",
-            ),
-        ),
-        Slide(
-            id="s23", section="Afternoon", kicker=f"Studio - {ctx.activity(9)}",
-            title="Accessibility Champion Studio",
-            blocks=(
-                Para("Design one workflow you can hand to someone else."),
-                Bullets(items=(
-                    "Who does each step?",
-                    "Where is the point a person must review before anything goes out?",
-                    "What does the partner learn by doing it, that they did not know before?",
-                )),
-                Para("Build the workflow that still works when you are on holiday.", big=True),
-            ),
-            notes=(
-                "Workflows shared to the gallery carry a \"Start from this workflow\" link. It fills an empty form only; it never writes over someone's own answers. Anonymous submitters stay anonymous in the attribution.",
-            ),
-        ),
-        Slide(
-            id="s24", section="Afternoon",
-            kicker=f"Peer review - {peer_review.minutes} minutes - gallery",
-            title="Three sentences for someone else",
-            blocks=(
+                Para("By the end of this block: your agent's first answer on a real course document."),
                 Bullets(ordered=True, items=(
-                    "One thing that is strong.",
-                    "One risk or missing safeguard.",
-                    "One way it could be reused somewhere else.",
+                    "In Copilot Chat, type /try-my-agent.",
+                    "Pick a file from the PSY 101 sample course.",
+                    "Read what your agent says.",
                 )),
-                Para("Supportive, specific, and short. You are reviewing a workflow, not a person."),
+                Para("It will guess a little. That is not a mistake. It is the setup for this afternoon.", big=True),
             ),
             notes=(
-                "The gallery announces new work as a count and waits for the reader to press \"Show new submissions\". Nothing appears underneath anyone mid-read. Say that out loud - it will be noticed in this room, and it should be.",
+                _journey_note(3),
+                "PSY 101 is fictional: a course about memory and procrastination that keeps forgetting things and running late. The barriers in it are planted on purpose; the answer key is in the facilitator folder.",
             ),
         ),
         Slide(
-            id="s25", section="Afternoon", kicker=f"Capstone - {ctx.activity(10)}",
-            title="Say it in four sentences",
+            id="s13", section="Design", kicker="Watch me", title="Maria's first answer",
             blocks=(
-                Para("What is your workflow? Who does it help? What do they learn?"),
-                Para("And how does it keep going after today?"),
-            ),
-            notes=(
-                "Take three or four out loud, from volunteers. Then send everyone to the artifact page - that is the next slide and it needs two full minutes.",
-            ),
-        ),
-        Slide(
-            id="s26", section="Afternoon", kicker="Take it with you",
-            title="My take-home artifact",
-            blocks=(
-                Para("One page, assembled from what you wrote today: your workflow, who it helps, the human-review gate in your own words, and your 30-day commitment."),
+                Panel(lines=(
+                    "\"Run Acrobat's Make Accessible action, add alternative text to all images, and increase the font size. This will make the document compliant with WCAG 2.1.\"",
+                )),
                 Bullets(items=(
-                    "Print it, or download it as a single file that still opens years from now.",
-                    "Email it to yourself with your agent package and a link back to everything else.",
+                    "It never saw the file, so it did not know the reading is a scan.",
+                    "Alt text on pictures of text would describe the pictures, not turn them into text.",
+                    "It said \"compliant\", which her agent is told never to say.",
                 )),
-                Para("This is the thing you forward to a director on Monday.", big=True),
             ),
             notes=(
-                "Do not rush this. Two minutes each, and it is the highest-value two minutes of the day.",
-                "The plain text of the artifact is in the email body too, because institutional mail gateways strip attachments.",
+                "Read the quote in a confident voice, then the three problems in a normal one. The contrast is the joke, and the lesson.",
+                "This is a written example, labelled as one in the kit. On the day, show a real first answer from the room if someone offers one.",
             ),
         ),
         Slide(
-            id="s27", section="Afternoon", kicker=f"Activity 11 - {ctx.activity(11)}",
-            title="How this gets used where you work",
+            id="s14", section="Lunch", kicker=f"Lunch - {lunch.clock}", title=f"Back at {lunch.resume}",
             blocks=(
-                Definitions(items=(
-                    ("One workflow", "that you will actually try."),
-                    ("One partner", "or team you will try it with."),
-                    ("One safeguard", "you will use every single time."),
-                    ("One first step", "small enough to do this week."),
-                    ("Who needs to know", "or approve it - a manager, a comms lead, an IT policy."),
-                    ("What it looks like if it worked", "in one sentence you could say to them."),
+                Para("You have an agent. That was the hard part."),
+                Para("After lunch it stops guessing."),
+            ),
+            notes=(
+                "Say well done, and mean it. Most people in this room had never written an agent at 10:30.",
+                "Anyone still setting up: lunch is when a helper finishes it with them.",
+            ),
+        ),
+        # -- Block 4: ground it ---------------------------------------------
+        Slide(
+            id="s15", section="Afternoon", kicker=_you_are_here(4), title="Ground it",
+            blocks=(
+                Para("By the end of this block: the same agent, giving cited answers from real evidence. A before and an after."),
+                Bullets(ordered=True, items=(
+                    "In Copilot Chat, type /ground-my-agent.",
+                    "Use the same file as this morning.",
+                    "Your agent reads that file's checker report from sample-course/evidence: GLOW for documents, axe for the web page.",
+                    "Compare the two answers.",
                 )),
             ),
             notes=(
-                "Small is the point. \"Rewrite one email template\" beats \"audit the LMS\".",
-                "The last two are the additions, and they are the difference between a good intention and something that survives an institution. A workflow nobody approved and nobody measured gets forgotten.",
-                "Nobody is going to chase them about this. Say so, and say where help is: support@community-access.org.",
+                _journey_note(4),
+                "Grounding is the trusted in the session title. The checkers find; the agent explains and plans; a person decides.",
             ),
         ),
         Slide(
-            id="s28", section="Close", kicker=close_at, title="The commitment wall",
+            id="s16", section="Afternoon", kicker="Watch me", title="Before and after",
+            blocks=(
+                Table(
+                    caption="Maria's agent, on the scanned reading:",
+                    headers=("Before evidence", "After evidence"),
+                    rows=(
+                        ("Guessed the file was an ordinary PDF", "Knew it was two pages of pictures of text"),
+                        ("WCAG 2.1, no links", "WCAG 2.2, 1.4.5 Images of Text, linked"),
+                        ("\"Compliant\"", "What was checked, and what a person must check"),
+                        ("Fix the PDF", "Get a clean source, then large print and audio for everyone"),
+                    ),
+                ),
+            ),
+            notes=(
+                "Read both columns, row by row.",
+                "Then ask one volunteer to read their own before and after. One is enough, and applaud it.",
+            ),
+        ),
+        Slide(
+            id="s17", section="Afternoon", kicker="The skill, not the tool", title="Any checker, and a person",
+            blocks=(
+                Para("The same works with Word's and PowerPoint's own Accessibility Checker, Acrobat's checker, or Accessibility Insights. The skill is giving your agent evidence."),
+                Para("And some barriers no checker sees:"),
+                Bullets(items=(
+                    "The accommodations statement, last, in 8-point gray, contradicted two sections earlier by a no-makeup-exams rule in capitals.",
+                    "Alt text that says \"image.png\".",
+                    "A lab that only works if you can see color.",
+                    "Captions that turn Ebbinghaus into \"ebb in house\".",
+                )),
+            ),
+            notes=(
+                "If Word is handy, show Review, then Check Accessibility on the syllabus, and paste its results into Copilot with the agent. Same skill, different tool.",
+                "Those four barriers are why every agent has a human review step. Read each one; the room will recognise every one of them from their own campus.",
+            ),
+        ),
+        Slide(
+            id="s18", section="Afternoon", kicker=f"Break - {rest.minutes} minutes", title=f"Back at {rest.resume}",
+            blocks=(Para("Next, your agent goes public. Nicely."),),
+            notes=("Short break on purpose. The next two blocks are where the day comes together.",),
+        ),
+        # -- Block 5: share it ----------------------------------------------
+        Slide(
+            id="s19", section="Afternoon", kicker=_you_are_here(5), title="Share it",
+            blocks=(
+                Para("By the end of this block: your own pull request in the open-source Accessibility Agents project."),
+                Bullets(ordered=True, items=(
+                    "Open letitglow.app/workshop/ahg-2026/share in your browser, and choose your my-agent/SKILL.md.",
+                    "Press Open GitHub with my agent. GitHub opens with your agent filled in.",
+                    "Press Propose changes. GitHub makes your own copy, called a fork.",
+                    "Press Create pull request, then Create pull request again.",
+                )),
+                Para("That is your contribution. Buttons only. No code."),
+            ),
+            notes=(
+                _journey_note(5),
+                "Step card 5 walks the GitHub pages one control at a time, with what a screen reader announces at each step.",
+            ),
+        ),
+        Slide(
+            id="s20", section="Afternoon", kicker="Open source, live", title="Merged, with your name on it",
+            blocks=(
+                Para("As your pull requests arrive, I review and merge them, here, on the screen."),
+                Para("Every agent merged today lives in community/ahg-2026 in the Accessibility Agents project, for anyone in higher education to use and improve.", big=True),
+            ),
+            notes=(
+                "Merge on the projector as they arrive, and read each name and agent title out loud. Applause is allowed and encouraged.",
+                "Started from a ready-made agent? It still counts. Say so: what matters is that it is yours now.",
+            ),
+        ),
+        # -- Block 6: build the office --------------------------------------
+        Slide(
+            id="s21", section="Afternoon", kicker=_you_are_here(6), title="Build the office",
+            blocks=(
+                Para("By the end of this block: your agent working inside a team, across the whole course, and one team report."),
+                Bullets(ordered=True, items=(
+                    "In Copilot Chat, type /run-the-office.",
+                    "The coordinator sends each course file to its specialists, and yours where it fits.",
+                    "The standards reviewer checks everyone's work.",
+                    "You get the team report, with your agent's section in it.",
+                )),
+            ),
+            notes=(
+                _journey_note(6),
+                "This is building an agent team: they added a specialist, and their coordinator is running it. Copilot announces each file as it finishes, so screen reader users hear progress, not silence.",
+            ),
+        ),
+        Slide(
+            id="s22", section="Afternoon", kicker="What scale looks like", title="One course, one report",
+            blocks=(
+                Bullets(items=(
+                    "Seven files, eight specialists, plus yours.",
+                    "Every finding: evidence, a WCAG 2.2 criterion with its link, and a named reviewer.",
+                    "A list of what no checker could see, for a person.",
+                    "Three lines at the top that a director will actually read.",
+                )),
+                Para("That is quality, accountability and transparency, at scale. It is also a Tuesday.", big=True),
+            ),
+            notes=(
+                "Ask: what would it take to run this across ten courses? Let them answer. The honest answer is a person's review time, which is exactly where it should go.",
+            ),
+        ),
+        Slide(
+            id="s23", section="Afternoon", kicker="Agents in action", title="Everyone's agents, together",
+            blocks=(
+                Para("One more run, on the screen: the office team with every agent this room merged."),
+                Para("Listen for yours."),
+            ),
+            notes=(
+                "Run the merged team on the projector against the sample course. Read out each agent's name as the coordinator calls it.",
+                "If the run is slow, narrate it. If it stumbles, say what happened and why; a real failure explained well teaches more than a perfect demo.",
+            ),
+        ),
+        # -- Block 7: take it home ------------------------------------------
+        Slide(
+            id="s24", section="Close", kicker=_you_are_here(7), title="Take it home",
+            blocks=(
+                Para("By the end of this block: a 30-day plan for your own campus."),
+                Bullets(ordered=True, items=(
+                    "In Copilot Chat, type /my-30-day-plan.",
+                    f"Then add your one-sentence commitment at {ctx.join_display}/11 for the wall.",
+                )),
+                Table(
+                    caption="What you can do on Monday, with tools you already have:",
+                    headers=("You learned", "Monday, with"),
+                    rows=(
+                        ("Writing an agent", "Any AI assistant, including your campus Copilot"),
+                        ("Grounding it", "Word's, PowerPoint's and Acrobat's checkers, Accessibility Insights, axe"),
+                        ("Human review, in writing", "Your own office's process"),
+                        ("Agent teams", "One specialist at a time, or the Accessibility Agents project"),
+                    ),
+                ),
+            ),
+            notes=(
+                _journey_note(7),
+                "Small is the point. \"Run the planner on the next five requests\" beats \"transform our office\".",
+            ),
+        ),
+        Slide(
+            id="s25", section="Close", kicker=commitments.starts_at, title="The commitment wall",
             blocks=(
                 Para("Every commitment in this room, on one screen, with no names on it."),
-                Para("A promise made in front of strangers should not carry a name unless the person who made it decides to say it out loud."),
             ),
             notes=(
-                "Project it. Read three aloud. Do not comment on them, do not rank them, do not add a moral.",
-                "Then go straight to what happens next. The last five minutes belong to the session evaluation.",
+                "Project the wall from GLOW. Read three aloud. Do not comment on them, do not rank them.",
+                "Then go straight to the evaluation. The last five minutes belong to it.",
             ),
         ),
         Slide(
-            id="s29", section="Close", kicker="After today", title="What happens next",
+            id="s26", section="Close", kicker=f"{evaluation.starts_at} - Thank you", title="Go make one more champion",
             blocks=(
-                Bullets(items=(
-                    "Within 48 hours: a resource packet, and your exports in Markdown, JSON, HTML and Word.",
-                    "In 30 days: one message quoting your own commitment back to you, with a link to your follow-through log.",
-                    "Whenever you need it: support@community-access.org. Nobody will chase you, and anybody who writes gets help.",
-                    "Always: GLOW is free, open source, and built by the community it serves.",
-                )),
-                Url("letitglow.app"),
-            ),
-            notes=(
-                "Nobody is emailed twice, nobody who did not give an address is on the list, and the nudge is a command a person runs after looking at what is about to go out.",
-            ),
-        ),
-        Slide(
-            id="s30", section="Close", kicker="Thank you", title="Go make one more champion",
-            blocks=(
-                Para("You came in as the person who fixes things.", lead=True),
-                Para("You are leaving as the person who makes more people who can.", big=True),
+                Para("You came in with a problem. You are leaving with an agent, a team and a plan.", lead=True),
                 Para("Before you go: the session evaluation. It shapes next year's conference."),
+                Para("Help any time, before or after today: support@community-access.org."),
                 Para("GLOW is a community project of BITS, an affiliate of the American Council of the Blind.", small=True),
             ),
             notes=(
-                "Last slide. Say it, thank them, and hand over to the proctor for the session evaluation. Then stop talking while people fill it in - the five minutes are theirs.",
-                "Do not add a Q and A block here - answer at the tables while people pack up.",
+                "Say it, thank them, and hand over to the proctor for the evaluation. Then stop talking while people fill it in.",
+                "No question block here. Answer at the tables while people pack up.",
             ),
         ),
     ]
@@ -613,6 +589,13 @@ def build_deck_markdown(ctx: DeckContext) -> str:
     asks of everybody else's documents.
     """
     lines: list[str] = [
+        "---",
+        f'title: "{DECK_TITLE}: {DECK_SUBTITLE}"',
+        "lang: en",
+        f'author: "{DECK_BYLINE}"',
+        f'description: "The {DECK_EVENT} deck, with speaker notes."',
+        "---",
+        "",
         f"# {DECK_TITLE}",
         "",
         f"{DECK_SUBTITLE}",
@@ -621,7 +604,7 @@ def build_deck_markdown(ctx: DeckContext) -> str:
         f"- Presenter: {DECK_BYLINE}",
         f"- Join: {ctx.join_display}",
         "",
-        "Speaker notes are included under each slide. Thirty slides.",
+        f"Speaker notes are included under each slide. {len(build_slides(ctx))} slides.",
         "",
         "---",
         "",
@@ -650,19 +633,27 @@ def build_deck_markdown(ctx: DeckContext) -> str:
     return "\n".join(lines).rstrip() + "\n"
 
 
+_PATH_RE = re.compile(r"(?<![`\w])((?:[\w.-]+/)+[\w.-]+\.(?:md|html|txt)|[\w.-]+/(?=\s|$|[.,]))")
+
+
+def _md(text: str) -> str:
+    """File and folder names as inline code, so they read as names."""
+    return _PATH_RE.sub(lambda m: "`" + m.group(1) + "`", text)
+
+
 def _markdown_block(block: Content) -> list[str]:
     if isinstance(block, Para):
-        return [block.text, ""]
+        return [_md(block.text), ""]
     if isinstance(block, Url):
         return [f"### {block.text}", ""]
     if isinstance(block, Bullets):
         out = []
         for position, item in enumerate(block.items, start=1):
-            out.append(f"{position}. {item}" if block.ordered else f"- {item}")
+            out.append(f"{position}. {_md(item)}" if block.ordered else f"- {_md(item)}")
         out.append("")
         return out
     if isinstance(block, Definitions):
-        out = [f"- {term}: {meaning}" for term, meaning in block.items]
+        out = [f"- {term}: {_md(meaning)}" for term, meaning in block.items]
         out.append("")
         return out
     if isinstance(block, Panel):
@@ -937,10 +928,19 @@ def _pptx_table_slide(slide, slide_data: Slide, Inches, Pt) -> None:
             caption = block.caption
         elif isinstance(block, Para):
             intro.append(block.text)
+        elif isinstance(block, Bullets):
+            # Steps on a table slide must not be dropped: on the take-home
+            # slide they are the instructions.
+            intro.extend(
+                f"{n}. {item}" if block.ordered else item
+                for n, item in enumerate(block.items, start=1)
+            )
+        elif isinstance(block, Definitions):
+            intro.extend(f"{term}: {meaning}" for term, meaning in block.items)
 
     top = Inches(1.6)
     if slide_data.kicker or intro or caption:
-        box = slide.shapes.add_textbox(Inches(0.6), top, Inches(12.1), Inches(0.45 * 3))
+        box = slide.shapes.add_textbox(Inches(0.6), top, Inches(12.1), Inches(0.45 * max(1, len(intro) + 2)))
         frame = box.text_frame
         frame.word_wrap = True
         lines = ([slide_data.kicker] if slide_data.kicker else []) + intro + ([caption] if caption else [])
