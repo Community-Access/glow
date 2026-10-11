@@ -96,8 +96,8 @@ Copilot Chat.
 
 ### 1.5 Before the day: configuration
 
-Do these after PR #116 is merged and deployed, and before the first setup
-message goes out.
+PR #116 was merged and deployed on 10 October 2026, so steps 1 to 5 can
+be done now. Do them before the first setup message goes out.
 
 1. Copy `docs/ahg-2026/for-accessibility-agents/community/ahg-2026/README.md`
    into the Accessibility Agents repository at the same path. First confirm
@@ -424,10 +424,16 @@ that found it passes again.
 
 ### 2.14a Results so far
 
-Run by Claude on Windows, 10 October 2026, against GLOW running locally
-from this branch (section 1.7). Everything that needs no Copilot sign-in,
-no screen reader by ear and no Mac is done, and passes. What remains for
-Jeff, on Windows:
+Run by Claude on Windows, 10 October 2026, first against GLOW running
+locally from the branch (section 1.7), then again against production after
+PR #116 and PR #117 were merged and deployed the same day: 35 of 35 browser
+checks pass on `https://letitglow.app`. Everything that needs no Copilot
+sign-in, no screen reader by ear and no Mac is done, and passes. The full
+record is `ahg-test-report.md`.
+
+The workshop is live, so everything below can be run against
+`https://letitglow.app/workshop/ahg-2026`; the local copy in section 1.7 is
+no longer needed. What remains for Jeff, on Windows:
 
 1. Setup-02 to Setup-10: make a fresh GitHub account, import the profile,
    open the kit, and run `/ready-check`. The four extensions in the profile

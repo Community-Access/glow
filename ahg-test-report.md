@@ -1,11 +1,11 @@
 ---
-title: "AHG 2026 workshop: test report, 10 October 2026"
+title: "AHG 2026 workshop: test report, updated 10 October 2026"
 lang: en
 author: "Jeff Bishop, BITS"
 description: "Results of the first test pass of the AHG 2026 Accessibility Agents workshop on Windows, the defects found and fixed, and what remains."
 ---
 
-# AHG 2026 workshop: test report, 10 October 2026
+# AHG 2026 workshop: test report, updated 10 October 2026
 
 This reports the first test pass of the Accessing Higher Ground 2026
 workshop, "Accessibility Agents: Building Human-Centered AI Workflows for
@@ -18,9 +18,13 @@ records what was run, what was found, what was fixed and what is left.
 Every test case that can run without a signed-in Copilot account, without
 listening with a screen reader and without a Mac was run on 10 October 2026,
 and every one passes. The pass found five defects. All five are fixed and
-re-tested. One of them, D-002, is live on letitglow.app today and affects
-every page on a phone or at high zoom; its fix is in PR #117, waiting to be
-merged.
+re-tested. One of them, D-002, was live on letitglow.app and affected every
+page on a phone or at high zoom.
+
+Update, later on 10 October: PR #117 (the reflow fix) and PR #116 (the
+workshop) were admin-merged and deployed, and the browser checks were run
+again against production. All 35 pass. Section 8 has the details. D-002 is
+fixed on letitglow.app.
 
 What remains is the part only a person can do: the Copilot commands with a
 real account, the NVDA and JAWS passes by ear, the real GitHub fork and
@@ -30,7 +34,9 @@ them in order.
 ## 2. Scope and environment
 
 The pass was run on the branch `feat/ahg-2026-workshop` (PR #116), with GLOW
-running locally from that branch as described in `ahg.md` section 1.7.
+running locally from that branch as described in `ahg.md` section 1.7. The
+browser checks were then repeated against production after the merge; see
+section 8.
 
 | Item | Value |
 |---|---|
@@ -132,9 +138,27 @@ In this order. Each item names its cases in `ahg.md`.
 
 These are not test steps, but testing cannot finish without them.
 
-| Decision | Why it matters |
+| Decision | Status |
 |---|---|
-| Merge PR #117 | D-002 makes every GLOW page unusable on a phone today. Merging deploys |
-| Merge PR #116 | The setup page, kit, profile and share page exist in production only after it. Merging deploys |
-| Copy the `community/ahg-2026` folder into the Accessibility Agents repository | Share-09 and Share-11, and the capstone itself, need it |
-| A Mac tester | Env-4 and Env-5 cannot be signed off without one |
+| Merge PR #117 | Done: merged as `e7b7c4b` and deployed |
+| Merge PR #116 | Done: merged as `affde56` and deployed |
+| Copy the `community/ahg-2026` folder into the Accessibility Agents repository | Open. Share-09 and Share-11, and the capstone itself, need it |
+| A Mac tester | Open. Env-4 and Env-5 cannot be signed off without one |
+
+## 8. Production verification after the merge
+
+Both deploys finished successfully on 10 October. The checks below were run
+against `https://letitglow.app` afterwards.
+
+| Check | Result |
+|---|---|
+| `/health`, `/workshop/ahg-2026/kit.zip`, `/workshop/ahg-2026/ahg-2026.code-profile` | 200 each |
+| `scripts/ahg_browser_checks.py --base https://letitglow.app` | 35 of 35 checks pass |
+| Reflow at 320px on the home, privacy, workshop, setup, share, deck, audit and convert pages | No sideways scrolling on any of them; D-002 and D-003 fixed in production |
+| axe at 1280px on the same pages | No violations |
+| Load-01 against production | 40 of 40 kit downloads succeeded |
+| Server checkout `~/app` | On `affde56`, nothing modified or untracked |
+| Containers | Every container with a health check reports healthy |
+
+With the workshop live, every remaining item in section 6 can now be run
+against `https://letitglow.app/workshop/ahg-2026` instead of a local copy.
