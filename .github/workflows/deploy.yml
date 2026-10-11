@@ -26,7 +26,11 @@ concurrency:
 
 jobs:
   test:
-    name: Run tests
+    # Named "Pre-deploy tests", not "Run tests": the required status check of
+    # that name is produced by tests.yml, which also runs on pull_request. Two
+    # workflows exporting an identically named check makes the required context
+    # ambiguous, so this one keeps its own name. It still gates the deploy below.
+    name: Pre-deploy tests
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
