@@ -55,8 +55,20 @@ def group_of(rel: str) -> str:
     return folder
 
 
+# Names that title-casing a folder would get wrong.
+LABELS = {
+    "ahg-2026.code-profile": "The AHG 2026 VS Code profile",
+    ".vscode/extensions.json": "Recommended extensions",
+    ".vscode/settings.json": "Editor settings",
+    "office-team/pdf-documents/SKILL.md": "PDF documents",
+    "office-team/powerpoint-slides/SKILL.md": "PowerPoint slides",
+}
+
+
 def label_for(rel: str) -> str:
     """A name a person can say: the agent's folder for SKILL.md files."""
+    if rel in LABELS:
+        return LABELS[rel]
     parts = rel.split("/")
     if parts[-1] == "SKILL.md" and len(parts) >= 2:
         return parts[-2].replace("-", " ").capitalize()
@@ -65,6 +77,18 @@ def label_for(rel: str) -> str:
         if name.endswith(suffix):
             return "/" + name[: -len(suffix)] if suffix == ".prompt.md" else name[: -len(suffix)].replace("-", " ").capitalize()
     return name
+
+
+def title_for(rel: str, text: str) -> str:
+    """A page title: an agent's or command's name, else the file's own heading."""
+    label = label_for(rel)
+    if label != rel.split("/")[-1] or not rel.endswith(".md"):
+        return label
+    _pairs, body = split_front_matter(text)
+    for line in body.splitlines():
+        if line.startswith("# "):
+            return line[2:].strip()
+    return label
 
 
 def split_front_matter(text: str) -> tuple[list[tuple[str, str]], str]:

@@ -317,3 +317,11 @@ def test_the_kit_is_readable_online(client):
     assert client.get("/ahg/kit/sample-course/psy101-syllabus.docx").headers["Location"].endswith(
         "/ahg/site/psy101-syllabus.docx")
 
+
+def test_the_page_titles_name_the_conference_not_glow(client):
+    assert "<title>Accessibility Agents at AHG 2026</title>" in client.get("/ahg").get_data(as_text=True)
+    for path in ("/workshop/ahg-2026/share", "/ahg/site", "/ahg/kit", "/ahg/kit/README.md"):
+        body = client.get(path).get_data(as_text=True)
+        title = body.split("<title>")[1].split("</title>")[0]
+        assert title.endswith(" - AHG 2026") and "GLOW" not in title and ".md" not in title, (path, title)
+
