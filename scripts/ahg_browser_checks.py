@@ -209,6 +209,9 @@ record("Load-01", all(c == 200 for c in codes), f"{codes.count(200)} of 40 retur
 
 # Reflow sweep: no sideways scrolling at 320px, no axe violations at 1280px
 PAGES = ["/", "/privacy", "/workshop/", "/ahg", "/workshop/ahg-2026/share",
+         "/ahg/site", "/ahg/kit", "/ahg/kit/step-cards/4-ground-it.md",
+         "/ahg/kit/office-team/word-documents/SKILL.md", "/ahg/kit/README.md",
+         "/ahg/kit/ahg-2026.code-profile", "/ahg/kit/examples/maria-alternate-format-planner.md",
          "/workshop/deck", "/audit/", "/convert/"]
 with sync_playwright() as p:
     b = p.chromium.launch(channel="chrome")

@@ -495,8 +495,14 @@ def build_step_cards() -> list[Path]:
 
 
 def build_offline_share_page() -> Path:
-    template = REPO / "web" / "src" / "acb_large_print_web" / "templates" / "workshop" / "ahg_share.html"
-    html = template.read_text(encoding="utf-8").replace(' nonce="{{ csp_nonce }}"', "")
+    # Rendered from the same template GLOW serves, with its links pointing at
+    # letitglow.app, so the copy in the kit works from a file on disk.
+    import jinja2
+
+    templates = REPO / "web" / "src" / "acb_large_print_web" / "templates"
+    env = jinja2.Environment(loader=jinja2.FileSystemLoader(str(templates)), autoescape=True)
+    html = env.get_template("workshop/ahg_share.html").render(ahg_site="https://letitglow.app", csp_nonce="")
+    html = html.replace(' nonce=""', "")
     target = KIT / "share-my-agent.html"
     target.write_text(html, encoding="utf-8")
     return target

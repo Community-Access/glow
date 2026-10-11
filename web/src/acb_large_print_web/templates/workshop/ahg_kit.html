@@ -1,0 +1,54 @@
+{% extends "workshop/ahg_base.html" %}
+{% block title %}The agent kit{% endblock %}
+{% block heading %}The agent kit{% endblock %}
+
+{% block content %}
+<p>
+  Everything in the kit, readable right here: no zip, no unzipping. Each file
+  also has a plain-text address, for pasting into Copilot or any other AI.
+</p>
+<p>
+  For the workshop itself you still want the kit on your laptop, because the
+  Copilot commands, such as <kbd>/ready-check</kbd>, run from the kit folder
+  open in VS Code.
+  <a href="{{ url_for('workshop.ahg_kit_zip') }}">Download the whole kit as one zip file</a>,
+  then follow step 4 on <a href="{{ url_for('shortlinks.ahg_landing') }}#get-ready">the AHG 2026 page</a>.
+</p>
+
+<h2 id="contents">What is in it</h2>
+<ul>
+  {% for g in groups %}<li><a href="#{{ g.key | replace('/', '-') | replace('.', '') or 'start' }}">{{ g.title }}</a></li>
+  {% endfor %}<li><a href="#sample-course">The sample course</a></li>
+  <li><a href="#share">The share page</a></li>
+</ul>
+
+{% for g in groups %}
+<h2 id="{{ g.key | replace('/', '-') | replace('.', '') or 'start' }}">{{ g.title }}</h2>
+<p>{{ g.about }}{% if g.key %} In the kit: <code>{{ g.key }}/</code>.{% endif %}</p>
+<ul>
+  {% for f in g.files %}
+  <li>
+    <a href="{{ url_for('shortlinks.ahg_kit_file', rel=f.rel) }}">{{ f.label }}</a>
+    {%- if f.docx %}, or <a href="{{ url_for('shortlinks.ahg_kit_file', rel=f.docx) }}">download the Word file<span class="visually-hidden">: {{ f.label }}</span></a>{% endif %}
+  </li>
+  {% endfor %}
+</ul>
+{% endfor %}
+
+<h2 id="sample-course">The sample course</h2>
+<p>
+  PSY 101, the web page and documents everyone works on, with barriers on
+  purpose and each file's checker report:
+  <a href="{{ url_for('shortlinks.ahg_site') }}">the sample course, online</a>.
+  In the kit: <code>sample-course/</code>.
+</p>
+
+<h2 id="share">The share page</h2>
+<p>
+  <a href="{{ url_for('shortlinks.ahg_share_short') }}">Share your agent</a>.
+  The kit's <code>share-my-agent.html</code> is a copy of it that works
+  without this site.
+</p>
+
+<p><a href="{{ url_for('shortlinks.ahg_landing') }}">Back to everything for AHG 2026</a></p>
+{% endblock %}

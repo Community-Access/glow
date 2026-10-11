@@ -1,38 +1,10 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Share your agent - AHG 2026</title>
-<style nonce="{{ csp_nonce }}">
-  :root { --fg: #111; --bg: #fff; --accent: #0b4f8a; --panel: #eef3f8; --focus: #b45309; }
-  @media (prefers-color-scheme: dark) {
-    :root { --fg: #f2f2f2; --bg: #121212; --accent: #8cc4ff; --panel: #1e2a36; --focus: #fbbf24; }
-  }
-  body { font-family: Arial, Helvetica, sans-serif; font-size: 1.5rem; line-height: 1.5;
-         color: var(--fg); background: var(--bg); margin: 0 auto; max-width: 46rem; padding: 1.5rem 1rem 4rem;
-         overflow-wrap: anywhere; }
-  h1 { font-size: 2.2rem; line-height: 1.2; }
-  h2 { font-size: 1.8rem; margin-top: 2rem; }
-  label, legend { display: block; font-weight: 700; margin-top: 1.25rem; }
-  fieldset { border: 2px solid var(--fg); padding: 0.5rem 1rem 1rem; margin-top: 1.5rem; min-width: 0; }
-  fieldset label { font-weight: 400; margin-top: 0.5rem; }
-  .hint { margin: 0.25rem 0 0.5rem; }
-  input[type="text"], input[type="file"], textarea { font: inherit; width: 100%; box-sizing: border-box;
-         padding: 0.5rem; border: 2px solid var(--fg); background: var(--bg); color: var(--fg); }
-  input[type="radio"] { width: 1.25rem; height: 1.25rem; margin-right: 0.5rem; }
-  textarea { min-height: 12rem; }
-  button { font: inherit; font-weight: 700; margin-top: 1.5rem; padding: 0.6rem 1.2rem;
-           background: var(--accent); color: var(--bg); border: 2px solid var(--accent); cursor: pointer; }
-  :focus-visible { outline: 4px solid var(--focus); outline-offset: 3px; }
-  .panel { background: var(--panel); border-left: 8px solid var(--accent); padding: 1rem 1.25rem; margin-top: 1.5rem; }
-  a { color: var(--accent); }
-  @media (prefers-reduced-motion: no-preference) { html { scroll-behavior: smooth; } }
-</style>
-</head>
-<body>
-<main>
-<h1>Share your agent</h1>
+{% extends "workshop/ahg_base.html" %}
+{#- Also copied into the kit as share-my-agent.html by scripts/build_ahg_kit.py,
+    rendered with ahg_site="https://letitglow.app". Keep it self-contained. -#}
+{% block title %}Share your agent{% endblock %}
+{% block heading %}Share your agent{% endblock %}
+
+{% block content %}
 <p>One form, one button. Your agent goes into the AHG 2026 collection with
 your name on it, and you get a reply within about a minute. No Git, no fork,
 no pull request.</p>
@@ -59,7 +31,7 @@ no pull request.</p>
   <button type="submit">Open the share form on GitHub</button>
 </form>
 
-<div id="result" class="panel" role="status" aria-live="polite" hidden></div>
+<div id="result" class="panel" role="status" aria-live="polite"></div>
 
 <h2>What happens on GitHub</h2>
 <ol>
@@ -73,11 +45,14 @@ fix it, and save, and it is checked again straight away. Your agent is
 committed in your name, so it shows on your own GitHub profile.</p>
 
 <h2>If anything goes wrong</h2>
-<p>Raise a hand, or write to support@community-access.org. If you are stuck,
+<p>Raise a hand, or write to <a href="mailto:support@community-access.org">support@community-access.org</a>. If you are stuck,
 share one of the ready-made agents from <code>examples/agents/</code> with
 your name on its author line. That counts.</p>
-</main>
 
+<p><a href="{{ ahg_site | default('') }}/ahg">Back to everything for AHG 2026</a></p>
+{% endblock %}
+
+{% block scripts %}
 <script nonce="{{ csp_nonce }}">
 (function () {
   "use strict";
@@ -109,7 +84,8 @@ your name on its author line. That counts.</p>
   }
 
   function say(html) {
-    result.hidden = false;
+    // The live region is always in the page and only its text changes, so
+    // screen readers announce each message.
     result.innerHTML = html;
   }
 
@@ -162,5 +138,4 @@ your name on its author line. That counts.</p>
   });
 }());
 </script>
-</body>
-</html>
+{% endblock %}

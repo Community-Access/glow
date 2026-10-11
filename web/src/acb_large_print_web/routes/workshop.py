@@ -29,6 +29,7 @@ from markupsafe import Markup, escape
 
 from .. import workshop_agenda as agenda
 from .. import workshop_deck as deck
+from .. import ahg_kit_online as kit_online
 from ..app import limiter
 from ..email import (
     email_configured,
@@ -2951,6 +2952,7 @@ def render_ahg_landing():
         profile_url=url_for("workshop.ahg_profile", _external=True),
         step_cards=_ahg_step_cards(),
         schedule=agenda.ahg_schedule_rows(),
+        ahg_home=True,
     )
 
 
@@ -3001,6 +3003,179 @@ def ahg_share():
     if not _workshop_enabled():
         abort(404)
     return render_template("workshop/ahg_share.html")
+
+
+# The sample course, online at /ahg/site (routes in shortlinks.py). The same
+# files as the kit's sample-course folder, so a participant can point axe or
+# Accessibility Insights at a real address, and anyone without the kit can
+# still see the course. The barriers are planted on purpose.
+
+AHG_SITE_FILES = (
+    ("psy101-announcement.html", "The course announcement", "Web page"),
+    ("psy101-syllabus.docx", "The syllabus", "Word document"),
+    ("psy101-week3-lecture.pptx", "Week 3 lecture slides", "PowerPoint"),
+    ("psy101-gradebook.xlsx", "The gradebook", "Excel workbook"),
+    ("psy101-lab1-stroop.pdf", "Lab 1: the Stroop test", "PDF"),
+    ("psy101-reading-forgetting-scanned.pdf", "Reading: A Short History of Forgetting, scanned", "PDF"),
+    ("psy101-week3-captions.vtt", "Week 3 lecture captions", "Captions file"),
+)
+
+AHG_SITE_TYPES = {
+    ".html": "text/html; charset=utf-8",
+    ".txt": "text/plain; charset=utf-8",
+    ".vtt": "text/plain; charset=utf-8",
+    ".png": "image/png",
+    ".pdf": "application/pdf",
+    ".docx": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+    ".pptx": "application/vnd.openxmlformats-officedocument.presentationml.presentation",
+    ".xlsx": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+}
+
+# The announcement keeps its own inline style and its div-with-onclick
+# "button": they are the barriers it teaches. This page alone may use inline
+# style and handlers; it loads nothing else and submits nothing.
+AHG_SITE_PAGE_CSP = (
+    "default-src 'none'; style-src 'unsafe-inline'; style-src-attr 'unsafe-inline'; "
+    "script-src-attr 'unsafe-inline'; img-src 'self'; form-action 'none'; "
+    "frame-ancestors 'none'; base-uri 'none'"
+)
+
+
+def _ahg_course_dir() -> Path | None:
+    kit = _ahg_kit_dir()
+    course = kit / "sample-course" if kit else None
+    return course if course and course.is_dir() else None
+
+
+def _size_label(size: int) -> str:
+    return f"{max(1, round(size / 1024))} KB"
+
+
+def render_ahg_site():
+    if not _workshop_enabled():
+        abort(404)
+    course = _ahg_course_dir()
+    if course is None:
+        abort(404)
+    files = []
+    for name, title, kind in AHG_SITE_FILES:
+        path = course / name
+        if not path.is_file():
+            continue
+        evidence = course / "evidence" / (path.stem + ".txt")
+        files.append({
+            "name": name,
+            "title": title,
+            "kind": kind,
+            "size": _size_label(path.stat().st_size),
+            "evidence": f"evidence/{evidence.name}" if evidence.is_file() else "",
+        })
+    return render_template("workshop/ahg_site.html", files=files)
+
+
+def send_ahg_site_file(name: str):
+    if not _workshop_enabled():
+        abort(404)
+    course = _ahg_course_dir()
+    if course is None:
+        abort(404)
+    allowed = {f.relative_to(course).as_posix() for f in course.rglob("*") if f.is_file()}
+    if name not in allowed:
+        abort(404)
+    path = course / name
+    mimetype = AHG_SITE_TYPES.get(path.suffix.lower())
+    if mimetype is None:
+        abort(404)
+    inline = path.suffix.lower() in (".html", ".txt", ".vtt", ".png", ".pdf")
+    response = send_file(str(path), mimetype=mimetype, as_attachment=not inline, download_name=path.name)
+    if path.suffix.lower() == ".html":
+        response.headers["Content-Security-Policy"] = AHG_SITE_PAGE_CSP
+    response.headers["X-Robots-Tag"] = "noindex"
+    return response
+
+
+# The kit, readable online at /ahg/kit (routes in shortlinks.py): every file
+# has a page a person can read and a plain-text address Copilot can use, so
+# unzipping is optional.
+
+def _kit_rel_or_404(rel: str) -> tuple[Path, Path]:
+    if not _workshop_enabled():
+        abort(404)
+    kit = _ahg_kit_dir()
+    if kit is None:
+        abort(404)
+    if rel not in set(kit_online.kit_files(kit)):
+        abort(404)
+    return kit, kit / rel
+
+
+def render_ahg_kit_index():
+    if not _workshop_enabled():
+        abort(404)
+    kit = _ahg_kit_dir()
+    if kit is None:
+        abort(404)
+    grouped: dict[str, list[dict[str, str]]] = {g[0]: [] for g in kit_online.GROUPS}
+    for rel in kit_online.kit_files(kit):
+        if rel in kit_online.ELSEWHERE or rel.startswith("sample-course/"):
+            continue
+        group = kit_online.group_of(rel)
+        if group not in grouped:
+            continue
+        if rel.startswith("step-cards/") and rel.endswith(".docx"):
+            continue  # offered beside its card
+        entry = {"rel": rel, "label": kit_online.label_for(rel)}
+        if rel.startswith("step-cards/"):
+            entry["label"] = _ahg_card_title(kit / rel)
+            entry["docx"] = rel[:-3] + ".docx" if (kit / (rel[:-3] + ".docx")).is_file() else ""
+        grouped[group].append(entry)
+    groups = [
+        {"key": key, "title": title, "about": about, "files": grouped[key]}
+        for key, title, about in kit_online.GROUPS if grouped[key]
+    ]
+    return render_template("workshop/ahg_kit.html", groups=groups)
+
+
+def _ahg_card_title(path: Path) -> str:
+    for line in path.read_text(encoding="utf-8").splitlines():
+        if line.startswith("# "):
+            return line[2:].strip()
+    return path.stem
+
+
+def render_ahg_kit_file(rel: str):
+    if rel in kit_online.ELSEWHERE:
+        return redirect(kit_online.ELSEWHERE[rel])
+    if rel.startswith("sample-course/"):
+        return redirect(url_for("shortlinks.ahg_site_file", name=rel[len("sample-course/"):]))
+    kit, path = _kit_rel_or_404(rel)
+    suffix = "".join(path.suffixes[-1:]).lower()
+    if path.name.endswith(".code-profile"):
+        suffix = ".code-profile"
+    if suffix not in kit_online.TEXT_SUFFIXES:
+        return send_file(str(path), as_attachment=True, download_name=path.name)
+    text = path.read_text(encoding="utf-8")
+    front, body = ([], None)
+    if suffix == ".md":
+        front, body = kit_online.markdown_page(text)
+    title = _ahg_card_title(path) if rel.startswith("step-cards/") else kit_online.label_for(rel)
+    docx = rel[:-3] + ".docx" if rel.startswith("step-cards/") and (kit / (rel[:-3] + ".docx")).is_file() else ""
+    return render_template(
+        "workshop/ahg_kit_file.html",
+        rel=rel, title=title, front=front, body=body,
+        plain=text if body is None else "", docx=docx,
+        raw_url=url_for("shortlinks.ahg_kit_raw", rel=rel, _external=True),
+    )
+
+
+def send_ahg_kit_raw(rel: str):
+    _kit, path = _kit_rel_or_404(rel)
+    if path.suffix.lower() not in kit_online.TEXT_SUFFIXES and not path.name.endswith(".code-profile"):
+        abort(404)
+    response = make_response(path.read_text(encoding="utf-8"))
+    response.headers["Content-Type"] = "text/plain; charset=utf-8"
+    response.headers["X-Robots-Tag"] = "noindex"
+    return response
 
 
 @workshop_bp.route("/ahg-2026/step-cards/<name>", methods=["GET"])

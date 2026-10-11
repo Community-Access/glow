@@ -153,7 +153,7 @@ def test_every_way_of_typing_the_address_reaches_the_landing_page(client, path):
 
 def test_the_short_addresses_reach_the_share_page_kit_and_slides(client):
     assert client.get("/ahg/share?practice=1").headers["Location"].endswith("/workshop/ahg-2026/share?practice=1")
-    assert client.get("/ahg/kit").headers["Location"].endswith("/workshop/ahg-2026/kit.zip")
+    assert client.get("/ahg/kit.zip").headers["Location"].endswith("/workshop/ahg-2026/kit.zip")
     assert client.get("/ahg/slides").headers["Location"].endswith("/workshop/deck")
 
 
@@ -245,3 +245,75 @@ def test_every_front_matter_block_is_valid_yaml():
         except yaml.YAMLError as exc:
             broken.append((str(path.relative_to(REPO)), str(exc).splitlines()[0]))
     assert not broken, broken
+
+
+# -- The conference pages: a clean frame, the sample course, the kit online --
+
+GLOW_CHROME = ("sidebar-nav", "ai-meter", "Admin Sign-In", "Changelog", "Ollama", "/prd/")
+
+
+@pytest.mark.parametrize("path", ["/ahg", "/workshop/ahg-2026/share", "/ahg/site", "/ahg/kit",
+                                  "/ahg/kit/office-team/word-documents/SKILL.md"])
+def test_the_conference_pages_carry_none_of_glows_chrome(client, path):
+    resp = client.get(path)
+    assert resp.status_code == 200, path
+    body = resp.get_data(as_text=True)
+    for needle in GLOW_CHROME:
+        assert needle not in body, (path, needle)
+    assert body.count("<h1") == 1, path
+    assert 'href="#main"' in body and 'id="main"' in body
+    assert "/privacy/" in body and "Hosted by" in body
+    assert '<html lang="en">' in body
+
+
+def test_the_landing_page_marks_itself_current(client):
+    body = client.get("/ahg").get_data(as_text=True)
+    assert 'aria-current="page"' in body
+    assert 'aria-current="page"' not in client.get("/ahg/kit").get_data(as_text=True)
+
+
+def test_the_slides_open_without_the_consent_page(client):
+    resp = client.get("/workshop/deck")
+    assert resp.status_code == 200
+    assert "/consent" not in resp.headers.get("Location", "")
+
+
+def test_the_sample_course_is_online_with_its_checker_reports(client):
+    body = client.get("/ahg/site").get_data(as_text=True)
+    for name in ("psy101-announcement.html", "psy101-syllabus.docx", "psy101-gradebook.xlsx",
+                 "psy101-week3-lecture.pptx", "evidence/psy101-syllabus.txt"):
+        assert f"/ahg/site/{name}" in body, name
+    page = client.get("/ahg/site/psy101-announcement.html")
+    assert page.status_code == 200
+    # Its barriers are the lesson, so its own inline style must survive.
+    csp = page.headers["Content-Security-Policy"]
+    assert "style-src 'unsafe-inline'" in csp and "'self'" not in csp.split("style-src")[1].split(";")[0]
+    assert "frame-ancestors 'none'" in csp
+    assert client.get("/ahg/site/brain.png").status_code == 200
+    doc = client.get("/ahg/site/psy101-syllabus.docx")
+    assert doc.status_code == 200 and "attachment" in doc.headers["Content-Disposition"]
+    report = client.get("/ahg/site/evidence/psy101-announcement.txt")
+    assert report.headers["Content-Type"].startswith("text/plain")
+
+
+@pytest.mark.parametrize("path", ["/ahg/site/../README.md", "/ahg/site/nope.html", "/ahg/kit/raw/../app.py",
+                                  "/ahg/kit/nope.md", "/ahg/kit/raw/step-cards/0-before-the-day.docx"])
+def test_only_kit_files_are_served(client, path):
+    assert client.get(path).status_code == 404, path
+
+
+def test_the_kit_is_readable_online(client):
+    body = client.get("/ahg/kit").get_data(as_text=True)
+    for rel in ("README.md", "step-cards/0-before-the-day.md", "step-cards/0-before-the-day.docx",
+                "my-agent/SKILL.md", "examples/agents/faculty-coach/SKILL.md",
+                "office-team/word-documents/SKILL.md", ".github/prompts/ready-check.prompt.md"):
+        assert f"/ahg/kit/{rel}" in body, rel
+    assert "/ahg/kit.zip" in body or "/workshop/ahg-2026/kit.zip" in body
+    card = client.get("/ahg/kit/step-cards/5-share-it.md").get_data(as_text=True)
+    assert "Step card 5: Share it" in card and "/ahg/kit/raw/step-cards/5-share-it.md" in card
+    raw = client.get("/ahg/kit/raw/my-agent/SKILL.md")
+    assert raw.headers["Content-Type"].startswith("text/plain") and raw.get_data(as_text=True).startswith("---")
+    assert client.get("/ahg/kit/share-my-agent.html").headers["Location"].endswith("/ahg/share")
+    assert client.get("/ahg/kit/sample-course/psy101-syllabus.docx").headers["Location"].endswith(
+        "/ahg/site/psy101-syllabus.docx")
+

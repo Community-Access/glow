@@ -1,0 +1,35 @@
+{% extends "workshop/ahg_base.html" %}
+{% block title %}{{ title }} - the agent kit{% endblock %}
+{% block heading %}{{ title }}{% endblock %}
+
+{% block content %}
+<p>In the kit: <code>{{ rel }}</code>.</p>
+<ul>
+  <li>
+    Plain text, for Copilot or any AI:
+    <a href="{{ raw_url }}">{{ raw_url }}</a>
+  </li>
+  {% if docx %}<li><a href="{{ url_for('shortlinks.ahg_kit_file', rel=docx) }}">Download this card as a large print Word file</a></li>{% endif %}
+  <li><a href="{{ url_for('shortlinks.ahg_kit_short') }}">Everything in the kit</a></li>
+</ul>
+
+{% if front %}
+<h2 id="about-this-file">About this file</h2>
+<dl class="front">
+  {% for key, value in front %}
+  <dt>{{ key }}</dt>
+  <dd>{{ value }}</dd>
+  {% endfor %}
+</dl>
+{% endif %}
+
+{% if body is not none %}
+{% if front %}<h2 id="contents">The file</h2>{% endif %}
+<div class="md">
+{{ body }}
+</div>
+{% else %}
+<h2 id="contents">The file</h2>
+<pre class="plain">{{ plain }}</pre>
+{% endif %}
+{% endblock %}

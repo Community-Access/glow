@@ -74,6 +74,9 @@ CONSENT_EXEMPT_PREFIXES = (
     # documents; the share page runs in the browser and sends nothing to
     # GLOW. The tools they link to still ask for consent as usual.
     "/workshop/ahg-2026",
+    # The workshop slides and their downloads, linked from /ahg/slides. They
+    # are reading material, and process nothing a visitor sends.
+    "/workshop/deck",
     "/ahg",
     "/AHG",
     "/Ahg",
