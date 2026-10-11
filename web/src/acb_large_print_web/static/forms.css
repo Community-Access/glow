@@ -571,6 +571,19 @@ main {
   overflow-wrap: anywhere;
 }
 
+/* Form controls never wider than the page at 320px (1.4.10 Reflow). A
+   fieldset's default min-width is its content, which defeats wrapping. */
+main fieldset {
+  min-width: 0;
+}
+
+main input,
+main select,
+main textarea {
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
 /* --- Print: hide sidebar, show content normally --------------------------- */
 @media print {
 
@@ -666,7 +679,8 @@ main[aria-busy="true"] {
 /* --- Mission Grid (GLOW 5.0.0 home page) --- */
 .mission-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(20rem, 1fr));
+  /* min() so a single column never asks for more than the screen has. */
+  grid-template-columns: repeat(auto-fit, minmax(min(20rem, 100%), 1fr));
   gap: 1.5rem;
   margin-bottom: 2rem;
 }
@@ -750,7 +764,7 @@ html[data-theme="dark"] .mission-card:hover {
 
 .home-quickstart__cta {
   font-size: 1.0625rem;
-  white-space: nowrap;
+  white-space: normal;
 }
 
 .home-quickstart__hint {

@@ -45,3 +45,10 @@ def test_the_app_layout_has_only_the_sidebar_and_the_content_area(client):
     # top-level element is the sidebar; anything else becomes a column.
     assert between.count("</nav>") >= 1
     assert "ai-meter" not in between[between.rfind("</nav>"):]
+
+
+def test_the_stylesheet_keeps_content_and_controls_inside_320px():
+    css = (Path(__file__).resolve().parents[1] / "src" / "acb_large_print_web" / "static" / "forms.css").read_text(encoding="utf-8")
+    assert "overflow-wrap: anywhere" in css
+    assert "minmax(min(20rem, 100%), 1fr)" in css
+    assert re.search(r"main fieldset \{\s*min-width: 0;", css)
