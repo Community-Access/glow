@@ -17,6 +17,138 @@ Session: Accessibility Agents: Building Human-Centered AI Workflows for
 Trusted Accessibility Automation at Scale. Monday 16 November 2026, 10:30 AM
 to 4:30 PM Mountain Time, Matchless, Hilton Denver City Center.
 
+## Quick links: every document, site and repository
+
+Everything for the workshop, in one place. Paths are relative to the root of
+the GLOW repository, `S:\code\glow` on Jeff's machine, on the `main` branch.
+
+### Live sites
+
+These are the addresses participants, the facilitator and testers use.
+
+| What | Address |
+|---|---|
+| Setup page: four steps, kit, profile, step cards | `https://letitglow.app/workshop/ahg-2026` |
+| The agent kit, as a zip | `https://letitglow.app/workshop/ahg-2026/kit.zip` |
+| The AHG 2026 VS Code profile, for Profiles: Import Profile | `https://letitglow.app/workshop/ahg-2026/ahg-2026.code-profile` |
+| Share page: opens GitHub with an agent filled in | `https://letitglow.app/workshop/ahg-2026/share` |
+| Share page against a test fork, for rehearsals | `https://letitglow.app/workshop/ahg-2026/share?repo=<account>/accessibility-agents` |
+| Step card downloads | `https://letitglow.app/workshop/ahg-2026/step-cards/<n>-<name>.docx` |
+| The deck, before a session exists | `https://letitglow.app/workshop/deck` |
+| The deck for the room, with its join address | `https://letitglow.app/workshop/session/ahg-2026/deck` |
+| Commitment for the wall, participant | `https://letitglow.app/w/ahg-2026/11` |
+| The commitment wall, to project | `https://letitglow.app/workshop/session/ahg-2026/wall` |
+| Facilitator dashboard | `https://letitglow.app/workshop/session/ahg-2026/facilitator` |
+| GLOW health | `https://letitglow.app/health` |
+| Help desk, for support mail | `https://helpdesk.community-access.org` |
+| Support address given to participants | `support@community-access.org` |
+
+The addresses with `ahg-2026` in a session path work once the conference
+code is configured on the server, step 2 of section 1.5. The setup, kit,
+profile, share and step card addresses work now.
+
+### The conference
+
+These are the conference's own pages and resources.
+
+| What | Where |
+|---|---|
+| The published session, number 42876: title, abstract, time, room | `https://accessinghigherground.org/accessibility-agents-building-human-centered-ai-workflows-for-trusted-accessibility-automation-at-scale/` |
+| Accepted pre-conference sessions | `https://accessinghigherground.org/accepted-precon-sessions-2026-wtime/` |
+| Speaker orientation folder: best practices slides, orientation notes, outline, Cvent instructions | `https://drive.google.com/drive/folders/1-t0S9Uc0vLgCInyvosSqQR89CXLvLczM` |
+| Cvent Speaker Resource Center: profile, session details, material uploads | The personal link in the invitation email from AHEAD; it must not be forwarded |
+
+### Repositories and pull requests
+
+The code and the history of how the workshop was built.
+
+| What | Where |
+|---|---|
+| GLOW | `https://github.com/Community-Access/glow` |
+| Accessibility Agents, where capstone pull requests land in `community/ahg-2026/` | `https://github.com/Community-Access/accessibility-agents` |
+| Pull requests to merge on the day | `https://github.com/Community-Access/accessibility-agents/pulls` |
+| PR #116, the workshop | `https://github.com/Community-Access/glow/pull/116` |
+| PR #117, pages reflow at 320px | `https://github.com/Community-Access/glow/pull/117` |
+| PR #118, test report after the merge | `https://github.com/Community-Access/glow/pull/118` |
+| Branch `wip/postmark-helpdesk`, the unmerged mail and help desk work | `https://github.com/Community-Access/glow/tree/wip/postmark-helpdesk` |
+
+### Documents for the facilitator
+
+Everything Jeff reads or prints before and on the day.
+
+| Document | What it is |
+|---|---|
+| `ahg.md` | This file: instructions and the full test plan |
+| `ahg-test-report.md` | Results of the test pass, defects and fixes, production check |
+| `docs/ahg-2026/README.md` | Index of the workshop folder |
+| `docs/ahg-2026/plan.md` | The plan: every program promise and the block that keeps it |
+| `docs/ahg-2026/run-of-show.md` | The day by the clock, pacing, fallback ladder, pre-flight |
+| `docs/ahg-2026/facilitator-card.md` | The pocket card, with blanks to fill in |
+| `docs/ahg-2026/answer-key.md` | Every barrier planted in the sample course |
+| `docs/ahg-2026/ahg-speaker-guidance.md` | Every AHG speaker recommendation and where it is met |
+| `docs/ahg-2026/pre-event-message.md` | The setup message, sent three times |
+| `docs/ahg-2026/slides.html`, `.pptx`, `.docx`, `.md` | The deck in four formats, generated |
+| `docs/ahg-2026/workshop-frontfacing-guide.md` | The session description participants read in GLOW |
+| `docs/ahg-2026/for-accessibility-agents/` | The `community/ahg-2026` folder, ready to copy into Accessibility Agents |
+
+### The participant kit
+
+All in `docs/ahg-2026/kit/`, and inside the downloadable zip.
+
+| Part | What it is |
+|---|---|
+| `kit/README.md` | The welcome page VS Code opens first |
+| `kit/step-cards/0-before-the-day.md` to `7-take-it-home.md` | One card per block and one for setup, each also as Word |
+| `kit/examples/maria-alternate-format-planner.md` | Worked example: alternate formats |
+| `kit/examples/jordan-faculty-coach.md` | Worked example: faculty coaching |
+| `kit/examples/sam-remediation-log-keeper.md` | Worked example: Title II compliance log |
+| `kit/examples/agents/` | Six ready-made fallback agents |
+| `kit/office-team/` | The eight specialists of the agent team |
+| `kit/.github/agents/office-coordinator.agent.md` | The coordinator that runs the team |
+| `kit/.github/prompts/` | The six Copilot commands, one per block |
+| `kit/.github/copilot-instructions.md` | The rules Copilot follows in the kit |
+| `kit/my-agent/SKILL.md` | The template each participant fills in |
+| `kit/sample-course/` | PSY 101, and its checker evidence in `evidence/` |
+| `kit/share-my-agent.html` | The offline share page |
+| `kit/ahg-2026.code-profile` | The VS Code profile |
+
+### Scripts
+
+Run from the repository root.
+
+| Script | What it does |
+|---|---|
+| `scripts/build_ahg_sample_course.py` | Rebuilds the sample course |
+| `scripts/build_ahg_kit.py` | Rebuilds the kit's agents, evidence, step card Word files and zip |
+| `flask --app acb_large_print_web.app:create_app workshop-deck --code ahg-2026` | Regenerates the deck |
+| `scripts/ahg_browser_checks.py --base <address>` | The 35 browser checks |
+| `scripts/check_ahg_sample_course.py` | Checks all 42 planted barriers are present |
+| `scripts/audit_ahg_docs.py` | GLOW's own audit of every document |
+| `scripts/check_material_conformance.py` | Checks materials against the program's promises |
+
+### Source code
+
+For changing the workshop itself.
+
+| File | What it holds |
+|---|---|
+| `web/src/acb_large_print_web/workshop_agenda.py` | The clock, `AHG_DAY` |
+| `web/src/acb_large_print_web/workshop_deck.py` | Every slide and speaker note |
+| `web/src/acb_large_print_web/routes/workshop.py` | The setup, kit, profile, share and step card pages, at the end of the file |
+| `web/src/acb_large_print_web/templates/workshop/ahg_home.html` | The setup page |
+| `web/src/acb_large_print_web/templates/workshop/ahg_share.html` | The share page |
+| `web/tests/test_workshop_ahg_kit.py` | Tests for the kit and its pages |
+
+### The server
+
+Production runs on `lp.csedesigns.com`, as `jeffbis`.
+
+| What | Where |
+|---|---|
+| GLOW checkout | `~/app`, deployed from `main` by GitHub Actions on merge |
+| Caddy configuration | `~/app/web/caddy/Caddyfile` |
+| Conference codes and secrets | `~/app/web/.env` (`WORKSHOP_CONFERENCE_CODES_JSON`) |
+
 ## Part 1: Instructions
 
 ### 1.1 What the course is
