@@ -42,7 +42,7 @@ SEPTEMBER = {
 
 
 def markdown_files() -> list[Path]:
-    files = [REPO / "ahg.md"] if (REPO / "ahg.md").exists() else []
+    files = [REPO / name for name in ("ahg.md", "ahg-test-report.md") if (REPO / name).exists()]
     for path in sorted(AHG.rglob("*.md")):
         rel = path.relative_to(AHG)
         if path.name in SEPTEMBER or path.name == "SKILL.md" or ".github" in rel.parts:
