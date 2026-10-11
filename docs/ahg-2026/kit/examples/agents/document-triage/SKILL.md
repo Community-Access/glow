@@ -1,14 +1,14 @@
 ---
 name: document-triage
-description: Decides what to fix first in a course document, and why, from a checker's report.
+description: "Decides what to fix first in a course document, and why, from a checker's report."
 license: MIT
 metadata:
   tier: specialist
   domain: documents
   output: plan
-  title: Document Triage
+  title: "Document Triage"
   workshop: AHG 2026
-  author: Example: Mesa Ridge State University
+  author: "Example: Mesa Ridge State University"
 ---
 ## Role
 

@@ -1,14 +1,14 @@
 ---
 name: my-agent-name
-description: One sentence. What this agent does, for whom, in plain words.
+description: "One sentence. What this agent does, for whom, in plain words."
 license: MIT
 metadata:
   tier: specialist
   domain: documents
   output: findings
-  title: My Agent Title
+  title: "My Agent Title"
   workshop: AHG 2026
-  author: Your Name, Your Institution
+  author: "Your Name, Your Institution"
 ---
 ## Role
 

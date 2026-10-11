@@ -26,6 +26,7 @@ Run ``scripts/build_ahg_sample_course.py`` first if the course has changed.
 from __future__ import annotations
 
 import argparse
+import json
 import sys
 import zipfile
 from collections import Counter
@@ -86,21 +87,27 @@ def skill(
     derived_from: str = "",
     tier: str = "specialist",
 ) -> str:
+    # Free text is written as a JSON string, which is valid YAML: an author
+    # like "Example: Maria Alvarez" would otherwise be read as a mapping and
+    # break the whole header for VS Code, Vale and the Agent Skills tools.
+    def q(value: str) -> str:
+        return json.dumps(value, ensure_ascii=False)
+
     meta = [
         "---",
         f"name: {name}",
-        f"description: {description}",
+        f"description: {q(description)}",
         "license: MIT",
         "metadata:",
         f"  tier: {tier}",
         f"  domain: {domain}",
         f"  output: {output}",
-        f"  title: {title}",
+        f"  title: {q(title)}",
         "  workshop: AHG 2026",
-        f"  author: {author}",
+        f"  author: {q(author)}",
     ]
     if derived_from:
-        meta.append(f"  derived-from: {AA}/tree/main/skills/{derived_from}")
+        meta.append(f"  derived-from: {q(AA + '/tree/main/skills/' + derived_from)}")
     meta.append("---")
     body = [
         "## Role",

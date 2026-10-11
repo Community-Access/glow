@@ -1,15 +1,15 @@
 ---
 name: standards-reviewer
-description: Checks every other agent's findings for evidence and correct WCAG citations before the report goes out.
+description: "Checks every other agent's findings for evidence and correct WCAG citations before the report goes out."
 license: MIT
 metadata:
   tier: specialist
   domain: compliance
   output: review
-  title: Standards Reviewer
+  title: "Standards Reviewer"
   workshop: AHG 2026
-  author: AHG 2026 office team, adapted from Accessibility Agents
-  derived-from: https://github.com/Community-Access/accessibility-agents/tree/main/skills/wcag-guide
+  author: "AHG 2026 office team, adapted from Accessibility Agents"
+  derived-from: "https://github.com/Community-Access/accessibility-agents/tree/main/skills/wcag-guide"
 ---
 ## Role
 

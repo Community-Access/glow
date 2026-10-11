@@ -1,15 +1,15 @@
 ---
 name: plain-language
-description: Makes course text easier to understand, for students with cognitive and learning disabilities and everyone else.
+description: "Makes course text easier to understand, for students with cognitive and learning disabilities and everyone else."
 license: MIT
 metadata:
   tier: specialist
   domain: documents
   output: rewrite
-  title: Plain Language and Cognitive Access
+  title: "Plain Language and Cognitive Access"
   workshop: AHG 2026
-  author: AHG 2026 office team, adapted from Accessibility Agents
-  derived-from: https://github.com/Community-Access/accessibility-agents/tree/main/skills/cognitive-accessibility
+  author: "AHG 2026 office team, adapted from Accessibility Agents"
+  derived-from: "https://github.com/Community-Access/accessibility-agents/tree/main/skills/cognitive-accessibility"
 ---
 ## Role
 

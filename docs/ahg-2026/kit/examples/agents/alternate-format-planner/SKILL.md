@@ -1,14 +1,14 @@
 ---
 name: alternate-format-planner
-description: Plans alternate formats for a course document from a checker's report and the formats a student needs.
+description: "Plans alternate formats for a course document from a checker's report and the formats a student needs."
 license: MIT
 metadata:
   tier: specialist
   domain: documents
   output: plan
-  title: Alternate Format Planner
+  title: "Alternate Format Planner"
   workshop: AHG 2026
-  author: Example: Maria Alvarez, Mesa Ridge State University
+  author: "Example: Maria Alvarez, Mesa Ridge State University"
 ---
 ## Role
 

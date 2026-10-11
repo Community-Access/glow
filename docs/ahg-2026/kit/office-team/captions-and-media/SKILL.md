@@ -1,15 +1,15 @@
 ---
 name: captions-and-media
-description: Reviews caption files for accuracy, speakers and undescribed visuals.
+description: "Reviews caption files for accuracy, speakers and undescribed visuals."
 license: MIT
 metadata:
   tier: specialist
   domain: media
   output: findings
-  title: Captions and Media
+  title: "Captions and Media"
   workshop: AHG 2026
-  author: AHG 2026 office team, adapted from Accessibility Agents
-  derived-from: https://github.com/Community-Access/accessibility-agents/tree/main/skills/media-accessibility
+  author: "AHG 2026 office team, adapted from Accessibility Agents"
+  derived-from: "https://github.com/Community-Access/accessibility-agents/tree/main/skills/media-accessibility"
 ---
 ## Role
 

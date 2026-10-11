@@ -1,14 +1,14 @@
 ---
 name: vendor-report-reader
-description: Reads a vendor's accessibility conformance report and lists the gaps and the questions to ask.
+description: "Reads a vendor's accessibility conformance report and lists the gaps and the questions to ask."
 license: MIT
 metadata:
   tier: specialist
   domain: compliance
   output: questions
-  title: Vendor Report Reader
+  title: "Vendor Report Reader"
   workshop: AHG 2026
-  author: Example: Mesa Ridge State University
+  author: "Example: Mesa Ridge State University"
 ---
 ## Role
 

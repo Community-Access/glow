@@ -1,14 +1,14 @@
 ---
 name: course-page-coach
-description: Explains a course page's barriers in course-builder language, with steps a faculty member can follow.
+description: "Explains a course page's barriers in course-builder language, with steps a faculty member can follow."
 license: MIT
 metadata:
   tier: specialist
   domain: web
   output: message
-  title: Course Page Coach
+  title: "Course Page Coach"
   workshop: AHG 2026
-  author: Example: Mesa Ridge State University
+  author: "Example: Mesa Ridge State University"
 ---
 ## Role
 

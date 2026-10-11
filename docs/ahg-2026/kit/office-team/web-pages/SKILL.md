@@ -1,15 +1,15 @@
 ---
 name: web-pages
-description: Explains axe and Accessibility Insights results for a course web page in plain language.
+description: "Explains axe and Accessibility Insights results for a course web page in plain language."
 license: MIT
 metadata:
   tier: specialist
   domain: web
   output: findings
-  title: Web Pages
+  title: "Web Pages"
   workshop: AHG 2026
-  author: AHG 2026 office team, adapted from Accessibility Agents
-  derived-from: https://github.com/Community-Access/accessibility-agents/tree/main/skills/web-accessibility-wizard
+  author: "AHG 2026 office team, adapted from Accessibility Agents"
+  derived-from: "https://github.com/Community-Access/accessibility-agents/tree/main/skills/web-accessibility-wizard"
 ---
 ## Role
 

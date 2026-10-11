@@ -211,3 +211,20 @@ def test_the_share_page_can_be_rehearsed_against_a_test_fork(client):
 def test_the_coordinator_can_run_the_whole_room_s_agents():
     text = (KIT / ".github" / "agents" / "office-coordinator.agent.md").read_text(encoding="utf-8")
     assert "room/<name>/SKILL.md" in text
+
+
+def test_every_front_matter_block_is_valid_yaml():
+    """An unquoted colon once broke six agent headers; VS Code and Vale both read them."""
+    import yaml
+
+    broken = []
+    for path in [*REPO.joinpath("docs", "ahg-2026").rglob("*.md"), REPO / "ahg.md"]:
+        text = path.read_text(encoding="utf-8").replace("\r\n", "\n")
+        if not text.startswith("---\n"):
+            continue
+        end = text.index("\n---\n", 4)
+        try:
+            yaml.safe_load(text[4:end])
+        except yaml.YAMLError as exc:
+            broken.append((str(path.relative_to(REPO)), str(exc).splitlines()[0]))
+    assert not broken, broken

@@ -1,14 +1,14 @@
 ---
 name: faculty-coach
-description: Turns a checker's report on a faculty document into a short, kind note that teaches the habit behind the barriers.
+description: "Turns a checker's report on a faculty document into a short, kind note that teaches the habit behind the barriers."
 license: MIT
 metadata:
   tier: specialist
   domain: documents
   output: message
-  title: Faculty Coach
+  title: "Faculty Coach"
   workshop: AHG 2026
-  author: Example: Jordan Lee, Mesa Ridge State University
+  author: "Example: Jordan Lee, Mesa Ridge State University"
 ---
 ## Role
 

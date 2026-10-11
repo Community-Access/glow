@@ -1,15 +1,15 @@
 ---
 name: pdf-documents
-description: Finds and explains barriers in PDFs from a checker's report, including scanned ones.
+description: "Finds and explains barriers in PDFs from a checker's report, including scanned ones."
 license: MIT
 metadata:
   tier: specialist
   domain: documents
   output: findings
-  title: PDF Documents
+  title: "PDF Documents"
   workshop: AHG 2026
-  author: AHG 2026 office team, adapted from Accessibility Agents
-  derived-from: https://github.com/Community-Access/accessibility-agents/tree/main/skills/pdf-accessibility
+  author: "AHG 2026 office team, adapted from Accessibility Agents"
+  derived-from: "https://github.com/Community-Access/accessibility-agents/tree/main/skills/pdf-accessibility"
 ---
 ## Role
 

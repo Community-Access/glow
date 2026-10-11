@@ -22,6 +22,8 @@ what they are building.
 4. Write their answers into `my-agent/SKILL.md`, keeping the template's
    headings and its "Never" section exactly. Set `name` to a short lowercase
    name with hyphens, and `author` to the name and institution they give you.
+   Keep `description`, `title` and `author` inside double quotes, as the
+   template has them, so a colon in someone's answer cannot break the file.
    Keep WCAG 2.2 links in Trusted guidance.
 5. Read the finished file back in five lines or fewer, and tell them one
    specific thing their agent does well.

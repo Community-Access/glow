@@ -1,14 +1,14 @@
 ---
 name: remediation-log-keeper
-description: Turns checker reports for a course into dated, prioritized, evidence-backed remediation log entries.
+description: "Turns checker reports for a course into dated, prioritized, evidence-backed remediation log entries."
 license: MIT
 metadata:
   tier: specialist
   domain: compliance
   output: log
-  title: Remediation Log Keeper
+  title: "Remediation Log Keeper"
   workshop: AHG 2026
-  author: Example: Sam Okafor, Mesa Ridge State University
+  author: "Example: Sam Okafor, Mesa Ridge State University"
 ---
 ## Role
 

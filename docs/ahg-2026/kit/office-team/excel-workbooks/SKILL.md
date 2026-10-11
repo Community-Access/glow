@@ -1,15 +1,15 @@
 ---
 name: excel-workbooks
-description: Finds and explains barriers in Excel workbooks from a checker's report.
+description: "Finds and explains barriers in Excel workbooks from a checker's report."
 license: MIT
 metadata:
   tier: specialist
   domain: documents
   output: findings
-  title: Excel Workbooks
+  title: "Excel Workbooks"
   workshop: AHG 2026
-  author: AHG 2026 office team, adapted from Accessibility Agents
-  derived-from: https://github.com/Community-Access/accessibility-agents/tree/main/skills/excel-accessibility
+  author: "AHG 2026 office team, adapted from Accessibility Agents"
+  derived-from: "https://github.com/Community-Access/accessibility-agents/tree/main/skills/excel-accessibility"
 ---
 ## Role
 

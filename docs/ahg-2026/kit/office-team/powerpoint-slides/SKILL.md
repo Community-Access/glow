@@ -1,15 +1,15 @@
 ---
 name: powerpoint-slides
-description: Finds and explains barriers in PowerPoint decks from a checker's report.
+description: "Finds and explains barriers in PowerPoint decks from a checker's report."
 license: MIT
 metadata:
   tier: specialist
   domain: documents
   output: findings
-  title: PowerPoint Slides
+  title: "PowerPoint Slides"
   workshop: AHG 2026
-  author: AHG 2026 office team, adapted from Accessibility Agents
-  derived-from: https://github.com/Community-Access/accessibility-agents/tree/main/skills/powerpoint-accessibility
+  author: "AHG 2026 office team, adapted from Accessibility Agents"
+  derived-from: "https://github.com/Community-Access/accessibility-agents/tree/main/skills/powerpoint-accessibility"
 ---
 ## Role
 
