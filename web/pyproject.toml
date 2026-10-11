@@ -48,6 +48,11 @@ dependencies = [
     # QR codes for workshop room signage. Pure Python, no dependencies of
     # its own, renders SVG inline so nothing has to be written to disk.
     "segno>=1.6.1",
+    # The workshop deck and worksheet packs are built as Office files.
+    # Both arrived transitively before this; they are direct dependencies
+    # now, because workshop_deck.py imports them by name.
+    "python-docx>=1.1.2",
+    "python-pptx>=1.0.2",
     # liblouis Python bindings are provided by python3-louis (apt) in the
     # Docker image; no PyPI package needed -- see web/Dockerfile.
 ]

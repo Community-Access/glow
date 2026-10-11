@@ -23,10 +23,10 @@ from flask import (
 )
 
 from ..app import limiter
-from ..email import _POSTMARK_STREAM as _postmark_stream
 from ..email import _from_address as _postmark_from  # noqa: F401  (documented in the panel)
 from ..email import _send as _postmark_send
-from ..email import email_configured, render_email
+from ..email import _stream as _postmark_stream
+from ..email import conversations_available, email_configured, render_email
 from ..passport_store import (
     COOKIE_NAME,
     RETURN_DESTINATIONS,
@@ -115,7 +115,7 @@ def _send_passport_link(email: str, link: str, *, restoring: bool) -> tuple[bool
         "Subject": "Your GLOW settings link",
         "HtmlBody": html_body + f'<p><a href="{link}">Restore my settings</a></p>',
         "TextBody": text_body,
-        "MessageStream": _postmark_stream,
+        "MessageStream": _postmark_stream(),
     }
     return _postmark_send(payload, email)
 
@@ -131,6 +131,7 @@ def passport_page():
         settings_count=len(passport.get("settings", {})) if passport else 0,
         history=list_history(passport["passport_id"]) if passport and passport.get("history_enabled") else [],
         email_available=email_configured(),
+        conversations_available=conversations_available(),
         retention_days=retention_days(),
         link_ttl_days=link_ttl_days(),
         message=message,

@@ -23,9 +23,9 @@ docs/*.docx
 #   samples/          -> /workshop/session/<code>/samples/<slug>
 #   front-facing docs -> /workshop/resources/<slug>
 # They must stay in the build context or those routes 404 in the container.
-!docs/workshop-frontfacing-guide.md
-!docs/workshop-frontfacing-exercises.md
-!docs/workshop-frontfacing-utilization.md
+!docs/ahg-2026/workshop-frontfacing-guide.md
+!docs/ahg-2026/workshop-frontfacing-exercises.md
+!docs/ahg-2026/workshop-frontfacing-utilization.md
 reference/
 templates/
 styles/

@@ -7,12 +7,15 @@ import json
 import logging
 import os
 import sqlite3
+from dataclasses import dataclass
 from datetime import UTC, datetime, timedelta
 from pathlib import Path
 
 from flask import Blueprint, abort, current_app, jsonify, render_template, request
 
 from ..app import csrf, limiter
+from ..helpdesk import SKIP_PREFIX as HELPDESK_SKIP_PREFIX
+from ..helpdesk import file_ticket, load_helpdesk_config
 from ..support_hub import (
     SKIP_PREFIX,
     create_support_issue,
@@ -87,6 +90,13 @@ def _ensure_feedback_schema(conn: sqlite3.Connection) -> None:
         "github_sync_status": "TEXT",
         "github_sync_error": "TEXT",
         "github_synced_at": "TEXT",
+        # The help desk is a second, independent destination: GitHub tracks the
+        # engineering work, FreeScout holds the conversation with the person.
+        # One can fail without touching the other, so each keeps its own state.
+        "helpdesk_message_id": "TEXT",
+        "helpdesk_status": "TEXT",
+        "helpdesk_error": "TEXT",
+        "helpdesk_filed_at": "TEXT",
     }
     for col, col_type in required.items():
         if col not in existing:
@@ -128,7 +138,64 @@ def _recent_duplicate(conn, entry: dict[str, str], *, exclude_id: int) -> int | 
     return int(row[0]) if row else None
 
 
-def _save_feedback_entry(entry: dict[str, str]) -> tuple[int, str | None, str | None, str | None]:
+@dataclass(slots=True)
+class _SaveResult:
+    """What happened to one submission, per destination.
+
+    Three things can happen to a piece of feedback and they are independent:
+    it is stored, it may open a tracker issue, and it may open a help desk
+    ticket. A tuple of four values stopped being readable once the third
+    destination arrived.
+    """
+
+    feedback_id: int
+    issue_url: str | None = None
+    sync_error: str | None = None
+    source_app: str = ""
+    ticket_filed: bool = False
+    ticket_error: str | None = None
+
+
+def _file_helpdesk_ticket(conn, entry: dict, feedback_id: int) -> tuple[bool, str | None]:
+    """Open a conversation with the person, if they left a way to answer.
+
+    Runs after the tracker issue so the ticket can name it: an agent who can
+    see the engineering issue from the conversation does not have to go
+    looking for it, and a person asking "is anyone working on this?" can be
+    answered without leaving the help desk.
+    """
+    message_id, error = file_ticket(entry)
+
+    if message_id:
+        status, stored_error = "filed", None
+    elif error and error.startswith(HELPDESK_SKIP_PREFIX):
+        # Deliberately not filed. Nothing went wrong.
+        status, stored_error = "skipped", error
+        log.info("Help desk ticket not filed for id=%s: %s", feedback_id, error)
+    else:
+        status, stored_error = "failed", error
+        log.warning("Help desk ticket failed for id=%s: %s", feedback_id, error)
+
+    try:
+        conn.execute(
+            "UPDATE feedback SET helpdesk_message_id=?, helpdesk_status=?,"
+            " helpdesk_error=?, helpdesk_filed_at=? WHERE id=?",
+            (
+                message_id,
+                status,
+                stored_error,
+                datetime.now(UTC).isoformat() if message_id else None,
+                feedback_id,
+            ),
+        )
+    except sqlite3.Error:
+        # Recording the outcome must never undo the feedback that was stored.
+        log.exception("Could not record help desk status for id=%s", feedback_id)
+
+    return bool(message_id), error
+
+
+def _save_feedback_entry(entry: dict[str, str]) -> _SaveResult:
     conn = _get_db()
     cur = conn.execute(
         "INSERT INTO feedback ("
@@ -196,9 +263,20 @@ def _save_feedback_entry(entry: dict[str, str]) -> tuple[int, str | None, str | 
         )
         if sync_error:
             log.warning("Support-hub GitHub sync failed for id=%s: %s", feedback_id, sync_error)
+    stored_entry["github_issue_url"] = issue_url
+
+    ticket_filed, ticket_error = _file_helpdesk_ticket(conn, stored_entry, feedback_id)
+
     conn.commit()
     conn.close()
-    return feedback_id, issue_url, sync_error, stored_entry["source_app"]
+    return _SaveResult(
+        feedback_id=feedback_id,
+        issue_url=issue_url,
+        sync_error=sync_error,
+        source_app=str(stored_entry["source_app"]),
+        ticket_filed=ticket_filed,
+        ticket_error=ticket_error,
+    )
 
 
 def _feedback_defaults() -> dict[str, str]:
@@ -303,22 +381,26 @@ def feedback_submit():
     if errors:
         return _render_feedback_form(" ".join(errors), **entry), 400
 
-    issue_url = None
-    sync_error = None
+    result = _SaveResult(feedback_id=0, source_app=entry["source_app"])
     try:
-        _feedback_id, issue_url, sync_error, source_app = _save_feedback_entry(entry)
+        result = _save_feedback_entry(entry)
     except (sqlite3.Error, OSError):
         log.exception("Failed to save feedback")
-        source_app = entry["source_app"]
 
+    helpdesk = load_helpdesk_config()
     return render_template(
         "feedback_thanks.html",
-        issue_url=issue_url,
+        issue_url=result.issue_url,
         # True when the feedback was deliberately not filed, so the page can
         # say so plainly instead of implying a configuration problem.
-        not_filed=bool(sync_error and sync_error.startswith(SKIP_PREFIX)),
-        source_app=source_app,
+        not_filed=bool(result.sync_error and result.sync_error.startswith(SKIP_PREFIX)),
+        source_app=result.source_app,
         support_repo=load_support_hub_config().repo,
+        # A ticket means a person will reply by email. Saying so is the
+        # difference between "we received this" and "somebody will answer".
+        ticket_filed=result.ticket_filed,
+        helpdesk_email=helpdesk.support_email,
+        helpdesk_url=helpdesk.helpdesk_url,
     )
 
 
@@ -341,19 +423,21 @@ def feedback_submit_api():
     if errors:
         return jsonify({"error": " ".join(errors)}), 400
     try:
-        feedback_id, issue_url, sync_error, source_app = _save_feedback_entry(entry)
+        result = _save_feedback_entry(entry)
     except (sqlite3.Error, OSError):
         log.exception("Failed to save API feedback")
         return jsonify({"error": "Feedback could not be stored"}), 500
     return jsonify(
         {
             "status": "accepted",
-            "id": feedback_id,
-            "source_app": source_app,
+            "id": result.feedback_id,
+            "source_app": result.source_app,
             "support_repo": cfg.repo,
-            "issue_url": issue_url,
-            "github_sync_status": "synced" if issue_url else "failed",
-            "github_sync_error": sync_error,
+            "issue_url": result.issue_url,
+            "github_sync_status": "synced" if result.issue_url else "failed",
+            "github_sync_error": result.sync_error,
+            "helpdesk_ticket": result.ticket_filed,
+            "helpdesk_error": result.ticket_error,
         }
     ), 202
 

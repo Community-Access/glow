@@ -1,14 +1,29 @@
-"""Postmark email integration for GLOW audit report delivery.
+"""Postmark email integration: everything GLOW sends, and the reply path back.
 
-Sends audit results (scorecard + findings CSV attachment) to a user-provided
-email address via the Postmark transactional email API.
+Outbound covers audit reports, batch reports, Whisperer notifications, admin
+sign-in links, workshop return links and artifacts, and the 30-day nudge.
+:func:`send_thread_message` adds the two-way case: a message with a
+per-conversation Reply-To, whose answer arrives at
+:mod:`acb_large_print_web.routes.postmark` and is filed by
+:mod:`acb_large_print_web.email_threads`.
 
 Configuration (environment variables):
-  POSTMARK_SERVER_TOKEN  -- Postmark server API token (required to send)
-  POSTMARK_FROM_EMAIL    -- Sender address (default: no-reply@notify.letitglow.app)
+  POSTMARK_SERVER_TOKEN     -- Postmark server API token (required to send)
+  POSTMARK_FROM_EMAIL       -- Sender address (default: no-reply@notify.letitglow.app)
+  POSTMARK_MESSAGE_STREAM   -- Transactional stream id (default: outbound)
+  POSTMARK_BROADCAST_STREAM -- Stream for the 30-day nudge (default: broadcast)
+  POSTMARK_INBOUND_ADDRESS  -- Inbound address replies are routed through.
+                               Without it, GLOW still sends; it just cannot
+                               be answered, and the conversation features
+                               report themselves unavailable.
+  POSTMARK_WEBHOOK_TOKEN    -- Shared secret the webhook routes require
+  GLOW_SUPPORT_EMAIL        -- A monitored address shown to people who ask
 
 If POSTMARK_SERVER_TOKEN is not set, send attempts are skipped and callers
 receive (False, "Email service not configured") rather than raising.
+
+An address Postmark has reported as a hard bounce or a spam complaint is
+recorded as suppressed and is not mailed again until an admin clears it.
 
 Error handling follows Postmark Skills guidance:
   200   -- success
@@ -29,10 +44,18 @@ from typing import Optional
 
 import requests
 
+from . import email_threads
+
 log = logging.getLogger(__name__)
 
 _POSTMARK_API_URL = "https://api.postmarkapp.com/email"
-_POSTMARK_STREAM = "transactional"  # Always transactional for audit reports
+
+# Postmark's own id for the transactional stream every server is created
+# with is "outbound". A stream that does not exist is a 422 at send time and
+# nothing in the logs that says so plainly, which is why this is a named
+# default rather than a literal in seven payloads.
+_POSTMARK_STREAM = "outbound"
+_DEFAULT_BROADCAST_STREAM = "broadcast"
 _DEFAULT_FROM = "no-reply@notify.letitglow.app"
 _REQUEST_TIMEOUT = 8  # seconds
 
@@ -43,6 +66,27 @@ def _token() -> str:
 
 def _from_address() -> str:
     return os.environ.get("POSTMARK_FROM_EMAIL", _DEFAULT_FROM)
+
+
+def _stream() -> str:
+    """The transactional message stream. Overridable per deployment."""
+    return os.environ.get("POSTMARK_MESSAGE_STREAM", "").strip() or _POSTMARK_STREAM
+
+
+def _broadcast_stream() -> str:
+    """The stream for mail somebody may unsubscribe from.
+
+    The 30-day nudge is a follow-up to a workshop, not a receipt for an
+    action just taken. Postmark wants that on a broadcast stream so the
+    unsubscribe link is real and the reputation is accounted for separately;
+    sending it transactionally is how a sending domain gets itself blocked.
+    """
+    return os.environ.get("POSTMARK_BROADCAST_STREAM", "").strip() or _DEFAULT_BROADCAST_STREAM
+
+
+def _support_address() -> str:
+    """A monitored address, for messages that invite a human answer."""
+    return os.environ.get("GLOW_SUPPORT_EMAIL", "").strip()
 
 
 def email_configured() -> bool:
@@ -70,19 +114,36 @@ EMAIL_FEATURES = (
     ("Workshop return links", "How a participant reaches their work from another device."),
     ("Workshop artifact email", "The end-of-day page, agent package and link home."),
     ("Workshop 30-day nudge", "The follow-up that closes the loop."),
+    ("Conversations", "Replies coming back into GLOW instead of into a void."),
 )
 
 
 def email_status() -> dict:
     """Everything worth knowing about mail, with nothing secret in it."""
     token = _token()
+    inbound = email_threads.inbound_address()
+    suppressed = 0
+    try:
+        suppressed = email_threads.count_suppressions()
+    except Exception:  # pragma: no cover - status must never raise
+        suppressed = -1
     return {
         "configured": bool(token),
         "from_address": _from_address(),
-        "stream": _POSTMARK_STREAM,
+        "support_address": _support_address(),
+        "stream": _stream(),
+        "broadcast_stream": _broadcast_stream(),
         "token_length": len(token),
+        "inbound_address": inbound,
+        "inbound_configured": bool(inbound),
+        "webhook_secret_set": bool(os.environ.get("POSTMARK_WEBHOOK_TOKEN", "").strip()),
+        "suppressed_count": suppressed,
         "features": [
-            {"name": name, "detail": detail, "available": bool(token)}
+            {
+                "name": name,
+                "detail": detail,
+                "available": bool(token) and (name != "Conversations" or bool(inbound)),
+            }
             for name, detail in EMAIL_FEATURES
         ],
     }
@@ -146,7 +207,7 @@ def send_test_email(to_email: str, *, requested_by: str = "") -> tuple[bool, str
         ),
         bullets=(
             f"Sender: {_from_address()}",
-            f"Message stream: {_POSTMARK_STREAM}",
+            f"Message stream: {_stream()}",
         ),
         closing=(
             "Nothing was changed by sending this. If it landed in spam, the "
@@ -161,7 +222,7 @@ def send_test_email(to_email: str, *, requested_by: str = "") -> tuple[bool, str
         "Subject": "GLOW test email",
         "HtmlBody": html_body,
         "TextBody": text_body,
-        "MessageStream": _POSTMARK_STREAM,
+        "MessageStream": _stream(),
     }
     return _send(payload, to_email)
 
@@ -417,6 +478,7 @@ def send_audit_report_email(
     findings_count: int,
     severity_breakdown: dict,
     findings,
+    reply_thread: dict | None = None,
 ) -> tuple[bool, str]:
     """Send a single-file audit report email with a CSV attachment.
 
@@ -450,13 +512,13 @@ def send_audit_report_email(
             f"The findings CSV is attached to this email.\n\n"
             f"Your email address was not stored."
         ),
-        "MessageStream": _POSTMARK_STREAM,
+        "MessageStream": _stream(),
         "Attachments": [
             _base64_attachment(csv_bytes, csv_name, "text/csv"),
         ],
     }
 
-    return _send(payload, to_email)
+    return _dispatch(payload, to_email, reply_thread=reply_thread)
 
 
 def send_batch_audit_report_email(
@@ -543,7 +605,7 @@ def send_batch_audit_report_email(
             f"The combined findings CSV is attached to this email.\n\n"
             f"Your email address was not stored."
         ),
-        "MessageStream": _POSTMARK_STREAM,
+        "MessageStream": _stream(),
         "Attachments": [
             _base64_attachment(csv_bytes, "batch-findings.csv", "text/csv"),
         ],
@@ -573,7 +635,7 @@ def send_whisperer_status_email(
         "Subject": subject,
         "HtmlBody": html_body,
         "TextBody": text_body,
-        "MessageStream": _POSTMARK_STREAM,
+        "MessageStream": _stream(),
     }
     return _send(payload, to_email)
 
@@ -626,7 +688,7 @@ def send_workshop_return_link_email(
         "Subject": "Your link back to your GLOW workshop work",
         "HtmlBody": html_body,
         "TextBody": text_body,
-        "MessageStream": _POSTMARK_STREAM,
+        "MessageStream": _stream(),
     }
     return _send(payload, to_email)
 
@@ -639,6 +701,7 @@ def send_workshop_artifact_email(
     artifact_text: str,
     return_link: str,
     attachments: list[tuple[str, bytes, str]],
+    reply_thread: dict | None = None,
 ) -> tuple[bool, str]:
     """Send a participant their own day: the designed page, and their agent.
 
@@ -685,13 +748,13 @@ def send_workshop_artifact_email(
         "Subject": "Your GLOW workshop artifacts",
         "HtmlBody": html_body,
         "TextBody": text_body,
-        "MessageStream": _POSTMARK_STREAM,
+        "MessageStream": _stream(),
         "Attachments": [
             _base64_attachment(payload_bytes, name, content_type)
             for name, payload_bytes, content_type in attachments
         ],
     }
-    return _send(payload, to_email)
+    return _dispatch(payload, to_email, reply_thread=reply_thread)
 
 
 def send_workshop_nudge_email(
@@ -740,7 +803,9 @@ def send_workshop_nudge_email(
         "Subject": "How did your 30-day accessibility commitment go?",
         "HtmlBody": html_body,
         "TextBody": text_body,
-        "MessageStream": _POSTMARK_STREAM,
+        # Broadcast, not transactional: this is a follow-up nobody just asked
+        # for, so it belongs on the stream that carries a real unsubscribe.
+        "MessageStream": _broadcast_stream(),
     }
     return _send(payload, to_email)
 
@@ -750,7 +815,18 @@ def send_workshop_nudge_email(
 # ---------------------------------------------------------------------------
 
 def _send(payload: dict, to_email: str) -> tuple[bool, str]:
-    """POST payload to Postmark API and return (success, message).
+    """POST payload to Postmark and return (success, message)."""
+    ok, message, _message_id = send_and_track(payload, to_email)
+    return ok, message
+
+
+def send_and_track(payload: dict, to_email: str) -> tuple[bool, str, str]:
+    """:func:`_send`, plus the Postmark message id when there is one.
+
+    The id is what ties an outbound message to the bounce webhook that
+    follows it and to the reply that quotes it, so anything that wants to
+    hold a conversation needs this variant. Everything else keeps the older
+    two-value shape.
 
     Error handling follows Postmark Skills guidance:
       200   -- success
@@ -761,6 +837,25 @@ def _send(payload: dict, to_email: str) -> tuple[bool, str]:
       5xx   -- transient server error
       Timeout -- Postmark unreachable
     """
+    # An address Postmark has already told us is dead, or whose owner marked
+    # us as spam, is not worth another attempt: it costs reputation that
+    # every other GLOW user's mail then pays for. The check is advisory --
+    # a suppression store that cannot be read must not stop mail going out.
+    try:
+        if email_threads.is_suppressed(to_email):
+            record = email_threads.suppression_for(to_email) or {}
+            log.info(
+                "Suppressed address %s not mailed (%s)", to_email, record.get("reason", "")
+            )
+            return (
+                False,
+                "That address is on the do-not-send list because earlier mail "
+                "bounced or was reported as spam. An administrator can clear it.",
+                "",
+            )
+    except Exception:  # pragma: no cover - never fail a send over the check
+        log.debug("Suppression check unavailable", exc_info=True)
+
     headers = {
         "X-Postmark-Server-Token": _token(),
         "Content-Type": "application/json",
@@ -776,29 +871,193 @@ def _send(payload: dict, to_email: str) -> tuple[bool, str]:
         )
     except requests.Timeout:
         log.warning("Postmark request timed out sending to %s", to_email)
-        return False, "Email service timed out. The audit report is available on-screen. Please try again later."
+        return False, "Email service timed out. The audit report is available on-screen. Please try again later.", ""
     except requests.RequestException as exc:
         log.exception("Postmark network error: %s", exc)
-        return False, "Email service is unreachable. The audit report is available on-screen."
+        return False, "Email service is unreachable. The audit report is available on-screen.", ""
 
     status = response.status_code
 
     if status == 200:
         log.info("Audit report emailed to %s", to_email)
-        return True, f"Report sent to {to_email}. Check your spam folder if it does not arrive within a few minutes."
+        message_id = ""
+        try:
+            message_id = str((response.json() or {}).get("MessageID", "") or "")
+        except ValueError:  # a 200 with a body that is not JSON
+            log.debug("Postmark 200 had no JSON body")
+        return (
+            True,
+            f"Report sent to {to_email}. Check your spam folder if it does not arrive within a few minutes.",
+            message_id,
+        )
 
     if status == 429:
         log.warning("Postmark rate limited (429) sending to %s", to_email)
-        return False, "Email service is temporarily busy. Please try again in a minute. The audit report is still available on-screen."
+        return False, "Email service is temporarily busy. Please try again in a minute. The audit report is still available on-screen.", ""
 
     if status in (400, 401):
         log.error("Postmark auth/config error %d: %s", status, response.text[:300])
-        return False, "Email service is not properly configured. Contact the site administrator."
+        return False, "Email service is not properly configured. Contact the site administrator.", ""
 
     if status == 422:
         log.error("Postmark validation error (422): %s", response.text[:300])
-        return False, "Email could not be sent due to a validation error. Contact the site administrator."
+        return False, "Email could not be sent due to a validation error. Contact the site administrator.", ""
 
     # 5xx or unexpected
     log.error("Postmark unexpected error %d: %s", status, response.text[:300])
-    return False, f"Email service returned an error (HTTP {status}). The audit report is available on-screen."
+    return False, f"Email service returned an error (HTTP {status}). The audit report is available on-screen.", ""
+
+
+# ---------------------------------------------------------------------------
+# Conversations: the same mail path, but expecting an answer
+# ---------------------------------------------------------------------------
+#
+# Every message above is a one-way announcement with a no-reply sender. These
+# two functions are the other shape: a message that sets a per-thread Reply-To
+# so the answer comes back into GLOW, and is recorded on the way out so the
+# answer has something to attach itself to.
+
+
+def conversations_available() -> bool:
+    """True when a reply can actually get back to us."""
+    return email_configured() and email_threads.inbound_configured()
+
+
+def _dispatch(
+    payload: dict,
+    to_email: str,
+    *,
+    reply_thread: dict | None = None,
+    author_label: str = "GLOW",
+) -> tuple[bool, str]:
+    """Send a prepared payload, optionally as part of a conversation.
+
+    Callers that pass a thread get two things: a Reply-To that routes the
+    answer back into GLOW, and a copy of what was sent recorded against the
+    thread, so the reply arrives next to the message it is answering rather
+    than on its own with no context. Callers that pass nothing behave
+    exactly as they did before.
+    """
+    if reply_thread and email_threads.inbound_configured():
+        payload.setdefault(
+            "ReplyTo", email_threads.reply_address(str(reply_thread.get("thread_key", "")))
+        )
+
+    ok, message, message_id = send_and_track(payload, to_email)
+
+    if ok and reply_thread:
+        try:
+            email_threads.add_message(
+                int(reply_thread["id"]),
+                direction="out",
+                author_label=author_label,
+                from_email=str(payload.get("From", "")),
+                to_email=to_email,
+                subject=str(payload.get("Subject", "")),
+                body_text=str(payload.get("TextBody", "")),
+                body_html=str(payload.get("HtmlBody", "")),
+                postmark_message_id=message_id,
+                attachments=tuple(
+                    str(item.get("Name", "")) for item in payload.get("Attachments", [])
+                ),
+                delivery_state="sent",
+            )
+        except Exception:  # pragma: no cover - a send that worked still worked
+            log.exception("Could not record outbound message on thread")
+
+    return ok, message
+
+
+def send_thread_message(
+    thread: dict,
+    *,
+    subject: str = "",
+    body_text: str,
+    body_html: str = "",
+    author_label: str = "GLOW",
+    attachments: tuple[tuple[str, bytes, str], ...] = (),
+) -> tuple[bool, str]:
+    """Send one message in a conversation and record it on the thread.
+
+    The Reply-To is ``reply+<thread key>@<inbound domain>``, which is what
+    makes this two-way: whatever the recipient's mail client does with
+    threading headers, the address itself carries the routing.
+    """
+    if not email_configured():
+        return False, "Email is not configured on this server."
+    if not email_threads.inbound_configured():
+        return (
+            False,
+            "Replies are not configured on this server, so a conversation "
+            "would be one-sided. Set POSTMARK_INBOUND_ADDRESS first.",
+        )
+
+    to_email = str(thread.get("participant_email", "") or "")
+    if not to_email:
+        return False, "That conversation has no address to send to."
+
+    line = str(subject or thread.get("subject") or "A message from GLOW").strip()
+    if not line.lower().startswith("re:"):
+        # A conversation that already has messages is being continued, so the
+        # subject should say so; a mail client that threads on subject then
+        # keeps it together with what came before.
+        try:
+            already = bool(email_threads.list_messages(int(thread["id"]), limit=1))
+        except Exception:  # pragma: no cover - never fail a send over a subject
+            already = False
+        if already:
+            line = f"Re: {line}"
+
+    reply_to = email_threads.reply_address(str(thread.get("thread_key", "")))
+    html = body_html or _plain_to_html(body_text)
+    footer_html = (
+        "<hr><p>You can reply to this email and your answer will reach us "
+        "inside GLOW. Nothing else is needed.</p>"
+    )
+    footer_text = (
+        "\n\n--\nYou can reply to this email and your answer will reach us "
+        "inside GLOW. Nothing else is needed.\n"
+    )
+
+    payload = {
+        "From": _from_address(),
+        "To": to_email,
+        "ReplyTo": reply_to,
+        "Subject": line,
+        "HtmlBody": html + footer_html,
+        "TextBody": body_text.rstrip() + footer_text,
+        "MessageStream": _stream(),
+    }
+    if attachments:
+        payload["Attachments"] = [
+            _base64_attachment(data, name, content_type)
+            for name, data, content_type in attachments
+        ]
+
+    ok, message, message_id = send_and_track(payload, to_email)
+    if ok:
+        email_threads.add_message(
+            int(thread["id"]),
+            direction="out",
+            author_label=author_label,
+            from_email=_from_address(),
+            to_email=to_email,
+            subject=line,
+            body_text=body_text,
+            body_html=html,
+            postmark_message_id=message_id,
+            attachments=tuple(name for name, _data, _type in attachments),
+            delivery_state="sent",
+        )
+        return True, f"Sent to {to_email}."
+    return False, message
+
+
+def _plain_to_html(text: str) -> str:
+    """A minimal, semantic HTML rendering of typed plain text."""
+    import html as _html
+
+    paragraphs = [block.strip() for block in (text or "").split("\n\n") if block.strip()]
+    return "".join(
+        "<p>" + _html.escape(block).replace("\n", "<br>") + "</p>" for block in paragraphs
+    )

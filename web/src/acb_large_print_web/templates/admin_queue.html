@@ -68,6 +68,19 @@
     </div>
     <button type="submit"{% if not email_status.configured %} disabled{% endif %}>Send test email</button>
   </form>
+  <p>
+    {% if email_status.inbound_configured %}
+    Replies arrive at <code>{{ email_status.inbound_address }}</code>.
+    {% else %}
+    Replies are not configured. Set <code>POSTMARK_INBOUND_ADDRESS</code> and
+    <code>POSTMARK_WEBHOOK_TOKEN</code> to let people answer GLOW's mail.
+    {% endif %}
+    {% if email_status.suppressed_count > 0 %}
+    {{ email_status.suppressed_count }} address{{ 'es are' if email_status.suppressed_count != 1 else ' is' }}
+    on the do-not-send list.
+    {% endif %}
+  </p>
+  <p><a href="{{ url_for('postmark.admin_threads') }}">Open mail and conversations</a></p>
 
   <h2 id="admin-health-heading">System Health</h2>
   <p class="field-hint">Live status from <a href="/health">/health</a> (auto-refreshes every 20 seconds).</p>

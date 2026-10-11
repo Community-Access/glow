@@ -1,0 +1,3677 @@
+<h1 id="community-access-mail-and-help-desk">Community Access mail and
+help desk</h1>
+<p>One operations manual for every piece of email and support in this
+estate: Postmark, the FreeScout help desk, the mailboxes for QUILL,
+GLOW, Community Access, Git Going with GitHub and BITS, the GitHub
+escalation path, and GLOW’s own two-way mail.</p>
+<p><strong>Sources merged into this file.</strong> The Postmark
+walkthrough that was <code>magic.md</code> item 3 in
+<code>s:\quill</code>, and the whole of <code>s:\helpdesk.md</code> (the
+Unified Help Desk Plan, 11 September 2026). Both are superseded by this
+document.</p>
+<hr />
+<h2 id="how-to-use-this-document">0. How to use this document</h2>
+<p>It is long because it is the only one. Nothing here has to be read in
+a single sitting, and the parts are ordered by what you should do
+first.</p>
+<table>
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+</colgroup>
+<thead>
+<tr>
+<th>Part</th>
+<th>What it covers</th>
+<th>When</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="#part-one--get-mail-flowing-do-this-first">One</a></td>
+<td>Get Postmark working so the help desk can send and receive at
+all</td>
+<td><strong>Now.</strong> Everything else waits on it</td>
+</tr>
+<tr>
+<td><a href="#part-two--the-help-desk-platform">Two</a></td>
+<td>The FreeScout platform: mailboxes, modules, fields, workflows,
+portals, knowledge bases</td>
+<td>After part one</td>
+</tr>
+<tr>
+<td><a href="#part-three--github-escalation">Three</a></td>
+<td>Getting a confirmed defect from a ticket into GitHub without
+dragging the customer there</td>
+<td>After part two</td>
+</tr>
+<tr>
+<td><a href="#part-four--glows-own-mail">Four</a></td>
+<td>GLOW’s own sending and its two-way conversations</td>
+<td>Independent; any time</td>
+</tr>
+<tr>
+<td><a href="#part-five--operations">Five</a></td>
+<td>Accessibility, privacy, backups, monitoring, governance</td>
+<td>Before launch</td>
+</tr>
+<tr>
+<td><a href="#part-six--delivery">Six</a></td>
+<td>Phases, checklists, agent procedure, philosophy</td>
+<td>The plan of record</td>
+</tr>
+<tr>
+<td><a href="#part-seven--reference">Seven</a></td>
+<td>What is already running, troubleshooting, what changed in the
+code</td>
+<td>Look things up</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Priority.</strong> QUILL comes first throughout — in the
+mailbox list, the custom fields, the knowledge base. GLOW, Git Going
+with GitHub and BITS are all here in full, just not at the front.</p>
+<p><strong>A convention worth knowing.</strong> Where a step says “click
+X”, X is exactly what you should see on screen. If it is not there, stop
+and re-read the step before it rather than guessing.</p>
+<h3 id="the-map">0.1 The map</h3>
+<pre><code>                         a person needs help
+                                  |
+       +--------------+-----------+-----------+---------------+
+       |              |           |           |               |
+   QUILL app      GLOW web    an email    a portal form   Git Going class
+   Report a Bug   /feedback   to support@  on the web       question
+       |              |           |           |               |
+       +--------------+-----------+-----------+---------------+
+                                  |
+                          FreeScout conversation
+                          (one instance, many mailboxes)
+                                  |
+                    +-------------+-------------+
+                    |                           |
+            answered by a person        confirmed software defect
+                    |                           |
+                 customer                 GitHub escalation
+                                          (human decision)</code></pre>
+<p>Two different things are both called a “bridge” in these notes, and
+confusing them will waste a day:</p>
+<table>
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+</colgroup>
+<thead>
+<tr>
+<th>Name here</th>
+<th>What it is</th>
+<th>Status</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>The mail bridge</strong>
+(<code>helpdesk-mailbridge</code>)</td>
+<td>Postmark’s inbound webhook to a Maildir that FreeScout reads over
+IMAP</td>
+<td><strong>Built, deployed, proven.</strong> Section 6</td>
+</tr>
+<tr>
+<td><strong>The GitHub bridge</strong></td>
+<td>A service that turns a FreeScout escalation into a sanitised GitHub
+issue, and GitHub events into internal notes</td>
+<td><strong>Not built.</strong> Part three</td>
+</tr>
+</tbody>
+</table>
+<p>Throughout this document they are always called the <em>mail
+bridge</em> and the <em>GitHub bridge</em>.</p>
+<h3 id="four-decisions-to-make-before-you-start">0.2 Four decisions to
+make before you start</h3>
+<p>These came out of checking the live DNS and the running server on 11
+September 2026. Each one is a real fork, not a detail.</p>
+<p><strong>1. <code>help.</code> or <code>helpdesk.</code>?</strong> The
+plan names <code>https://help.community-access.org</code> as the
+canonical FreeScout URL. What is actually deployed, with DNS, a Caddy
+block and a valid certificate, is
+<code>https://helpdesk.community-access.org</code>.
+<code>help.community-access.org</code> does not resolve at all
+today.</p>
+<ul>
+<li><em>Keep <code>helpdesk.</code></em> — nothing to do. It works now,
+and FreeScout’s <code>APP_URL</code> already matches, which is what
+keeps sessions, portal links, generated ticket URLs and the inbound
+webhook path consistent.</li>
+<li><em>Move to <code>help.</code></em> — add an A record, add a Caddy
+block, change <code>APP_URL</code>, and re-point the Postmark inbound
+webhook. Doable, but do it <strong>before</strong> anybody has
+bookmarked a portal or received a ticket link, not after.</li>
+</ul>
+<p>Recommendation: keep <code>helpdesk.</code> unless somebody feels
+strongly. The shorter name is nicer; it is not worth a migration once
+links exist.</p>
+<p><strong>2. <code>bits-acb.org</code> is not like the others.</strong>
+Checked:</p>
+<pre><code>bits-acb.org    MX  0 bitsacb-org01b.mail.protection.outlook.com.
+                SPF v=spf1 include:spf.protection.outlook.com
+                    include:_spf.wpcloud.com -all</code></pre>
+<p>That is <strong>Microsoft 365</strong>, not registrar forwarding. So
+<code>support@bits-acb.org</code> and <code>gitgoing@bits-acb.org</code>
+are real Exchange mailboxes. The Namecheap forwarding trick in section 5
+does not apply to them. Two ways in:</p>
+<ul>
+<li><strong>FreeScout connects directly over IMAP or OAuth</strong> to
+the Microsoft 365 mailbox. This is what the original plan recommended
+for the general case, it needs no bridge, and for this domain it is the
+right answer.</li>
+<li>Or add an Exchange rule forwarding the mailbox to Postmark’s inbound
+address, and let the mail bridge carry it like the rest.</li>
+</ul>
+<p>Recommendation: IMAP/OAuth straight to Microsoft 365 for the BITS
+mailboxes, the mail bridge for everything on a registrar-forwarded
+domain. FreeScout supports both at once, per mailbox. See section
+13.</p>
+<p><strong>3. <code>glow.bits-acb.org</code> looks like a CNAME, which
+cannot hold mail.</strong> Checked:</p>
+<pre><code>glow.bits-acb.org   MX  letitglow.app. 10 eforward1.registrar-servers.com. ...
+                    A   letitglow.app. 107.175.91.158</code></pre>
+<p>The name resolving through <code>letitglow.app</code> in both answers
+is the signature of a CNAME. A CNAME cannot coexist with MX or any other
+record at the same name, so <code>support@glow.bits-acb.org</code> would
+inherit whatever <code>letitglow.app</code> does with mail — which is
+registrar forwarding, on a different domain, for a different
+purpose.</p>
+<p>Recommendation: use the plan’s own alternative,
+<strong><code>glow@community-access.org</code></strong>, for the GLOW
+mailbox. It sits on a domain whose mail you control the same way as
+everything else in part one. Keep <code>support.glow.bits-acb.org</code>
+as a <em>web</em> redirect to the GLOW portal, which is all it was ever
+needed for.</p>
+<p><strong>4. Every new mailbox address must be added to the mail
+bridge’s allow-list.</strong> This is the single easiest thing to get
+wrong. The bridge currently serves exactly one address:</p>
+<pre><code>MAILBRIDGE_RECIPIENTS=support@community-access.org</code></pre>
+<p>An address that is not on that list gets a <strong>403</strong>, and
+Postmark treats 403 as “stop retrying” — so the message is gone,
+deliberately and permanently. Every time you add a mailbox in section
+12, add its address here too. Section 13 has the command.</p>
+<hr />
+<h1 id="part-one-get-mail-flowing-do-this-first">Part one — get mail
+flowing (do this first)</h1>
+<h2 id="what-you-are-building">1. What you are building</h2>
+<p><code>support@community-access.org</code> is answered by
+<strong>FreeScout</strong>, a help desk already installed and running on
+<code>lp.csedesigns.com</code>, reachable at <a
+href="https://helpdesk.community-access.org"
+class="uri">https://helpdesk.community-access.org</a>. The website works
+today. It cannot send or receive email yet, and until it can, nobody can
+write to support and get an answer.</p>
+<p>Postmark fixes both halves:</p>
+<ul>
+<li><strong>Receiving.</strong> Mail sent to
+<code>support@community-access.org</code> reaches Postmark, which posts
+it to the mail bridge on the server, which writes it into a mailbox
+FreeScout reads.</li>
+<li><strong>Sending.</strong> FreeScout sends replies through Postmark’s
+SMTP, so they arrive authenticated and land in an inbox rather than a
+spam folder.</li>
+</ul>
+<p>The chain, once it works:</p>
+<pre><code>someone emails support@community-access.org
+  -&gt; Namecheap forwarding
+  -&gt; Postmark (inbound)
+  -&gt; helpdesk-mailbridge          (writes the raw message to a Maildir)
+  -&gt; Dovecot                      (serves that Maildir over IMAP)
+  -&gt; FreeScout                    (a conversation, in a queue, with agents)
+  -&gt; an agent replies
+  -&gt; Postmark (SMTP)
+  -&gt; back to the person, in the same email thread</code></pre>
+<p><strong>Everything from the mail bridge rightwards is already built,
+deployed and proven.</strong> This part is the two ends: getting
+Postmark an account, and telling each side about the other.</p>
+<h3 id="why-this-is-the-priority-for-quill">Why this is the priority,
+for QUILL</h3>
+<p>Report a Bug in every QUILL app currently files a GitHub issue
+through the submission server. Once this works, that can be switched to
+open a FreeScout conversation instead — <strong>a change on the server
+only</strong>, with no app release and no version skew, because the apps
+post to a URL rather than calling GitHub themselves. That seam was the
+point of building it that way. See section 9.</p>
+<h3 id="before-you-start-have-ready">Before you start, have ready</h3>
+<ul>
+<li>A browser, logged into whatever account manages billing for this
+project.</li>
+<li>The Namecheap login that manages <code>community-access.org</code>
+DNS. This is the same login used for the help desk’s DNS record. If you
+do not have it, get it before continuing; everything below needs
+it.</li>
+<li>A terminal with SSH to the server as <code>jeffbis</code> (one
+command, in section 6).</li>
+<li>A payment card. Section 2 is the only thing in this document that
+costs money.</li>
+</ul>
+<hr />
+<h2 id="postmark-account-and-plan">2. Postmark account and plan</h2>
+<ol type="1">
+<li><p>Go to <code>postmarkapp.com</code> in your browser.</p></li>
+<li><p>Click <strong>Sign Up</strong> (or <strong>Get Started</strong>)
+and create an account with an email address you control.</p></li>
+<li><p>Once inside, look for <strong>Plans</strong> or
+<strong>Billing</strong> in the account settings.</p></li>
+<li><p><strong>Choose a plan that includes inbound email.</strong> At
+the time this was researched that was the <strong>Pro</strong> plan at
+<strong>$16.50/month</strong> including 10,000 messages, and neither the
+free Developer plan nor the $15 Basic plan included inbound.</p>
+<p>Inbound is the entire reason for doing this. Pick a plan without it
+and you will get as far as section 5 and discover it silently does not
+work.</p>
+<p><strong>Check the current pricing page rather than trusting this
+paragraph.</strong> Plan names and prices move; the only thing that
+matters is the line item saying inbound is included.</p></li>
+<li><p>Enter payment details and confirm the subscription.</p></li>
+</ol>
+<hr />
+<h2 id="create-the-server-and-verify-the-domain">3. Create the server
+and verify the domain</h2>
+<p>Postmark’s dashboard organises everything under a
+<strong>Server</strong>, which is their word for a project inside your
+account. It has nothing to do with a physical machine.</p>
+<ol type="1">
+<li><p>In the Postmark dashboard, click <strong>Servers</strong> in the
+top navigation.</p></li>
+<li><p>Click <strong>Create Server</strong>.</p></li>
+<li><p>Name it <code>Community Access Help Desk</code>. Click
+<strong>Create</strong>.</p></li>
+<li><p>Click into the server you just created.</p></li>
+<li><p>In the left sidebar, click <strong>Sending</strong>, then
+<strong>Domains</strong>.</p></li>
+<li><p>Click <strong>Add Domain</strong>.</p></li>
+<li><p>In the field asking for a domain name, type exactly:</p>
+<pre><code>community-access.org</code></pre>
+<p>Do <strong>not</strong> type
+<code>helpdesk.community-access.org</code>, and do <strong>not</strong>
+type <code>www.community-access.org</code>. Only the plain domain.</p>
+<p><em>Why:</em> verifying this one domain covers every address at it,
+including <code>support@community-access.org</code>. Verifying the help
+desk’s own hostname would create DNS records that do nothing, because
+nothing ever sends mail <em>from</em> that name — it is only where the
+website lives.</p></li>
+<li><p>Click <strong>Add</strong>. Postmark now shows a page titled
+<strong>DNS Settings</strong> with two records to add.</p></li>
+</ol>
+<p><strong>Keep this browser tab open.</strong> You copy values out of
+it in the next section.</p>
+<p><em>(You will come back and add <code>quillforall.org</code> here
+too, in section 13, once the QUILL mailbox exists. One server can verify
+several sending domains.)</em></p>
+<hr />
+<h2 id="two-dns-records-at-namecheap">4. Two DNS records at
+Namecheap</h2>
+<p>These make outbound mail authentic, so replies from the help desk are
+not treated as forgeries.</p>
+<ol type="1">
+<li>Open a new browser tab, go to <code>namecheap.com</code>, and log
+in.</li>
+<li>Click <strong>Domain List</strong> in the left sidebar.</li>
+<li>Find <code>community-access.org</code> and click
+<strong>Manage</strong>.</li>
+<li>Click the <strong>Advanced DNS</strong> tab near the top.</li>
+<li>You will see a table of existing records. <strong>Do not delete or
+edit any existing row.</strong> You are only adding two new ones.</li>
+<li>Click <strong>Add New Record</strong>. For the first record:
+<ul>
+<li><strong>Type</strong>: <code>TXT Record</code></li>
+<li><strong>Host</strong>: copy this exactly from the Postmark tab. It
+looks like <code>20260827123456pm._domainkey</code> — the numbers will
+differ, so use whatever Postmark shows you, not this example.</li>
+<li><strong>Value</strong>: copy the long string from Postmark starting
+<code>k=rsa; p=...</code>. Copy the whole thing; it is long.</li>
+<li><strong>TTL</strong>: leave at Automatic.</li>
+<li>Click the green checkmark to save the row.</li>
+</ul></li>
+<li>Click <strong>Add New Record</strong> again. For the second record:
+<ul>
+<li><strong>Type</strong>: <code>CNAME Record</code></li>
+<li><strong>Host</strong>: <code>pm_bounces</code></li>
+<li><strong>Value</strong>: <code>pm.mtasv.net</code></li>
+<li>Click the green checkmark.</li>
+</ul>
+<strong>If Namecheap refuses this</strong> because of the underscore or
+for any other reason: go back to the Postmark tab, find the setting for
+the “Return-Path” or “bounce” hostname, change it from
+<code>pm_bounces</code> to <code>pm-bounces</code> (hyphen), and repeat
+this step with <code>pm-bounces</code> as the Host.</li>
+<li>Leave the page. Namecheap saves each row as you add it; there is no
+separate Save button for the page as a whole.</li>
+<li>Go back to the Postmark tab and click <strong>Verify</strong> on the
+domain page. This usually takes a few minutes. Postmark says it can take
+up to 48 hours in the worst case, so come back and click Verify again
+later if it is not done immediately.</li>
+</ol>
+<p><strong>Both DKIM and Return-Path must show Verified before you
+continue to section 7.</strong></p>
+<h3 id="three-warnings-about-this-domain-specifically">Three warnings
+about this domain specifically</h3>
+<p><strong>Do not touch the existing SPF record.</strong>
+<code>community-access.org</code> already has one:</p>
+<pre><code>v=spf1 include:spf.efwd.registrar-servers.com ~all</code></pre>
+<p>It belongs to the Namecheap email forwarding that other addresses at
+this domain rely on, and it must stay exactly as it is. Postmark does
+not need an SPF record when the Return-Path CNAME above is in place,
+because the Return-Path domain carries its own.</p>
+<p>If your own policy later requires Postmark to be named in SPF,
+<strong>merge</strong> it into the existing record rather than adding a
+second one:</p>
+<pre><code>v=spf1 include:spf.efwd.registrar-servers.com include:spf.mtasv.net ~all</code></pre>
+<p>Two SPF records on one host is a permanent error, and it fails
+silently.</p>
+<p><strong>DMARC is optional here.</strong> Skip it for now; it is a
+separate, harmless TXT record you can add later. The recommended
+progression, when you get to it, is <code>p=none</code> → read the
+reports and fix alignment → <code>p=quarantine</code> →
+<code>p=reject</code>. Do not change email DNS blindly on a production
+domain; inventory the existing records first.</p>
+<p><strong>Watch for a doubled zone suffix.</strong> Some DNS hosts
+append the domain name to whatever you type in the Host field. If yours
+does, entering the full <code>..._domainkey.community-access.org</code>
+produces
+<code>..._domainkey.community-access.org.community-access.org</code>,
+which verifies never. Namecheap expects the short form, which is what
+Postmark shows you.</p>
+<hr />
+<h2 id="route-support-into-postmark-without-touching-mx">5. Route
+support@ into Postmark, without touching MX</h2>
+<p>This is the step with a trap in it. Read the warning before doing
+anything.</p>
+<h3 id="the-trap">The trap</h3>
+<p>Postmark’s normal instructions tell you to point your domain’s MX
+records at Postmark. <strong>Do not do this for
+<code>community-access.org</code>.</strong></p>
+<p>That domain already has five MX records pointing at Namecheap’s own
+email forwarding:</p>
+<pre><code>$ dig +short MX community-access.org
+10 eforward1.registrar-servers.com.
+10 eforward2.registrar-servers.com.
+10 eforward3.registrar-servers.com.
+15 eforward4.registrar-servers.com.
+20 eforward5.registrar-servers.com.</code></pre>
+<p>Replace those with Postmark’s and <strong>every email address at this
+domain that currently forwards somewhere silently stops
+working</strong>, with no error message anywhere.</p>
+<h3 id="the-safe-way-forward-one-address-touch-no-dns">The safe way —
+forward one address, touch no DNS</h3>
+<ol type="1">
+<li>Go back to the Postmark tab. In the left sidebar of your server,
+click <strong>Message Streams</strong>.</li>
+<li>Click the stream named <strong>Inbound</strong> (or <strong>Default
+Inbound Stream</strong>).</li>
+<li>Find the <strong>inbound email address</strong> on that page. It is
+a long random string followed by <code>@inbound.postmarkapp.com</code>,
+for example <code>abc123def456@inbound.postmarkapp.com</code>. Copy
+it.</li>
+<li>Switch to the Namecheap tab. Click <strong>Domain List</strong>,
+then <strong>Manage</strong> next to
+<code>community-access.org</code>.</li>
+<li>Find the <strong>Email Forwarding</strong> tab or section. It is
+usually a separate tab from Advanced DNS — look along the top of the
+domain management page.</li>
+<li>Add a new forwarding rule:
+<ul>
+<li><strong>Mailbox / alias</strong>: <code>support</code></li>
+<li><strong>Forwards to</strong>: paste the
+<code>@inbound.postmarkapp.com</code> address from step 3.</li>
+<li>Save the rule.</li>
+</ul></li>
+<li>That is it. No DNS record was touched. Mail to
+<code>support@community-access.org</code> is now forwarded, unchanged,
+to Postmark, which hands it to the mail bridge already waiting on the
+server.</li>
+</ol>
+<p><strong>What forwarding does and does not change.</strong> It
+rewrites the envelope, which is invisible to everyone, and leaves the
+<code>From:</code> header alone — so FreeScout still sees the real
+person as the customer. That is the behaviour the whole design depends
+on, so prove it with one real message in section 8 rather than assuming
+it.</p>
+<p>This same pattern is how you add every later mailbox on a
+registrar-forwarded domain. Section 13 does the rest of them.</p>
+<h3 id="two-alternatives-if-you-outgrow-this">Two alternatives, if you
+outgrow this</h3>
+<ul>
+<li><strong>An inbound subdomain.</strong> Add
+<code>MX inbound.community-access.org -&gt; inbound.postmarkapp.com</code>
+and forward <code>support@</code> to
+<code>anything@inbound.community-access.org</code>. More moving parts,
+and it buys a readable inbound address nobody outside the system ever
+sees. Worth it only if you want several distinct inbound addresses.</li>
+<li><strong>Repoint the domain’s MX.</strong> Only if the domain has no
+other mail you care about. Check the forwarding list in Namecheap before
+even considering it.</li>
+</ul>
+<hr />
+<h2 id="the-inbound-webhook">6. The inbound webhook</h2>
+<p>Postmark now receives the mail. This tells it where to send it.</p>
+<ol type="1">
+<li><p>Open a terminal and connect to the server:</p>
+<div class="sourceCode" id="cb10"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ssh</span> jeffbis@lp.csedesigns.com</span></code></pre></div></li>
+<li><p>Run:</p>
+<div class="sourceCode" id="cb11"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> ~/feedback-hub</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="ex">./deploy/helpdesk/make-credentials.sh</span></span></code></pre></div></li>
+<li><p>This prints two things: a webhook URL containing a username and
+password, and IMAP settings for FreeScout. Copy the whole webhook
+URL:</p>
+<pre class="text"><code>https://&lt;user&gt;:&lt;password&gt;@helpdesk.community-access.org/postmark/inbound</code></pre>
+<p>The script is idempotent and <strong>refuses to overwrite a value
+that is already set</strong>, because regenerating the credential would
+break inbound mail until Postmark is updated to match — and mail that
+stops arriving is the hardest kind of failure to notice.</p></li>
+<li><p>Switch back to the Postmark tab, still on <strong>Message Streams
+&gt; Inbound</strong>.</p></li>
+<li><p>Find the field labelled <strong>Webhook URL</strong>. It is
+sometimes under a “Settings” or “Webhook” sub-tab on that same
+page.</p></li>
+<li><p>Paste the entire URL from step 3 — the <code>https://</code>, the
+username, the colon, the password, the <code>@</code>, all of it, as one
+string.</p></li>
+<li><p>Click <strong>Save</strong>. If Postmark offers to send a test
+webhook call, take it and confirm you see a success response.</p></li>
+</ol>
+<h3 id="why-this-has-to-be-exactly-right">Why this has to be exactly
+right</h3>
+<p>If the username or password in that URL is wrong by one character,
+the server returns <code>401 Unauthorized</code>. Postmark documents
+that only a <code>403</code> stops retries outright — a <code>401</code>
+is retried, up to ten attempts on a growing schedule over several hours.
+So a wrong password does not lose mail instantly. But once the attempts
+are used up, the message is marked <strong>Inbound Error</strong> in
+Postmark and goes no further on its own. It does not retry forever, and
+it never appears in FreeScout, so it can sit unnoticed for hours before
+anybody realises mail is not arriving.</p>
+<p>Run the test sequence in section 8 before telling anyone the address
+exists, rather than relying on the retry window to cover a typo.</p>
+<h3 id="what-the-mail-bridge-does-and-deliberately-does-not-do">What the
+mail bridge does, and deliberately does not do</h3>
+<p>It is a <strong>delivery adapter, not a second help desk</strong>. It
+writes the raw RFC-822 message out byte for byte and never parses it,
+rewrites a header, strips quoted text, or touches
+<code>Message-ID</code>, <code>In-Reply-To</code> or
+<code>References</code>. Everything that looks like mail handling —
+threading, duplicate detection, customer-versus-agent replies,
+attachments, auto-replies, bounces, reactivating a closed conversation —
+is FreeScout’s, which is the entire reason for feeding it real
+email.</p>
+<p>Three behaviours worth knowing before reading its logs:</p>
+<ul>
+<li><strong>A retry is answered 200 and writes nothing.</strong> The
+bridge is idempotent on Postmark’s message id, falling back to a hash of
+the message. The Maildir filename is derived from that hash, so even a
+crash between the write and the database update cannot produce a second
+copy.</li>
+<li><strong>Status codes are instructions to Postmark.</strong>
+<code>403</code> stops retries and is used only for a recipient the
+bridge does not serve. Everything an administrator could fix — a missing
+raw email, a full disk, an unwritable mailbox — is a <code>5xx</code>,
+so the retry lands once it is fixed. A <code>4xx</code> there would
+discard the message before anybody noticed.</li>
+<li><strong>It is deliberately not rate limited.</strong> Postmark’s
+retry schedule is what protects mail from a transient failure, and a
+limiter is exactly the thing that would turn a busy hour into silently
+lost support requests. Its protections are the size cap, the
+credentials, and the recipient allow-list.</li>
+</ul>
+<hr />
+<h2 id="tell-freescout-how-to-send">7. Tell FreeScout how to send</h2>
+<p>Outbound is configured <strong>inside FreeScout</strong>, not in any
+<code>.env</code> file, so rotating the token later never needs a
+container restart.</p>
+<ol type="1">
+<li><p>Go to <code>https://helpdesk.community-access.org/login</code>
+and sign in as the admin account
+(<code>jeff@jeffbishop.com</code>).</p></li>
+<li><p>Click <strong>Manage</strong> in the top menu, then
+<strong>Settings</strong>, then <strong>Mail</strong>.</p>
+<p>Depending on the FreeScout version this may instead be
+<strong>Mailboxes</strong>, then the support mailbox, then its mail
+settings. You are looking for outgoing / SMTP settings.</p></li>
+<li><p>Go back to the Postmark tab. In the left sidebar click
+<strong>API Tokens</strong> (sometimes under “Credentials” or the
+server’s “Settings”).</p></li>
+<li><p>Copy the <strong>Server API Token</strong> — a long string of
+letters and numbers.</p></li>
+<li><p>Back in FreeScout, fill in:</p>
+<pre><code>Driver:     SMTP
+Host:       smtp.postmarkapp.com
+Port:       587
+Encryption: TLS            (sometimes labelled STARTTLS)
+Username:   &lt;the Server API Token&gt;
+Password:   &lt;the same Server API Token again&gt;
+From:       support@community-access.org</code></pre>
+<p>Both the username and password fields get the identical string. That
+is how Postmark’s SMTP works; it is not a mistake.</p></li>
+<li><p>Click <strong>Save</strong>.</p></li>
+</ol>
+<hr />
+<h2 id="the-test-sequence">8. The test sequence</h2>
+<p>Do these in order and do not skip ahead. Each proves a single thing,
+so a failure tells you immediately which piece is broken.</p>
+<ol type="1">
+<li><p><strong>DNS.</strong> On the Postmark domain page from section 3,
+confirm <strong>DKIM: Verified</strong> and <strong>Return-Path:
+Verified</strong>. If either says Pending, wait and refresh before
+continuing.</p></li>
+<li><p><strong>Outbound.</strong> In FreeScout, send a test email to
+your own address. There is usually a “send test email” option in the
+mail settings you were just in; otherwise create a conversation
+addressed to yourself. Open the email and view its full headers — most
+clients call this “show original” or “view source”. Confirm:</p>
+<ul>
+<li>a <code>DKIM-Signature:</code> line mentioning
+<code>community-access.org</code></li>
+<li>a <code>Return-Path:</code> line mentioning
+<code>pm.mtasv.net</code></li>
+</ul>
+<p>Both present means outbound works.</p></li>
+<li><p><strong>Inbound.</strong> From a completely different account (a
+personal Gmail is fine), send a plain email to
+<code>support@community-access.org</code>. Wait a minute, then check
+both:</p>
+<ul>
+<li>In Postmark, click <strong>Activity</strong>; the message should be
+listed as received.</li>
+<li>In FreeScout, refresh the conversations list; a new conversation
+should have appeared with that subject and body, <strong>from the real
+sender</strong>, not from Namecheap or Postmark.</li>
+</ul>
+<p>Both present means inbound works end to end.</p></li>
+<li><p><strong>Round trip.</strong> Open that conversation in FreeScout
+and click <strong>Reply</strong>. Send anything. Check the account you
+sent from in step 3 — the reply should arrive there, and it should
+appear in the <strong>same email thread</strong> as the original, not as
+an unrelated new message.</p></li>
+<li><p><strong>Duplicates.</strong> Send the exact same email again from
+step 3: same subject, same body, same account. It should
+<strong>not</strong> create a second conversation or a duplicate
+message.</p></li>
+</ol>
+<p>If all five pass, Postmark is working for the help desk.</p>
+<p>If any one fails, stop, and re-read the section above that matches
+what failed. Do not move on and do not guess at a workaround.</p>
+<hr />
+<h2 id="publish-the-address-and-what-that-unblocks">9. Publish the
+address, and what that unblocks</h2>
+<p>Once all five checks pass:</p>
+<ol type="1">
+<li><p><code>support@community-access.org</code> is safe to tell people
+about. It is already referenced in the QUILL apps’ <strong>Help &gt;
+About</strong> screens and in the documentation, so there is nothing to
+change in any app.</p></li>
+<li><p><strong>QUILL’s Report a Bug can move off GitHub.</strong> Every
+QUILL app routes bug reports through the submission server on
+<code>lp.csedesigns.com</code>, which files a GitHub issue. Because the
+apps post to a URL rather than calling GitHub themselves, changing where
+a report lands is a change on the server only — no release, no version
+skew, no installed copy left behind still filing into the wrong
+place.</p></li>
+<li><p><strong>The bundled GitHub token can then be retired.</strong>
+Every QUILL installer has an issues-only token baked in as the fallback
+from before the server existed. Removing it is gated on a released build
+having been <em>observed</em> working through the server path — until
+then it is the only safety net, and removing it early removes exactly
+that. The steps are in <code>magic.md</code> item 7.</p></li>
+<li><p><strong>GLOW’s feedback form can start filing tickets.</strong>
+That path does not use Postmark at all; see section 39. It needs only
+three environment variables.</p></li>
+</ol>
+<h3 id="one-thing-not-to-do-before-this-is-finished">One thing not to do
+before this is finished</h3>
+<p>Do <strong>not</strong> use FreeScout’s “Forgot password” link to
+test account recovery until the walkthrough above is complete. It sends
+an email, and until Postmark is carrying mail that email has nowhere to
+go.</p>
+<p>If you are locked out of the admin account before then, the only way
+back in is from the terminal:</p>
+<div class="sourceCode" id="cb14"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ssh</span> jeffbis@lp.csedesigns.com</span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> ~/helpdesk</span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a><span class="ex">docker</span> compose exec <span class="at">-u</span> nginx app sh <span class="at">-c</span> <span class="dt">\</span></span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>  <span class="st">&#39;cd /www/html &amp;&amp; php artisan freescout:create-user --role=admin \</span></span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a><span class="st">     --firstName=X --lastName=Y --email=x@example.org --password=...&#39;</span></span></code></pre></div>
+<p>Replace <code>X</code>, <code>Y</code>, <code>x@example.org</code>
+and <code>...</code> with real values first. It creates a second admin
+account with whatever you put there.</p>
+<h3
+id="the-freescout-trap-worth-knowing-before-you-touch-the-container">The
+FreeScout trap worth knowing before you touch the container</h3>
+<p>FreeScout encrypts its stored mailbox passwords with
+<code>APP_KEY</code>. The container image rewrites its own
+<code>.env</code> on <strong>recreate</strong> — which
+<code>docker compose up -d</code> performs after any compose change, and
+which every image update performs — and on the first-install path it
+writes <code>APP_KEY</code> <strong>empty</strong>.</p>
+<p>An emptied <code>APP_KEY</code> makes the saved Postmark credentials
+undecryptable, so <strong>inbound mail stops silently</strong>, at a
+moment that looks unrelated to whatever was updated. In a help desk that
+is mail nobody knows they are not receiving.</p>
+<p>The deployment already defends against this:
+<code>docker-compose.yml</code> bind-mounts <code>./freescout.env</code>
+over <code>/www/html/.env</code>, so the host copy is authoritative and
+the image’s init script takes its <em>update</em> path instead, touching
+only the handful of keys it manages.</p>
+<ul>
+<li>Do not undo that bind mount.</li>
+<li>Do not “tidy up” a <code>freescout.env</code> you cannot read. It is
+owned by uid 80 at mode 600 deliberately. Read it with
+<code>docker exec helpdesk-app cat /www/html/.env</code>.</li>
+<li>The same image also writes a database driver name Laravel 5.5 does
+not define, whose only symptom is an endless redirect to
+<code>install.php</code>. The repair is
+<code>~/helpdesk/fix-db-driver.sh</code>.</li>
+</ul>
+<p>Both are documented in full in
+<code>~/feedback-hub/deploy/helpdesk/README.md</code>.</p>
+<hr />
+<h1 id="part-two-the-help-desk-platform">Part two — the help desk
+platform</h1>
+<h2 id="architecture-one-instance-many-mailboxes">10. Architecture: one
+instance, many mailboxes</h2>
+<p>The recommended architecture, and the one this document assumes:</p>
+<blockquote>
+<p><strong>One FreeScout instance, one canonical application URL, many
+mailboxes, many support email addresses, several public support domains,
+one knowledge and workflow strategy, and one GitHub integration
+layer.</strong></p>
+</blockquote>
+<p>FreeScout is treated as a <strong>shared service platform</strong>,
+not merely an email inbox. The objectives:</p>
+<ul>
+<li>One administrative and support environment.</li>
+<li>Each program gets its own public-facing support identity.</li>
+<li>One FreeScout instance and one set of module licences.</li>
+<li>Different teams and volunteers work only in the areas they
+need.</li>
+<li>Consistent intake, triage, escalation, reporting and knowledge
+management.</li>
+<li>Technical issues integrate with GitHub without forcing customers to
+use it.</li>
+<li>Accessibility is a first-class design and acceptance
+requirement.</li>
+<li>New Community Access and BITS initiatives can be added without
+rearchitecting.</li>
+</ul>
+<hr />
+<h2 id="the-canonical-url">11. The canonical URL</h2>
+<p>Use <strong>one</strong> canonical application URL and configure it
+as FreeScout’s <code>APP_URL</code>.</p>
+<p>Today that is:</p>
+<pre><code>https://helpdesk.community-access.org</code></pre>
+<p>The plan originally proposed <code>help.community-access.org</code>;
+see decision 1 in section 0.2 for the trade-off. Whichever you choose,
+choose once.</p>
+<p><strong>Do not run the same installation as independent applications
+under several hostnames.</strong> One canonical hostname is used for
+authentication, agent access, portal links, API calls, and
+application-generated URLs. A single canonical URL avoids problems with
+login sessions and cookies, CSRF protections, portal authentication,
+generated ticket links, API integrations, webhooks, embedded images and
+attachments, browser password managers, certificates, and any future
+SSO.</p>
+<p>Additional branded support domains <strong>redirect</strong> users to
+the appropriate portal inside the canonical installation. FreeScout’s
+End-User Portal gives each mailbox its own portal address; the branded
+domains point at those.</p>
+<table>
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+</colgroup>
+<thead>
+<tr>
+<th>Public support identity</th>
+<th>Purpose</th>
+<th>Destination</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>helpdesk.community-access.org</code></td>
+<td>Canonical help desk</td>
+<td>FreeScout front door</td>
+</tr>
+<tr>
+<td><code>support.quillforall.org</code></td>
+<td>QUILL Support</td>
+<td>QUILL portal or knowledge base</td>
+</tr>
+<tr>
+<td><code>support.glow.bits-acb.org</code></td>
+<td>GLOW Support</td>
+<td>GLOW portal or knowledge base</td>
+</tr>
+<tr>
+<td><code>support.bits-acb.org</code></td>
+<td>BITS Support</td>
+<td>BITS portal or knowledge base</td>
+</tr>
+<tr>
+<td><code>gitgoing.bits-acb.org</code></td>
+<td>Git Going with GitHub</td>
+<td>Git Going portal or knowledge base</td>
+</tr>
+</tbody>
+</table>
+<p>These aliases can change later without moving FreeScout. Note that
+<code>support.glow.bits-acb.org</code> is a <strong>web</strong>
+redirect only — see decision 3 in section 0.2 for why it should not
+carry mail.</p>
+<hr />
+<h2 id="mailboxes">12. Mailboxes</h2>
+<p>Create separate mailboxes for distinct support programs, but
+<strong>do not create a separate mailbox for every QUILL
+application.</strong></p>
+<p>Recommended starting mailboxes, in priority order:</p>
+<ol type="1">
+<li><strong>QUILL Support</strong></li>
+<li><strong>GLOW Support</strong></li>
+<li><strong>Community Access</strong></li>
+<li><strong>Git Going with GitHub</strong></li>
+<li><strong>BITS Support</strong></li>
+</ol>
+<p>Future mailboxes can be added without changing the architecture —
+possible areas include Training Support, Accessibility Testing,
+Community Access Projects, Event Support, Partner Support, Internal
+Operations.</p>
+<h3 id="quill-support">12.1 QUILL Support</h3>
+<p>Recommended public address:
+<strong><code>support@quillforall.org</code></strong></p>
+<p>Use <strong>one QUILL mailbox for the entire product family.</strong>
+Do not create separate mailboxes for QUILL Editor, Lite, Radio, Cast,
+Weather and future products unless different organisations or entirely
+separate support teams eventually own them.</p>
+<p>Use a required <strong>Product</strong> custom field instead.
+Reasons:</p>
+<ul>
+<li>Customers have one obvious support destination.</li>
+<li>Agents have one QUILL queue.</li>
+<li>Product reporting can still be separated.</li>
+<li>Workflows can route by product.</li>
+<li>Tags can generate product-specific folders.</li>
+<li>GitHub escalation can choose a repository based on product.</li>
+<li><strong>FreeScout custom-field values are not preserved when a
+conversation is moved between mailboxes</strong>, so avoiding
+unnecessary mailbox movement is directly valuable.</li>
+</ul>
+<p>Suggested <strong>Product</strong> values — update as the family
+evolves:</p>
+<p>QUILL Editor · QUILL Lite · QUILL Radio · QUILL Cast · QUILL Weather
+· QUILL Book / Library · QUILL Bookmarks · QUILL Sync · QUILL Website ·
+Other QUILL Product</p>
+<h3 id="glow-support">12.2 GLOW Support</h3>
+<p>Recommended public address:
+<strong><code>glow@community-access.org</code></strong></p>
+<p>The plan’s first choice was <code>support@glow.bits-acb.org</code>;
+decision 3 in section 0.2 explains why
+<code>glow@community-access.org</code> is the safer one. Keep
+<code>support.glow.bits-acb.org</code> as a web redirect to the GLOW
+portal.</p>
+<p>Purpose: GLOW Audit, Fix, Convert, Templates, Hub; login and
+authentication problems; accessibility testing questions; interpreting
+results; feature requests; bug reports.</p>
+<p>This is also where GLOW’s own feedback-form tickets land — see
+section 39.</p>
+<h3 id="community-access">12.3 Community Access</h3>
+<p>Recommended public address:
+<strong><code>help@community-access.org</code></strong></p>
+<p>Purpose: general questions; anything that does not clearly belong to
+another program; Community Access site or account questions; requests
+involving several projects; partner or organisational questions; and a
+safe front door for somebody who does not know where to begin.</p>
+<p>Avoid making this a dumping ground. Workflows should route or retag
+requests once their destination is clear.</p>
+<p><em>(<code>support@community-access.org</code>, the address set up in
+part one, can either stay as the general support address or become an
+alias feeding this mailbox. Decide when you create it; both are fine,
+but pick one and put the other in the allow-list as an alias rather than
+a second mailbox.)</em></p>
+<h3 id="git-going-with-github">12.4 Git Going with GitHub</h3>
+<p>Recommended public address:
+<strong><code>gitgoing@bits-acb.org</code></strong></p>
+<p>Purpose: Git Going training questions; Git installation and
+configuration; GitHub account questions; repositories, pull requests,
+issues, branches; GitHub Desktop; GitHub CLI; VS Code Git and GitHub
+workflows; screen-reader specific Git and GitHub questions; course and
+workshop exercises.</p>
+<p>This is a <strong>support and education mailbox, not a substitute for
+GitHub itself.</strong> When a training issue exposes a genuine defect
+in training materials or software, escalate it using part three.</p>
+<p>Note: this address is on <code>bits-acb.org</code>, which is
+Microsoft 365. See decision 2 in section 0.2 and section 13.</p>
+<h3 id="bits-support">12.5 BITS Support</h3>
+<p>Recommended public address:
+<strong><code>support@bits-acb.org</code></strong></p>
+<p>Purpose: BITS membership questions; programs and services; training;
+website support; BITS Connect; event and convention technology;
+program-specific technology support; general BITS technical
+assistance.</p>
+<p>Where a question is organisational rather than technical, FreeScout
+is still useful as the structured point of intake.</p>
+<p>Also on Microsoft 365; see section 13.</p>
+<hr />
+<h2 id="email-architecture-domain-by-domain">13. Email architecture,
+domain by domain</h2>
+<p>Each mailbox needs a real support address, and FreeScout supports a
+separate sender address per mailbox. What differs between them is
+<strong>how mail gets in</strong>, and that depends entirely on who runs
+the domain’s MX. Checked 11 September 2026:</p>
+<table>
+<colgroup>
+<col style="width: 25%" />
+<col style="width: 25%" />
+<col style="width: 25%" />
+<col style="width: 25%" />
+</colgroup>
+<thead>
+<tr>
+<th>Address</th>
+<th>Domain’s mail</th>
+<th>Inbound route</th>
+<th>Sending domain to verify in Postmark</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>support@quillforall.org</code></td>
+<td>Namecheap forwarding</td>
+<td>Forward to Postmark, mail bridge</td>
+<td><code>quillforall.org</code></td>
+</tr>
+<tr>
+<td><code>glow@community-access.org</code></td>
+<td>Namecheap forwarding</td>
+<td>Forward to Postmark, mail bridge</td>
+<td><code>community-access.org</code> (already done)</td>
+</tr>
+<tr>
+<td><code>help@community-access.org</code></td>
+<td>Namecheap forwarding</td>
+<td>Forward to Postmark, mail bridge</td>
+<td><code>community-access.org</code> (already done)</td>
+</tr>
+<tr>
+<td><code>support@community-access.org</code></td>
+<td>Namecheap forwarding</td>
+<td>Already working (part one)</td>
+<td><code>community-access.org</code> (done)</td>
+</tr>
+<tr>
+<td><code>support@bits-acb.org</code></td>
+<td><strong>Microsoft 365</strong></td>
+<td><strong>FreeScout IMAP/OAuth direct</strong></td>
+<td><code>bits-acb.org</code></td>
+</tr>
+<tr>
+<td><code>gitgoing@bits-acb.org</code></td>
+<td><strong>Microsoft 365</strong></td>
+<td><strong>FreeScout IMAP/OAuth direct</strong></td>
+<td><code>bits-acb.org</code></td>
+</tr>
+</tbody>
+</table>
+<h3 id="adding-a-registrar-forwarded-address">13.1 Adding a
+registrar-forwarded address</h3>
+<p>For <code>quillforall.org</code>, <code>community-access.org</code>
+and any other domain on
+<code>eforward*.registrar-servers.com</code>:</p>
+<ol type="1">
+<li><p>In Postmark, <strong>Sending &gt; Domains &gt; Add
+Domain</strong> for that domain, and add its DKIM TXT and Return-Path
+CNAME at Namecheap, exactly as section 4. Each sending domain needs its
+own pair.</p></li>
+<li><p>Check for an existing SPF record on that domain before touching
+anything. <code>quillforall.org</code> has one:
+<code>v=spf1 include:spf.efwd.registrar-servers.com ~all</code>.
+<strong>Merge, never add a second.</strong></p></li>
+<li><p>In Namecheap’s <strong>Email Forwarding</strong> for that domain,
+forward the alias to the Postmark server’s inbound address — the same
+<code>@inbound.postmarkapp.com</code> address from section 5. One
+Postmark server can receive for all of them.</p></li>
+<li><p><strong>Add the address to the mail bridge’s allow-list.</strong>
+This is the step people forget:</p>
+<div class="sourceCode" id="cb16"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ssh</span> jeffbis@lp.csedesigns.com</span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> ~/feedback-hub/deploy/helpdesk</span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a><span class="co"># edit .env, extend MAILBRIDGE_RECIPIENTS to a comma-separated list:</span></span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a><span class="co">#   MAILBRIDGE_RECIPIENTS=support@community-access.org,support@quillforall.org,...</span></span>
+<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a><span class="ex">docker</span> compose up <span class="at">-d</span> mailbridge</span></code></pre></div>
+<p>An address not on that list gets a <strong>403</strong>, and Postmark
+treats 403 as “stop retrying”. The message is gone, deliberately and
+permanently.</p></li>
+<li><p>In FreeScout, create the mailbox with that address as its sender,
+and point its fetching at the same Dovecot IMAP settings
+<code>make-credentials.sh</code> printed.</p></li>
+<li><p>Send one real message to the new address and confirm it becomes a
+conversation, before telling anybody it exists.</p></li>
+</ol>
+<h3 id="adding-a-microsoft-365-address">13.2 Adding a Microsoft 365
+address</h3>
+<p>For <code>support@bits-acb.org</code> and
+<code>gitgoing@bits-acb.org</code>:</p>
+<p>FreeScout retrieves directly. No Postmark inbound, no mail bridge, no
+forwarding rule.</p>
+<ol type="1">
+<li>In Microsoft 365, confirm the mailbox or shared mailbox exists.</li>
+<li>In FreeScout, create the mailbox and configure
+<strong>incoming</strong> mail as IMAP or OAuth against Microsoft 365.
+OAuth is preferable where the tenant allows it; basic-auth IMAP is being
+retired by Microsoft.</li>
+<li>Configure <strong>outgoing</strong> mail for that mailbox. Two
+options:
+<ul>
+<li>Send through Postmark, which needs <code>bits-acb.org</code>
+verified as a sending domain <strong>and</strong>
+<code>include:spf.mtasv.net</code> merged into its existing SPF
+(<code>v=spf1 include:spf.protection.outlook.com include:_spf.wpcloud.com -all</code>
+— note the <code>-all</code>, which is strict, so an unmerged Postmark
+send will be rejected outright rather than merely flagged).</li>
+<li>Or send through Microsoft 365’s own SMTP, which needs no DNS change
+at all. For a mailbox whose mail already lives in M365, this is the
+simpler answer.</li>
+</ul></li>
+<li>Nothing goes in the mail bridge allow-list for these.</li>
+</ol>
+<h3 id="aliases">13.3 Aliases</h3>
+<p>Aliases may be added later, such as
+<code>help@quillforall.org</code>, <code>bugs@quillforall.org</code>,
+<code>accessibility@quillforall.org</code>. <strong>An alias should feed
+an existing mailbox, not become a new FreeScout mailbox.</strong> Add
+each alias to the bridge allow-list the same way.</p>
+<h3 id="the-plans-original-advice-on-inbound-resolved">13.4 The plan’s
+original advice on inbound, resolved</h3>
+<p>The source plan said: <em>“Do not assume that an outbound email
+provider such as Postmark is also an IMAP mailbox host. If you already
+have a reliable FreeScout/Postmark inbound bridge, document it
+separately before changing it.”</em></p>
+<p>That bridge exists, is deployed, and is proven. Sections 1 and 6 are
+that documentation. The plan’s fallback — obtain a separate IMAP mailbox
+host for every address — is not needed for the registrar-forwarded
+domains. It <em>is</em> the right answer for <code>bits-acb.org</code>,
+where a real IMAP host already exists in the form of Microsoft 365.</p>
+<hr />
+<h2 id="modules-purchase-and-install">14. Modules: purchase and
+install</h2>
+<h3 id="purchase-in-one-transaction">14.1 Purchase in one
+transaction</h3>
+<p>The FreeScout module catalogue uses a shared <strong>Add to cart /
+Checkout</strong> flow. Go to <a href="https://freescout.net/modules/"
+class="uri">https://freescout.net/modules/</a> and add all the paid
+modules you want to the cart <strong>before checking out</strong>.
+Payments are one-time lifetime licences for one FreeScout instance.
+Module FAQ: <a href="https://freescout.net/modules-faq/"
+class="uri">https://freescout.net/modules-faq/</a>.</p>
+<p>Before submitting payment:</p>
+<ul>
+<li>Confirm every desired module is in the cart.</li>
+<li>Confirm the order is for the one production instance.</li>
+<li>Save the purchase confirmation.</li>
+<li>Save all licence keys in the organisation’s password manager.</li>
+<li>Record who owns the purchasing account, the purchase date, and the
+canonical instance name.</li>
+</ul>
+<h3 id="recommended-set">14.2 Recommended set</h3>
+<p><strong>Core — install immediately</strong></p>
+<p>Tags · Saved Replies · Workflows · Ticket Number · API &amp; Webhooks
+· Custom Fields · End-User Portal · Custom Folders · Reports · Knowledge
+Base · Mentions · Two-Factor Authentication · Customization &amp;
+Rebranding · Widgets White-Labeling · Spam Filter · Satisfaction
+Ratings</p>
+<p><strong>Strong operational additions</strong></p>
+<p>Teams · Global Mailbox · Checklists · Export Conversations · Office
+Hours · Send &amp; Close · Sent Folder · Extended Attachments</p>
+<p><strong>Free</strong></p>
+<p>AI Integration</p>
+<p><strong>Consider later</strong></p>
+<p>Time Tracking · Mobile Notifications · OAuth &amp; Social Login ·
+SAML SSO · Slack Integration · Ticket Translator · Dark Mode · Out of
+Office · Kanban · Keyboard Shortcuts</p>
+<p>Do not buy modules merely because they exist. Buy the operational set
+and add others when a defined use case appears.</p>
+<h3 id="installation-order">14.3 Installation order</h3>
+<p>Install in dependency order so a problem is easy to attribute:</p>
+<ol type="1">
+<li>Tags</li>
+<li>Custom Fields</li>
+<li>Saved Replies</li>
+<li>Ticket Number</li>
+<li>Workflows</li>
+<li>API &amp; Webhooks</li>
+<li>Custom Folders</li>
+<li>End-User Portal</li>
+<li>Knowledge Base</li>
+<li>Reports</li>
+<li>Mentions</li>
+<li>Teams</li>
+<li>Global Mailbox</li>
+<li>Two-Factor Authentication</li>
+<li>Customization &amp; Rebranding</li>
+<li>Widgets White-Labeling</li>
+<li>Spam Filter</li>
+<li>Satisfaction Ratings</li>
+<li>Checklists</li>
+<li>Export Conversations</li>
+<li>Office Hours</li>
+<li>Send &amp; Close</li>
+<li>Sent Folder</li>
+<li>Extended Attachments</li>
+<li>AI Integration</li>
+</ol>
+<p><strong>After each installation:</strong> confirm the module
+activates; confirm FreeScout still loads; test with keyboard only; test
+one basic module function; record the licence key and version.</p>
+<p>Do not install twenty modules and only then discover which one caused
+a problem.</p>
+<hr />
+<h2 id="server-baseline">15. Server baseline</h2>
+<p>Before extensive configuration, confirm:</p>
+<ul>
+<li>FreeScout is on the current supported stable version.</li>
+<li>PHP requirements are met.</li>
+<li>Database health.</li>
+<li>Application storage permissions.</li>
+<li>HTTPS.</li>
+<li>Outbound network access to FreeScout’s module service.</li>
+<li>Backup and restore capability.</li>
+<li><strong>Cron runs every minute.</strong> It is what fetches mail and
+sends replies.</li>
+<li>Background jobs are operating.</li>
+<li>Email retrieval works.</li>
+<li>Email sending works.</li>
+<li>A test ticket can complete a full round trip.</li>
+</ul>
+<p>FreeScout’s installation guide requires a scheduler cron similar
+to:</p>
+<pre class="text"><code>* * * * * php /path/to/freescout/artisan schedule:run</code></pre>
+<p>On this deployment the image’s own cron does this and is already
+on.</p>
+<hr />
+<h2 id="users-teams-and-permissions">16. Users, teams and
+permissions</h2>
+<p>Create access intentionally. Suggested functional groups:</p>
+<p>System Administrators · Help Desk Administrators · QUILL Support ·
+GLOW Support · BITS Support · Git Going Support · Developer Liaisons ·
+Knowledge Base Editors</p>
+<p>Use FreeScout mailbox access and Teams to implement the
+separation.</p>
+<p><strong>Least privilege.</strong> An agent should see only the
+mailboxes their role needs. A QUILL volunteer does not automatically
+need BITS organisational tickets. A Git Going instructor does not need
+private BITS membership correspondence. A developer does not need
+administrator permissions merely to review technical escalations.</p>
+<p><strong>Administrator accounts.</strong> Keep the number small.
+Require Two-Factor Authentication for administrators, program leads,
+anyone with API configuration access, and anyone with broad
+multi-mailbox permissions. Prefer requiring it for every agent if
+operationally practical.</p>
+<p><strong>No shared accounts.</strong> Each person gets their own
+login, their own 2FA, their own activity trail, and only the permissions
+they require.</p>
+<hr />
+<h2 id="ticket-numbering">17. Ticket numbering</h2>
+<p>Enable <strong>Ticket Number</strong> and use a consistent
+human-readable identifier in outbound subjects:</p>
+<pre><code>[CA-1842] QUILL Radio stops during playback</code></pre>
+<p>Use one common prefix — <code>CA</code>, for Community Access —
+across the unified instance. Do not make prefixes so product-specific
+that moving or reclassifying an issue makes the number misleading.</p>
+<hr />
+<h2 id="tagging-strategy">18. Tagging strategy</h2>
+<p>FreeScout tags are <strong>global across mailboxes</strong>, so adopt
+a controlled naming convention and stick to it.</p>
+<p><strong>Service</strong> — <code>svc:quill</code> ·
+<code>svc:glow</code> · <code>svc:community</code> ·
+<code>svc:gitgoing</code> · <code>svc:bits</code></p>
+<p><strong>Issue type</strong> — <code>type:bug</code> ·
+<code>type:a11y</code> · <code>type:howto</code> ·
+<code>type:feature</code> · <code>type:account</code> ·
+<code>type:content</code> · <code>type:training</code> ·
+<code>type:security</code></p>
+<p><strong>State</strong> — <code>state:triage</code> ·
+<code>state:waiting</code> · <code>state:github</code> ·
+<code>state:dev</code> · <code>state:kb</code> ·
+<code>state:blocked</code> · <code>state:overdue</code></p>
+<p><strong>Impact</strong> — <code>impact:blocker</code> ·
+<code>impact:high</code> · <code>impact:normal</code> ·
+<code>impact:low</code></p>
+<p><strong>Source</strong> — <code>src:email</code> ·
+<code>src:portal</code> · <code>src:web</code></p>
+<p><strong>QUILL product</strong> — <code>quill:editor</code> ·
+<code>quill:lite</code> · <code>quill:radio</code> ·
+<code>quill:cast</code> · <code>quill:weather</code> ·
+<code>quill:books</code> · <code>quill:bookmarks</code></p>
+<p>Do not create uncontrolled synonyms — bug, bugs, defect, problem,
+software bug. Pick one taxonomy and use it consistently.</p>
+<hr />
+<h2 id="custom-fields">19. Custom fields</h2>
+<p>Capture structured information useful for triage, reporting,
+automation and GitHub escalation. <strong>Avoid requiring too many
+fields; every required field adds friction.</strong></p>
+<h3 id="common-fields">19.1 Common fields</h3>
+<p><strong>Issue Type</strong> (dropdown): Question · Bug ·
+Accessibility · Feature Request · Documentation · Account · Training ·
+Security / Privacy · Other</p>
+<p><strong>Impact</strong> (dropdown): Blocker · High · Normal · Low</p>
+<p>Define impact by <strong>effect</strong>, not by who submitted the
+ticket:</p>
+<ul>
+<li><strong>Blocker</strong> — user cannot complete a critical task and
+no reasonable workaround exists.</li>
+<li><strong>High</strong> — major function unavailable or substantially
+impaired.</li>
+<li><strong>Normal</strong> — meaningful problem with a workaround, or
+limited impact.</li>
+<li><strong>Low</strong> — cosmetic, minor inconvenience, suggestion,
+non-urgent improvement.</li>
+</ul>
+<p>An accessibility issue should be <strong>evaluated</strong> for
+impact, not automatically assigned the highest severity.</p>
+<p><strong>Operating System</strong>: Windows 11 · Windows 10 · macOS ·
+iOS · Android · Linux · Web / Browser · Other · Unknown</p>
+<p><strong>Assistive Technology</strong> (multiselect): JAWS · NVDA ·
+Narrator · VoiceOver · TalkBack · ZoomText · Magnification · Voice
+Control · Keyboard Only · None · Other · Unknown</p>
+<p><strong>Version</strong> (single line)</p>
+<p><strong>Reproducible</strong>: Yes · No · Sometimes · Unknown</p>
+<h3 id="quill-fields">19.2 QUILL fields</h3>
+<p><strong>Product</strong> (required dropdown): QUILL Editor · QUILL
+Lite · QUILL Radio · QUILL Cast · QUILL Weather · QUILL Book / Library ·
+QUILL Bookmarks · QUILL Sync · QUILL Website · Other</p>
+<p><strong>Application Version</strong> (single line)</p>
+<p><strong>Installation Type</strong> (optional): Installed · Portable ·
+Unknown</p>
+<p><strong>GitHub Repository</strong> · <strong>GitHub Issue
+Number</strong> · <strong>GitHub Issue URL</strong> — internal fields,
+written by the GitHub bridge.</p>
+<p><strong>Developer Status</strong> (internal dropdown): Not Escalated
+· Ready for GitHub · GitHub Open · Developer Reviewing · Fix in Progress
+· Fixed Pending Release · Released · Closed / Not Planned</p>
+<h3 id="glow-fields">19.3 GLOW fields</h3>
+<p><strong>GLOW Area</strong>: Audit · Fix · Convert · Templates · Hub ·
+Authentication · Reporting · Website · Other</p>
+<p><strong>Browser</strong>: Edge · Chrome · Firefox · Safari ·
+Other</p>
+<p><strong>Content Type</strong>: Web · PDF · Word · PowerPoint ·
+Spreadsheet · Other</p>
+<p><strong>URL or Resource</strong> (optional single line). Do not
+encourage customers to submit confidential document URLs without
+appropriate privacy instructions.</p>
+<p><em>GLOW’s feedback form already supplies most of this in the ticket
+body — see section 39 — so these fields are for tickets that arrive by
+email.</em></p>
+<h3 id="git-going-fields">19.4 Git Going fields</h3>
+<p><strong>Topic</strong>: Git Basics · Git Configuration · GitHub
+Account · Repository · Clone · Commit · Branch · Merge · Pull Request ·
+Issues · GitHub Desktop · GitHub CLI · VS Code · Authentication ·
+Accessibility · Training Exercise · Other</p>
+<p><strong>Course / Session</strong> (optional) · <strong>Repository
+URL</strong> (optional)</p>
+<p><strong>Git Client</strong>: Command Line · GitHub Desktop · VS Code
+· Other · Unknown</p>
+<h3 id="bits-fields">19.5 BITS fields</h3>
+<p><strong>BITS Area</strong>: Membership · Training · Website · BITS
+Connect · Technology Support · Events · RIM Support · Education ·
+Other</p>
+<p><strong>Request Type</strong>: Question · Technical Support ·
+Membership · Account · Training · Accessibility · Feedback · Other</p>
+<p><strong>Avoid collecting disability or medical information</strong>
+unless it is actually necessary to resolve the request.</p>
+<hr />
+<h2 id="custom-folders">20. Custom folders</h2>
+<p>The Custom Folders module works well with tags. FreeScout limits
+folder names to <strong>15 characters</strong> and does not support
+nesting.</p>
+<p>Recommended: <code>Overdue</code> · <code>Waiting</code> ·
+<code>GitHub</code> · <code>A11y</code> · <code>Security</code> ·
+<code>Blockers</code> · <code>Needs Triage</code> ·
+<code>KB Candidate</code></p>
+<p>Keep names short. Folders should represent <strong>actionable
+queues</strong>, not every possible category.</p>
+<hr />
+<h2 id="workflows">21. Workflows</h2>
+<p>Workflows are configured <strong>per mailbox</strong>. Build one
+master worksheet and reproduce the applicable workflows in each mailbox.
+Documentation: <a href="https://freescout.net/module/workflows/"
+class="uri">https://freescout.net/module/workflows/</a></p>
+<p>Workflows can change status, assign users, add notes, add and remove
+tags, set custom fields, move conversations, and trigger webhooks when
+API &amp; Webhooks is installed.</p>
+<p><strong>New ticket classification.</strong> Add the applicable
+<code>svc:</code> tag; add <code>state:triage</code>; leave unassigned
+unless a reliable routing rule applies. QUILL mailbox →
+<code>svc:quill</code>.</p>
+<p><strong>Product routing (QUILL).</strong> If Product = QUILL Radio,
+add <code>quill:radio</code> and optionally assign to the Radio support
+team or lead. Repeat for major products. Do not auto-assign to a single
+individual unless there is backup coverage.</p>
+<p><strong>Accessibility intake.</strong> If Issue Type = Accessibility,
+add <code>type:a11y</code> and show it in the <code>A11y</code> folder;
+notify the accessibility lead if appropriate. <strong>Do not
+automatically mark all accessibility issues as blockers</strong> — use
+Impact.</p>
+<p><strong>Security / privacy.</strong> If Issue Type = Security /
+Privacy, add <code>type:security</code>, notify designated
+administrators, <strong>do not automatically send into public
+GitHub</strong>, keep sensitive data out of public repositories, and
+restrict mailbox access where practical. For serious vulnerability
+reporting, consider a separate confidential procedure rather than normal
+support email.</p>
+<p><strong>First-response aging.</strong> If no staff response after one
+business day, add <code>state:overdue</code>, place in
+<code>Overdue</code>, notify the assignee or team lead. Escalate after
+another business day. Treat these as operational targets, not
+contractual SLAs, unless the organisation intentionally establishes
+one.</p>
+<p><strong>Waiting on customer.</strong> Add <code>state:waiting</code>
+and set status Pending. After 3–5 business days send a polite reminder;
+after 7–10 send a closing notice and close. If the customer replies
+later, let the ticket reopen — the mail bridge and FreeScout already
+handle reactivation.</p>
+<p><strong>Knowledge-base candidate.</strong> When an agent spots a
+repeated question, add <code>state:kb</code> so it appears in
+<code>KB Candidate</code>. Review recurring themes monthly. This turns
+support volume into documentation improvement.</p>
+<hr />
+<h2 id="saved-replies">22. Saved replies</h2>
+<p>Create shared saved replies for consistent, accessible
+communication:</p>
+<p>Welcome / acknowledgment · Need more information · Need application
+version · Need operating-system version · Need screen reader / AT
+information · Request reproduction steps · Request log file ·
+Accessibility issue acknowledgment · Known issue response · Feature
+request acknowledgment · GitHub escalation notice · Fix available · Fix
+included in release · Waiting for customer reminder · Closing due to no
+response · Resolution confirmation · Knowledge-base link response ·
+Security/privacy redirection</p>
+<p><strong>Avoid robotic wording.</strong> Saved replies are a starting
+point, not a replacement for responding like a human.</p>
+<hr />
+<h2 id="end-user-portals">23. End-user portals</h2>
+<p>Enable an End-User Portal for each major mailbox. FreeScout gives
+each mailbox its own portal URL. Module: <a
+href="https://freescout.net/module/end-user-portal/"
+class="uri">https://freescout.net/module/end-user-portal/</a></p>
+<p>The portal lets users submit a ticket, authenticate by email, view
+their tickets and reply to them. Custom fields can be exposed on portal
+and contact forms where appropriate.</p>
+<p><strong>Design principle.</strong> Each portal should ask only for
+information useful to that service. QUILL can ask for Product and
+Version; BITS Membership should not ask for a software version.</p>
+<p><strong>Branded entry points.</strong> Use branded public domains
+that redirect to the appropriate portal —
+<code>support.quillforall.org</code> → the QUILL portal URL. The user’s
+browser ultimately operates at the canonical FreeScout host, which is
+what keeps sessions and links working.</p>
+<hr />
+<h2 id="knowledge-bases">24. Knowledge bases</h2>
+<p>Enable a Knowledge Base per mailbox where useful. FreeScout’s KB
+operates per mailbox. Module: <a
+href="https://freescout.net/module/knowledge-base/"
+class="uri">https://freescout.net/module/knowledge-base/</a></p>
+<p><strong>QUILL</strong> — Getting Started · Installation · QUILL
+Editor · QUILL Lite · QUILL Radio · QUILL Cast · QUILL Weather ·
+Keyboard Commands · Screen Readers · Troubleshooting · Known Issues ·
+Release Notes · Reporting a Bug · Feature Requests · Privacy and
+Data</p>
+<p><strong>GLOW</strong> — Getting Started · GLOW Audit · GLOW Fix ·
+GLOW Convert · Templates · Authentication · Understanding Results ·
+Accessibility Review · Privacy · Troubleshooting · Known Issues</p>
+<p><strong>Git Going</strong> — Getting Started · Installing Git · Git
+Basics · GitHub Basics · Repositories · Commits · Branches · Pull
+Requests · Issues · GitHub Desktop · GitHub CLI · VS Code ·
+Authentication · Screen Reader Tips · Keyboard Workflows · Course
+Exercises · Troubleshooting</p>
+<p><strong>BITS</strong> — Membership · Training · BITS Connect ·
+Technology Support · Events · Programs · Frequently Asked Questions ·
+Contact BITS</p>
+<p>Section 53 lists the specific articles to publish before launch.</p>
+<hr />
+<h1 id="part-three-github-escalation">Part three — GitHub
+escalation</h1>
+<h2 id="the-flow">25. The flow</h2>
+<p>The integration should protect customers from having to understand
+GitHub while giving developers a clean engineering workflow.</p>
+<pre class="text"><code>Customer
+   |
+   v
+FreeScout ticket
+   |
+   v
+Support triage
+   |
+   +---- resolved by support ----&gt; Customer
+   |
+   +---- confirmed software issue
+              |
+              v
+       Escalate to GitHub          &lt;- a human decision, always
+              |
+              v
+        GitHub issue
+              |
+              v
+       Developer activity
+              |
+              v
+       FreeScout internal updates
+              |
+              v
+          Customer</code></pre>
+<p><strong>The support ticket remains the customer communication record.
+The GitHub issue remains the engineering record.</strong></p>
+<hr />
+<h2 id="method-and-the-two-bridges">26. Method, and the two bridges</h2>
+<p>Use the FreeScout <strong>API &amp; Webhooks</strong> module, a
+<strong>manual</strong> FreeScout workflow, a small integration service
+called here the <strong>GitHub bridge</strong>, a <strong>GitHub
+App</strong>, and GitHub webhooks.</p>
+<p><strong>This is not the mail bridge.</strong> The mail bridge
+(<code>helpdesk-mailbridge</code>) is built and carries Postmark inbound
+into FreeScout. The GitHub bridge does not exist yet. They share a word
+and nothing else.</p>
+<p><strong>Avoid a personal access token for the permanent production
+integration.</strong> GitHub recommends GitHub Apps, minimum required
+permissions, webhook secrets and limited subscriptions.</p>
+<ul>
+<li>App best practices: <a
+href="https://docs.github.com/en/apps/creating-github-apps/about-creating-github-apps/best-practices-for-creating-a-github-app"
+class="uri">https://docs.github.com/en/apps/creating-github-apps/about-creating-github-apps/best-practices-for-creating-a-github-app</a></li>
+<li>Webhooks with Apps: <a
+href="https://docs.github.com/en/apps/creating-github-apps/registering-a-github-app/using-webhooks-with-github-apps"
+class="uri">https://docs.github.com/en/apps/creating-github-apps/registering-a-github-app/using-webhooks-with-github-apps</a></li>
+</ul>
+<p><strong>A note on what already exists.</strong> The submission server
+(<code>feedback-hub-submit:8095</code>, from the
+<code>feedback-hub</code> repository) already holds a GitHub credential
+and files issues on behalf of accountless clients — QUILL’s Report a
+Bug, the picks suggestion form, and GLOW’s feedback route. When you
+build the GitHub bridge, look there first: the credential handling, the
+sanitisation and the deployment pattern are solved, and a second service
+holding a second GitHub token is worth avoiding.</p>
+<hr />
+<h2 id="github-bridge-responsibilities">27. GitHub bridge
+responsibilities</h2>
+<p>A small Python, Node.js or serverless service exposing two
+endpoints.</p>
+<h3 id="freescout-to-github-post-freescoutgithub">27.1 FreeScout to
+GitHub — <code>POST /freescout/github</code></h3>
+<p>When an agent runs <strong>Escalate to GitHub</strong>:</p>
+<ol type="1">
+<li>FreeScout triggers a custom webhook.</li>
+<li>The bridge receives the event.</li>
+<li>It identifies the FreeScout conversation.</li>
+<li>It retrieves structured ticket data through the FreeScout API.</li>
+<li><strong>It checks whether a GitHub issue already
+exists.</strong></li>
+<li><strong>It removes or excludes private customer
+information.</strong></li>
+<li>It chooses the correct repository.</li>
+<li>It creates the GitHub issue.</li>
+<li>It records the issue number and URL back in FreeScout.</li>
+<li>It adds an internal FreeScout note.</li>
+<li>It adds <code>state:github</code>.</li>
+</ol>
+<h3 id="github-to-freescout-post-githubfreescout">27.2 GitHub to
+FreeScout — <code>POST /github/freescout</code></h3>
+<p>GitHub sends signed webhook events. React to: issue opened, labelled,
+assigned, closed, reopened; selected comments; milestone or release
+changes if useful.</p>
+<p>The bridge then locates the associated conversation, adds an
+<strong>internal note</strong>, updates Developer Status, and changes
+tags where appropriate.</p>
+<p><strong>Do not automatically send every GitHub comment to the
+customer.</strong> Developer conversations may contain implementation
+detail, security context or internal discussion. Use internal notes
+first; a support agent decides what should be communicated
+externally.</p>
+<hr />
+<h2 id="the-issue-template">28. The issue template</h2>
+<p>An issue generated from support should look approximately like
+this:</p>
+<div class="sourceCode" id="cb20"><pre
+class="sourceCode markdown"><code class="sourceCode markdown"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="fu">## Support Reference</span></span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>FreeScout ticket: CA-1842</span>
+<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-5"><a href="#cb20-5" aria-hidden="true" tabindex="-1"></a><span class="fu">## Product</span></span>
+<span id="cb20-6"><a href="#cb20-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-7"><a href="#cb20-7" aria-hidden="true" tabindex="-1"></a>QUILL Radio</span>
+<span id="cb20-8"><a href="#cb20-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-9"><a href="#cb20-9" aria-hidden="true" tabindex="-1"></a><span class="fu">## Version</span></span>
+<span id="cb20-10"><a href="#cb20-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-11"><a href="#cb20-11" aria-hidden="true" tabindex="-1"></a>2.x</span>
+<span id="cb20-12"><a href="#cb20-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-13"><a href="#cb20-13" aria-hidden="true" tabindex="-1"></a><span class="fu">## Environment</span></span>
+<span id="cb20-14"><a href="#cb20-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-15"><a href="#cb20-15" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>OS: Windows 11</span>
+<span id="cb20-16"><a href="#cb20-16" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Assistive technology: JAWS</span>
+<span id="cb20-17"><a href="#cb20-17" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Installation: Installed</span>
+<span id="cb20-18"><a href="#cb20-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-19"><a href="#cb20-19" aria-hidden="true" tabindex="-1"></a><span class="fu">## Problem</span></span>
+<span id="cb20-20"><a href="#cb20-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-21"><a href="#cb20-21" aria-hidden="true" tabindex="-1"></a>Concise technical summary written by support.</span>
+<span id="cb20-22"><a href="#cb20-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-23"><a href="#cb20-23" aria-hidden="true" tabindex="-1"></a><span class="fu">## Steps to Reproduce</span></span>
+<span id="cb20-24"><a href="#cb20-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-25"><a href="#cb20-25" aria-hidden="true" tabindex="-1"></a>1.</span>
+<span id="cb20-26"><a href="#cb20-26" aria-hidden="true" tabindex="-1"></a>2.</span>
+<span id="cb20-27"><a href="#cb20-27" aria-hidden="true" tabindex="-1"></a>3.</span>
+<span id="cb20-28"><a href="#cb20-28" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-29"><a href="#cb20-29" aria-hidden="true" tabindex="-1"></a><span class="fu">## Expected Result</span></span>
+<span id="cb20-30"><a href="#cb20-30" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-31"><a href="#cb20-31" aria-hidden="true" tabindex="-1"></a>...</span>
+<span id="cb20-32"><a href="#cb20-32" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-33"><a href="#cb20-33" aria-hidden="true" tabindex="-1"></a><span class="fu">## Actual Result</span></span>
+<span id="cb20-34"><a href="#cb20-34" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-35"><a href="#cb20-35" aria-hidden="true" tabindex="-1"></a>...</span>
+<span id="cb20-36"><a href="#cb20-36" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-37"><a href="#cb20-37" aria-hidden="true" tabindex="-1"></a><span class="fu">## Impact</span></span>
+<span id="cb20-38"><a href="#cb20-38" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-39"><a href="#cb20-39" aria-hidden="true" tabindex="-1"></a>High</span>
+<span id="cb20-40"><a href="#cb20-40" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-41"><a href="#cb20-41" aria-hidden="true" tabindex="-1"></a><span class="fu">## Accessibility</span></span>
+<span id="cb20-42"><a href="#cb20-42" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-43"><a href="#cb20-43" aria-hidden="true" tabindex="-1"></a>Yes</span>
+<span id="cb20-44"><a href="#cb20-44" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-45"><a href="#cb20-45" aria-hidden="true" tabindex="-1"></a><span class="fu">## Additional Technical Notes</span></span>
+<span id="cb20-46"><a href="#cb20-46" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-47"><a href="#cb20-47" aria-hidden="true" tabindex="-1"></a>Sanitized information useful to developers.</span>
+<span id="cb20-48"><a href="#cb20-48" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-49"><a href="#cb20-49" aria-hidden="true" tabindex="-1"></a><span class="fu">## Privacy</span></span>
+<span id="cb20-50"><a href="#cb20-50" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-51"><a href="#cb20-51" aria-hidden="true" tabindex="-1"></a>Customer name, email address, and private transcript intentionally omitted.</span></code></pre></div>
+<p><strong>Do not dump the complete support conversation into a public
+GitHub issue.</strong></p>
+<hr />
+<h2 id="repository-mapping">29. Repository mapping</h2>
+<p>Maintain product-to-repository mapping in the bridge’s
+configuration:</p>
+<pre class="text"><code>QUILL Editor    -&gt; organization/repository
+QUILL Lite      -&gt; organization/repository
+QUILL Radio     -&gt; organization/repository
+QUILL Cast      -&gt; organization/repository
+GLOW            -&gt; organization/repository
+Git Going       -&gt; training-materials repository</code></pre>
+<p>If several QUILL applications share one repository, the bridge can
+set product-specific labels instead: <code>product:editor</code>,
+<code>product:radio</code>, <code>product:cast</code>,
+<code>accessibility</code>, <code>support-escalation</code>,
+<code>bug</code>, <code>feature</code>.</p>
+<hr />
+<h2 id="preventing-duplicate-issues">30. Preventing duplicate
+issues</h2>
+<p>Before creating an issue:</p>
+<ol type="1">
+<li>Check the FreeScout <strong>GitHub Issue Number</strong> field.</li>
+<li>If present, do not create another issue.</li>
+<li>Add an internal note pointing at the existing one.</li>
+<li>Optionally search GitHub for a ticket-reference label or support
+reference.</li>
+</ol>
+<p><em>(The submission server already implements a related idea for
+crash reports — a fingerprint that deduplicates a live report against
+one filed later from a saved traceback. Worth reading before writing
+this from scratch.)</em></p>
+<hr />
+<h2 id="github-security-and-api-credentials">31. GitHub security and API
+credentials</h2>
+<p>Create a <strong>dedicated GitHub App</strong> and grant only
+required repository permissions — likely <strong>Issues: read and
+write</strong>, <strong>Metadata: read</strong>. Request more only if
+genuinely required.</p>
+<ul>
+<li>Store the App private key securely.</li>
+<li>Store FreeScout API credentials securely.</li>
+<li>Use HTTPS.</li>
+<li>Use a GitHub webhook secret, and <strong>validate webhook
+signatures</strong>.</li>
+<li>Log integration failures.</li>
+<li>Do not log full ticket bodies unnecessarily.</li>
+<li>Rotate secrets.</li>
+<li>Restrict the App to required repositories.</li>
+</ul>
+<p><strong>Do not embed API keys</strong> in source code, repositories,
+JavaScript delivered to browsers, documentation, or ticket notes. Store
+secrets in environment variables or a managed secret store.</p>
+<p>For every credential, document: who owns it; what it can access;
+where it is stored; the rotation procedure; the revocation
+procedure.</p>
+<hr />
+<h1 id="part-four-glows-own-mail">Part four — GLOW’s own mail</h1>
+<h2 id="a-second-postmark-server-and-why">32. A second Postmark server,
+and why</h2>
+<p>GLOW sends its own mail — audit reports, admin sign-in links,
+workshop artifacts, return links, Whisperer notices — and, with this
+work, receives replies to it.</p>
+<p><strong>It needs its own Postmark server.</strong> A server has
+exactly one inbound webhook URL and one inbound domain, and these are
+not the same thing:</p>
+<table>
+<colgroup>
+<col style="width: 25%" />
+<col style="width: 25%" />
+<col style="width: 25%" />
+<col style="width: 25%" />
+</colgroup>
+<thead>
+<tr>
+<th>Server</th>
+<th>Sends as</th>
+<th>Receives at</th>
+<th>Inbound webhook</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Community Access Help Desk</code></td>
+<td>the support addresses</td>
+<td>those addresses</td>
+<td><code>helpdesk.community-access.org/postmark/inbound</code></td>
+</tr>
+<tr>
+<td><code>GLOW production</code></td>
+<td><code>no-reply@notify.letitglow.app</code></td>
+<td><code>reply@inbound.letitglow.app</code></td>
+<td><code>letitglow.app/mail/webhook/inbound</code></td>
+</tr>
+</tbody>
+</table>
+<p>Separate on the merits too: different sending domains, different
+reputations, and a token that can be rotated for one without stopping
+the other.</p>
+<p>Create it as in section 3 — <strong>Servers &gt; Create
+Server</strong>, named <code>GLOW production</code> — then copy its
+<strong>Server API Token</strong> from <strong>Settings &gt; API
+Tokens</strong>. It is a server token, not an account token; GLOW never
+needs the account token. Make a <code>GLOW staging</code> server too if
+you want somewhere safe to test.</p>
+<h3 id="message-streams">Message streams</h3>
+<p>Confirm the server has two streams. A new one is created with
+both:</p>
+<ul>
+<li><strong>Default Transactional Stream</strong>, stream ID
+<code>outbound</code></li>
+<li><strong>Default Broadcast Stream</strong>, stream ID
+<code>broadcast</code></li>
+</ul>
+<p>The stream <strong>ID</strong> is what the API wants, not the display
+name. GLOW uses <code>outbound</code> for everything a person just asked
+for, and <code>broadcast</code> for the 30-day workshop nudge — a
+follow-up nobody asked for, which belongs on the stream carrying a real
+unsubscribe link.</p>
+<p>If either is missing, create it under <strong>Message Streams &gt;
+Create stream</strong> with exactly that ID.</p>
+<h3 id="account-approval">Account approval</h3>
+<p>A new Postmark account can only send to addresses on its own domain
+until approved. Workshop participants and audit users are not on your
+domain, so <strong>request approval before your first event</strong>.
+The honest answer to Postmark’s question is short:</p>
+<blockquote>
+<p>Transactional mail for an accessibility tool: audit reports the user
+asked for, sign-in links, and workshop materials sent to the participant
+who created them. Recipients are people who typed their own address into
+a form. One monthly follow-up to workshop attendees goes on a broadcast
+stream with an unsubscribe link.</p>
+</blockquote>
+<p>Approval takes hours to a day. Do not leave it until the morning of a
+workshop.</p>
+<hr />
+<h2 id="dns-for-sending-notify.letitglow.app">33. DNS for sending:
+<code>notify.letitglow.app</code></h2>
+<p>Two subdomains of <code>letitglow.app</code> are involved, and using
+subdomains rather than the root is deliberate: a sending subdomain keeps
+transactional reputation separate, and an inbound subdomain can take an
+MX record without disturbing the root. That matters here, because the
+root already uses Namecheap forwarding:</p>
+<pre><code>$ dig +short MX letitglow.app
+10 eforward1.registrar-servers.com.       (and four more)</code></pre>
+<p>On the <code>GLOW production</code> server: <strong>Sender Signatures
+&gt; Add Domain</strong>, enter <code>notify.letitglow.app</code>,
+create the records it shows.</p>
+<p><strong>DKIM (required)</strong></p>
+<pre><code>Type:  TXT
+Host:  &lt;selector&gt;._domainkey.notify.letitglow.app
+Value: k=rsa;p=MIGfMA0GCSq...          (Postmark shows the real value)</code></pre>
+<p><strong>Return-Path (required for GLOW)</strong></p>
+<pre><code>Type:  CNAME
+Host:  pm-bounces.notify.letitglow.app
+Value: pm.mtasv.net</code></pre>
+<p>Postmark calls this optional. It is <strong>not optional
+here.</strong> It makes the envelope sender a <code>letitglow.app</code>
+address, which makes SPF align with the From address, which makes DMARC
+pass. Without it, a recipient domain with a strict DMARC policy rejects
+or quarantines GLOW’s mail and the only symptom is silence.</p>
+<p><strong>SPF</strong> — not needed with the Return-Path CNAME in
+place. If required anyway,
+<code>v=spf1 include:spf.mtasv.net ~all</code> on
+<code>notify.letitglow.app</code>. Never a second record on a host that
+already has one.</p>
+<p><strong>DMARC</strong> — recommended, not required. Start at
+<code>p=none</code> with <code>rua=mailto:dmarc@letitglow.app</code>,
+read the reports, then tighten.</p>
+<p>Click <strong>Verify</strong>. DKIM and Return-Path must both show
+verified. More than a few hours means a typo or a doubled zone suffix,
+not propagation.</p>
+<hr />
+<h2 id="dns-for-receiving-inbound.letitglow.app">34. DNS for receiving:
+<code>inbound.letitglow.app</code></h2>
+<p>This is the half that makes GLOW’s conversations two-way.</p>
+<ol type="1">
+<li>On the GLOW server, open <strong>Settings &gt; Inbound</strong>. It
+shows an address like <code>a1b2c3d4e5f6@inbound.postmarkapp.com</code>.
+<strong>That address already works</strong>, so you can test everything
+today without touching DNS.</li>
+<li>For a readable address of your own, set <strong>Inbound
+Domain</strong> to <code>inbound.letitglow.app</code> and add:</li>
+</ol>
+<pre><code>Type:     MX
+Host:     inbound.letitglow.app
+Value:    inbound.postmarkapp.com
+Priority: 10</code></pre>
+<p>Once that resolves, <code>reply@inbound.letitglow.app</code> is what
+GLOW should use.</p>
+<p>Three things to know:</p>
+<ul>
+<li><strong>The inbound domain must be a subdomain with no other MX
+record.</strong> Do not point <code>letitglow.app</code> itself at
+Postmark; that would break the existing forwarding exactly as it would
+for <code>community-access.org</code> in section 5.</li>
+<li><strong>Postmark splits anything after a <code>+</code></strong> out
+of the local part and hands it to GLOW as <code>MailboxHash</code>. That
+is how <code>reply+9f3c...@inbound.letitglow.app</code> finds its
+conversation.</li>
+<li><strong>A reply is never discarded.</strong> If the hash is missing,
+GLOW falls back to <code>In-Reply-To</code>, then to the sender’s most
+recent open conversation, and files anything still unrouted as a new
+conversation an admin can see.</li>
+</ul>
+<hr />
+<h2 id="glows-webhooks">35. GLOW’s webhooks</h2>
+<h3 id="the-shared-secret">The shared secret</h3>
+<div class="sourceCode" id="cb26"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="ex">python</span> <span class="at">-c</span> <span class="st">&quot;import secrets; print(secrets.token_urlsafe(32))&quot;</span></span></code></pre></div>
+<p>The same value goes in the webhook URLs and in
+<code>POSTMARK_WEBHOOK_TOKEN</code>. Both routes reject a request
+without it, and <strong>return 503 if the variable is unset</strong>, so
+an unconfigured deployment cannot accidentally accept anonymous
+posts.</p>
+<h3 id="inbound">Inbound</h3>
+<p><strong>Settings &gt; Inbound</strong>, set the <strong>Inbound
+Webhook</strong> URL to:</p>
+<pre><code>https://letitglow.app/mail/webhook/inbound?token=YOUR_WEBHOOK_SECRET</code></pre>
+<p>GLOW also accepts the secret as HTTP basic auth or in an
+<code>X-Postmark-Webhook-Token</code> header.</p>
+<h3 id="events">Events</h3>
+<p><strong>Message Streams &gt; Default Transactional Stream &gt;
+Webhooks</strong>:</p>
+<pre><code>https://letitglow.app/mail/webhook/events?token=YOUR_WEBHOOK_SECRET</code></pre>
+<p>Tick <strong>Bounce</strong>, <strong>Spam Complaint</strong>,
+<strong>Delivery</strong>, <strong>Subscription Change</strong>.</p>
+<p>Leave <strong>Open</strong> and <strong>Click</strong> unticked. GLOW
+does not use them, and open tracking means embedding a tracking pixel in
+mail sent to people who use screen readers and text-only clients — worth
+avoiding on principle as well as on privacy grounds.</p>
+<p><strong>Add the same webhook to the Default Broadcast
+Stream</strong>, so an unsubscribe from the 30-day nudge is honoured
+everywhere.</p>
+<hr />
+<h2 id="environment-variables">36. Environment variables</h2>
+<p>Set these in the <code>.env</code> that
+<code>web/docker-compose.prod.yml</code> loads, then restart the web
+container.</p>
+<h3 id="the-whole-block-to-paste">36.1 The whole block, to paste</h3>
+<p>Delete lines you do not want yet. Each feature checks its own
+variables and reports itself unavailable rather than failing.</p>
+<div class="sourceCode" id="cb29"><pre
+class="sourceCode sh"><code class="sourceCode bash"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="co"># --- Postmark: sending -------------------------------------------------</span></span>
+<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a><span class="va">POSTMARK_SERVER_TOKEN</span><span class="op">=</span></span>
+<span id="cb29-3"><a href="#cb29-3" aria-hidden="true" tabindex="-1"></a><span class="va">POSTMARK_FROM_EMAIL</span><span class="op">=</span>no-reply@notify.letitglow.app</span>
+<span id="cb29-4"><a href="#cb29-4" aria-hidden="true" tabindex="-1"></a><span class="va">POSTMARK_MESSAGE_STREAM</span><span class="op">=</span>outbound</span>
+<span id="cb29-5"><a href="#cb29-5" aria-hidden="true" tabindex="-1"></a><span class="va">POSTMARK_BROADCAST_STREAM</span><span class="op">=</span>broadcast</span>
+<span id="cb29-6"><a href="#cb29-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-7"><a href="#cb29-7" aria-hidden="true" tabindex="-1"></a><span class="co"># --- Postmark: two-way conversations -----------------------------------</span></span>
+<span id="cb29-8"><a href="#cb29-8" aria-hidden="true" tabindex="-1"></a><span class="va">POSTMARK_INBOUND_ADDRESS</span><span class="op">=</span>reply@inbound.letitglow.app</span>
+<span id="cb29-9"><a href="#cb29-9" aria-hidden="true" tabindex="-1"></a><span class="va">POSTMARK_WEBHOOK_TOKEN</span><span class="op">=</span></span>
+<span id="cb29-10"><a href="#cb29-10" aria-hidden="true" tabindex="-1"></a><span class="va">POSTMARK_WEBHOOK_ALLOWED_IPS</span><span class="op">=</span></span>
+<span id="cb29-11"><a href="#cb29-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-12"><a href="#cb29-12" aria-hidden="true" tabindex="-1"></a><span class="co"># --- Addresses shown to people -----------------------------------------</span></span>
+<span id="cb29-13"><a href="#cb29-13" aria-hidden="true" tabindex="-1"></a><span class="va">GLOW_SUPPORT_EMAIL</span><span class="op">=</span>glow@community-access.org</span>
+<span id="cb29-14"><a href="#cb29-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-15"><a href="#cb29-15" aria-hidden="true" tabindex="-1"></a><span class="co"># --- Help desk: support tickets into FreeScout -------------------------</span></span>
+<span id="cb29-16"><a href="#cb29-16" aria-hidden="true" tabindex="-1"></a><span class="va">HELPDESK_BRIDGE_URL</span><span class="op">=</span>http://helpdesk-mailbridge:8096/postmark/inbound</span>
+<span id="cb29-17"><a href="#cb29-17" aria-hidden="true" tabindex="-1"></a><span class="va">HELPDESK_BRIDGE_USER</span><span class="op">=</span></span>
+<span id="cb29-18"><a href="#cb29-18" aria-hidden="true" tabindex="-1"></a><span class="va">HELPDESK_BRIDGE_PASSWORD</span><span class="op">=</span></span>
+<span id="cb29-19"><a href="#cb29-19" aria-hidden="true" tabindex="-1"></a><span class="va">HELPDESK_SUPPORT_EMAIL</span><span class="op">=</span>glow@community-access.org</span>
+<span id="cb29-20"><a href="#cb29-20" aria-hidden="true" tabindex="-1"></a><span class="va">HELPDESK_URL</span><span class="op">=</span>https://helpdesk.community-access.org</span>
+<span id="cb29-21"><a href="#cb29-21" aria-hidden="true" tabindex="-1"></a><span class="va">HELPDESK_CATEGORIES</span><span class="op">=</span>bug,accessibility,regression,support</span>
+<span id="cb29-22"><a href="#cb29-22" aria-hidden="true" tabindex="-1"></a><span class="va">HELPDESK_MESSAGE_DOMAIN</span><span class="op">=</span>letitglow.app</span></code></pre></div>
+<p><strong><code>HELPDESK_SUPPORT_EMAIL</code> must be in the mail
+bridge’s <code>MAILBRIDGE_RECIPIENTS</code></strong> (section 13.1), or
+every ticket gets a 403. Until the GLOW mailbox exists, point it at
+<code>support@community-access.org</code>, which is already allowed.</p>
+<p><strong><code>.env.example</code> has not been updated.</strong> It
+is a credentials file and was left untouched deliberately. Copy the
+block above with empty values if you want the names in it.</p>
+<h3 id="every-variable">36.2 Every variable</h3>
+<table>
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+</colgroup>
+<thead>
+<tr>
+<th>Variable</th>
+<th>Default</th>
+<th>Without it</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>POSTMARK_SERVER_TOKEN</code></td>
+<td>unset</td>
+<td>Nothing sends. Every mail feature reports itself unavailable</td>
+</tr>
+<tr>
+<td><code>POSTMARK_FROM_EMAIL</code></td>
+<td><code>no-reply@notify.letitglow.app</code></td>
+<td>Uses the default, which must be a verified sender</td>
+</tr>
+<tr>
+<td><code>POSTMARK_MESSAGE_STREAM</code></td>
+<td><code>outbound</code></td>
+<td>Uses <code>outbound</code></td>
+</tr>
+<tr>
+<td><code>POSTMARK_BROADCAST_STREAM</code></td>
+<td><code>broadcast</code></td>
+<td>Uses <code>broadcast</code>; only the 30-day nudge uses it</td>
+</tr>
+<tr>
+<td><code>POSTMARK_INBOUND_ADDRESS</code></td>
+<td>unset</td>
+<td>GLOW sends but cannot be answered. Conversations report
+unavailable</td>
+</tr>
+<tr>
+<td><code>POSTMARK_WEBHOOK_TOKEN</code></td>
+<td>unset</td>
+<td>Both webhook routes return 503. Nothing inbound is accepted</td>
+</tr>
+<tr>
+<td><code>POSTMARK_WEBHOOK_ALLOWED_IPS</code></td>
+<td>unset</td>
+<td>No source-address check; the secret is the only control</td>
+</tr>
+<tr>
+<td><code>GLOW_SUPPORT_EMAIL</code></td>
+<td>unset</td>
+<td>The conversations page has no address to offer when replies are
+off</td>
+</tr>
+<tr>
+<td><code>HELPDESK_BRIDGE_URL</code></td>
+<td>unset</td>
+<td>No tickets filed. Feedback still stored, still reaches GitHub</td>
+</tr>
+<tr>
+<td><code>HELPDESK_BRIDGE_USER</code></td>
+<td>unset</td>
+<td>As above</td>
+</tr>
+<tr>
+<td><code>HELPDESK_BRIDGE_PASSWORD</code></td>
+<td>unset</td>
+<td>As above</td>
+</tr>
+<tr>
+<td><code>HELPDESK_SUPPORT_EMAIL</code></td>
+<td><code>support@community-access.org</code></td>
+<td>Uses the default</td>
+</tr>
+<tr>
+<td><code>HELPDESK_URL</code></td>
+<td><code>https://helpdesk.community-access.org</code></td>
+<td>Uses the default; display only</td>
+</tr>
+<tr>
+<td><code>HELPDESK_CATEGORIES</code></td>
+<td><code>bug,accessibility,regression,support</code></td>
+<td>Uses the default. <code>all</code> files everything</td>
+</tr>
+<tr>
+<td><code>HELPDESK_MESSAGE_DOMAIN</code></td>
+<td><code>letitglow.app</code></td>
+<td>Uses the default; only affects generated Message-IDs</td>
+</tr>
+</tbody>
+</table>
+<p><code>POSTMARK_WEBHOOK_ALLOWED_IPS</code> is a second lock on the
+webhook routes. The shared secret is the primary control; the allow-list
+is belt and braces, and is empty by default because an allow-list that
+goes stale rejects real mail silently. If you set it, take the addresses
+from Postmark’s own documentation rather than from this file.</p>
+<p>Nothing is read at import time. A change needs a container restart
+because the process holds the environment, not because anything is
+cached.</p>
+<hr />
+<h2 id="proving-glows-mail-works">37. Proving GLOW’s mail works</h2>
+<h3 id="sending">37.1 Sending</h3>
+<ol type="1">
+<li>Sign in at <code>/admin</code>.</li>
+<li>On the admin queue page, the email panel should say Postmark is
+configured, name the sender address, and name the <code>outbound</code>
+stream.</li>
+<li>Send a test email to yourself.</li>
+<li>Check the headers for <code>DKIM=pass</code> and
+<code>SPF=pass</code>.</li>
+</ol>
+<p>If it lands in spam, DKIM or Return-Path is the first thing to check,
+not the message content.</p>
+<h3 id="receiving">37.2 Receiving</h3>
+<ol type="1">
+<li>Reply to that test email from an ordinary mail client.</li>
+<li>Open <code>/mail/admin</code>. The reply should appear as a new
+conversation within seconds.</li>
+<li>In Postmark, <strong>Activity &gt; Inbound</strong> shows every
+message received and the HTTP status GLOW returned. 403 means the secret
+does not match; 503 means <code>POSTMARK_WEBHOOK_TOKEN</code> is
+unset.</li>
+</ol>
+<h3 id="a-real-round-trip">37.3 A real round trip</h3>
+<ol type="1">
+<li>From <code>/mail/admin</code>, open the conversation and send a
+reply.</li>
+<li>Check it arrives, with a Reply-To of
+<code>reply+&lt;something&gt;@inbound.letitglow.app</code>.</li>
+<li>Reply to that. It should land on the same conversation, in
+order.</li>
+<li>Open <code>/mail/conversations</code> in a browser carrying the
+participant or passport cookie. Same conversation, same order, with a
+box to answer in.</li>
+</ol>
+<h3 id="bounces">37.4 Bounces</h3>
+<ol type="1">
+<li>Send a test email to an address you know does not exist.</li>
+<li>Within a minute, <code>/mail/admin</code> should list it on the
+do-not-send list.</li>
+<li>Try again. GLOW refuses and says why.</li>
+<li>Clear the suppression from <code>/mail/admin</code> when you want to
+re-enable it.</li>
+</ol>
+<h3 id="machine-readable-check">37.5 Machine-readable check</h3>
+<p><code>GET /mail/admin/health</code> (admin session required):</p>
+<div class="sourceCode" id="cb30"><pre
+class="sourceCode json"><code class="sourceCode json"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="fu">{</span></span>
+<span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;sending_configured&quot;</span><span class="fu">:</span> <span class="kw">true</span><span class="fu">,</span></span>
+<span id="cb30-3"><a href="#cb30-3" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;inbound_address&quot;</span><span class="fu">:</span> <span class="st">&quot;reply@inbound.letitglow.app&quot;</span><span class="fu">,</span></span>
+<span id="cb30-4"><a href="#cb30-4" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;webhook_secret_set&quot;</span><span class="fu">:</span> <span class="kw">true</span><span class="fu">,</span></span>
+<span id="cb30-5"><a href="#cb30-5" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;conversations_available&quot;</span><span class="fu">:</span> <span class="kw">true</span><span class="fu">,</span></span>
+<span id="cb30-6"><a href="#cb30-6" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;open_threads&quot;</span><span class="fu">:</span> <span class="dv">3</span><span class="fu">,</span></span>
+<span id="cb30-7"><a href="#cb30-7" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;unread_for_staff&quot;</span><span class="fu">:</span> <span class="dv">1</span><span class="fu">,</span></span>
+<span id="cb30-8"><a href="#cb30-8" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;suppressed&quot;</span><span class="fu">:</span> <span class="dv">0</span><span class="fu">,</span></span>
+<span id="cb30-9"><a href="#cb30-9" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;inbound_webhook_url&quot;</span><span class="fu">:</span> <span class="st">&quot;https://letitglow.app/mail/webhook/inbound&quot;</span><span class="fu">,</span></span>
+<span id="cb30-10"><a href="#cb30-10" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;events_webhook_url&quot;</span><span class="fu">:</span> <span class="st">&quot;https://letitglow.app/mail/webhook/events&quot;</span><span class="fu">,</span></span>
+<span id="cb30-11"><a href="#cb30-11" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;helpdesk&quot;</span><span class="fu">:</span> <span class="fu">{</span></span>
+<span id="cb30-12"><a href="#cb30-12" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;configured&quot;</span><span class="fu">:</span> <span class="kw">true</span><span class="fu">,</span></span>
+<span id="cb30-13"><a href="#cb30-13" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;support_email&quot;</span><span class="fu">:</span> <span class="st">&quot;glow@community-access.org&quot;</span><span class="fu">,</span></span>
+<span id="cb30-14"><a href="#cb30-14" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;helpdesk_url&quot;</span><span class="fu">:</span> <span class="st">&quot;https://helpdesk.community-access.org&quot;</span><span class="fu">,</span></span>
+<span id="cb30-15"><a href="#cb30-15" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;credentials_set&quot;</span><span class="fu">:</span> <span class="kw">true</span><span class="fu">,</span></span>
+<span id="cb30-16"><a href="#cb30-16" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;categories&quot;</span><span class="fu">:</span> <span class="ot">[</span><span class="st">&quot;bug&quot;</span><span class="ot">,</span> <span class="st">&quot;accessibility&quot;</span><span class="ot">,</span> <span class="st">&quot;regression&quot;</span><span class="ot">,</span> <span class="st">&quot;support&quot;</span><span class="ot">]</span></span>
+<span id="cb30-17"><a href="#cb30-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">}</span></span>
+<span id="cb30-18"><a href="#cb30-18" aria-hidden="true" tabindex="-1"></a><span class="fu">}</span></span></code></pre></div>
+<hr />
+<h2 id="what-this-gives-each-part-of-glow">38. What this gives each part
+of GLOW</h2>
+<h3 id="accounts">Accounts</h3>
+<p>GLOW has no passwords and no sign-up wall, by design. “Accounts”
+means three identities, and mail makes each portable:</p>
+<ul>
+<li><strong>Admin accounts</strong> (<code>/admin</code>). Email sign-in
+links, access requests, approval notices. OAuth still works without
+mail; the email route does not.</li>
+<li><strong>Passports</strong> (<code>/passport</code>). A single-use
+link that restores somebody’s settings on another device. Somebody who
+has tuned contrast, type scale, reduced motion and the cognitive profile
+can get that back on a phone.</li>
+<li><strong>Workshop participants</strong>. Return links, the end-of-day
+artifact, the agent package, and the 30-day follow-up.</li>
+</ul>
+<p>Admin mail and workshop mail now carry a reply path: the address on
+the message is monitored, and an answer reaches a person.</p>
+<p><strong>Audit report delivery is deliberately left one-way.</strong>
+That email tells the recipient “your email address was not stored”, and
+that is true — opening a conversation would store it. The sender accepts
+an optional conversation (<code>reply_thread=</code>) if you later
+decide otherwise, but nothing passes one today, and the promise in the
+message should change first.</p>
+<h3 id="two-way-conversations">Two-way conversations</h3>
+<ul>
+<li>A participant replies to any GLOW email. It lands on the right
+conversation, visible at <code>/mail/admin</code>.</li>
+<li>Staff answer from <code>/mail/admin</code>. The participant receives
+ordinary email and can reply again.</li>
+<li>Either side can work in the browser:
+<code>/mail/conversations</code> shows the same thread to the person who
+owns it, identified by the passport or workshop cookie they already
+have. No new account, no password.</li>
+<li>A participant can start a conversation from inside GLOW without
+opening a mail client.</li>
+</ul>
+<h3 id="the-training-platform">The training platform</h3>
+<ul>
+<li>The workshop artifact email carries a per-participant Reply-To, so
+“one question about step 3” reaches a facilitator rather than a no-reply
+address.</li>
+<li>Conversations carry the session code, so a facilitator can see which
+session a question came from.</li>
+<li>The 30-day nudge goes on the broadcast stream with a working
+unsubscribe, honoured across every GLOW feature at once.</li>
+</ul>
+<h3 id="reputation">Reputation</h3>
+<ul>
+<li>Hard bounces, spam complaints and unsubscribes are recorded and
+honoured everywhere. Without this, one feature suppresses an address and
+the next one mails it again, which is how a sending domain gets itself
+blocked.</li>
+<li>Soft and transient bounces are recorded but not suppressed. A full
+mailbox on Tuesday is not a reason to stop mailing somebody on
+Friday.</li>
+<li>Out-of-office replies are recorded as events rather than filed as
+messages, so a vacation responder does not appear in somebody’s
+conversation.</li>
+</ul>
+<hr />
+<h2 id="glow-tickets-into-the-help-desk">39. GLOW tickets into the help
+desk</h2>
+<p>GLOW’s feedback form files support tickets into the same FreeScout
+help desk. <strong>This path does not go through Postmark at
+all.</strong></p>
+<pre><code>Postmark inbound --webhook--&gt; mail bridge --&gt; Maildir --&gt; Dovecot --&gt; FreeScout
+GLOW feedback form ----------/</code></pre>
+<p>GLOW posts to the same bridge, with the same payload shape. The
+bridge is attached to the <code>web_default</code> Docker network that
+GLOW already runs on, so it is reachable as
+<code>helpdesk-mailbridge:8096</code> with no public round trip, no
+Postmark send, and no second inbound domain.</p>
+<h3 id="why-not-the-other-two-options">Why not the other two
+options</h3>
+<p><strong>Not FreeScout’s API.</strong> That means reimplementing the
+part of FreeScout worth having: <code>Message-ID</code> and
+<code>In-Reply-To</code> matching, duplicate detection,
+customer-versus-agent replies, auto-reply and bounce handling,
+reactivating a closed conversation.</p>
+<p><strong>Not sending through Postmark.</strong> Postmark only sends
+from a verified domain, so the ticket would arrive
+<code>From: no-reply@notify.letitglow.app</code> and FreeScout would
+file every ticket raised in the product against GLOW rather than against
+the person who raised it.</p>
+<h3 id="what-glow-sends">What GLOW sends</h3>
+<p>An ordinary RFC-822 message:</p>
+<ul>
+<li><code>From:</code> the submitter’s name and address, so they are the
+customer.</li>
+<li><code>To:</code> the GLOW support address.</li>
+<li><code>Subject:</code> their short summary, or
+<code>GLOW &lt;category&gt; request</code>.</li>
+<li>Body: what they wrote, then the context an agent needs —
+application, version, platform, category, the task in progress, the GLOW
+feedback id, and the tracker issue URL when one was filed.</li>
+<li><code>X-GLOW-Address-Verified: no</code>, and a line in the body
+saying the same thing in words.</li>
+</ul>
+<p>That last one is not decoration. Anyone can type anyone’s address
+into a feedback form, and a help desk that replies to it is a way to
+send mail to a stranger over Community Access’s signature. <strong>Do
+not remove that line.</strong></p>
+<h3 id="what-opens-a-ticket">What opens a ticket</h3>
+<p>Both conditions must hold:</p>
+<ul>
+<li>The category is <code>bug</code>, <code>accessibility</code>,
+<code>regression</code> or <code>support</code>. Praise and general
+comments are still stored and still reach the admin feedback list; they
+do not open a ticket somebody has to close.
+<code>HELPDESK_CATEGORIES=all</code> changes that.</li>
+<li>The person left an email address. A ticket is a promise somebody
+will answer; without an address there is nobody to answer.</li>
+</ul>
+<h3 id="what-it-cannot-break">What it cannot break</h3>
+<p>Nothing here can lose a bug report. The feedback entry is stored, and
+the GitHub issue filed, before the ticket is attempted. A help desk that
+is unconfigured, unreachable or refusing costs a ticket, never a
+submission. The outcome is recorded per entry in
+<code>helpdesk_status</code> and <code>helpdesk_error</code>, so a
+failure is visible rather than silent.</p>
+<h3 id="setting-it-up">Setting it up</h3>
+<div class="sourceCode" id="cb32"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ssh</span> lp.csedesigns.com</span>
+<span id="cb32-2"><a href="#cb32-2" aria-hidden="true" tabindex="-1"></a><span class="ex">docker</span> inspect helpdesk-mailbridge <span class="at">--format</span> <span class="st">&#39;{{range .Config.Env}}{{println .}}{{end}}&#39;</span> <span class="dt">\</span></span>
+<span id="cb32-3"><a href="#cb32-3" aria-hidden="true" tabindex="-1"></a>  <span class="kw">|</span> <span class="fu">grep</span> MAILBRIDGE_WEBHOOK</span></code></pre></div>
+<p>Put the pair into GLOW’s <code>.env</code> as
+<code>HELPDESK_BRIDGE_USER</code> and
+<code>HELPDESK_BRIDGE_PASSWORD</code>, with the other variables in
+section 36.1, and restart.</p>
+<p>Two things that will catch you out:</p>
+<ul>
+<li><strong><code>HELPDESK_SUPPORT_EMAIL</code> must be in
+<code>MAILBRIDGE_RECIPIENTS</code>.</strong> A recipient the bridge does
+not serve gets a 403.</li>
+<li><strong><code>MAILBRIDGE_TRUSTED_IPS</code> must stay
+empty</strong>, or include GLOW’s container address. It is empty today,
+which is what makes this work; the credential is the control. Setting it
+to Postmark’s source addresses to lock down the public webhook will
+start failing GLOW’s posts with a 403, and the cause will not be
+obvious.</li>
+</ul>
+<h3 id="checking-it">Checking it</h3>
+<ol type="1">
+<li>Submit a bug report at <code>/feedback</code> with an address you
+can read.</li>
+<li>The thank-you page should say a conversation has been opened.</li>
+<li>The ticket appears in FreeScout, <strong>from your address, not from
+GLOW</strong>.</li>
+<li>Reply as an agent. The reply goes out through FreeScout’s Postmark
+SMTP from section 7, straight to the submitter.</li>
+<li><code>GET /mail/admin/health</code> includes a <code>helpdesk</code>
+block; <code>/mail/admin</code> shows the same thing in words.</li>
+</ol>
+<h3 id="the-boundary-between-the-two-systems">The boundary between the
+two systems</h3>
+<p>A help desk ticket is <strong>not</strong> a GLOW conversation:</p>
+<ul>
+<li><strong>Help desk tickets</strong> (<code>/feedback</code>, and
+QUILL’s Report a Bug) are for support: a person needs an answer from a
+human, and FreeScout has the queue, the agents and the history. Once
+filed, GLOW is out of the loop.</li>
+<li><strong>GLOW conversations</strong>
+(<code>/mail/conversations</code>) are for mail GLOW itself started — a
+workshop artifact, a return link — where the reply belongs next to the
+work it is about.</li>
+</ul>
+<p>Running one question through both would mean two places to answer it
+and two answers that can disagree. When GLOW cannot hold a conversation
+itself, the conversations page points at the help desk address instead
+of apologising.</p>
+<h3 id="picks-suggestions-do-not-move-here">Picks suggestions do not
+move here</h3>
+<p>A station or podcast suggestion goes straight to GitHub and stays
+there. It has no customer relationship to preserve and nothing personal
+in it — the <em>point</em> is that it becomes public — and it is already
+consumed by a workflow. Routing structured data through a mailbox would
+mean a person retyping it. Support and content contribution both produce
+issues, and should not be conflated because of it.</p>
+<hr />
+<h1 id="part-five-operations">Part five — operations</h1>
+<h2 id="reports-satisfaction-and-ai">40. Reports, satisfaction and
+AI</h2>
+<h3 id="reports">Reports</h3>
+<p>Use Reports to measure <strong>service quality, not to rank
+volunteers competitively.</strong> Recommended monthly metrics: new
+tickets; tickets by mailbox; by product; by issue type;
+accessibility-related tickets; average first response time; tickets
+waiting more than one business day; resolved; reopened; GitHub
+escalations; top recurring problems; knowledge-base candidates;
+satisfaction rating; unassigned backlog.</p>
+<p>Use trends to improve documentation, training, product design,
+accessibility, staffing and automation.</p>
+<h3 id="satisfaction-ratings">Satisfaction ratings</h3>
+<p>Enable after basic operation is stable. Keep the survey simple; do
+not make users complete a long form after every interaction. Use
+feedback to identify poor explanations, delays, difficult workflows,
+documentation gaps, product frustrations — and excellent practices worth
+repeating.</p>
+<h3 id="ai-integration">AI integration</h3>
+<p>The official module is free: <a
+href="https://freescout.net/module/ai-integration/"
+class="uri">https://freescout.net/module/ai-integration/</a></p>
+<p>Use AI initially for <strong>drafting a response, summarising a long
+ticket, and improving grammar and clarity.</strong></p>
+<p>Do <strong>not</strong> initially use it for automatic customer
+replies, autonomous ticket closure, autonomous GitHub escalation,
+decisions about accessibility severity, or security and privacy
+decisions.</p>
+<p><strong>Establish a data policy before enabling an external
+provider.</strong> Support tickets may contain names, email addresses,
+logs, uploaded documents, account information, accessibility information
+and confidential organisational information. Determine what may be sent
+to an external provider. A local provider such as Ollama may be
+appropriate where privacy needs justify it — and GLOW already runs an
+Ollama-first AI configuration, so the pattern exists here.</p>
+<p><strong>Human review remains required</strong> before sending
+AI-generated customer communication.</p>
+<hr />
+<h2 id="accessibility">41. Accessibility</h2>
+<p>Accessibility is not merely another ticket category. <strong>The help
+desk itself must be usable.</strong> FreeScout identifies screen-reader
+support as a core feature, but the production configuration must still
+be tested, because modules, custom CSS, widgets, forms and branding all
+affect usability.</p>
+<h3 id="what-to-test">What to test</h3>
+<p>Base FreeScout · agent interface · login · 2FA · End-User Portal ·
+contact form · Knowledge Base · custom fields · saved replies · reports
+· workflow dialogs · GitHub escalation controls · error messages · file
+upload · satisfaction survey</p>
+<h3 id="test-matrix">Test matrix</h3>
+<p><strong>Screen readers</strong> — JAWS + Edge or Chrome; NVDA +
+Firefox; NVDA + Chrome or Edge; Narrator + Edge; VoiceOver + Safari for
+the public portal where practical.</p>
+<p><strong>Input</strong> — keyboard only; screen-reader keyboard
+navigation; no mouse; browser zoom at 200 percent, and higher where
+practical; Windows high-contrast and forced-colors behaviour.</p>
+<p><strong>Validate</strong> — logical heading structure; meaningful
+page titles; form labels; required-field identification; error
+identification; error recovery; visible keyboard focus; predictable
+focus movement; accessible dialogs; status changes announced where
+needed; link purpose; button names; table navigation; no colour-only
+meaning; sufficient contrast; accessible file upload; accessible
+knowledge-base articles.</p>
+<h3 id="three-mechanisms-that-were-found-not-to-work">Three mechanisms
+that were found not to work</h3>
+<p>Discovered while building the suggestion form, and worth knowing
+before relying on any of them in a portal form:</p>
+<ul>
+<li><code>role="alert"</code> plus focus reads the whole error list
+twice with the first reading clipped, and an unchanged alert may not
+fire at all — so resubmitting the same errors announces nothing.</li>
+<li>Clearing and rebuilding a live region in one task announces nothing
+either, which would silence every repeated rate-limit refusal a server
+produces <em>by design</em>.</li>
+<li>Disabling the focused submit button strands the keyboard many tab
+stops away, announced by nothing.</li>
+</ul>
+<p>All three were replaced in that form. Do not reintroduce them
+here.</p>
+<hr />
+<h2 id="captcha">42. CAPTCHA</h2>
+<p><strong>Do not add CAPTCHA simply because a security module provides
+it.</strong></p>
+<p>Start with 2FA for agents, strong passwords, rate limiting and server
+protections, the Spam Filter, email authentication, and monitoring.</p>
+<p>Add CAPTCHA only if abuse demonstrates a need. If one is introduced,
+test the complete customer experience with assistive technology before
+production deployment.</p>
+<p><strong>Turnstile, never reCAPTCHA.</strong> The submission server
+already supports Turnstile and has it switched off, because a challenge
+nobody needs is a barrier nobody asked for. reCAPTCHA’s image grids are
+precisely the barrier this organisation exists to remove: a spam control
+that locks out blind users to keep out bots has failed at the only job
+that matters here.</p>
+<hr />
+<h2 id="branding-and-customer-facing-language">43. Branding and
+customer-facing language</h2>
+<p>Use Customization &amp; Rebranding to make the service feel
+intentional.</p>
+<p>Primary identity: <strong>Community Access Help Desk</strong>.
+Sub-services: QUILL Support · GLOW Support · BITS Support · Git Going
+with GitHub.</p>
+<p>Use restrained customization. Do not sacrifice contrast, focus
+indication, semantic structure, readability, browser zoom or
+forced-colors support. <strong>A clean accessible interface is
+preferable to elaborate visual branding.</strong></p>
+<p>Recommended front door:</p>
+<blockquote>
+<p>Welcome to the Community Access Help Desk. Choose the service you
+need help with, or contact Community Access if you are not sure where to
+begin.</p>
+</blockquote>
+<p>Service links: Get Help with QUILL · Get Help with GLOW · Get Help
+with Git Going with GitHub · Get Help with BITS · General Community
+Access Help</p>
+<p><strong>Avoid forcing customers to understand internal organisational
+structure.</strong></p>
+<hr />
+<h2 id="privacy-and-attachments">44. Privacy and attachments</h2>
+<h3 id="privacy-notice">Privacy notice</h3>
+<p>Publish a concise support privacy notice explaining: what information
+support tickets collect; why; who may see it; how long support records
+are retained; whether AI may be used; whether technical information may
+be escalated to GitHub; that personally identifying information will not
+normally be copied into public GitHub issues; and how a user can request
+deletion where applicable.</p>
+<p><strong>Do not request information merely because a field can be
+created.</strong></p>
+<h3 id="what-glows-side-does">What GLOW’s side does</h3>
+<ul>
+<li>Conversations are deleted 180 days after their last message;
+<code>/mail/admin</code> has a button to apply that now.</li>
+<li>Deleting a conversation deletes its messages and the stored address
+immediately.</li>
+<li>Inbound attachments are recorded by name only; GLOW does not store
+contents.</li>
+<li>Open and click tracking are deliberately not enabled anywhere.</li>
+<li>A participant’s conversations are readable only by the cookie
+identity that owns them; there is no way to enumerate somebody else’s by
+guessing an id.</li>
+</ul>
+<h3 id="the-mail-bridges-audit-trail">The mail bridge’s audit trail</h3>
+<p>A SQLite file in the <code>bridge-state</code> volume records the
+Postmark message id, the Maildir filename, the spam score, and the
+<strong>length</strong> of the subject rather than the subject itself.
+An administrator reads that table, and message content belongs in the
+help desk where access is controlled, not in a second store that would
+also have to be secured and backed up.</p>
+<h3 id="spam">Spam</h3>
+<p><strong>Spam is scored, logged, and delivered anyway.</strong> A
+support inbox for accessibility work is full of long quoted threads,
+unusual markup and assistive-technology jargon — the shapes a filter
+mistrusts — so agents mark spam by hand until there is evidence for a
+threshold.</p>
+<h3 id="attachment-policy">Attachment policy</h3>
+<p>Define accepted types, and allow only those actually needed.
+Consider: TXT, LOG, JSON, PNG, JPG, PDF, DOCX.</p>
+<p>Warn users not to upload passwords, API keys, private SSH keys,
+authentication tokens, or highly confidential documents unless
+explicitly requested through an approved process.</p>
+<hr />
+<h2 id="backup-and-recovery">45. Backup and recovery</h2>
+<p>Before launch, document backups for: the FreeScout database;
+<code>.env</code>; application configuration; module configuration;
+uploaded attachments; custom code; the GitHub bridge; reverse-proxy
+configuration. On the GLOW side, add
+<code>instance/email_threads.db</code> and
+<code>instance/feedback.db</code>.</p>
+<p><strong>Do not rely solely on VM or server snapshots. Test restore
+procedures.</strong> A backup that has never been restored is an
+assumption, not a recovery plan.</p>
+<p>Recommended: automated daily database backup; regular attachment
+backup; an off-server copy; a retention policy; a periodic restore
+test.</p>
+<h3 id="what-glows-work-stores">What GLOW’s work stores</h3>
+<table>
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+</colgroup>
+<thead>
+<tr>
+<th>Where</th>
+<th>What</th>
+<th>Retention</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>instance/email_threads.db</code></td>
+<td>Conversations, messages, do-not-send list, webhook events</td>
+<td>Conversations 180 days from last message; suppressions and events
+until deleted</td>
+</tr>
+<tr>
+<td><code>instance/feedback.db</code></td>
+<td>Four new columns: <code>helpdesk_message_id</code>,
+<code>helpdesk_status</code>, <code>helpdesk_error</code>,
+<code>helpdesk_filed_at</code></td>
+<td>As the existing feedback table</td>
+</tr>
+</tbody>
+</table>
+<p>The schema migration is automatic and additive, so an existing
+<code>feedback.db</code> upgrades in place with no migration step and no
+downtime.</p>
+<p><strong>The do-not-send list is the one worth protecting.</strong>
+Losing <code>email_threads.db</code> loses conversation history, which
+is unfortunate; it also loses every suppression, which means GLOW starts
+mailing hard-bounced and spam-complained addresses again, and that costs
+sending reputation for every other user.</p>
+<hr />
+<h2 id="logging-and-monitoring">46. Logging and monitoring</h2>
+<p>Monitor: FreeScout application errors; failed email retrieval; failed
+outbound email; cron failures; queue failures; API errors; GitHub
+webhook failures; bridge failures (both bridges); disk usage; database
+availability; TLS certificate expiration.</p>
+<p><strong>Send administrative alerts somewhere independent of the help
+desk.</strong> If the help desk is down, an alert that exists only
+inside the help desk is not useful.</p>
+<p><code>GET /mail/admin/health</code> on GLOW is suitable for an uptime
+monitor.</p>
+<h3 id="rate-limits-on-the-new-glow-routes">Rate limits on the new GLOW
+routes</h3>
+<table>
+<thead>
+<tr>
+<th>Route</th>
+<th>Limit</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>POST /mail/webhook/inbound</code></td>
+<td>120 per minute</td>
+</tr>
+<tr>
+<td><code>POST /mail/webhook/events</code></td>
+<td>240 per minute</td>
+</tr>
+<tr>
+<td><code>POST /mail/conversations/&lt;id&gt;/reply</code></td>
+<td>20 per hour</td>
+</tr>
+<tr>
+<td><code>POST /mail/conversations/start</code></td>
+<td>10 per hour</td>
+</tr>
+</tbody>
+</table>
+<p>Webhook limits are generous on purpose, for the reason in section 6.
+They are per process, so with N workers the effective limit is N times
+these numbers.</p>
+<hr />
+<h2 id="update-policy">47. Update policy</h2>
+<p>Before major updates:</p>
+<ol type="1">
+<li>Read FreeScout release notes.</li>
+<li>Read installed module requirements.</li>
+<li>Create a backup.</li>
+<li>Confirm a restore point.</li>
+<li>Update FreeScout.</li>
+<li>Update modules.</li>
+<li>Clear cache if required.</li>
+<li>Test agent login.</li>
+<li>Test an inbound ticket.</li>
+<li>Test a reply.</li>
+<li>Test the portal.</li>
+<li>Test the GitHub bridge.</li>
+<li>Perform a brief accessibility regression check.</li>
+</ol>
+<p><strong>Avoid customizing official module code</strong> unless
+necessary; local modifications complicate upgrades.</p>
+<p>On this deployment, <code>ENABLE_AUTO_UPDATE</code> and FreeScout’s
+in-app updater are both <strong>off</strong> deliberately: an unattended
+upgrade of a help desk is how a Monday morning starts badly. And re-read
+the <code>APP_KEY</code> warning in section 9 before any update, because
+an update is a recreate.</p>
+<hr />
+<h2 id="governance-and-review">48. Governance and review</h2>
+<h3 id="roles">Roles</h3>
+<p><strong>Platform Owner</strong> — FreeScout server, modules, backups,
+updates, security, DNS coordination, API credentials.</p>
+<p><strong>Help Desk Administrator</strong> — mailboxes, users, fields,
+tags, workflows, saved replies, reports.</p>
+<p><strong>Program Leads</strong> — QUILL, GLOW, BITS, Git Going.</p>
+<p><strong>Developer Liaison</strong> — GitHub escalation quality, issue
+mapping, developer-status updates, preventing duplicate issues.</p>
+<p><strong>Accessibility Lead</strong> — portal acceptance testing,
+agent-interface testing, accessibility workflow, periodic regression
+testing.</p>
+<p><strong>Knowledge Manager</strong> — knowledge-base quality, removing
+stale articles, converting recurring tickets into documentation.</p>
+<p>One person may initially perform several roles, but the
+responsibilities should still be written down.</p>
+<h3 id="monthly">Monthly</h3>
+<ol type="1">
+<li>Review overdue tickets.</li>
+<li>Review unassigned tickets.</li>
+<li>Review top ticket categories.</li>
+<li>Review accessibility tickets.</li>
+<li>Review open GitHub escalations.</li>
+<li>Review satisfaction feedback.</li>
+<li>Review spam and abuse.</li>
+<li>Review failed integrations.</li>
+<li>Review knowledge-base candidates.</li>
+<li>Publish or update documentation.</li>
+<li>Review agent access.</li>
+<li>Review module and FreeScout updates.</li>
+</ol>
+<h3 id="quarterly">Quarterly</h3>
+<ul>
+<li>Test backup restoration.</li>
+<li>Review API credentials.</li>
+<li>Review GitHub App permissions.</li>
+<li>Review DMARC posture.</li>
+<li>Conduct accessibility regression testing.</li>
+<li>Review retention and privacy practices.</li>
+</ul>
+<hr />
+<h1 id="part-six-delivery">Part six — delivery</h1>
+<h2 id="deployment-phases">49. Deployment phases</h2>
+<h3 id="phase-1-foundation">Phase 1 — Foundation</h3>
+<ul class="task-list">
+<li><label><input type="checkbox" />Confirm production
+server.</label></li>
+<li><label><input type="checkbox" />Confirm the canonical hostname
+(decision 1, section 0.2).</label></li>
+<li><label><input type="checkbox" />Configure HTTPS.</label></li>
+<li><label><input type="checkbox" />Confirm current FreeScout
+version.</label></li>
+<li><label><input type="checkbox" />Confirm cron.</label></li>
+<li><label><input type="checkbox" />Confirm backup.</label></li>
+<li><label><input type="checkbox" />Confirm outbound mail.</label></li>
+<li><label><input type="checkbox" />Confirm inbound mail.</label></li>
+<li><label><input type="checkbox" />Create administrator
+accounts.</label></li>
+</ul>
+<h3 id="phase-2-purchase-modules">Phase 2 — Purchase modules</h3>
+<ul class="task-list">
+<li><label><input type="checkbox" />Open <a
+href="https://freescout.net/modules/"
+class="uri">https://freescout.net/modules/</a></label></li>
+<li><label><input type="checkbox" />Add recommended paid modules to the
+shared cart.</label></li>
+<li><label><input type="checkbox" />Review cart before
+checkout.</label></li>
+<li><label><input type="checkbox" />Complete one checkout
+transaction.</label></li>
+<li><label><input type="checkbox" />Save receipt; store licence keys;
+document the purchasing account.</label></li>
+<li><label><input type="checkbox" />Install modules in the recommended
+order.</label></li>
+<li><label><input type="checkbox" />Install the free AI Integration
+module, leaving external AI disabled until the policy review in section
+40.</label></li>
+</ul>
+<h3 id="phase-3-domains-and-email">Phase 3 — Domains and email</h3>
+<ul class="task-list">
+<li><label><input type="checkbox" />Configure the canonical help
+domain.</label></li>
+<li><label><input type="checkbox" />Configure branded support
+aliases.</label></li>
+<li><label><input type="checkbox" />Obtain TLS certificates for web
+aliases.</label></li>
+<li><label><input type="checkbox" />Configure support
+mailboxes.</label></li>
+<li><label><input type="checkbox" />Configure Postmark SMTP where
+appropriate.</label></li>
+<li><label><input type="checkbox" />Validate SPF for every sending
+domain (merge, never duplicate).</label></li>
+<li><label><input type="checkbox" />Validate DKIM.</label></li>
+<li><label><input type="checkbox" />Configure DMARC.</label></li>
+<li><label><input type="checkbox" /><strong>Extend
+<code>MAILBRIDGE_RECIPIENTS</code> for every new
+address.</strong></label></li>
+<li><label><input type="checkbox" />Test replies from every
+mailbox.</label></li>
+<li><label><input type="checkbox" />Confirm Reply-To / From
+behaviour.</label></li>
+</ul>
+<h3 id="phase-4-mailboxes">Phase 4 — Mailboxes</h3>
+<ul class="task-list">
+<li><label><input type="checkbox" />Create QUILL Support.</label></li>
+<li><label><input type="checkbox" />Create GLOW Support.</label></li>
+<li><label><input type="checkbox" />Create Community
+Access.</label></li>
+<li><label><input type="checkbox" />Create Git Going with
+GitHub.</label></li>
+<li><label><input type="checkbox" />Create BITS Support.</label></li>
+<li><label><input type="checkbox" />Configure signatures.</label></li>
+<li><label><input type="checkbox" />Configure auto replies.</label></li>
+<li><label><input type="checkbox" />Configure mailbox
+permissions.</label></li>
+<li><label><input type="checkbox" />Configure Teams.</label></li>
+</ul>
+<h3 id="phase-5-classification">Phase 5 — Classification</h3>
+<ul class="task-list">
+<li><label><input type="checkbox" />Create the tag
+taxonomy.</label></li>
+<li><label><input type="checkbox" />Create common custom
+fields.</label></li>
+<li><label><input type="checkbox" />Create mailbox-specific custom
+fields.</label></li>
+<li><label><input type="checkbox" />Create the impact
+model.</label></li>
+<li><label><input type="checkbox" />Create custom folders.</label></li>
+<li><label><input type="checkbox" />Configure ticket
+numbering.</label></li>
+<li><label><input type="checkbox" />Document naming
+standards.</label></li>
+</ul>
+<h3 id="phase-6-workflows">Phase 6 — Workflows</h3>
+<ul class="task-list">
+<li><label><input type="checkbox" />New-ticket service
+tagging.</label></li>
+<li><label><input type="checkbox" />Product tagging.</label></li>
+<li><label><input type="checkbox" />Accessibility routing.</label></li>
+<li><label><input type="checkbox" />Security/privacy
+routing.</label></li>
+<li><label><input type="checkbox" />First-response aging.</label></li>
+<li><label><input type="checkbox" />Waiting-on-customer
+reminder.</label></li>
+<li><label><input type="checkbox" />Overdue escalation.</label></li>
+<li><label><input type="checkbox" />Knowledge-base candidate
+workflow.</label></li>
+<li><label><input type="checkbox" />GitHub escalation manual
+workflow.</label></li>
+</ul>
+<h3 id="phase-7-portal-and-knowledge-base">Phase 7 — Portal and
+knowledge base</h3>
+<ul class="task-list">
+<li><label><input type="checkbox" />Configure the End-User Portal for
+each service.</label></li>
+<li><label><input type="checkbox" />Configure public redirect
+domains.</label></li>
+<li><label><input type="checkbox" />Add appropriate intake
+fields.</label></li>
+<li><label><input type="checkbox" />Build knowledge-base
+categories.</label></li>
+<li><label><input type="checkbox" />Publish the initial articles from
+section 53.</label></li>
+<li><label><input type="checkbox" />Configure branding.</label></li>
+<li><label><input type="checkbox" />Test widgets if used.</label></li>
+<li><label><input type="checkbox" />Perform an accessibility
+review.</label></li>
+</ul>
+<h3 id="phase-8-github-bridge">Phase 8 — GitHub bridge</h3>
+<ul class="task-list">
+<li><label><input type="checkbox" />Create the GitHub App.</label></li>
+<li><label><input type="checkbox" />Restrict repository
+permissions.</label></li>
+<li><label><input type="checkbox" />Configure the webhook
+secret.</label></li>
+<li><label><input type="checkbox" />Deploy the GitHub
+bridge.</label></li>
+<li><label><input type="checkbox" />Store secrets securely.</label></li>
+<li><label><input type="checkbox" />Configure the FreeScout API
+key.</label></li>
+<li><label><input type="checkbox" />Configure the FreeScout custom
+webhook.</label></li>
+<li><label><input type="checkbox" />Build the repository
+mapping.</label></li>
+<li><label><input type="checkbox" />Build the sanitised issue
+template.</label></li>
+<li><label><input type="checkbox" />Write the issue URL back to
+FreeScout.</label></li>
+<li><label><input type="checkbox" />Process GitHub status
+webhooks.</label></li>
+<li><label><input type="checkbox" />Test duplicate
+prevention.</label></li>
+<li><label><input type="checkbox" />Test security/privacy
+exclusions.</label></li>
+<li><label><input type="checkbox" />Add integration
+logging.</label></li>
+</ul>
+<h3 id="phase-9-accessibility-acceptance">Phase 9 — Accessibility
+acceptance</h3>
+<ul class="task-list">
+<li><label><input type="checkbox" />JAWS testing.</label></li>
+<li><label><input type="checkbox" />NVDA testing.</label></li>
+<li><label><input type="checkbox" />Narrator testing.</label></li>
+<li><label><input type="checkbox" />Keyboard-only testing.</label></li>
+<li><label><input type="checkbox" />Portal testing.</label></li>
+<li><label><input type="checkbox" />Knowledge-base testing.</label></li>
+<li><label><input type="checkbox" />Form validation
+testing.</label></li>
+<li><label><input type="checkbox" />200 percent zoom.</label></li>
+<li><label><input type="checkbox" />Forced-colors / high-contrast
+testing.</label></li>
+<li><label><input type="checkbox" />Mobile public-portal
+testing.</label></li>
+<li><label><input type="checkbox" />Document discovered
+issues.</label></li>
+<li><label><input type="checkbox" />Remediate launch
+blockers.</label></li>
+</ul>
+<h3 id="phase-10-pilot">Phase 10 — Pilot</h3>
+<p>Start with a small group of agents, piloting QUILL, GLOW, Git Going
+and BITS.</p>
+<p>Measure: misrouted tickets; missing fields; excessive required
+fields; workflow errors; email deliverability; accessibility barriers;
+GitHub duplication; agent confusion; knowledge-base gaps.</p>
+<p>Adjust before public launch.</p>
+<hr />
+<h2 id="launch-checklist">50. Launch checklist</h2>
+<p>A production launch is ready when all of the following are true:</p>
+<ul class="task-list">
+<li><label><input type="checkbox" />One canonical FreeScout URL is
+stable.</label></li>
+<li><label><input type="checkbox" />HTTPS is valid.</label></li>
+<li><label><input type="checkbox" />Backups are working.</label></li>
+<li><label><input type="checkbox" />The restore procedure is documented
+<strong>and has been tested</strong>.</label></li>
+<li><label><input type="checkbox" />Cron is healthy.</label></li>
+<li><label><input type="checkbox" />Each mailbox receives
+email.</label></li>
+<li><label><input type="checkbox" />Each mailbox sends
+email.</label></li>
+<li><label><input type="checkbox" />SPF, DKIM and DMARC are validated
+for every sending domain.</label></li>
+<li><label><input type="checkbox" />Every mailbox address is in
+<code>MAILBRIDGE_RECIPIENTS</code> (or uses IMAP direct).</label></li>
+<li><label><input type="checkbox" />Agent permissions are
+correct.</label></li>
+<li><label><input type="checkbox" />2FA is enabled.</label></li>
+<li><label><input type="checkbox" />Required modules are
+installed.</label></li>
+<li><label><input type="checkbox" />Tags are standardized.</label></li>
+<li><label><input type="checkbox" />Custom fields are
+documented.</label></li>
+<li><label><input type="checkbox" />Workflows have been
+tested.</label></li>
+<li><label><input type="checkbox" />Portals work.</label></li>
+<li><label><input type="checkbox" />Knowledge bases work.</label></li>
+<li><label><input type="checkbox" />Branded domains redirect
+correctly.</label></li>
+<li><label><input type="checkbox" />The GitHub bridge
+works.</label></li>
+<li><label><input type="checkbox" />Public GitHub issues do not leak
+customer data.</label></li>
+<li><label><input type="checkbox" />Accessibility testing is
+complete.</label></li>
+<li><label><input type="checkbox" />The privacy notice is
+published.</label></li>
+<li><label><input type="checkbox" />Support staff have
+training.</label></li>
+<li><label><input type="checkbox" />An outage contact method exists
+<strong>outside</strong> FreeScout.</label></li>
+</ul>
+<hr />
+<h2 id="agent-operating-procedure">51. Agent operating procedure</h2>
+<p>Every new ticket should follow approximately this path:</p>
+<ol type="1">
+<li>Read the customer’s entire request.</li>
+<li>Confirm the correct mailbox and service.</li>
+<li>Set Issue Type.</li>
+<li>Set Impact.</li>
+<li>Set Product or Area where applicable.</li>
+<li>Capture Version, OS and AT <strong>only when relevant</strong>.</li>
+<li>Assign, or leave in the correct team queue.</li>
+<li>Reply promptly.</li>
+<li>Troubleshoot.</li>
+<li>Use internal notes for staff discussion.</li>
+<li>Escalate confirmed product defects to GitHub.</li>
+<li><strong>Keep the customer in FreeScout.</strong></li>
+<li>Resolve or close when complete.</li>
+<li>Mark recurring topics as knowledge-base candidates.</li>
+</ol>
+<p><strong>Do not require customers to move to GitHub to receive
+support.</strong></p>
+<hr />
+<h2 id="support-philosophy">52. Support philosophy</h2>
+<h3 id="meet-people-where-they-are">Meet people where they are</h3>
+<p>Users should be able to begin with a simple email or an accessible
+form. They should not need to understand GitHub, repository structure,
+issue labels, internal teams, product ownership or technical
+terminology.</p>
+<p><strong>Support owns the complexity.</strong></p>
+<h3 id="accessibility-is-the-floor-usability-is-the-goal">Accessibility
+is the floor; usability is the goal</h3>
+<p>A technically conforming portal that is confusing or difficult to
+navigate is not good enough. The measure of success is whether people
+can effectively and independently get help.</p>
+<h3 id="preserve-human-judgment">Preserve human judgment</h3>
+<p>Automation should categorize, remind, route, surface and
+integrate.</p>
+<p>Automation should <strong>not</strong> replace judgment about
+severity, privacy, accessibility impact, customer communication,
+security, or whether a problem belongs in public GitHub.</p>
+<hr />
+<h2 id="initial-knowledge-base-articles">53. Initial knowledge-base
+articles</h2>
+<p>Publish these before launch.</p>
+<p><strong>Universal</strong></p>
+<ol type="1">
+<li>How to Contact Support</li>
+<li>What Information Helps Us Solve a Problem</li>
+<li>How We Handle Your Support Information</li>
+<li>How Accessibility Issues Are Reported</li>
+<li>What Happens When a Bug Is Sent to GitHub</li>
+</ol>
+<p><strong>QUILL</strong></p>
+<ol type="1">
+<li>Installing QUILL</li>
+<li>Portable Versus Installed Versions</li>
+<li>Finding Your QUILL Version</li>
+<li>Reporting a QUILL Bug</li>
+<li>QUILL Keyboard Basics</li>
+<li>QUILL and JAWS</li>
+<li>QUILL and NVDA</li>
+<li>Known Issues</li>
+<li>Release Notes</li>
+</ol>
+<p><strong>GLOW</strong></p>
+<ol type="1">
+<li>What GLOW Does</li>
+<li>Getting Started</li>
+<li>Understanding Audit Results</li>
+<li>Human Review Still Matters</li>
+<li>Reporting a GLOW Problem</li>
+<li>Privacy and Uploaded Content</li>
+</ol>
+<p><strong>Git Going</strong></p>
+<ol type="1">
+<li>Installing Git</li>
+<li>Git Versus GitHub</li>
+<li>Creating a Repository</li>
+<li>Cloning a Repository</li>
+<li>Commit and Push</li>
+<li>Pulling Changes</li>
+<li>Branch Basics</li>
+<li>Pull Requests</li>
+<li>Screen Reader Tips for GitHub</li>
+<li>Common Authentication Problems</li>
+</ol>
+<hr />
+<h2 id="final-topology">54. Final topology</h2>
+<pre class="text"><code>                    Internet
+                       |
+      +----------+-----+------+-----------+
+      |          |            |           |
+  QUILL      GLOW         BITS        Git Going
+  Support    Support      Support
+      |          |            |           |
+      +----------+-----+------+-----------+
+                       |
+               Branded redirects
+                       |
+                       v
+        helpdesk.community-access.org
+                       |
+                  FreeScout
+                       |
+      +----------------+------------------+
+      |        |        |        |        |
+   QUILL     GLOW   Community  Git Going  BITS
+      |        |        |        |        |
+      +----------------+------------------+
+                       |
+          Tags / Fields / Workflows
+                       |
+       +---------------+---------------+
+       |                               |
+ Knowledge Bases                API &amp; Webhooks
+                                       |
+                                       v
+                               GitHub bridge
+                                       |
+                                       v
+                                  GitHub App
+                                       |
+                                       v
+                              GitHub Repositories
+
+Mail in:   Namecheap forwarding -&gt; Postmark -&gt; mail bridge -&gt; Dovecot
+           Microsoft 365 -&gt; FreeScout IMAP/OAuth  (bits-acb.org only)
+           GLOW /feedback -&gt; mail bridge          (no Postmark)
+Mail out:  FreeScout -&gt; Postmark SMTP</code></pre>
+<p><strong>Final recommendation.</strong> Build one Community Access
+FreeScout service and let programs have distinct identities inside it.
+Keep one canonical application URL, one module-licence set, one security
+model, one reporting strategy, one support philosophy. Separate programs
+using mailboxes, teams, permissions, portal entry points, knowledge
+bases, custom fields, tags and workflows. Use GitHub only after human
+triage, with FreeScout remaining the customer’s source of truth.</p>
+<hr />
+<h1 id="part-seven-reference">Part seven — reference</h1>
+<h2 id="what-is-already-running-and-what-is-not">55. What is already
+running, and what is not</h2>
+<p>Observed on lp.csedesigns.com on 11 September 2026. Checked, not
+assumed. Re-check before relying on it; a server moves on and a document
+does not.</p>
+<h3 id="already-done">Already done</h3>
+<table>
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
+<tbody>
+<tr>
+<td><code>helpdesk.community-access.org</code> DNS</td>
+<td>Resolves to <code>107.175.91.158</code></td>
+</tr>
+<tr>
+<td>Caddy site block</td>
+<td>Live, <code>/postmark/*</code> routed to the mail bridge ahead of
+the catch-all</td>
+</tr>
+<tr>
+<td>TLS certificate</td>
+<td>Issued, valid</td>
+</tr>
+<tr>
+<td>FreeScout</td>
+<td>Running as <code>helpdesk-app</code>, tiredofit/freescout 1.8.219,
+pinned by digest</td>
+</tr>
+<tr>
+<td>MariaDB, Dovecot, mail bridge</td>
+<td><code>helpdesk-db</code>, <code>helpdesk-imap</code>,
+<code>helpdesk-mailbridge</code></td>
+</tr>
+<tr>
+<td>Mail bridge health</td>
+<td>Answering <code>/health</code> every minute</td>
+</tr>
+<tr>
+<td>Bridge reachable from GLOW</td>
+<td>Yes — <code>helpdesk-mailbridge:8096</code> returns 401 without
+credentials, the correct refusal</td>
+</tr>
+<tr>
+<td><code>MAILBRIDGE_RECIPIENTS</code></td>
+<td><code>support@community-access.org</code> <strong>only</strong></td>
+</tr>
+<tr>
+<td><code>MAILBRIDGE_TRUSTED_IPS</code></td>
+<td>Empty, which is what lets GLOW post to it</td>
+</tr>
+<tr>
+<td><code>MAILBRIDGE_PATH</code></td>
+<td><code>/postmark/inbound</code></td>
+</tr>
+<tr>
+<td>Submission server</td>
+<td><code>feedback-hub-submit:8095</code>, live, filing GitHub
+issues</td>
+</tr>
+</tbody>
+</table>
+<p>The mail bridge is attached to <strong>both</strong>
+<code>helpdesk_default</code> and <code>web_default</code>. GLOW
+(<code>web-web-1</code>, from <code>/home/jeffbis/app/web</code>) is on
+<code>web_default</code>. That shared network is why the ticket path
+needs no public round trip. If either container is moved off
+<code>web_default</code>, GLOW’s tickets stop, and the symptom is a
+connection error in the feedback log rather than a visible outage.</p>
+<h3 id="not-done">Not done</h3>
+<table>
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
+<tbody>
+<tr>
+<td>Postmark account</td>
+<td>Not created, or not wired to this deployment</td>
+</tr>
+<tr>
+<td><code>support@community-access.org</code> into Postmark</td>
+<td>No. Namecheap forwarding today</td>
+</tr>
+<tr>
+<td>FreeScout outbound SMTP</td>
+<td>Not configured</td>
+</tr>
+<tr>
+<td><code>help.community-access.org</code></td>
+<td>Does not resolve</td>
+</tr>
+<tr>
+<td>Other mailboxes</td>
+<td>None created</td>
+</tr>
+<tr>
+<td>Modules</td>
+<td>Not purchased</td>
+</tr>
+<tr>
+<td>GitHub bridge</td>
+<td>Not built</td>
+</tr>
+<tr>
+<td><code>inbound.letitglow.app</code> MX</td>
+<td>Does not exist. GLOW cannot receive replies yet</td>
+</tr>
+<tr>
+<td>GLOW’s <code>.env</code></td>
+<td>Untouched</td>
+</tr>
+</tbody>
+</table>
+<h3 id="dns-as-measured">DNS as measured</h3>
+<table>
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+</colgroup>
+<thead>
+<tr>
+<th>Domain</th>
+<th>MX</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>community-access.org</code></td>
+<td>Namecheap forwarding (5 records)</td>
+<td>GitHub Pages A records</td>
+</tr>
+<tr>
+<td><code>quillforall.org</code></td>
+<td>Namecheap forwarding (5 records)</td>
+<td>GitHub Pages A records</td>
+</tr>
+<tr>
+<td><code>letitglow.app</code></td>
+<td>Namecheap forwarding (5 records)</td>
+<td>Root; GLOW uses subdomains</td>
+</tr>
+<tr>
+<td><code>quillville.org</code></td>
+<td>Namecheap forwarding (5 records)</td>
+<td>Parked</td>
+</tr>
+<tr>
+<td><code>bits-acb.org</code></td>
+<td><strong>Microsoft 365</strong>, strict <code>-all</code> SPF</td>
+<td>Different handling; section 13.2</td>
+</tr>
+<tr>
+<td><code>glow.bits-acb.org</code></td>
+<td>Resolves via <code>letitglow.app</code> — <strong>looks like a
+CNAME</strong></td>
+<td>Cannot carry its own mail; decision 3</td>
+</tr>
+<tr>
+<td><code>inbound.letitglow.app</code></td>
+<td>None</td>
+<td>Needs the MX in section 34</td>
+</tr>
+<tr>
+<td><code>help.community-access.org</code></td>
+<td>Does not resolve</td>
+<td>Decision 1</td>
+</tr>
+</tbody>
+</table>
+<h3 id="where-things-stand-by-route">Where things stand, by route</h3>
+<table>
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+</colgroup>
+<thead>
+<tr>
+<th>Route</th>
+<th>Account needed?</th>
+<th>Status</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Quill Radio, Suggest a Station or Podcast</td>
+<td>No</td>
+<td>Working. Files an issue with the bundled issues-only token</td>
+</tr>
+<tr>
+<td><code>quillforall.org/picks/suggest/</code></td>
+<td>No</td>
+<td>Posts to the submission server, which files the issue</td>
+</tr>
+<tr>
+<td><code>lp.csedesigns.com/submit/picks</code></td>
+<td>—</td>
+<td>Live. feedback-hub 1.2.0</td>
+</tr>
+<tr>
+<td>Help desk website</td>
+<td>—</td>
+<td>Reachable and serving. Waiting only on Postmark</td>
+</tr>
+<tr>
+<td>Inbound mail, Postmark to FreeScout</td>
+<td>—</td>
+<td>Built and proven. Waiting only on Postmark credentials</td>
+</tr>
+<tr>
+<td>Report a Bug, every QUILL app</td>
+<td>No</td>
+<td>Routed through the server, so a build needs no token. Still files a
+GitHub issue until Postmark lands</td>
+</tr>
+<tr>
+<td>GLOW feedback to FreeScout</td>
+<td>No</td>
+<td>Code complete. Waiting on three <code>HELPDESK_BRIDGE_*</code>
+variables</td>
+</tr>
+<tr>
+<td>GLOW two-way conversations</td>
+<td>No</td>
+<td>Code complete. Waiting on sections 32 to 36</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="troubleshooting">56. Troubleshooting</h2>
+<h3 id="postmark-and-the-help-desk">Postmark and the help desk</h3>
+<table>
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+</colgroup>
+<thead>
+<tr>
+<th>Symptom</th>
+<th>Cause</th>
+<th>Fix</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Inbound silently does nothing</td>
+<td>Plan without inbound email</td>
+<td>Section 2</td>
+</tr>
+<tr>
+<td>Postmark shows <strong>Inbound Error</strong></td>
+<td>Webhook credentials wrong</td>
+<td>Re-run <code>make-credentials.sh</code>, re-paste the whole URL</td>
+</tr>
+<tr>
+<td>Webhook returns 401</td>
+<td>Username or password off by a character</td>
+<td>Postmark retries ~10 times over several hours, then gives up</td>
+</tr>
+<tr>
+<td>Webhook returns 403</td>
+<td>Recipient not in <code>MAILBRIDGE_RECIPIENTS</code></td>
+<td>403 stops retries by design. Section 13.1</td>
+</tr>
+<tr>
+<td>Every other address at the domain stopped forwarding</td>
+<td>The domain’s MX was repointed at Postmark</td>
+<td>Restore the five <code>eforward*</code> records. Section 5</td>
+</tr>
+<tr>
+<td>Domain never verifies</td>
+<td>Doubled zone suffix, or a wrapped DKIM value</td>
+<td>Re-copy from Postmark; use the short Host form</td>
+</tr>
+<tr>
+<td>Namecheap refuses <code>pm_bounces</code></td>
+<td>Underscore</td>
+<td>Change the Return-Path hostname in Postmark to
+<code>pm-bounces</code></td>
+</tr>
+<tr>
+<td>Mail to a <code>bits-acb.org</code> address never arrives</td>
+<td>It is Microsoft 365, not forwarding</td>
+<td>Section 13.2</td>
+</tr>
+<tr>
+<td>Sending from <code>bits-acb.org</code> is rejected</td>
+<td>Its SPF ends <code>-all</code> and does not include Postmark</td>
+<td>Merge <code>include:spf.mtasv.net</code>, or send via M365</td>
+</tr>
+<tr>
+<td>A duplicate conversation appears</td>
+<td>Should not happen</td>
+<td>The bridge dedups on message id and content hash. Report it</td>
+</tr>
+<tr>
+<td>FreeScout stops receiving after an update</td>
+<td><code>APP_KEY</code> reset</td>
+<td>Section 9. Do not undo the <code>freescout.env</code> bind
+mount</td>
+</tr>
+<tr>
+<td>FreeScout redirects endlessly to <code>install.php</code></td>
+<td>Image wrote a DB driver Laravel 5.5 does not define</td>
+<td><code>~/helpdesk/fix-db-driver.sh</code></td>
+</tr>
+<tr>
+<td>Custom field values vanished</td>
+<td>The conversation was moved between mailboxes</td>
+<td>FreeScout does not preserve them. Section 12.1</td>
+</tr>
+</tbody>
+</table>
+<h3 id="glows-own-mail">GLOW’s own mail</h3>
+<table>
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+</colgroup>
+<thead>
+<tr>
+<th>Symptom</th>
+<th>Cause</th>
+<th>Fix</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Everything reports “not configured”</td>
+<td><code>POSTMARK_SERVER_TOKEN</code> unset</td>
+<td>Set it and restart</td>
+</tr>
+<tr>
+<td>Sends return HTTP 422</td>
+<td>Stream id does not exist</td>
+<td>The id is <code>outbound</code>, not <code>transactional</code></td>
+</tr>
+<tr>
+<td>Sends return HTTP 401</td>
+<td>Account token used instead of server token</td>
+<td>Use the server’s own API token</td>
+</tr>
+<tr>
+<td>Mail sends but nobody receives it</td>
+<td>Domain not verified, or approval not granted</td>
+<td>Check Sender Signatures and account approval</td>
+</tr>
+<tr>
+<td>Mail lands in spam</td>
+<td>DKIM or Return-Path missing</td>
+<td>Both must show verified</td>
+</tr>
+<tr>
+<td>Replies never arrive</td>
+<td>Inbound webhook URL or secret wrong</td>
+<td><strong>Activity &gt; Inbound</strong> shows the status GLOW
+returned</td>
+</tr>
+<tr>
+<td>Webhook shows 503</td>
+<td><code>POSTMARK_WEBHOOK_TOKEN</code> unset</td>
+<td>Set it and restart. It fails closed on purpose</td>
+</tr>
+<tr>
+<td>Webhook shows 403</td>
+<td>Secret mismatch, or source IP not in the allow-list</td>
+<td>Compare the URL value with the variable</td>
+</tr>
+<tr>
+<td>Reply lands on the wrong conversation</td>
+<td>Mail client stripped the plus-address and headers</td>
+<td>Falls back to the sender’s most recent open conversation. Reassign
+from <code>/mail/admin</code></td>
+</tr>
+<tr>
+<td>An address stops receiving anything</td>
+<td>It is suppressed</td>
+<td><code>/mail/admin</code> shows why, and can clear it</td>
+</tr>
+</tbody>
+</table>
+<h3 id="glow-tickets-into-the-help-desk-1">GLOW tickets into the help
+desk</h3>
+<table>
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+</colgroup>
+<thead>
+<tr>
+<th>Symptom</th>
+<th>Cause</th>
+<th>Fix</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>No ticket filed, no error</td>
+<td>Category not in <code>HELPDESK_CATEGORIES</code>, or no address
+given</td>
+<td>Recorded as <code>skipped</code>. Nothing is wrong</td>
+</tr>
+<tr>
+<td>“does not accept mail for …”</td>
+<td><code>HELPDESK_SUPPORT_EMAIL</code> not in
+<code>MAILBRIDGE_RECIPIENTS</code></td>
+<td>Match them</td>
+</tr>
+<tr>
+<td>“rejected the credentials”</td>
+<td><code>HELPDESK_BRIDGE_USER</code>/<code>PASSWORD</code> wrong</td>
+<td>Re-read from the container</td>
+</tr>
+<tr>
+<td>“unreachable”</td>
+<td>GLOW and the bridge are not on the same Docker network</td>
+<td>Both must be on <code>web_default</code></td>
+</tr>
+<tr>
+<td>Ticket arrives from GLOW, not the person</td>
+<td>Something is sending through Postmark instead of the bridge</td>
+<td>Check <code>HELPDESK_BRIDGE_URL</code> is set</td>
+</tr>
+</tbody>
+</table>
+<h3 id="the-caddyfile-trap-on-this-server">The Caddyfile trap on this
+server</h3>
+<p><strong><code>sed -i</code> silently disconnects the Caddyfile from
+the running Caddy.</strong></p>
+<p>Docker bind-mounts a <em>single file</em> by inode.
+<code>sed -i</code> does not edit in place despite its name — it writes
+a temporary file and renames it over the target, producing a <strong>new
+inode</strong>. The container keeps the old one. From that moment the
+host file and the running configuration are two different files, and
+nothing says so.</p>
+<p>Worse, every check still passes. <code>caddy validate</code> reads
+the host file and says <em>Valid configuration</em>.
+<code>caddy reload</code> re-reads the container’s inode — the old one —
+and reports success. The edit is confirmed twice and applied never.</p>
+<p>Two rules follow:</p>
+<ul>
+<li><strong>Append with <code>&gt;&gt;</code>, rewrite with
+<code>&gt;</code>.</strong> Both keep the inode. To edit, transform to a
+temp file then <code>cat tmp &gt; Caddyfile</code>. Never
+<code>sed -i</code>, never <code>mv</code> a new file over it.</li>
+<li><strong>Repairing a split needs a container recreate</strong>,
+because a bind mount can only be re-bound that way — and that restarts
+the Caddy fronting every site on the box, so it is a deliberate act, not
+a reflex.</li>
+</ul>
+<p>As of the last note, the host file and the container’s copy were made
+byte-identical, so the divergence cannot change behaviour and a recreate
+is a no-op whenever convenient. <strong>The inodes are still split until
+that recreate happens</strong>, so the next person to edit the Caddyfile
+must do the recreate first or their change will vanish.</p>
+<p>Always back the file up first:</p>
+<div class="sourceCode" id="cb34"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cp</span> ~/app/web/Caddyfile ~/app/web/Caddyfile.bak.<span class="va">$(</span><span class="fu">date</span> +%Y-%m-%d<span class="va">)</span></span></code></pre></div>
+<p>A related trap, already fixed: <strong>a bare <code>redir</code>
+shadows every handler in its Caddy block.</strong> Caddy sorts
+directives by a fixed order and <code>redir</code> ranks above
+<code>handle</code>, so a redirect written at the foot of a site block
+runs <em>first</em>. Wrap redirects in <code>handle { }</code>.</p>
+<hr />
+<h2 id="what-changed-in-the-repositories">57. What changed in the
+repositories</h2>
+<h3 id="glow-scodeglow">GLOW (<code>s:\code\glow</code>)</h3>
+<p>New:</p>
+<ul>
+<li><code>web/src/acb_large_print_web/email_threads.py</code> —
+conversations, messages, the do-not-send list, webhook events,
+reply-address routing, retention.</li>
+<li><code>web/src/acb_large_print_web/routes/postmark.py</code> — the
+two webhook routes, the participant conversation views, and the staff
+console.</li>
+<li><code>web/src/acb_large_print_web/helpdesk.py</code> — composes a
+support ticket as RFC-822 and posts it to the mail bridge.</li>
+<li><code>web/src/acb_large_print_web/templates/conversations.html</code>,
+<code>conversation.html</code>, <code>mail_admin.html</code>,
+<code>mail_admin_thread.html</code>.</li>
+<li><code>web/tests/test_email_two_way.py</code> — 28 tests: the reply
+path, webhook authentication, routing, bounce handling, view
+scoping.</li>
+<li><code>web/tests/test_helpdesk.py</code> — 18 tests: the
+<code>From</code> header, what opens a ticket, the unverified-address
+notice, the bridge’s status codes, and that a help desk failure never
+costs a bug report.</li>
+</ul>
+<p>Changed:</p>
+<ul>
+<li><code>web/src/acb_large_print_web/email.py</code> — the message
+stream is configurable and defaults to <code>outbound</code> rather than
+the non-existent <code>transactional</code>; the 30-day nudge moved to
+the broadcast stream; sends check the do-not-send list first and capture
+the Postmark message id; <code>send_thread_message()</code> and
+<code>conversations_available()</code> added; the audit report and
+workshop artifact senders accept an optional conversation.</li>
+<li><code>web/src/acb_large_print_web/app.py</code> — registers the
+blueprint at <code>/mail</code>.</li>
+<li><code>web/src/acb_large_print_web/routes/workshop.py</code> — the
+artifact email opens a conversation so a participant can reply.</li>
+<li><code>web/src/acb_large_print_web/routes/passport.py</code> — uses
+the configurable stream; the passport page links to messages.</li>
+<li><code>web/src/acb_large_print_web/routes/feedback.py</code> — files
+a help desk ticket alongside the GitHub issue, recording the outcome in
+four new columns. <code>_save_feedback_entry</code> returns a
+<code>_SaveResult</code> rather than a four-tuple.</li>
+<li><code>web/src/acb_large_print_web/templates/admin_queue.html</code>,
+<code>passport.html</code>, <code>workshop/artifact.html</code>,
+<code>feedback_thanks.html</code>.</li>
+<li><code>web/docker-compose.prod.yml</code> — the new variables,
+documented in comments.</li>
+<li><code>web/tests/test_email.py</code>,
+<code>test_email_layer.py</code> — two assertions updated from
+<code>transactional</code> to <code>outbound</code>.</li>
+</ul>
+<p>Full suite: 1058 passed, 31 skipped.</p>
+<h3 id="quill-squill">QUILL (<code>s:\quill</code>)</h3>
+<ul>
+<li><code>magic.md</code> — item 3, the Postmark walkthrough, moved
+here. The item keeps its number and points at this file, so links from
+earlier notes still land somewhere useful. A backup of the original is
+at <code>zquill_magic_backup_2026-09-11.md</code> (gitignored, like
+<code>magic.md</code> itself).</li>
+<li>No code changed.</li>
+</ul>
+<h3 id="shelpdesk.md"><code>s:\helpdesk.md</code></h3>
+<ul>
+<li>Merged into this file in full. Nothing from it was dropped; the
+reordering is QUILL-first, and section 0.2 records where the plan and
+the live estate disagreed.</li>
+</ul>
+<h3 id="feedback-hub-on-the-server">feedback-hub (on the server)</h3>
+<ul>
+<li>Nothing changed. <code>feedback_hub.mailbridge</code> is used
+exactly as built.</li>
+</ul>
+<h3 id="one-behaviour-change-worth-knowing">One behaviour change worth
+knowing</h3>
+<p>The message stream was hardcoded to <code>transactional</code>.
+Postmark’s id for the transactional stream every server is created with
+is <code>outbound</code>; <code>transactional</code> is the stream’s
+<em>type</em>, not its id. A send to a stream id that does not exist
+returns HTTP 422, which GLOW reported to users as “a validation error,
+contact the site administrator”. If you had already created a custom
+stream with the id <code>transactional</code>, set
+<code>POSTMARK_MESSAGE_STREAM=transactional</code> to keep using it.</p>
+<hr />
+<h2 id="routes">58. Routes</h2>
+<h3 id="added-to-glow">Added to GLOW</h3>
+<table>
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+</colgroup>
+<thead>
+<tr>
+<th>Route</th>
+<th>Who</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>POST /mail/webhook/inbound</code></td>
+<td>Postmark</td>
+<td>Receives replies</td>
+</tr>
+<tr>
+<td><code>POST /mail/webhook/events</code></td>
+<td>Postmark</td>
+<td>Bounces, complaints, deliveries, subscription changes</td>
+</tr>
+<tr>
+<td><code>GET /mail/conversations</code></td>
+<td>Participant</td>
+<td>Their conversations</td>
+</tr>
+<tr>
+<td><code>GET /mail/conversations/&lt;id&gt;</code></td>
+<td>Participant</td>
+<td>One conversation</td>
+</tr>
+<tr>
+<td><code>POST /mail/conversations/&lt;id&gt;/reply</code></td>
+<td>Participant</td>
+<td>Answer from in-app</td>
+</tr>
+<tr>
+<td><code>POST /mail/conversations/start</code></td>
+<td>Participant</td>
+<td>Start a conversation</td>
+</tr>
+<tr>
+<td><code>GET /mail/admin</code></td>
+<td>Admin</td>
+<td>Conversations, suppressions, events, help desk state</td>
+</tr>
+<tr>
+<td><code>GET /mail/admin/&lt;id&gt;</code></td>
+<td>Admin</td>
+<td>One conversation</td>
+</tr>
+<tr>
+<td><code>POST /mail/admin/&lt;id&gt;/reply</code></td>
+<td>Admin</td>
+<td>Answer a participant</td>
+</tr>
+<tr>
+<td><code>POST /mail/admin/&lt;id&gt;/status</code></td>
+<td>Admin</td>
+<td>Close or reopen</td>
+</tr>
+<tr>
+<td><code>POST /mail/admin/&lt;id&gt;/assign</code></td>
+<td>Admin</td>
+<td>Anchor an unrouted conversation</td>
+</tr>
+<tr>
+<td><code>POST /mail/admin/&lt;id&gt;/delete</code></td>
+<td>Admin</td>
+<td>Delete a conversation</td>
+</tr>
+<tr>
+<td><code>POST /mail/admin/suppressions/clear</code></td>
+<td>Admin</td>
+<td>Allow an address again</td>
+</tr>
+<tr>
+<td><code>POST /mail/admin/purge</code></td>
+<td>Admin</td>
+<td>Apply retention now</td>
+</tr>
+<tr>
+<td><code>GET /mail/admin/health</code></td>
+<td>Admin</td>
+<td>JSON status</td>
+</tr>
+</tbody>
+</table>
+<h3 id="existing-elsewhere">Existing elsewhere</h3>
+<table>
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+</colgroup>
+<thead>
+<tr>
+<th>Route</th>
+<th>Host</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>POST /postmark/inbound</code></td>
+<td><code>helpdesk.community-access.org</code></td>
+<td>The mail bridge</td>
+</tr>
+<tr>
+<td><code>POST /submit/picks</code></td>
+<td><code>lp.csedesigns.com</code></td>
+<td>The submission server</td>
+</tr>
+<tr>
+<td><code>POST /freescout/github</code></td>
+<td>not built</td>
+<td>GitHub bridge, part three</td>
+</tr>
+<tr>
+<td><code>POST /github/freescout</code></td>
+<td>not built</td>
+<td>GitHub bridge, part three</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="turning-it-off">59. Turning it off</h2>
+<p>Every piece fails soft, so there is no uninstall.</p>
+<ul>
+<li><strong>Stop GLOW sending:</strong> unset
+<code>POSTMARK_SERVER_TOKEN</code> and restart. Every mail feature
+reports itself unavailable and the on-screen paths still work.</li>
+<li><strong>Stop GLOW receiving:</strong> unset
+<code>POSTMARK_WEBHOOK_TOKEN</code>. Both webhook routes return 503, and
+Postmark retries for hours before giving up, so do this deliberately
+rather than as a debugging step.</li>
+<li><strong>Stop offering conversations without stopping mail:</strong>
+unset <code>POSTMARK_INBOUND_ADDRESS</code>.</li>
+<li><strong>Stop filing tickets:</strong> unset
+<code>HELPDESK_BRIDGE_URL</code>. Feedback is still stored and still
+reaches GitHub.</li>
+<li><strong>Roll back the stream change:</strong>
+<code>POSTMARK_MESSAGE_STREAM=transactional</code>.</li>
+<li><strong>Stop the help desk entirely:</strong>
+<code>cd ~/helpdesk &amp;&amp; docker compose down</code>. Nothing else
+on the box is affected.</li>
+</ul>
+<p>Nothing above needs a code change or a redeploy, only an
+<code>.env</code> edit and a restart. That is deliberate: these are the
+failure modes you want to be able to stop at 4pm on a Friday.</p>
+<hr />
+<h2 id="what-was-not-done">60. What was not done</h2>
+<ul>
+<li><strong><code>.env</code> and <code>.env.example</code> are
+untouched</strong> in GLOW. Section 36.1 is the block to paste.</li>
+<li><strong>Nothing was committed</strong> in either repository.</li>
+<li><strong>Nothing was sent.</strong> No test email, no ticket into the
+live FreeScout queue, no change of any kind on lp.csedesigns.com —
+section 55 is the result of reading only.</li>
+<li><strong>No Postmark account, server, domain or DNS record was
+created.</strong></li>
+<li><strong>Audit report delivery is still one-way</strong>,
+deliberately.</li>
+<li><strong>Report a Bug still files GitHub issues.</strong></li>
+<li><strong>The bundled GitHub token still ships.</strong> Removal is
+gated on a release proving the server path; <code>magic.md</code> item
+7.</li>
+<li><strong>No FreeScout module was purchased or
+installed.</strong></li>
+<li><strong>The GitHub bridge does not exist.</strong></li>
+</ul>
+<hr />
+<h2 id="authoritative-references">61. Authoritative references</h2>
+<h3 id="freescout">FreeScout</h3>
+<ul>
+<li>Modules catalogue — <a href="https://freescout.net/modules/"
+class="uri">https://freescout.net/modules/</a></li>
+<li>Module licensing FAQ — <a href="https://freescout.net/modules-faq/"
+class="uri">https://freescout.net/modules-faq/</a></li>
+<li>Installation guide — <a
+href="https://github.com/freescout-help-desk/freescout/wiki/Installation-Guide"
+class="uri">https://github.com/freescout-help-desk/freescout/wiki/Installation-Guide</a></li>
+<li>Sending emails — <a
+href="https://github.com/freescout-help-desk/freescout/wiki/Sending-Emails"
+class="uri">https://github.com/freescout-help-desk/freescout/wiki/Sending-Emails</a></li>
+<li>Workflows — <a href="https://freescout.net/module/workflows/"
+class="uri">https://freescout.net/module/workflows/</a></li>
+<li>API &amp; Webhooks — <a
+href="https://freescout.net/module/api-webhooks/"
+class="uri">https://freescout.net/module/api-webhooks/</a></li>
+<li>Tags — <a href="https://freescout.net/module/tags/"
+class="uri">https://freescout.net/module/tags/</a></li>
+<li>Custom Fields — <a
+href="https://freescout.net/module/custom-fields/"
+class="uri">https://freescout.net/module/custom-fields/</a></li>
+<li>End-User Portal — <a
+href="https://freescout.net/module/end-user-portal/"
+class="uri">https://freescout.net/module/end-user-portal/</a></li>
+<li>Knowledge Base — <a
+href="https://freescout.net/module/knowledge-base/"
+class="uri">https://freescout.net/module/knowledge-base/</a></li>
+<li>Reports — <a href="https://freescout.net/module/reports/"
+class="uri">https://freescout.net/module/reports/</a></li>
+<li>Custom Folders — <a
+href="https://freescout.net/module/custom-folders/"
+class="uri">https://freescout.net/module/custom-folders/</a></li>
+<li>AI Integration — <a
+href="https://freescout.net/module/ai-integration/"
+class="uri">https://freescout.net/module/ai-integration/</a></li>
+</ul>
+<h3 id="github">GitHub</h3>
+<ul>
+<li>Creating GitHub Apps — <a
+href="https://docs.github.com/en/apps/creating-github-apps"
+class="uri">https://docs.github.com/en/apps/creating-github-apps</a></li>
+<li>App best practices — <a
+href="https://docs.github.com/en/apps/creating-github-apps/about-creating-github-apps/best-practices-for-creating-a-github-app"
+class="uri">https://docs.github.com/en/apps/creating-github-apps/about-creating-github-apps/best-practices-for-creating-a-github-app</a></li>
+<li>Webhooks with Apps — <a
+href="https://docs.github.com/en/apps/creating-github-apps/registering-a-github-app/using-webhooks-with-github-apps"
+class="uri">https://docs.github.com/en/apps/creating-github-apps/registering-a-github-app/using-webhooks-with-github-apps</a></li>
+</ul>
+<h3 id="on-the-server">On the server</h3>
+<ul>
+<li><code>~/feedback-hub/deploy/README.md</code> — the submission server
+runbook</li>
+<li><code>~/feedback-hub/deploy/helpdesk/README.md</code> — the help
+desk runbook, including the full <code>APP_KEY</code> and
+database-driver accounts</li>
+<li><code>~/feedback-hub/INTEGRATING.md</code> — how each app reaches
+the submission server</li>
+</ul>
+<hr />
+<h2 id="order-of-operations-condensed">62. Order of operations,
+condensed</h2>
+<p>If only one checklist is used, use this one.</p>
+<h3 id="get-mail-working-do-this-first">Get mail working (do this
+first)</h3>
+<ol type="1">
+<li>Sign up for Postmark on a plan that <strong>includes
+inbound</strong>.</li>
+<li>Create the server <code>Community Access Help Desk</code>; add the
+domain <code>community-access.org</code>.</li>
+<li>Add the DKIM TXT and <code>pm_bounces</code> CNAME at Namecheap.
+Touch nothing else, especially not the existing SPF record.</li>
+<li>Wait for both to show <strong>Verified</strong>.</li>
+<li>Copy the Postmark inbound address; forward <code>support@</code> to
+it in Namecheap’s <strong>Email Forwarding</strong>. <strong>Do not
+change the MX records.</strong></li>
+<li>On the server, run
+<code>./deploy/helpdesk/make-credentials.sh</code>; paste the whole
+webhook URL into Postmark’s inbound stream.</li>
+<li>Configure FreeScout’s SMTP with the Server API Token in
+<strong>both</strong> the username and password fields.</li>
+<li>Run all five checks in section 8, in order.</li>
+<li>Only then tell anybody the address exists.</li>
+</ol>
+<h3 id="build-the-help-desk">Build the help desk</h3>
+<ol start="10" type="1">
+<li>Back up FreeScout; confirm the canonical hostname decision.</li>
+<li>Purchase the recommended modules in one checkout; install in
+dependency order; enable 2FA.</li>
+<li>Create the five mailboxes, QUILL first. <strong>Add every new
+address to <code>MAILBRIDGE_RECIPIENTS</code></strong>, except the
+<code>bits-acb.org</code> pair, which use IMAP direct.</li>
+<li>Verify each new sending domain in Postmark; merge SPF, never
+duplicate.</li>
+<li>Create Teams and permissions; configure Ticket Number.</li>
+<li>Create tags, custom fields and custom folders.</li>
+<li>Create the core workflows and saved replies.</li>
+<li>Configure End-User Portals, knowledge bases and branded
+redirects.</li>
+</ol>
+<h3 id="connect-github">Connect GitHub</h3>
+<ol start="18" type="1">
+<li>Build the GitHub App with minimum permissions and a webhook
+secret.</li>
+<li>Build the GitHub bridge; configure the FreeScout API key and custom
+webhook.</li>
+<li>Build the repository mapping and the sanitised issue template.</li>
+<li>Test end-to-end escalation, duplicate prevention and privacy
+exclusions.</li>
+</ol>
+<h3 id="glows-own-mail-independent-any-time">GLOW’s own mail
+(independent; any time)</h3>
+<ol start="22" type="1">
+<li>Create a second Postmark server, <code>GLOW production</code>.</li>
+<li>Verify <code>notify.letitglow.app</code>; add the
+<code>inbound.letitglow.app</code> MX.</li>
+<li>Generate a webhook secret; set both webhook URLs.</li>
+<li>Paste the Postmark half of section 36.1 into <code>.env</code>;
+restart; run the checks in section 37.</li>
+</ol>
+<h3 id="tickets-from-glow-any-time-after-step-6">Tickets from GLOW (any
+time after step 6)</h3>
+<ol start="26" type="1">
+<li>Read the bridge credentials off the server.</li>
+<li>Paste the <code>HELPDESK_*</code> half of section 36.1 into the same
+<code>.env</code>; restart.</li>
+<li>Submit a bug report at <code>/feedback</code> and confirm the ticket
+appears in FreeScout <strong>from your address</strong>, not from
+GLOW.</li>
+</ol>
+<h3 id="finish">Finish</h3>
+<ol start="29" type="1">
+<li>Configure Reports and Satisfaction Ratings.</li>
+<li>Conduct accessibility acceptance testing.</li>
+<li>Pilot with a small support team; correct what the pilot finds.</li>
+<li>Launch.</li>
+<li>Switch QUILL’s Report a Bug from GitHub to FreeScout, on the server
+only.</li>
+<li>Once a release has proven that path, retire the bundled token.</li>
+<li>Review monthly. Expand only when a defined need appears.</li>
+</ol>

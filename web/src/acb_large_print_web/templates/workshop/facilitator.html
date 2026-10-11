@@ -6,6 +6,12 @@
 {% block content %}
 <p>Session: {{ session_code }} — {{ session_title }}</p>
 
+<ul>
+  <li><a href="{{ url_for('workshop.workshop_session_preflight', session_code=session_code) }}">Pre-flight: is this deployment ready?</a></li>
+  <li><a href="{{ url_for('workshop.workshop_session_deck', session_code=session_code) }}">The workshop deck, with this room's code in it</a></li>
+  <li><a href="{{ url_for('workshop.workshop_signage', session_code=session_code) }}">Printable room signage</a></li>
+</ul>
+
 <h2>Session metrics</h2>
 <dl class="workshop-metrics">
   <div class="workshop-metric">
@@ -124,18 +130,36 @@
 </section>
 
 <section class="workshop-panel">
-  <h2>Built-in AI usage</h2>
-  <p>
-    The room shares one AI allowance. When someone reaches a cap they are sent
-    to the copy-a-prompt path rather than an error, so the day continues
-    either way — but it is worth knowing before the afternoon.
+  <h2>Run of show</h2>
+  <p id="runofshow-help">
+    The day as the activity pages describe it, so the clock you run and the
+    time a participant reads cannot disagree. The current block is marked when
+    your device clock is inside the workshop day.
   </p>
-  <ul>
-    <li>Calls used by this room: {{ ai_usage.total_calls }}{% if ai_usage.session_cap %} of {{ ai_usage.session_cap }}{% else %} (no room cap set){% endif %}</li>
-    <li>Participants who have used it: {{ ai_usage.participants }}</li>
-    <li>Busiest participant: {{ ai_usage.busiest }} call{{ '' if ai_usage.busiest == 1 else 's' }}{% if ai_usage.participant_cap %} of {{ ai_usage.participant_cap }} each{% endif %}</li>
-    <li>Participants at their cap: {{ ai_usage.at_cap }}</li>
-  </ul>
+  <p id="runofshow-now" role="status"></p>
+  <div class="workshop-table-wrap" tabindex="0" role="region" aria-label="Run of show, scrollable">
+    <table id="runofshow" aria-describedby="runofshow-help">
+      <caption>Today, block by block</caption>
+      <thead>
+        <tr>
+          <th scope="col">Time</th>
+          <th scope="col">Block</th>
+          <th scope="col">Mode</th>
+          <th scope="col">Cue</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for row in agenda_rows %}
+        <tr data-start="{{ row.start_minutes }}" data-end="{{ row.end_minutes }}">
+          <th scope="row">{{ row.time }}</th>
+          <td>{{ row.title }}</td>
+          <td>{{ row.mode }}</td>
+          <td>{{ row.note }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
 </section>
 
 {% include "workshop/_session_nav.html" %}
@@ -143,4 +167,47 @@
 
 {% block extra_js %}
   <script src="{{ url_for('static', filename='workshop-live.js') }}"></script>
+  <script nonce="{{ csp_nonce }}">
+  // Mark the block the room should be in, from the device clock rather than
+  // the server's: a conference is rarely in the same timezone as the host.
+  // The table is complete and correct without this; all it adds is "now".
+  (function () {
+    var table = document.getElementById('runofshow');
+    var status = document.getElementById('runofshow-now');
+    if (!table || !status) { return; }
+    var rows = Array.prototype.slice.call(table.tBodies[0].rows);
+
+    function paint() {
+      var d = new Date();
+      var mins = d.getHours() * 60 + d.getMinutes();
+      var current = null, upcoming = null;
+      rows.forEach(function (row) {
+        var start = parseInt(row.getAttribute('data-start'), 10);
+        var end = parseInt(row.getAttribute('data-end'), 10);
+        var isNow = mins >= start && mins < end;
+        row.classList.toggle('is-now', isNow);
+        var cell = row.cells[0];
+        var marker = cell.querySelector('.now-marker');
+        if (isNow && !marker) {
+          marker = document.createElement('span');
+          marker.className = 'now-marker';
+          marker.textContent = ' (now)';
+          cell.appendChild(marker);
+        } else if (!isNow && marker) {
+          marker.remove();
+        }
+        if (isNow) { current = row; }
+        if (!upcoming && start > mins) { upcoming = row; }
+      });
+      var text = current
+        ? 'Now: ' + current.cells[1].textContent.trim()
+        : 'Outside the workshop day.';
+      if (upcoming) { text += ' Next: ' + upcoming.cells[1].textContent.trim() + ' at ' + upcoming.cells[0].textContent.trim().split('-')[0] + '.'; }
+      if (status.textContent !== text) { status.textContent = text; }
+    }
+
+    paint();
+    window.setInterval(paint, 30000);
+  }());
+  </script>
 {% endblock %}

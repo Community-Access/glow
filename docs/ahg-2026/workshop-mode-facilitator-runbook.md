@@ -30,8 +30,10 @@ Total day: 8:30 AM to 4:30 PM
   short addresses are `/w/<code>` to join and `/w/<code>/<number>` for each
   activity, numbered the way you will say them out loud.
 - Blank worksheet packs: `/workshop/worksheets.docx` and
-  `/workshop/worksheets.html`. Print a dozen. Some attendees will prefer paper
-  and some institutions block the tool.
+  `/workshop/worksheets.html`. **We do not print these.** Publish the links
+  before the event so anyone who wants paper can print their own, and say it
+  again in the joining instructions. Everyone needs a device; a phone is
+  enough.
 - `POSTMARK_SERVER_TOKEN` if you want return links (see below).
 - AI caps, if the defaults do not suit the room:
   `GLOW_WORKSHOP_AI_PARTICIPANT_CAP` (default 40) and
@@ -112,10 +114,30 @@ because it is invisible until someone looks for it.
 - heading and landmark checks complete
 
 4. Facilitation assets
-- opening slides or HTML brief
+- **The deck.** `/workshop/session/<code>/deck` is the projected opening
+  brief, served with this room's join address and the live agenda already in
+  it -- there is nothing to replace by hand. `/workshop/deck` is the same deck
+  without a session, for reading beforehand. Arrow keys move between slides,
+  "Read as one page" turns it into a linear document for screen reader
+  review, `n` shows the speaker notes, and printing gives one slide per page
+  with its notes, which doubles as the handout and the projector fallback.
+  **Take it offline before the day.** The download row offers four formats:
+  HTML as one self-contained file, PowerPoint for a venue that projects from
+  its own machine, Word for anyone who wants it with their own screen reader
+  and font settings, and Markdown for review. Add `.pptx`, `.docx` or `.md`
+  to the deck address for any of them, and `docs/ahg-2026/slides.*` holds the
+  same four checked in.
 - scenario packets for labs
 - peer feedback rubric
 - capstone prompt and action plan template
+
+5. Pre-flight
+- `/workshop/session/<code>/preflight` answers "is this deployment ready?" on
+  one screen: every workshop flag, the conference code, the facilitator key,
+  the AI key **and** the three AI feature flags together, the caps, and mail
+  in both directions. It names nothing secret.
+- It is configuration only, so it answers instantly. `/health` is the live
+  reachability check; the pre-flight page links to it.
 
 ## Running the room
 
@@ -147,17 +169,15 @@ have one. Three scenarios attach a real starting document that GLOW can audit.
 unlikely to get the same brief, and you can walk someone back through what they
 were given.
 
-### When the built-in AI runs out
+### If someone asks why GLOW has no AI of its own
 
-The room shares one AI allowance. When a participant or the room reaches its
-cap, they are not shown an error: they are shown the copy-a-prompt path, which
-works with whatever assistant they already have on any device. Watch the AI
-usage panel on the dashboard so you know before the afternoon rather than
-after it.
+Because the day should not depend on one. GLOW's audit, fix and convert are
+deterministic: the same document gives the same findings, with no key, no
+account and no model. That is what lets the workshop promise that everyone in
+the room can do everything in it.
 
-Say out loud in the first ten minutes that the day works three ways: on paper,
-with GLOW's built-in AI, and with whatever assistant they already use. All
-three are first-class.
+Where the day teaches judgment about AI, it shows output written to be judged.
+Nobody has to generate anything, and nobody's limits run out at 1:40.
 
 ### Borrowing between participants
 
@@ -236,8 +256,13 @@ Participants should provide:
 Keep tone supportive and improvement-oriented.
 
 ## Facilitator Dashboard and Delivery Surfaces
+- Pre-flight: `/workshop/session/<code>/preflight`
+  - every setting the day depends on, on one screen, with what to do about each.
+- The deck: `/workshop/session/<code>/deck`
+  - the projected brief, carrying this room's code and the live agenda.
 - Facilitator dashboard: `/workshop/session/<code>/facilitator`
-  - monitor total submissions, anonymous participation, feedback coverage, and activity-level completion.
+  - monitor total submissions, anonymous participation, feedback coverage, and activity-level completion
+  - run of show with the current block marked from your own device clock.
 - Coach mode: `/workshop/session/<code>/coach`
   - keep teams focused on partner-centered teaching language.
 - Review mode: `/workshop/session/<code>/review`
@@ -261,9 +286,13 @@ Each participant or team leaves with:
 
 ## Incident Handling
 If workshop app features degrade:
-1. switch to backup worksheet mode
-2. continue facilitation sequence without technical interruption
+1. keep the sequence; the activities are questions, and they work said aloud
+2. point people at the worksheet pack they downloaded before the event
 3. capture artifacts manually for post-session import
+
+There is no printed fallback. That is a decision, not an oversight - see
+`plan.md`, L4 and L8 - and it makes the pre-event message load-bearing: bring
+a device, download the pack, print it yourself if you want paper.
 
 ## Post-Session Follow-Up
 Within 48 hours:

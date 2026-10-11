@@ -42,7 +42,12 @@ Participants will be able to:
 - Start: 8:30 AM
 - End: 4:30 PM
 - Lunch: 12:15 PM to 1:15 PM
+- Two breaks, at 10:10 and 2:55
 - Seven working workshop hours plus lunch
+
+The day is defined once and every surface reads from it, so the agenda you
+read here, the suggested length on each activity page, the exercise pack and
+the projected deck always agree.
 
 ## Artifact Outputs
 Participants leave with at least one reusable artifact:
@@ -71,4 +76,4 @@ Humans retain accountability for final accessibility decisions, especially where
 - Accessibility-first delivery in all materials
 - Keyboard and screen-reader compatible interaction paths
 - Short URLs plus QR alternatives
-- Offline fallback worksheets available
+- Electronic worksheet packs, published before the event so anyone who wants paper can print their own

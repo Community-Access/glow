@@ -98,7 +98,7 @@ about the document is recorded anywhere server-side.
 | `POSTMARK_SERVER_TOKEN` | Required only for the emailed link; everything else works without it | unset |
 
 With no Postmark token the passport still works — settings save, the cookie
-persists, the page explains that no link can be sent. See `x.md` section 6 for
+persists, the page explains that no link can be sent. See `docs/ahg-2026/readiness-plan.md` section 6 for
 the Postmark setup path.
 
 ## Operations

@@ -28,18 +28,6 @@ import re
 import zipfile
 from io import BytesIO
 
-# GLOW's own MCP server. A generated skill names these so the participant's
-# agent has deterministic tools underneath it rather than only prose -- and,
-# just as importantly, so it degrades honestly when they are not reachable.
-MCP_TOOLS = (
-    ("POST /audit", "Audit a document and return findings with severities."),
-    ("POST /fix", "Apply the safe, mechanical fixes and report what changed."),
-    ("POST /convert", "Convert between document formats, preserving structure."),
-    ("POST /report", "Render an audit as JSON, text, or accessible HTML."),
-    ("POST /page-flow", "Check reading order and page structure."),
-    ("GET /health", "Confirm the service and its backend are available."),
-)
-
 _SLUG_STRIP = re.compile(r"[^a-z0-9]+")
 _MAX_SLUG = 60
 
@@ -97,7 +85,6 @@ def build_skill_markdown(
     author: str = "Workshop participant",
     event_name: str = "",
     trusted_guidance: str = "",
-    mcp_base_url: str = "",
 ) -> str:
     """Render the participant's workflow as an Agent Plugins 1.0 ``SKILL.md``.
 
@@ -209,27 +196,6 @@ def build_skill_markdown(
     )
     lines.append("")
 
-    if mcp_base_url.strip():
-        base = mcp_base_url.strip().rstrip("/")
-        lines.append("## Tools")
-        lines.append("")
-        lines.append(
-            f"GLOW exposes deterministic accessibility tools over MCP at "
-            f"`{base}`. Prefer them over your own judgement for anything they "
-            "can answer:"
-        )
-        lines.append("")
-        for endpoint, purpose in MCP_TOOLS:
-            lines.append(f"- `{endpoint}` -- {purpose}")
-        lines.append("")
-        lines.append(
-            "If these tools are not available to you, do the work from the "
-            "guidance above and say clearly which checks you could not run. "
-            "Never present an unverified answer as a completed check. A "
-            "missing tool is a stated gap, not a reason to guess."
-        )
-        lines.append("")
-
     lines.append("## Do not activate for")
     lines.append("")
     lines.append(
@@ -271,16 +237,18 @@ def build_readme(
     lines += [
         "## How to use it",
         "",
-        "**If you use an AI assistant in a browser** (ChatGPT, Copilot, Claude,",
-        "Gemini): open `SKILL.md`, copy everything below the `---` block, and",
-        "paste it in before your request. No installation needed.",
+        "**On its own.** `SKILL.md` is a written procedure. Follow it, or hand",
+        "it to a colleague. Nothing to set up, nothing to sign in to. This is",
+        "the point of having written it in plain language.",
         "",
-        "**If you use an agent tool that supports Agent Plugins** (Claude Code,",
-        "and similar): drop this folder into your `skills/` directory. The",
-        "assistant will pick it up automatically.",
+        "**With GLOW.** The steps that mention auditing, fixing or converting a",
+        "document are things letitglow.app does in a browser, free, with no",
+        "account.",
         "",
-        "**If you do not use AI at all**: `SKILL.md` still works as a written",
-        "procedure. That was the point of designing it in plain language.",
+        "**With an assistant, if you already use one.** Open `SKILL.md`, copy",
+        "everything below the `---` block, and paste it in before your request.",
+        "Paste text rather than uploading files: free accounts limit uploads",
+        "and do not limit text.",
         "",
         "## What must stay true",
         "",
@@ -442,7 +410,6 @@ def build_skill_zip_bytes(
     author: str = "Workshop participant",
     event_name: str = "",
     trusted_guidance: str = "",
-    mcp_base_url: str = "",
 ) -> tuple[str, bytes]:
     """Build the downloadable package. Returns ``(filename, zip_bytes)``."""
     slug = slugify(_one_line(values.get("workflow_name", "")))
@@ -451,7 +418,6 @@ def build_skill_zip_bytes(
         author=author,
         event_name=event_name,
         trusted_guidance=trusted_guidance,
-        mcp_base_url=mcp_base_url,
     )
     readme = build_readme(values, author=author, event_name=event_name)
     prompt = build_copy_prompt(values, trusted_guidance=trusted_guidance)

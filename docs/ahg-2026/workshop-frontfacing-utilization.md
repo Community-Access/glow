@@ -6,7 +6,8 @@ Use this guide to deploy Workshop Mode for conferences, onboarding, institutiona
 - Confirm Workshop Mode feature flags.
 - Validate workshop route and activity routes.
 - Validate keyboard-only flow and screen-reader smoke pass.
-- Prepare fallback worksheets and short URLs.
+- Publish the electronic worksheet packs before the event, and say so in the joining instructions.
+- Prepare short URLs.
 - Confirm facilitator support contacts and escalation path.
 
 ## During Delivery
@@ -31,6 +32,7 @@ Use this guide to deploy Workshop Mode for conferences, onboarding, institutiona
 - Preserve participant privacy with optional anonymity.
 - Avoid sensitive data in shared artifacts unless explicitly approved.
 - Keep a repeatable facilitator runbook and quality checklist.
+- Tell participants to bring a device. Everything runs in a browser, including on a phone.
 
 ## Success Metrics
 - completion rate by activity

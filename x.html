@@ -1,0 +1,1479 @@
+<h1 id="glow-workshop-mode-readiness-plan-and-path-to-golden">GLOW
+Workshop Mode — Readiness Plan and Path to Golden</h1>
+<p><strong>For:</strong> Accessibility Agents in Action — A Hands-On
+GLOW Workshop, Accessing Higher Ground <strong>First written:</strong>
+18 August 2026 <strong>Last updated:</strong> 21 August 2026
+<strong>GLOW version:</strong> 8.0.0 (Workshop Mode introduced 7.3.0)
+<strong>Status:</strong> Phases 1–4 built, merged, and running in
+production. Phase 5 — hardening and rehearsal — is what remains, plus
+two credentials and the event configuration.</p>
+<p><strong>How to use this document:</strong> section 0 is the ordered
+checklist. Everything after it is the detail behind an item, and each
+checklist entry says where to look.</p>
+<hr />
+<h2 id="do-this-next">0. Do this next</h2>
+<p>Ordered. Times are honest. Nothing below needs code written.</p>
+<h3 id="before-anything-else-about-an-hour-in-total">0.1 Before anything
+else — about an hour in total</h3>
+<table>
+<colgroup>
+<col style="width: 25%" />
+<col style="width: 25%" />
+<col style="width: 25%" />
+<col style="width: 25%" />
+</colgroup>
+<thead>
+<tr>
+<th>#</th>
+<th>Do</th>
+<th>Where the detail is</th>
+<th>Done when</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td><strong>Fix the CI deploy key.</strong> Generate
+<code>ssh-keygen -t ed25519 -N "" -C github-actions-deploy -f ~/.ssh/github-actions-deploy</code>,
+append the public half to <code>authorized_keys</code> on bishoplink,
+then
+<code>gh secret set DEPLOY_SSH_KEY &lt; ~/.ssh/github-actions-deploy</code>
+plus <code>DEPLOY_USER=jeffbis</code> and
+<code>DEPLOY_HOST=lp.csedesigns.com</code></td>
+<td>§2.1 item 4</td>
+<td>A push to <code>main</code> deploys without a manual SSH
+session</td>
+</tr>
+<tr>
+<td>2</td>
+<td><strong>Set <code>OPENROUTER_API_KEY</code> in
+<code>~/app/web/.env</code></strong>, and turn on
+<code>GLOW_ENABLE_AI_ALT_TEXT</code>, <code>GLOW_ENABLE_AI_CHAT</code>,
+<code>GLOW_ENABLE_AI_WHISPERER</code> — all three are <code>0</code>
+today, so the key alone changes nothing</td>
+<td>§2.3, §5</td>
+<td><code>/health</code> reports <code>key_set: true</code> and
+<code>status: ready</code> for vision</td>
+</tr>
+<tr>
+<td>3</td>
+<td><strong>Configure Postmark</strong>: server token, verified sender
+or domain (DKIM + Return-Path), leave the sandbox, set
+<code>POSTMARK_SERVER_TOKEN</code> and <code>POSTMARK_FROM_EMAIL</code>,
+restart web <em>and</em> worker</td>
+<td>§6.2</td>
+<td>The Email panel on <code>/admin/queue</code> sends you a test
+message</td>
+</tr>
+<tr>
+<td>4</td>
+<td><strong>Set the event configuration</strong>:
+<code>WORKSHOP_CONFERENCE_CODES_JSON</code> with the AHG access code,
+<code>GLOW_WORKSHOP_FACILITATOR_KEY</code>, and the AI caps once you
+have a spend figure</td>
+<td>§5</td>
+<td><code>/w/&lt;code&gt;</code> joins the real session</td>
+</tr>
+<tr>
+<td>5</td>
+<td><strong>Walk the whole day on the deployed site</strong>, not
+locally</td>
+<td>—</td>
+<td>You have personally done all eleven activities at letitglow.app</td>
+</tr>
+</tbody>
+</table>
+<h3 id="content-and-rehearsal-weeks-3-to-11">0.2 Content and rehearsal —
+weeks 3 to 11</h3>
+<table>
+<colgroup>
+<col style="width: 25%" />
+<col style="width: 25%" />
+<col style="width: 25%" />
+<col style="width: 25%" />
+</colgroup>
+<thead>
+<tr>
+<th>#</th>
+<th>Do</th>
+<th>Detail</th>
+<th>Done when</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>6</td>
+<td>Read all twelve scenarios aloud; cut or rewrite anything that sounds
+like software wrote it</td>
+<td>§1.1</td>
+<td>You would say each one to a room</td>
+</tr>
+<tr>
+<td>7</td>
+<td>Print the worksheet packs and the room signage; look at them on
+paper</td>
+<td>§5</td>
+<td>A stack of both exists</td>
+</tr>
+<tr>
+<td>8</td>
+<td>Screen reader pass: NVDA first, then JAWS and VoiceOver</td>
+<td>§2.2</td>
+<td>Each of the eleven activities completed end to end by ear</td>
+</tr>
+<tr>
+<td>9</td>
+<td>Cost the AI; set the caps to the agreed number; rehearse hitting a
+cap</td>
+<td>§2.2, §5</td>
+<td>A figure is written down and agreed</td>
+</tr>
+<tr>
+<td>10</td>
+<td>Load rehearsal, 30 simulated participants</td>
+<td>§2.2</td>
+<td>No 429s, no request over two seconds</td>
+</tr>
+<tr>
+<td>11</td>
+<td>Full run with the house AI switched off</td>
+<td>§2.2</td>
+<td>A complete activity run with <code>OPENROUTER_API_KEY</code>
+unset</td>
+</tr>
+<tr>
+<td>12</td>
+<td>Degraded-network run, and a run from paper alone</td>
+<td>§2.2</td>
+<td>Both completed</td>
+</tr>
+<tr>
+<td>13</td>
+<td>Facilitator dry run against the real agenda, with an awkward
+participant</td>
+<td>§2.2</td>
+<td>A timed run-through, room pulse open</td>
+</tr>
+<tr>
+<td>14</td>
+<td>Freeze: tag the release, print everything, write your pocket
+card</td>
+<td>§3, §5</td>
+<td>No merges in the final week</td>
+</tr>
+</tbody>
+</table>
+<h3 id="housekeeping-whenever">0.3 Housekeeping — whenever</h3>
+<table>
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+</colgroup>
+<thead>
+<tr>
+<th>#</th>
+<th>Do</th>
+<th>Detail</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>15</td>
+<td>Decide the fate of <code>office-addin</code> and clear the 77
+dependency alerts</td>
+<td>§2.3</td>
+</tr>
+<tr>
+<td>16</td>
+<td>Restore or delete <code>review.md</code> at the repository root</td>
+<td>§2.3</td>
+</tr>
+<tr>
+<td>17</td>
+<td>Salvage the two uncommitted fixes in
+<code>C:\Users\jeffb\glow</code>, then delete that checkout</td>
+<td>§2.3</td>
+</tr>
+<tr>
+<td>18</td>
+<td>Find out what deleted the Playwright browsers and the virtualenvs on
+the dev machine</td>
+<td>§2.3</td>
+</tr>
+<tr>
+<td>19</td>
+<td>Delete the merged <code>workshop-ahg-readiness</code> branch from
+the remote</td>
+<td>§2.3</td>
+</tr>
+<tr>
+<td>20</td>
+<td>Generate the Keycloak fixtures at setup instead of tracking
+them</td>
+<td>§2.3</td>
+</tr>
+</tbody>
+</table>
+<h3 id="optional-after-the-conference">0.4 Optional, after the
+conference</h3>
+<table>
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+</colgroup>
+<thead>
+<tr>
+<th>#</th>
+<th>Do</th>
+<th>Detail</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>21</td>
+<td>Long-conversion completion notifications — the one unfinished piece
+of passport slice 2</td>
+<td>§7.6</td>
+</tr>
+<tr>
+<td>22</td>
+<td>Bounce and complaint webhooks, a delivery log, per-feature email
+switches</td>
+<td>§6.6</td>
+</tr>
+<tr>
+<td>23</td>
+<td>Move the audit-report email onto the shared layout; it still signals
+severity by colour alone</td>
+<td>§6.6</td>
+</tr>
+<tr>
+<td>24</td>
+<td>Keycloak on a real database before any email-based Keycloak
+flow</td>
+<td>§7.9</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="where-this-stands">1. Where this stands</h2>
+<p>Three days ago this document said the workshop’s design was strong,
+its curriculum complete, and its delivery layer newly repaired — and
+then listed four phases of work that would take it from “a good
+conference session” to “the session people remember”.</p>
+<p>Phases 1 through 4 are built, tested, merged to <code>main</code>,
+and running in production at letitglow.app. A fifth piece nobody planned
+for – the GLOW passport in section 7 – was built on top of them.</p>
+<h3 id="what-shipped">1.1 What shipped</h3>
+<p><strong>Phase 1 — Foundations.</strong></p>
+<ul>
+<li><strong>Return links.</strong> A participant can give an email
+address and receive a single-use link that restores their identity on
+any device. Tokens are stored hashed, expire after 45 days (outliving
+the 30-day plan), and the address never appears in the gallery, on the
+facilitator dashboard, or in any export.</li>
+<li><strong>Scenario bank.</strong> Twelve scenarios, four per GLOW lab,
+each from a different institutional sector. Real briefs rather than
+one-line prompts: the situation, what is wrong with the artifact, what
+to notice, the tools that fit, a stretch task, and for three of them a
+starting document GLOW can actually audit. “Surprise me” is
+deterministic per participant, so it spreads briefs across a room and
+can be reproduced when a facilitator walks someone back through what
+they were given. Choosing is optional and the page says so — a
+participant with a real document of their own should use it.</li>
+<li><strong>Blank worksheet packs</strong>, HTML and Word, generated
+from the live activity definitions so they cannot drift from the
+on-screen form. Word is Arial 18pt with ruled lines; the HTML pack has
+aria-labelled writing spaces, so it is usable with a screen reader and
+not merely printable.</li>
+<li><strong>Short URLs, QR codes and printable room signage.</strong>
+<code>/w/&lt;code&gt;</code> joins; <code>/w/&lt;code&gt;/7</code> opens
+the seventh activity, numbered the way a facilitator says it out loud.
+The signage page prints a card per activity with the address in large
+type and a QR code beside it.</li>
+</ul>
+<p><strong>Phase 2 — The four-tier AI model.</strong></p>
+<ul>
+<li><strong>Tier 2 on every AI-assisted activity</strong>: a prompt
+built from the participant’s own answers, their chosen scenario and
+their own human-review step, ready to paste into whatever assistant they
+already have. A copy button that works under the site CSP, announcing
+through a status region and never moving focus, with the text still
+selectable if the clipboard fails.</li>
+<li><strong>Tier 1 gets a budget.</strong> Per-participant and per-room
+caps on the house AI key. Hitting a cap routes to the Tier 2 path rather
+than an error, and the check fails open. The facilitator dashboard shows
+room usage.</li>
+<li><strong>Tier 3 gets a tool layer.</strong> Generated skills name
+GLOW’s six MCP endpoints and state what to do when they are unreachable
+— work from the guidance, name the gap, never present an unverified
+answer as a check.</li>
+<li><strong>Optional Lab: Run Your Agent</strong>, deliberately outside
+the agenda so it never touches the progress passport. A door, not a
+corridor.</li>
+</ul>
+<p><strong>Phase 3 — The living room.</strong></p>
+<ul>
+<li><strong>Live gallery and facilitator pulse</strong> over SSE, counts
+only. The gallery announces new work politely and offers a “Show new
+submissions” control the reader activates; nothing is inserted
+underneath anyone and focus is never moved. The dashboard updates
+per-activity counts and bars in place and is safe to project.</li>
+<li><strong>“Start from this workflow”</strong> on shared Champion
+Studio submissions. It fills the borrower’s form only when they have
+nothing of their own saved; otherwise the borrowed workflow is shown
+beside their work rather than over it. Anonymous submitters stay
+anonymous.</li>
+<li><strong>Badge collection page.</strong> The badges already existed
+and were announced once in a flash message; now they have somewhere to
+live.</li>
+</ul>
+<p><strong>Phase 4 — The finish.</strong></p>
+<ul>
+<li><strong>Take-home artifact.</strong> One designed page — workflow,
+who it helps, the human-review gate, the 30-day commitment —
+self-contained, large print, and printable, so it opens correctly from
+an email attachment years later.</li>
+<li><strong>End-of-day artifact email</strong>, carrying the artifact,
+the generated agent package, and a single-use link back to everything
+else. The plain text of the artifact is in the body too, because
+institutional mail gateways strip attachments.</li>
+<li><strong>Commitment wall</strong> for the close of the day: every
+30-day commitment on one screen, anonymous by design.</li>
+<li><strong>30-day nudge</strong>, as a command rather than a scheduled
+job: it quotes each participant’s own words back and links to their
+follow-through log. Dry run is the default, nobody is emailed twice, and
+nobody who never gave an address is in the list.</li>
+</ul>
+<h3 id="two-problems-found-along-the-way">1.2 Two problems found along
+the way</h3>
+<p>Both would have shown up in the room and nowhere else.</p>
+<ul>
+<li><strong>The site was not applying its own type scale.</strong>
+<code>body { … }</code> in <code>acb-large-print.css</code> was left
+unclosed, so the ACB 18pt size, line height, letter spacing and centred
+max-width were stranded after an unrelated closing brace and discarded
+by every browser, on every page.</li>
+<li><strong>The room would have rate-limited itself.</strong> Every
+limit was keyed on IP with a 120/minute default, and static assets
+counted. Thirty people behind one conference NAT address share that
+budget; one workshop page pulls a stylesheet and several scripts. Limits
+are now per participant, and static is exempt.</li>
+</ul>
+<h3 id="three-more-found-by-the-deploy-all-production-breaking">1.3
+Three more found by the deploy, all production-breaking</h3>
+<p>The deploy pipeline is what surfaced these, and none of them could be
+seen in a source checkout: they only appear when quill-glow-core is
+installed, which is true in the image and false in a bare clone.</p>
+<ul>
+<li><strong>Every audit returned HTTP 500.</strong> The audit routes
+filtered findings in place, and the post-split <code>AuditResult</code>
+is a frozen, slotted dataclass.</li>
+<li><strong>Every fix request returned HTTP 500.</strong> The fix route
+expected a 5-tuple; the shared core returns a <code>FixResult</code>
+object, so <code>len(result)</code> raised.</li>
+<li><strong><code>_fix_page_numbers</code> indexed
+<code>doc.sections[0]</code> unguarded</strong>, so a document with no
+section properties took the request down.</li>
+</ul>
+<p>Fixed in <code>c6f5d93</code>, with stand-in tests for both result
+shapes so the guard holds whether or not the shared core is installed in
+the environment running them. This is the same “works from source,
+breaks deployed” shape the MCP server hit after the 8.0.0 split – this
+time in the two workspaces the site is named for.</p>
+<h3 id="the-support-tracker-was-full-of-our-own-test-runs">1.4 The
+support tracker was full of our own test runs</h3>
+<p>Sixteen open GLOW issues in <code>Community-Access/support</code>,
+every one “Works great!” or “Love it”, filed in audit/fix pairs.
+<code>tests/test_app.py::TestFeedback</code> posts feedback without
+stubbing the sender, so on any machine whose environment carries
+<code>FEEDBACK_GITHUB_TOKEN</code> – a developer shell, a deploy shell –
+running the web suite filed two live issues in a public tracker.</p>
+<p>Fixed in <code>2080537</code>: tests can no longer reach the tracker,
+only categories that need a person (bug, accessibility, regression,
+support) open an issue, and identical submissions inside 24 hours open
+one. All sixteen closed with an explanation.</p>
+<h3 id="verification-as-of-21-august">1.5 Verification as of 21
+August</h3>
+<table>
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
+<thead>
+<tr>
+<th>Check</th>
+<th>Result</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Full web test suite</td>
+<td><strong>832 passed, 0 failed</strong>, 31 skipped – run with
+quill-glow-core installed, which is the deployed configuration</td>
+</tr>
+<tr>
+<td>Workshop suites alone</td>
+<td>253 tests</td>
+</tr>
+<tr>
+<td>Production after deploy</td>
+<td>post-deploy verification passed, every URL check OK, all eight
+containers healthy</td>
+</tr>
+<tr>
+<td>Live MCP</td>
+<td><code>/mcp/health</code> reports <code>backend: "glow"</code></td>
+</tr>
+<tr>
+<td>Passport</td>
+<td>Live in production: retention 90 days, link TTL 14 days</td>
+</tr>
+<tr>
+<td>Email</td>
+<td>Not configured. Seven features waiting on one token (§6)</td>
+</tr>
+<tr>
+<td>axe-core, WCAG 2.2 AA</td>
+<td><strong>38 pages, 0 violations, 1035 passing rules</strong></td>
+</tr>
+<tr>
+<td>Ruff on every file touched</td>
+<td>clean</td>
+</tr>
+<tr>
+<td>MCP endpoint tests against installed wheels</td>
+<td>8 passed</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="what-remains">2. What remains</h2>
+<h3 id="ship-what-exists">2.1 Ship what exists</h3>
+<p>Done on 21 August: merged to main, deployed to production by hand,
+and the MCP container rebuilt in the same deploy
+(<code>/mcp/health</code> now reports <code>backend: "glow"</code>
+rather than <code>"unknown"</code>). What is left here is configuration
+and one credential.</p>
+<ol type="1">
+<li><del>Merge the branch.</del> Done.</li>
+<li><del>Deploy web.</del> Done, by hand over SSH.</li>
+<li><del>Rebuild the MCP image.</del> Done.</li>
+<li><strong>Fix the CI deploy key.</strong> GitHub Actions cannot
+deploy: the runner’s key is not in the server’s
+<code>authorized_keys</code>, so every push to main builds, tests, and
+then fails at the last step. Deploys are manual until this is
+fixed.</li>
+<li><strong>Set the AI key in production.</strong>
+<code>OPENROUTER_API_KEY</code> is unset – <code>/health</code> reports
+<code>key_set: false</code> for chat, vision and whisperer – so Tier 1,
+the built-in AI a participant uses with no key of their own, does not
+work on the live site. Lab 2 is built around it.</li>
+<li><strong>Set the rest of the event configuration</strong> (section
+5).</li>
+</ol>
+<h3 id="phase-5-hardening-and-rehearsal">2.2 Phase 5 — hardening and
+rehearsal</h3>
+<p>This is the whole remaining risk. None of it is code.</p>
+<table>
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+</colgroup>
+<thead>
+<tr>
+<th>Item</th>
+<th>Why it matters</th>
+<th>Done when</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Load rehearsal, 30 simulated participants</td>
+<td>Nothing here has been tested at room scale. The rate-limit fix makes
+it survivable in theory; nobody has measured it</td>
+<td>A 30-client run completes with no 429s and no request over 2s</td>
+</tr>
+<tr>
+<td>Screen reader run-through: NVDA, JAWS, VoiceOver</td>
+<td>axe passing is necessary, not sufficient. The live gallery, the copy
+buttons and the scenario picker are where automated and lived results
+diverge most</td>
+<td>Each of the eleven activities completed end to end by ear</td>
+</tr>
+<tr>
+<td>AI spend estimate, approved</td>
+<td>The caps exist; the numbers behind them are guesses</td>
+<td>A figure written down and agreed, and caps set to match</td>
+</tr>
+<tr>
+<td>Full rehearsal with Tier 1 AI switched off</td>
+<td>The day must run on Tiers 0 and 2 alone</td>
+<td>A complete activity run with <code>OPENROUTER_API_KEY</code>
+unset</td>
+</tr>
+<tr>
+<td>Offline / degraded-network rehearsal</td>
+<td>Conference wifi is a real risk</td>
+<td>Worksheet packs printed; the day demonstrably runs from paper</td>
+</tr>
+<tr>
+<td>Facilitator dry run against the real agenda</td>
+<td>Find the pacing problems before the room does</td>
+<td>A timed run-through, with the room pulse open</td>
+</tr>
+<tr>
+<td>Freeze</td>
+<td>Ship nothing new in the final week</td>
+<td>Branch tagged, no merges</td>
+</tr>
+</tbody>
+</table>
+<h3 id="loose-ends-worth-clearing-before-november">2.3 Loose ends worth
+clearing before November</h3>
+<ul>
+<li><del>Five failing tests on <code>main</code>.</del> Fixed. The three
+<code>TestSettingsIntegration</code> failures read repo files relative
+to the working directory and now resolve from the repository root; the
+two feedback failures were reading the developer’s real support-hub
+configuration and are now isolated. The suite is 832 passed, 0
+failed.</li>
+<li><strong>Dependency alerts.</strong> 77 open on the default branch (2
+critical, 31 high), nearly all npm packages under
+<code>office-addin</code>, with eight Dependabot pull requests waiting.
+<code>office-addin</code> has not been touched since 23 May – decide
+whether it still ships, because retiring it clears most of the list at
+once.</li>
+<li><strong>The AI feature flags are off in production.</strong>
+<code>GLOW_ENABLE_AI_CHAT</code>, <code>GLOW_ENABLE_AI_ALT_TEXT</code>
+and <code>GLOW_ENABLE_AI_WHISPERER</code> are all <code>0</code>, and
+<code>OPENROUTER_API_KEY</code> is absent from the container –
+<code>docker-compose.prod.yml</code> never references it, so it has to
+reach the container through <code>~/app/web/.env</code>. Setting the key
+alone is not enough; the three flags have to be turned on with it.
+Meanwhile <code>GLOW_ENABLE_AI_HEADING_FIX</code> and
+<code>GLOW_ENABLE_AI_MARKITDOWN_LLM</code> default to <code>1</code>, so
+those paths are enabled and keyless – trying and failing rather than
+cleanly off.</li>
+<li><strong>Tracked Keycloak fixtures.</strong>
+<code>keycloak-users.json</code> and <code>glow-oidc-client.json</code>
+hold placeholders today; realm exports drift and include secrets by
+default. Generate them at setup instead.</li>
+<li><strong>The dead checkout at
+<code>C:\Users\jeffb\glow</code></strong>, which still has uncommitted
+edits to <code>pii_guardrails.py</code> and
+<code>routes/convert.py</code>. Its editable install has been removed,
+so it can no longer shadow this repo, but it should be diffed and
+deleted.</li>
+<li><del>The accessibility gate was switched off.</del> Restored in
+<code>e148e96</code>. Commit <code>c788b27</code>, titled “Make CodeQL
+workflow manual-only”, had left
+<code>accessibility-regression.yml</code> as
+<code>workflow_dispatch:</code> only, so axe had not run on a pull
+request or a push since 2 August.</li>
+<li><del>The deploy checker cried wolf on every deploy.</del> Fixed in
+<code>e148e96</code> and <code>dcd1c4e</code>: the readiness parser read
+from stdin, which the heredoc had already consumed, so it never saw the
+payload; three URL checks failed documents that redirect by design; and
+model readiness now reports rather than gates
+(<code>REQUIRE_MODEL_READINESS=1</code> restores gating).</li>
+<li><strong><code>review.md</code> is untracked at the repository
+root.</strong> Commit it, move it into <code>docs/</code>, or delete it
+– but decide, because root clutter is what it warns about itself.</li>
+<li><strong>The merged <code>workshop-ahg-readiness</code>
+branch</strong> can be deleted from the remote once it has been
+reviewed. Everything on it is in <code>main</code>.</li>
+<li><strong>Whatever is deleting things on this machine.</strong> The
+Playwright browser binaries vanished mid-session on 21 August, and
+<code>review.md</code> records two broken virtualenvs earlier. Worth
+identifying before it eats something on the day.</li>
+</ul>
+<h3 id="deliberately-not-doing">2.4 Deliberately not doing</h3>
+<ul>
+<li><strong>Full Keycloak accounts before November.</strong> Magic links
+give ninety percent of the benefit at five percent of the cost and none
+of the friction.</li>
+<li><strong>A scheduled nudge job.</strong> A command a person runs,
+having looked at the list, is the right shape for mail sent a month
+after an event.</li>
+<li><strong>Anything new in the final week.</strong> See “freeze”.</li>
+</ul>
+<hr />
+<h2 id="the-path-to-golden">3. The path to golden</h2>
+<p>Working back from a November conference. Weeks are counts from 21
+August.</p>
+<p><strong>Weeks 1–2 (now): ship and configure.</strong> Merge, deploy
+web, rebuild the MCP image, set the event configuration, and walk the
+whole day yourself once on the deployed site rather than locally. Fix
+what that turns up. Nothing else on this list is meaningful until the
+thing people will use is the thing that is running.</p>
+<p><strong>Weeks 3–4: content and rehearsal one.</strong> Read all
+twelve scenarios aloud and cut or rewrite anything that sounds like
+software wrote it. Do the first screen reader pass — NVDA first, because
+it is the one most attendees will be running. Print the worksheet packs
+and the signage; look at them on paper rather than on screen.</p>
+<p><strong>Weeks 5–6: scale and money.</strong> Load rehearsal at 30
+participants. Cost the AI, set the caps to the agreed number, and
+rehearse hitting a cap so you have seen the message a participant will
+see. JAWS and VoiceOver passes.</p>
+<p><strong>Weeks 7–8: the degraded days.</strong> Run a full session
+with the house AI switched off. Run one with the network throttled and
+one from paper alone. These are the rehearsals that decide whether a bad
+conference wifi day is an inconvenience or a disaster.</p>
+<p><strong>Weeks 9–10: the facilitator run.</strong> A timed dry run
+against the real agenda, with the room pulse open and a second person
+playing an awkward participant: someone who joins late, someone who
+clears their cookies, someone whose institution blocks the tool, someone
+using only a screen reader.</p>
+<p><strong>Week 11: freeze.</strong> Tag the release. Print everything.
+Write the one-page card for yourself with the session code, the
+facilitator key, the signage URL, and the wall URL on it.</p>
+<p><strong>Golden means:</strong> a participant with no laptop, no
+account, no AI access and a screen reader can complete the entire day
+and leave with a printed artifact they are willing to show their
+director — and a participant with all of those things leaves with a
+working agent they designed themselves. Both of those have to be true on
+a bad wifi day.</p>
+<hr />
+<h2 id="risks-that-remain">4. Risks that remain</h2>
+<table>
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+</colgroup>
+<thead>
+<tr>
+<th>Risk</th>
+<th>Mitigation</th>
+<th>State</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Conference wifi fails</td>
+<td>Worksheet packs, offline artifact, no lab depends on cloud AI</td>
+<td>Built; rehearsal outstanding</td>
+</tr>
+<tr>
+<td>Untested at room scale</td>
+<td>30-participant load rehearsal</td>
+<td>Outstanding — the largest remaining unknown</td>
+</tr>
+<tr>
+<td>AI budget exhausted mid-session</td>
+<td>Per-participant and per-room caps, exhaustion routes to Tier 2</td>
+<td>Built; the numbers are still guesses</td>
+</tr>
+<tr>
+<td>Live updates hurt screen reader users</td>
+<td>Counts only, polite announcement, explicit “show new” control, focus
+never moved</td>
+<td>Built and tested; needs a human ear</td>
+</tr>
+<tr>
+<td>AI output embarrasses the facilitator on a projector</td>
+<td>Human-review framing throughout; the room pulse shows counts
+only</td>
+<td>Built</td>
+</tr>
+<tr>
+<td>A lab accidentally requires an install or a key</td>
+<td>Tier 3 is a download and a five-minute mention; a test asserts the
+Tier 2 prompt never mentions installing anything</td>
+<td>Built</td>
+</tr>
+<tr>
+<td>Deployed MCP does not match the generated skills</td>
+<td>Rebuild the image before the event</td>
+<td>Outstanding</td>
+</tr>
+<tr>
+<td>Scope creep in the final weeks</td>
+<td>Phases 1–4 are done; everything left is rehearsal</td>
+<td>Manageable — hold the freeze</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="event-configuration-reference">5. Event configuration
+reference</h2>
+<table>
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+</colgroup>
+<thead>
+<tr>
+<th>Variable</th>
+<th>What it does</th>
+<th>For AHG</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>GLOW_ENABLE_WORKSHOP_MODE</code></td>
+<td>Master switch</td>
+<td>on</td>
+</tr>
+<tr>
+<td><code>GLOW_ENABLE_WORKSHOP_LAB_HUB</code></td>
+<td>Activities, gallery, exports</td>
+<td>on</td>
+</tr>
+<tr>
+<td><code>GLOW_ENABLE_WORKSHOP_GALLERY</code></td>
+<td>Shared gallery</td>
+<td>on</td>
+</tr>
+<tr>
+<td><code>GLOW_ENABLE_WORKSHOP_PEER_REVIEW</code></td>
+<td>Peer feedback forms</td>
+<td>on</td>
+</tr>
+<tr>
+<td><code>GLOW_WORKSHOP_FACILITATOR_KEY</code></td>
+<td>Unlocks the dashboard and session exports</td>
+<td>set, and keep off the slides</td>
+</tr>
+<tr>
+<td><code>WORKSHOP_CONFERENCE_CODES_JSON</code></td>
+<td>Access code → session mapping</td>
+<td>set for the AHG code</td>
+</tr>
+<tr>
+<td><code>POSTMARK_SERVER_TOKEN</code></td>
+<td>Return links, artifact email, nudge</td>
+<td>required — without it those features hide themselves</td>
+</tr>
+<tr>
+<td><code>OPENROUTER_API_KEY</code></td>
+<td>Tier 1: alt-text generation, document chat, transcription</td>
+<td><strong>not set in production as of 21 August</strong>; Lab 2
+depends on it</td>
+</tr>
+<tr>
+<td><code>GLOW_ENABLE_AI_ALT_TEXT</code></td>
+<td>Lab 2’s one-click alt text</td>
+<td><code>0</code> in production; set to <code>1</code> with the
+key</td>
+</tr>
+<tr>
+<td><code>GLOW_ENABLE_AI_CHAT</code></td>
+<td>Document chat</td>
+<td><code>0</code> in production</td>
+</tr>
+<tr>
+<td><code>GLOW_ENABLE_AI_WHISPERER</code></td>
+<td>Transcription</td>
+<td><code>0</code> in production</td>
+</tr>
+<tr>
+<td><code>GLOW_WORKSHOP_RETURN_LINK_TTL_DAYS</code></td>
+<td>Return link lifetime</td>
+<td>default 45</td>
+</tr>
+<tr>
+<td><code>GLOW_WORKSHOP_AI_PARTICIPANT_CAP</code></td>
+<td>Per-person AI calls</td>
+<td>default 40; set from the spend estimate</td>
+</tr>
+<tr>
+<td><code>GLOW_WORKSHOP_AI_SESSION_CAP</code></td>
+<td>Whole-room AI calls</td>
+<td>default 600; likewise</td>
+</tr>
+<tr>
+<td><code>GLOW_MCP_BASE_URL</code></td>
+<td>Tool layer named in generated skills</td>
+<td>default <code>https://letitglow.app/mcp</code></td>
+</tr>
+<tr>
+<td><code>GLOW_WORKSHOP_ASSET_ROOT</code></td>
+<td>Where samples and front-facing docs live</td>
+<td>only if the container layout changes</td>
+</tr>
+</tbody>
+</table>
+<p><strong>On the day, one card in your pocket:</strong></p>
+<ul>
+<li>Join: <code>letitglow.app/w/&lt;code&gt;</code></li>
+<li>Signage to print:
+<code>/workshop/session/&lt;code&gt;/signage</code></li>
+<li>Dashboard:
+<code>/workshop/session/&lt;code&gt;/facilitator</code></li>
+<li>Wall, for 4:25:
+<code>/workshop/session/&lt;code&gt;/wall</code></li>
+<li>Worksheets: <code>/workshop/worksheets.docx</code></li>
+</ul>
+<p><strong>Thirty days later:</strong></p>
+<pre><code>flask --app acb_large_print_web.app:create_app workshop-nudge &lt;code&gt; --dry-run
+flask --app acb_large_print_web.app:create_app workshop-nudge &lt;code&gt; --send</code></pre>
+<hr />
+<h2 id="email-postmark-end-to-end">6. Email: Postmark, end to end</h2>
+<p>Email is not configured in production. Seven features depend on it,
+so this section is the whole path from a Postmark account to a verified
+test message landing in an inbox.</p>
+<p>Everything here is optional. GLOW runs with mail switched off; each
+feature below hides itself or degrades in a stated way rather than
+failing.</p>
+<h3 id="what-glow-sends-and-what-happens-without-it">6.1 What GLOW
+sends, and what happens without it</h3>
+<table>
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
+<thead>
+<tr>
+<th>Feature</th>
+<th>Without email</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Audit report delivery</td>
+<td>The report is on screen and downloadable; the email link is simply
+absent</td>
+</tr>
+<tr>
+<td>Batch audit reports</td>
+<td>Same, for a folder of documents</td>
+</tr>
+<tr>
+<td>Whisperer job notifications</td>
+<td>Transcription still runs; nobody is told when it finishes</td>
+</tr>
+<tr>
+<td>Admin sign-in links</td>
+<td><code>/admin</code> is reachable only through the OAuth
+providers</td>
+</tr>
+<tr>
+<td>Workshop return links</td>
+<td>Identity stays a cookie on one device. The form is replaced by a
+prompt to download work before leaving</td>
+</tr>
+<tr>
+<td>Workshop artifact email</td>
+<td>The artifact is still viewable, printable and downloadable</td>
+</tr>
+<tr>
+<td>Workshop 30-day nudge</td>
+<td>The follow-through loop never closes, and there is no outcome
+data</td>
+</tr>
+</tbody>
+</table>
+<p>The two that matter for Accessing Higher Ground are the return link
+and the artifact email: they are the difference between the day ending
+in a browser tab and the day ending in someone’s inbox.</p>
+<h3 id="setup-in-order">6.2 Setup, in order</h3>
+<p><strong>1. Postmark account and server.</strong> Create a Server
+(call it “GLOW production”). Copy its <strong>Server API token</strong>
+– the per-server token, not the account token. The account token cannot
+send.</p>
+<p><strong>2. Verify the sender.</strong> Postmark will not send from an
+address it has not verified. Two ways:</p>
+<ul>
+<li><em>Sender Signature</em>: verify one address by clicking a link
+sent to it. Quickest, and it only authorises that one address.</li>
+<li><em>Domain verification (recommended)</em>: add the DKIM
+<code>TXT</code> record and the Return-Path <code>CNAME</code> that
+Postmark shows you, at the DNS host for
+<code>notify.letitglow.app</code>. This authorises every address on the
+domain, survives address changes, and is what keeps mail out of spam
+folders.</li>
+</ul>
+<p>GLOW’s default sender is <code>no-reply@notify.letitglow.app</code>.
+Whatever you verify, <code>POSTMARK_FROM_EMAIL</code> must match it
+exactly.</p>
+<p><strong>3. Leave the account’s sandbox.</strong> New Postmark
+accounts are restricted to verified recipient addresses until approved.
+Request approval well before November, or thirty participants will
+receive nothing and Postmark will report success.</p>
+<p><strong>4. Message stream.</strong> The code sends on the
+<code>transactional</code> stream, which is the default ID Postmark
+creates. If you make a custom stream, either name it
+<code>transactional</code> or change <code>_POSTMARK_STREAM</code> in
+<code>web/src/acb_large_print_web/email.py</code>. Broadcast streams are
+for marketing and must not be used here.</p>
+<p><strong>5. Configure the server.</strong> In
+<code>~/app/web/.env</code> on bishoplink – the <code>web</code> service
+loads it through <code>env_file</code>, and
+<code>docker-compose.prod.yml</code> does not reference these names
+individually:</p>
+<pre><code>POSTMARK_SERVER_TOKEN=&lt;the server API token&gt;
+POSTMARK_FROM_EMAIL=no-reply@notify.letitglow.app</code></pre>
+<p>Then restart:</p>
+<pre><code>cd ~/app/web &amp;&amp; docker compose -f docker-compose.prod.yml up -d web worker</code></pre>
+<p>The worker needs it too: Whisperer notifications are sent from
+Celery.</p>
+<p><strong>6. Verify without guessing.</strong> Sign in to
+<code>/admin</code>, open the queue page, and use the
+<strong>Email</strong> panel: it states whether Postmark is configured,
+which sender and stream are in use, what each feature would do, and
+offers a test send. Send one to yourself, then confirm it in Postmark’s
+Activity view.</p>
+<pre><code># or from a shell on the server
+docker compose -f docker-compose.prod.yml exec -T web python -c \
+  &quot;from acb_large_print_web.email import email_status; print(email_status())&quot;</code></pre>
+<h3 id="when-it-does-not-work">6.3 When it does not work</h3>
+<table>
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+</colgroup>
+<thead>
+<tr>
+<th>Symptom</th>
+<th>Cause</th>
+<th>Fix</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>401</code> from Postmark</td>
+<td>Account token used instead of the server token</td>
+<td>Copy the token from the Server, not the account</td>
+</tr>
+<tr>
+<td><code>422</code> validation error</td>
+<td><code>POSTMARK_FROM_EMAIL</code> is not a verified sender</td>
+<td>Verify the address, or the domain it belongs to</td>
+</tr>
+<tr>
+<td>Sends succeed, nothing arrives</td>
+<td>Account still in sandbox, or recipient not verified</td>
+<td>Request account approval</td>
+</tr>
+<tr>
+<td>Mail lands in spam</td>
+<td>DKIM and Return-Path records missing</td>
+<td>Complete domain verification rather than a single signature</td>
+</tr>
+<tr>
+<td><code>429</code></td>
+<td>Rate limited</td>
+<td>Back off; the workshop’s volume is nowhere near this</td>
+</tr>
+<tr>
+<td>Timeout</td>
+<td>Postmark unreachable from the container</td>
+<td>Check egress; GLOW surfaces the failure and never blocks the
+request</td>
+</tr>
+</tbody>
+</table>
+<h3 id="volume-and-cost-for-the-event">6.4 Volume and cost for the
+event</h3>
+<p>Thirty participants generate roughly: 30 return links, plus a handful
+of re-requests, plus 30 artifact emails, plus 30 nudges a month later.
+Call it 120 messages for the event and its follow-up, well inside
+Postmark’s smallest paid tier and around the free developer allowance.
+Audit-report delivery adds one message per person who asks for one.</p>
+<h3 id="privacy-stance">6.5 Privacy stance</h3>
+<p>Addresses are used only to send someone their own work. They never
+appear in the shared gallery, on the facilitator dashboard, or in any
+export, and a test asserts that across all five surfaces. Giving an
+address is optional at every step, and the retention period is stated on
+the form that asks for it.</p>
+<h3 id="what-was-built-for-this-and-what-is-still-optional">6.6 What was
+built for this, and what is still optional</h3>
+<p>Added on 21 August, all of it inert until a token exists:</p>
+<ul>
+<li><code>email_status()</code> – one structured answer to “will mail
+work?”, carrying the sender, the stream and a feature-by-feature
+availability list, and never the token itself.</li>
+<li><code>render_email()</code> – the house layout. Semantic HTML, a
+real plain-text alternative in the same reading order, no colour-carried
+meaning and no images, because an email client is a browser with
+opinions and some readers will only ever see the text part.</li>
+<li><code>send_test_email()</code> and the admin <strong>Email</strong>
+panel – prove the path in production without waiting for a real audit or
+a real workshop.</li>
+</ul>
+<p>Still optional, in rough order of usefulness:</p>
+<ol type="1">
+<li><strong>Bounce and spam-complaint webhooks.</strong> Postmark can
+POST delivery events back. Today a hard bounce is invisible; with a
+webhook, a participant whose address was mistyped could be told on the
+day rather than never.</li>
+<li><strong>A delivery log.</strong> Store feature, outcome and a hash
+of the recipient (not the address) so “did their artifact go?” has an
+answer that does not depend on someone’s Postmark login.</li>
+<li><strong>Per-feature switches.</strong> One token turns on all seven
+features. A <code>GLOW_EMAIL_FEATURES</code> allow-list would let a
+deployment enable audit delivery without enabling workshop mail, or the
+reverse.</li>
+<li><strong>A digest instead of individual sends.</strong> The 30-day
+nudge is a natural fit for a scheduled digest to the facilitator as well
+as the participant.</li>
+<li><strong>Moving the older senders onto
+<code>render_email()</code>.</strong> The audit-report builder still
+writes its own HTML with inline colour for severity pills. It works and
+is well covered by tests, so it was left alone – but two message styles
+is one more than a product needs, and the severity pills are the one
+place GLOW’s own mail carries meaning in colour alone.</li>
+</ol>
+<hr />
+<h2 id="the-glow-passport-email-wide-identity">7. The GLOW passport:
+email-wide identity</h2>
+<p><strong>Status: built and shipped, 21 August 2026.</strong> Optional
+at every point. Full feature documentation:
+<code>docs/PASSPORT.md</code>.</p>
+<p>Answering the original question – “do we have rich email features
+across all of GLOW?” – the answer was no, and now it is yes. Email did
+six disconnected jobs and the one rich feature, come back to your own
+work from any device, existed only inside Workshop Mode. It is now a
+product-wide passport, and Workshop Mode is one of its consumers rather
+than a parallel system.</p>
+<p>The short answer to “do we have rich email features across all of
+GLOW?” is no. Email today does six useful but disconnected jobs, and the
+one genuinely rich feature – come back to your own work from any device
+– exists only inside Workshop Mode, because that is where it was needed
+first.</p>
+<h3 id="where-things-actually-stand">7.1 Where things actually
+stand</h3>
+<table>
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+</colgroup>
+<thead>
+<tr>
+<th>Concern</th>
+<th>Today</th>
+<th>Consequence</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Display preferences (type scale, theme, cognitive profile, forced
+colours, motion)</td>
+<td><code>localStorage</code> in one browser
+(<code>static/preferences.js</code>)</td>
+<td>Lost on a new device, a different browser, or a cookie clear</td>
+</tr>
+<tr>
+<td>Per-user AI provider and model settings</td>
+<td>The Flask session, with a timeout (<code>user_ai.py</code>)</td>
+<td>Gone when the session expires; never on a second device</td>
+</tr>
+<tr>
+<td>Tool defaults (audit profile, suppressed rules, fix options,
+voice)</td>
+<td>Re-chosen on every visit</td>
+<td>The same choices, made again, every time</td>
+</tr>
+<tr>
+<td>Long-job notification (Whisperer)</td>
+<td>An address typed per job (<code>notify_email</code>)</td>
+<td>Typed again each time, and only for Whisperer</td>
+</tr>
+<tr>
+<td>Identity</td>
+<td>Three islands: admin (magic link + OAuth), workshop participant
+(cookie + return link), OIDC when Keycloak is on</td>
+<td>Nothing carries across the product</td>
+</tr>
+<tr>
+<td>Audit history</td>
+<td>Not kept</td>
+<td>No “what did this document score last month?”</td>
+</tr>
+</tbody>
+</table>
+<p>So GLOW has excellent <em>stateless</em> behaviour – which is a real
+virtue, and the reason it works for someone on a locked-down library
+machine – and no way at all for a person to be recognised again on their
+own terms.</p>
+<h3 id="the-proposal-a-glow-passport">7.2 The proposal: a GLOW
+passport</h3>
+<p>One optional, email-only identity for the whole product, built on the
+mechanism Workshop Mode already uses: a signed, single-use, expiring
+link; tokens stored only as hashes; no password, no account creation, no
+sign-up wall.</p>
+<p><strong>The interaction.</strong> On <code>/settings</code>, under
+the existing controls: <em>“Keep these settings. We will email you one
+link that restores them on any device.”</em> Enter an address, receive a
+link, click it anywhere, and the settings are yours again. No password
+to forget, nothing to install, and nothing changes for people who never
+use it.</p>
+<p><strong>What travels, in explicitly separate opt-ins:</strong></p>
+<ol type="1">
+<li><strong>Display preferences.</strong> Type scale, theme, contrast
+and forced-colours mode, the cognitive-accessibility profile, reduced
+motion.</li>
+<li><strong>Tool defaults.</strong> Standards profile, suppressed rules,
+fix options, conversion targets, speech voice and rate, braille
+table.</li>
+<li><strong>Notification preferences.</strong> “Email me when a long job
+finishes”, with the address already known so it is never typed
+again.</li>
+<li><strong>History pointers.</strong> Recent audits and their scores,
+so a document can be compared with its own past. Off by default, because
+it is the only one that stores anything about the <em>content</em>
+someone worked on.</li>
+</ol>
+<p><strong>What it must never become:</strong> an account system with
+passwords; a prerequisite for any feature; a way to identify someone who
+did not ask to be identified; or a marketing list. Every surface keeps
+working logged out, exactly as now.</p>
+<p><strong>Decided:</strong> one passport serves both GLOW and Workshop
+Mode, retention is 90 days from last use, and history is opt-in only.
+Section 7.8 has the detail.</p>
+<h3 id="why-this-matters-more-for-glow-than-for-most-products">7.3 Why
+this matters more for GLOW than for most products</h3>
+<p>The people most likely to have carefully tuned a type scale, a
+contrast mode, a reduced-motion setting and a screen-reader-friendly
+profile are precisely the people this tool exists for – and today those
+settings evaporate when they pick up a phone or when a shared machine
+clears its cookies. Asking somebody to rebuild their own accessibility
+configuration on every device is a small, repeated, avoidable
+insult.</p>
+<p>That is the argument for building this, and it is a stronger one than
+convenience.</p>
+<h3 id="what-it-unlocks-surface-by-surface">7.4 What it unlocks, surface
+by surface</h3>
+<ul>
+<li><strong>Audit.</strong> Your profile and rule suppressions are
+already set. Email delivery already exists; with a known address it
+becomes one click.</li>
+<li><strong>Fix and Convert.</strong> Your defaults survive. Long
+conversions can tell you when they are done instead of asking you to
+watch a progress bar.</li>
+<li><strong>Speech and Whisperer.</strong> Voice, rate and notification
+address are remembered; the address is no longer retyped per job.</li>
+<li><strong>Braille.</strong> Table and formatting preferences
+persist.</li>
+<li><strong>Workshop.</strong> The participant return link becomes a
+special case of the general mechanism rather than a parallel system, and
+a participant who already has a passport is recognised on arrival.</li>
+<li><strong>Admin.</strong> Nothing changes; admin identity stays
+separate on purpose.</li>
+</ul>
+<h3
+id="design-constraints-learned-from-building-the-workshop-version">7.5
+Design constraints, learned from building the workshop version</h3>
+<ul>
+<li>Tokens: single use, hashed at rest, time-boxed, and landing only on
+an allow-listed destination so a link in an email can never become an
+open redirect. All four of these are already implemented and
+tested.</li>
+<li>Rate limits per participant rather than per address, so a shared
+network cannot lock a room out. Also already implemented.</li>
+<li>A “forget me” control that deletes the stored settings and the
+address, and says plainly what it deleted.</li>
+<li>Retention stated on the form that asks for the address, not buried
+in a policy page.</li>
+<li>No address ever rendered in a shared surface, an export, or a log
+line.</li>
+<li>The link email must carry a plain-text alternative and no
+colour-carried meaning – the house layout added in section 6.6 already
+does this.</li>
+</ul>
+<h3 id="what-shipped-in-the-three-slices-proposed">7.6 What shipped, in
+the three slices proposed</h3>
+<p><strong>Slice 1 – settings that travel. Done.</strong>
+<code>passport_store.py</code> and <code>routes/passport.py</code>: an
+opaque id in a cookie, an optional address, the settings blob the
+browser already keeps, single-use hashed links, an allow-listed return
+destination, and a delete control that reports what it deleted. The
+settings page gained a “Keep these settings” section and an offer to
+apply stored settings when they differ from the local ones – offered,
+never applied automatically, because changing type size and contrast
+underneath somebody mid-task is what this tool exists to prevent.</p>
+<p><strong>Slice 2 – notifications worth having. Done for
+Whisperer.</strong> With notifications on, the address is prefilled from
+the passport rather than retyped per job. Long conversions do not yet
+have a completion notification of their own; that is the remaining piece
+of this slice.</p>
+<p><strong>Slice 3 – history and comparison. Done, opt-in only.</strong>
+Audits record filename, score and grade so a document can be measured
+against its own past. Off unless ticked, never switched on as a side
+effect of saving settings, deleted when switched off, and capped at the
+25 most recent entries.</p>
+<h3 id="b-steps-to-run-it">7.6b Steps to run it</h3>
+<ol type="1">
+<li><p><strong>Nothing is required.</strong> With no configuration at
+all, the passport works: settings save, the cookie persists, and the
+page says no link can be sent.</p></li>
+<li><p><strong>To enable the emailed link</strong>, configure Postmark
+(section 6). That is the only dependency.</p></li>
+<li><p><strong>Optional tuning</strong>:
+<code>GLOW_PASSPORT_RETENTION_DAYS</code> (default 90) and
+<code>GLOW_PASSPORT_LINK_TTL_DAYS</code> (default 14).</p></li>
+<li><p><strong>Verify a deployment</strong>:</p>
+<pre><code>docker compose -f docker-compose.prod.yml exec -T web python -c \
+  &quot;from acb_large_print_web.passport_store import retention_days; print(retention_days())&quot;</code></pre></li>
+<li><p><strong>Back up <code>instance/passport.db</code></strong> with
+the other instance data.</p></li>
+</ol>
+<h3 id="c-original-delivery-plan-for-reference">7.6c Original delivery
+plan, for reference</h3>
+<p><strong>Slice 1 – settings that travel.</strong> Server-side settings
+blob keyed by an opaque profile id, the passport cookie, the “email me a
+link” control on <code>/settings</code>, and the restore route. Reuses
+<code>workshop_store</code>’s return-link code almost verbatim. Roughly
+a day, plus tests.</p>
+<p><strong>Slice 2 – notifications worth having.</strong> “Tell me when
+it finishes” for Whisperer and long conversions, using the saved
+address; per-feature opt-in; one place to turn them all off. Half a
+day.</p>
+<p><strong>Slice 3 – history and comparison.</strong> Optional, off by
+default: keep audit scores over time so a document can be measured
+against its own past, and let someone email themselves that history. A
+day, and the slice most worth challenging on privacy grounds.</p>
+<p>Each slice ships on its own and each is optional at runtime. Nothing
+here should reach production before the conference; the workshop path is
+already built and tested, and freeze week is not the time.</p>
+<h3 id="other-email-ideas-worth-considering">7.7 Other email ideas worth
+considering</h3>
+<ul>
+<li><strong>Email this fixed document to me</strong> – the fix workspace
+produces a file and currently offers only a download.</li>
+<li><strong>Share a report by email</strong> – send an audit to a
+colleague with a note, rather than downloading and attaching it by
+hand.</li>
+<li><strong>Bounce and complaint webhooks</strong> so a mistyped address
+is visible on the day rather than never (also in section 6.6).</li>
+<li><strong>A facilitator digest</strong> the morning after a workshop:
+what was submitted, what was committed to, what to follow up.</li>
+</ul>
+<h3 id="decisions-taken">7.8 Decisions taken</h3>
+<p>Answered 21 August. These are settled; the design above is written to
+them.</p>
+<p><strong>1. One passport, used for both.</strong> A passport and a
+workshop participant are the same object. Practically that means:</p>
+<ul>
+<li>One identity record carries an optional email address, a settings
+blob, and zero or more workshop-session memberships.
+<code>workshop_participants</code> becomes a membership of a passport
+rather than a parallel identity.</li>
+<li>The return links already built are passport links. The mechanism
+does not change – single use, hashed at rest, time-boxed, allow-listed
+destination.</li>
+<li>Someone who arrives at a workshop already carrying a passport is
+recognised, keeps their type scale and contrast profile, and does not
+fill in a display name they have already given.</li>
+<li>Anonymity in the gallery is untouched. The display name and the
+share-anonymously choice stay per session, because “who I am to this
+room” is a different question from “which browser is mine”.</li>
+<li>Migration is additive: existing participant cookies keep working,
+and a passport is attached the first time someone asks for one.</li>
+</ul>
+<p><strong>2. Retention: 90 days.</strong> From last use, sliding – a
+returning visitor resets the clock. This matches the participant
+cookie’s existing lifetime and the 45-day return-link expiry sits
+comfortably inside it. Stated on the form that asks for the address, not
+buried in a policy page. A “forget me” control deletes the record
+immediately and says what it deleted.</p>
+<p><strong>3. Keycloak: yes, over SMTP.</strong> See section 7.9.</p>
+<p><strong>4. History is opt-in only.</strong> Off by default, never
+enabled as a side effect of saving settings, with its own checkbox and
+its own sentence explaining what gets stored. A passport with history
+switched off must store nothing about which documents someone worked
+on.</p>
+<h3 id="keycloak-and-postmark">7.9 Keycloak and Postmark</h3>
+<p>Yes – they work together, and they stay separate concerns.</p>
+<p>Keycloak sends its own mail (verify address, forgot password,
+required actions, admin invitations) over SMTP, and Postmark offers an
+SMTP endpoint alongside the HTTP API that GLOW itself uses. One Postmark
+server can serve both.</p>
+<p><strong>Realm Settings → Email, in Keycloak:</strong></p>
+<table>
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
+<thead>
+<tr>
+<th>Field</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>From</td>
+<td><code>no-reply@notify.letitglow.app</code> (must be a verified
+sender or on a verified domain)</td>
+</tr>
+<tr>
+<td>From display name</td>
+<td>GLOW</td>
+</tr>
+<tr>
+<td>Envelope-From</td>
+<td>an address on the same verified domain, so Return-Path aligns</td>
+</tr>
+<tr>
+<td>Host</td>
+<td><code>smtp.postmarkapp.com</code></td>
+</tr>
+<tr>
+<td>Port</td>
+<td>587 (25 and 2525 also work)</td>
+</tr>
+<tr>
+<td>Encryption</td>
+<td>Enable StartTLS</td>
+</tr>
+<tr>
+<td>Authentication</td>
+<td>On</td>
+</tr>
+<tr>
+<td>Username</td>
+<td>the Server API token</td>
+</tr>
+<tr>
+<td>Password</td>
+<td>the same Server API token</td>
+</tr>
+</tbody>
+</table>
+<p>Postmark accepts the server token as both username and password, or
+an SMTP token’s access key and secret key if you would rather keep the
+credentials separate. Without an <code>X-PM-Message-Stream</code>
+header, SMTP sends on the server’s default transactional stream, which
+is what these messages are – Keycloak cannot easily add headers, and
+broadcast mail would need a different host anyway.</p>
+<p><strong>Two things worth being clear about:</strong></p>
+<ul>
+<li><strong>The passport does not run on Keycloak.</strong> GLOW’s magic
+links are application-level: our token, our table, our expiry, and they
+work whether or not Keycloak is deployed. Keycloak’s SMTP settings only
+affect mail Keycloak itself sends. Configuring one does not configure
+the other, and either can exist without the other.</li>
+<li><strong>The current Keycloak runs on
+<code>KC_DB: dev-file</code>.</strong> That is a file-backed development
+database. Social login through Google and GitHub needs no mail and no
+durable user store, which is why this has not mattered. The moment
+Keycloak holds real accounts with verified addresses, it needs a real
+database and a backup story – so if email-based Keycloak flows are ever
+switched on, that migration comes first.</li>
+</ul>
+<p>Sources: <a
+href="https://postmarkapp.com/developer/user-guide/send-email-with-smtp">Postmark
+SMTP user guide</a>, <a
+href="https://postmarkapp.com/support/article/811-what-are-the-smtp-details-api-tokens-i-should-be-using">which
+SMTP details and API tokens to use</a>, <a
+href="https://postmarkapp.com/support/article/how-to-create-and-send-through-message-streams">sending
+through message streams</a>.</p>
+<hr />
+<h2 id="appendix-a-feature-inventory">Appendix A — Feature
+inventory</h2>
+<p><strong>Participant surfaces:</strong> workshop home and join, eleven
+activities plus one optional lab, scenario picker on each GLOW lab,
+exercise launchpad with tokenized deep links, my workshop content,
+personal Markdown export, take-home artifact (view, download, email),
+champion skill preview and package download, copy-a-prompt on every
+AI-assisted activity, badge collection, shared gallery with peer
+feedback and workflow borrowing, follow-through log, return links.</p>
+<p><strong>Facilitator surfaces:</strong> gated dashboard with metrics,
+live room pulse, AI usage panel, recent submissions, session-wide export
+in four formats, follow-through export, printable room signage,
+commitment wall.</p>
+<p><strong>Offline surfaces:</strong> blank worksheet packs in HTML and
+Word, downloadable sample documents, self-contained take-home
+artifact.</p>
+<p><strong>Platform:</strong> four feature flags, SQLite session store,
+conference access codes, facilitator key access control, 90-day
+participant cookie, single-use return links, optional OIDC binding,
+per-participant AI budgets, per-participant rate limiting, short URLs,
+QR codes, SSE live counts, Postmark mail, a nudge command.</p>
+<h2 id="appendix-b-key-source-locations">Appendix B — Key source
+locations</h2>
+<table>
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
+<thead>
+<tr>
+<th>Concern</th>
+<th>Path</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Routes</td>
+<td><code>web/src/acb_large_print_web/routes/workshop.py</code></td>
+</tr>
+<tr>
+<td>Short URLs</td>
+<td><code>web/src/acb_large_print_web/routes/shortlinks.py</code></td>
+</tr>
+<tr>
+<td>Persistence</td>
+<td><code>web/src/acb_large_print_web/workshop_store.py</code></td>
+</tr>
+<tr>
+<td>Scenario bank</td>
+<td><code>web/src/acb_large_print_web/workshop_scenarios.py</code></td>
+</tr>
+<tr>
+<td>Agent skill compiler</td>
+<td><code>web/src/acb_large_print_web/workshop_skills.py</code></td>
+</tr>
+<tr>
+<td>Worksheet packs</td>
+<td><code>web/src/acb_large_print_web/workshop_worksheets.py</code></td>
+</tr>
+<tr>
+<td>Take-home artifact</td>
+<td><code>web/src/acb_large_print_web/workshop_artifact.py</code></td>
+</tr>
+<tr>
+<td>AI budgets</td>
+<td><code>web/src/acb_large_print_web/workshop_ai_budget.py</code></td>
+</tr>
+<tr>
+<td>Nudge command</td>
+<td><code>web/src/acb_large_print_web/workshop_nudge.py</code></td>
+</tr>
+<tr>
+<td>Templates</td>
+<td><code>web/src/acb_large_print_web/templates/workshop/</code></td>
+</tr>
+<tr>
+<td>Styles</td>
+<td><code>web/src/acb_large_print_web/static/workshop.css</code></td>
+</tr>
+<tr>
+<td>Live updates</td>
+<td><code>web/src/acb_large_print_web/static/workshop-live.js</code></td>
+</tr>
+<tr>
+<td>Tests</td>
+<td><code>web/tests/test_workshop_*.py</code></td>
+</tr>
+<tr>
+<td>Accessibility CI</td>
+<td><code>web/e2e/tests/axe-audit.spec.mjs</code></td>
+</tr>
+<tr>
+<td>Facilitator runbook</td>
+<td><code>docs/workshop-mode-facilitator-runbook.md</code></td>
+</tr>
+<tr>
+<td>WCAG checklist</td>
+<td><code>docs/workshop-mode-wcag-checklist.md</code></td>
+</tr>
+<tr>
+<td>Email</td>
+<td><code>web/src/acb_large_print_web/email.py</code></td>
+</tr>
+<tr>
+<td>MCP server</td>
+<td><code>mcp_server/main.py</code></td>
+</tr>
+</tbody>
+</table>

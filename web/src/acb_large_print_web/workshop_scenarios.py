@@ -197,7 +197,7 @@ _LAB_2 = (
             "A blind student reading a handout about tactile graphics is the "
             "sharpest possible audience for getting this right.",
         ),
-        tools=("GLOW:ALT_TEXT", "GLOW:CHAT"),
+        tools=("GLOW:AUDIT",),
         stretch=(
             "Write the version for the procurement office, who need to know "
             "what was produced and at what quality."
@@ -225,7 +225,7 @@ _LAB_2 = (
             "each be the right answer. Choosing between them is the skill.",
             "'As the dashboard shows' is a sentence that assumes sight.",
         ),
-        tools=("GLOW:ALT_TEXT", "GLOW:CHAT", "GLOW:TEMPLATE"),
+        tools=("GLOW:AUDIT", "GLOW:TEMPLATE"),
         sample_slug="board-agenda-html",
         stretch=(
             "Rewrite the paragraph so the image becomes supporting evidence "
@@ -256,7 +256,7 @@ _LAB_2 = (
             "At 60,000 images, the policy matters more than any single "
             "description. That policy is what the participant is designing.",
         ),
-        tools=("GLOW:ALT_TEXT", "GLOW:CHAT"),
+        tools=("GLOW:AUDIT",),
         stretch=(
             "Draft the two-sentence rule the cataloguing team could actually "
             "follow at scale."
@@ -284,7 +284,7 @@ _LAB_2 = (
             "'Image' is worse than empty alt: it interrupts and tells nobody "
             "anything.",
         ),
-        tools=("GLOW:ALT_TEXT",),
+        tools=("GLOW:AUDIT",),
         stretch=(
             "Sort all four before writing any text, and record the reason for "
             "each decision. The reasons are the reusable part."

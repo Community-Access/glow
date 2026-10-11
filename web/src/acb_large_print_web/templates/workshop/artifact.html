@@ -86,6 +86,14 @@
   </div>
   <button type="submit">Email me my artifacts</button>
 </form>
+{% if conversations_available %}
+<p>
+  You can reply to that email with a question and it will reach a person.
+  Your answers appear on your
+  <a href="{{ url_for('postmark.conversations') }}">messages page</a> as well,
+  so you can carry on the conversation from either side.
+</p>
+{% endif %}
 {% else %}
 <p>
   Email is switched off on this server. Use the download links above before

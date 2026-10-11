@@ -235,8 +235,10 @@ class TestSendAuditReportEmail:
         # CSV attachment should have been included in payload
         call_kwargs = mock_post.call_args
         payload = call_kwargs.kwargs.get("json") or call_kwargs.args[0] if call_kwargs.args else {}
-        # Transactional stream
-        assert payload.get("MessageStream") == "transactional"
+        # The transactional stream. Postmark's id for the one every server is
+        # created with is "outbound"; "transactional" is the stream's type,
+        # not its id, and sending to it returns 422.
+        assert payload.get("MessageStream") == "outbound"
         # CSV attachment present
         attachments = payload.get("Attachments", [])
         assert len(attachments) == 1

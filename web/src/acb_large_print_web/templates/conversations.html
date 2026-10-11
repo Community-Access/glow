@@ -1,0 +1,102 @@
+{% extends "base.html" %}
+
+{% block title %}{% if status_prefix %}{{ status_prefix }} — {% endif %}Messages{% endblock %}
+{% block heading %}Messages{% endblock %}
+
+{% block content %}
+<div id="conversations-status" tabindex="-1"{% if message_is_error %} autofocus{% endif %}>
+  {% if message %}
+    {% if message_is_error %}
+  <p class="flash-error" role="alert"><strong>Error:</strong> {{ message }}</p>
+    {% else %}
+  <p class="flash-success" role="status"><strong>Success:</strong> {{ message }}</p>
+    {% endif %}
+  {% endif %}
+</div>
+
+<p>
+  This is where GLOW writes to you and where you write back. Every message
+  here is also an ordinary email: you can answer from your own mail program
+  and your reply will appear in the same conversation.
+</p>
+
+{% if not identified %}
+<h2>Nothing to show yet</h2>
+<p>
+  Messages are attached to your GLOW passport or to your workshop place on
+  this device. If you have neither, there is nothing for us to show you, and
+  nothing about you is stored.
+</p>
+<p>
+  <a href="{{ url_for('passport.passport_page') }}">Set up a passport</a> if
+  you want your work and your messages to follow you between devices.
+</p>
+
+{% elif not available %}
+<h2>Replies are switched off on this server</h2>
+<p>
+  This copy of GLOW can send mail but cannot receive it, so a conversation
+  would only go one way.
+  {% if support_email %}
+  Write to <a href="mailto:{{ support_email }}">{{ support_email }}</a> instead.
+  {% else %}
+  Ask the site administrator for the best address to use.
+  {% endif %}
+</p>
+
+{% else %}
+
+<h2>Your conversations</h2>
+{% if threads %}
+<ul class="conversation-list" role="list">
+  {% for thread in threads %}
+  <li>
+    <h3>
+      <a href="{{ url_for('postmark.conversation', thread_id=thread.id) }}">
+        {{ thread.subject or 'Conversation' }}
+      </a>
+      {% if thread.unread_for_participant %}
+      <span class="badge">New reply</span>
+      {% endif %}
+    </h3>
+    <p>{{ thread.preview or 'No messages yet.' }}</p>
+    <p>
+      {{ thread.message_count }} message{{ '' if thread.message_count == 1 else 's' }},
+      last on {{ thread.updated_at_utc[:10] }}.
+      {% if thread.status != 'open' %}This conversation is closed.{% endif %}
+    </p>
+  </li>
+  {% endfor %}
+</ul>
+{% else %}
+<p>You have no conversations yet.</p>
+{% endif %}
+
+<h2>Start a new conversation</h2>
+<form method="post" action="{{ url_for('postmark.conversation_start') }}">
+  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+  <div class="form-field">
+    <label for="new_subject">Subject</label>
+    <input type="text" id="new_subject" name="subject" maxlength="150"
+           aria-describedby="new-subject-help">
+    <p id="new-subject-help">A few words about what this is, so a reply lands in the right place.</p>
+  </div>
+  <div class="form-field">
+    <label for="new_email">Your email address</label>
+    <input type="email" id="new_email" name="email" autocomplete="email" required
+           spellcheck="false" aria-describedby="new-email-help">
+    <p id="new-email-help">
+      Used only to reply to you. It is stored with this conversation and
+      deleted when the conversation is.
+    </p>
+  </div>
+  <div class="form-field">
+    <label for="new_body">Your message</label>
+    <textarea id="new_body" name="body" rows="8" required
+              aria-describedby="new-body-help"></textarea>
+    <p id="new-body-help">Plain text. Write as much or as little as you like.</p>
+  </div>
+  <button type="submit">Send message</button>
+</form>
+{% endif %}
+{% endblock %}

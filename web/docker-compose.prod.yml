@@ -123,10 +123,25 @@ services:
       # Branding profile: 'communityaccess' (default) or 'uarizona'
       - GLOW_BRAND_PROFILE=${GLOW_BRAND_PROFILE:-communityaccess}
       # Feedback-to-GitHub sync is enabled when FEEDBACK_GITHUB_TOKEN is set in .env
-      # Postmark email notifications (optional -- email audit reports to users)
+      # Postmark email (optional). See postmark.md for the full setup.
       # Set these in the .env file loaded via env_file above:
       #   POSTMARK_SERVER_TOKEN=your-postmark-server-token
       #   POSTMARK_FROM_EMAIL=no-reply@notify.letitglow.app
+      #   POSTMARK_MESSAGE_STREAM=outbound      (transactional stream id)
+      #   POSTMARK_BROADCAST_STREAM=broadcast   (the 30-day nudge)
+      # Two-way conversations additionally need:
+      #   POSTMARK_INBOUND_ADDRESS=reply@inbound.letitglow.app
+      #   POSTMARK_WEBHOOK_TOKEN=a-long-random-string
+      #   POSTMARK_WEBHOOK_ALLOWED_IPS=          (optional CIDR allow-list)
+      #   GLOW_SUPPORT_EMAIL=support@letitglow.app
+      # Support tickets into FreeScout. GLOW posts the message straight to the
+      # help desk's mail bridge, which is on this same Docker network, so no
+      # Postmark send and no public round trip is involved:
+      #   HELPDESK_BRIDGE_URL=http://helpdesk-mailbridge:8096/postmark/inbound
+      #   HELPDESK_BRIDGE_USER=<the bridge's MAILBRIDGE_WEBHOOK_USER>
+      #   HELPDESK_BRIDGE_PASSWORD=<the bridge's MAILBRIDGE_WEBHOOK_PASSWORD>
+      #   HELPDESK_SUPPORT_EMAIL=support@community-access.org
+      #   HELPDESK_URL=https://helpdesk.community-access.org
     volumes:
       - feedback-data:/app/instance
       - speech-models:/app/instance/speech_models

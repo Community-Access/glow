@@ -140,7 +140,7 @@ def test_a_test_send_names_the_sender_and_the_stream(monkeypatch: pytest.MonkeyP
     assert sent["To"] == "someone@example.edu"
     assert sent["Subject"] == "GLOW test email"
     assert "no-reply@notify.letitglow.app" in sent["TextBody"]
-    assert "transactional" in sent["TextBody"]
+    assert "outbound" in sent["TextBody"]
     assert "admin@example.edu" in sent["TextBody"]
     assert sent["TextBody"].strip()
     assert sent["HtmlBody"].startswith("<h1>")

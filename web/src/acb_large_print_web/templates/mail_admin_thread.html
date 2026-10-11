@@ -1,0 +1,115 @@
+{% extends "base.html" %}
+
+{% block title %}{% if status_prefix %}{{ status_prefix }} — {% endif %}{{ thread.subject or 'Conversation' }}{% endblock %}
+{% block heading %}{{ thread.subject or 'Conversation' }}{% endblock %}
+
+{% block content %}
+<div id="mail-thread-status" tabindex="-1"{% if message_is_error %} autofocus{% endif %}>
+  {% if message %}
+    {% if message_is_error %}
+  <p class="flash-error" role="alert"><strong>Error:</strong> {{ message }}</p>
+    {% else %}
+  <p class="flash-success" role="status"><strong>Success:</strong> {{ message }}</p>
+    {% endif %}
+  {% endif %}
+</div>
+
+<p><a href="{{ url_for('postmark.admin_threads') }}">Back to all conversations</a></p>
+
+<h2>Who this is</h2>
+<dl>
+  <dt>Address</dt><dd>{{ thread.participant_email }}</dd>
+  <dt>Name</dt><dd>{{ thread.participant_name or 'Not given' }}</dd>
+  <dt>Context</dt><dd>{{ thread.context_kind }}{% if thread.context_id %} / {{ thread.context_id }}{% endif %}</dd>
+  <dt>Workshop session</dt><dd>{{ thread.session_code or 'None' }}</dd>
+  <dt>Status</dt><dd>{{ thread.status }}</dd>
+  <dt>Reply address</dt><dd><code>{{ thread.reply_address or 'Inbound not configured' }}</code></dd>
+</dl>
+
+<h2>Messages</h2>
+{% if messages %}
+<ol class="conversation-thread" role="list">
+  {% for item in messages %}
+  <li>
+    <h3>
+      {{ item.author_label or item.from_email }} wrote
+      <span class="message-when">on {{ item.created_at_utc[:16].replace('T', ' at ') }} UTC</span>
+    </h3>
+    <p class="message-direction">
+      {{ 'Inbound' if item.direction == 'in' else 'Outbound' }}{% if item.delivery_state %}, {{ item.delivery_state }}{% endif %}{% if item.delivery_detail %} — {{ item.delivery_detail }}{% endif %}.
+    </p>
+    <div class="message-body">
+      {% for paragraph in (item.body_text or '').split('\n\n') %}
+        {% if paragraph.strip() %}<p>{{ paragraph.strip() }}</p>{% endif %}
+      {% endfor %}
+    </div>
+    {% if item.attachments %}
+    <p>Attachments: {{ item.attachments | join(', ') }}</p>
+    {% endif %}
+  </li>
+  {% endfor %}
+</ol>
+{% else %}
+<p>No messages on this conversation yet.</p>
+{% endif %}
+
+<h2>Reply</h2>
+{% if not available %}
+<p>
+  Replying needs both a Postmark token and an inbound address. Until both are
+  set, this conversation is read-only.
+</p>
+{% else %}
+<form method="post" action="{{ url_for('postmark.admin_reply', thread_id=thread.id) }}">
+  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+  <div class="form-field">
+    <label for="admin_subject">Subject</label>
+    <input type="text" id="admin_subject" name="subject" maxlength="150"
+           value="{{ thread.subject }}" aria-describedby="admin-subject-help">
+    <p id="admin-subject-help">Leave as it is to keep the conversation's subject line.</p>
+  </div>
+  <div class="form-field">
+    <label for="admin_body">Your reply</label>
+    <textarea id="admin_body" name="body" rows="10" required
+              aria-describedby="admin-body-help"></textarea>
+    <p id="admin-body-help">
+      Sent to {{ thread.participant_email }}. Their answer comes back to this
+      conversation automatically.
+    </p>
+  </div>
+  <button type="submit">Send reply</button>
+</form>
+{% endif %}
+
+<h2>Manage this conversation</h2>
+<form method="post" action="{{ url_for('postmark.admin_thread_status', thread_id=thread.id) }}">
+  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+  <input type="hidden" name="status" value="{{ 'open' if thread.status == 'closed' else 'closed' }}">
+  <button type="submit">{{ 'Reopen this conversation' if thread.status == 'closed' else 'Close this conversation' }}</button>
+</form>
+
+<form method="post" action="{{ url_for('postmark.admin_thread_assign', thread_id=thread.id) }}">
+  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+  <div class="form-field">
+    <label for="assign_context">Anchor this conversation to</label>
+    <select id="assign_context" name="context_kind" aria-describedby="assign-context-help">
+      {% for kind in context_kinds %}
+      <option value="{{ kind }}"{% if kind == thread.context_kind %} selected{% endif %}>{{ kind }}</option>
+      {% endfor %}
+    </select>
+    <p id="assign-context-help">Use this for mail that arrived without a routing hash.</p>
+  </div>
+  <div class="form-field">
+    <label for="assign_session">Workshop session code (optional)</label>
+    <input type="text" id="assign_session" name="session_code" value="{{ thread.session_code }}">
+  </div>
+  <button type="submit">Save</button>
+</form>
+
+<form method="post" action="{{ url_for('postmark.admin_thread_delete', thread_id=thread.id) }}">
+  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+  <button type="submit" data-confirm="Delete this conversation and every message in it? This cannot be undone.">
+    Delete this conversation
+  </button>
+</form>
+{% endblock %}

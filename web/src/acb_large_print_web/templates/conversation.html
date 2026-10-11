@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+
+{% block title %}{% if status_prefix %}{{ status_prefix }} — {% endif %}{{ thread.subject or 'Conversation' }}{% endblock %}
+{% block heading %}{{ thread.subject or 'Conversation' }}{% endblock %}
+
+{% block content %}
+<div id="conversation-status" tabindex="-1"{% if message_is_error %} autofocus{% endif %}>
+  {% if message %}
+    {% if message_is_error %}
+  <p class="flash-error" role="alert"><strong>Error:</strong> {{ message }}</p>
+    {% else %}
+  <p class="flash-success" role="status"><strong>Success:</strong> {{ message }}</p>
+    {% endif %}
+  {% endif %}
+</div>
+
+<p><a href="{{ url_for('postmark.conversations') }}">Back to all messages</a></p>
+
+<h2>Messages</h2>
+{% if messages %}
+<ol class="conversation-thread" role="list">
+  {% for item in messages %}
+  <li>
+    <h3>
+      {% if item.direction == 'in' %}
+        {{ item.author_label or item.from_email }} wrote
+      {% else %}
+        {{ item.author_label or 'GLOW' }} wrote
+      {% endif %}
+      <span class="message-when">on {{ item.created_at_utc[:16].replace('T', ' at ') }} UTC</span>
+    </h3>
+    <p class="message-direction">
+      {{ 'Received by GLOW' if item.direction == 'in' else 'Sent to ' ~ item.to_email }}{% if item.delivery_state %}, {{ item.delivery_state }}{% endif %}.
+    </p>
+    <div class="message-body">
+      {% for paragraph in (item.body_text or '').split('\n\n') %}
+        {% if paragraph.strip() %}<p>{{ paragraph.strip() }}</p>{% endif %}
+      {% endfor %}
+    </div>
+    {% if item.attachments %}
+    <p>Attachments: {{ item.attachments | join(', ') }}</p>
+    {% endif %}
+  </li>
+  {% endfor %}
+</ol>
+{% else %}
+<p>This conversation has no messages yet.</p>
+{% endif %}
+
+<h2>Reply</h2>
+{% if thread.status != 'open' %}
+<p>This conversation is closed. Replying by email will reopen it.</p>
+{% elif not available %}
+<p>Replies are not available on this server at the moment.</p>
+{% else %}
+<form method="post" action="{{ url_for('postmark.conversation_reply', thread_id=thread.id) }}">
+  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+  <div class="form-field">
+    <label for="reply_body">Your reply</label>
+    <textarea id="reply_body" name="body" rows="8" required
+              aria-describedby="reply-body-help"></textarea>
+    <p id="reply-body-help">
+      Sent to {{ thread.participant_email }} as an email, and added above. You
+      can also just reply to any GLOW email instead of using this box.
+    </p>
+  </div>
+  <button type="submit">Send reply</button>
+</form>
+{% endif %}
+{% endblock %}

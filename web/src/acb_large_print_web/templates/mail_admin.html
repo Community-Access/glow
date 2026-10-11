@@ -1,0 +1,151 @@
+{% extends "base.html" %}
+
+{% block title %}{% if status_prefix %}{{ status_prefix }} — {% endif %}Mail and conversations{% endblock %}
+{% block heading %}Mail and conversations{% endblock %}
+
+{% block content %}
+<div id="mail-admin-status" tabindex="-1"{% if message_is_error %} autofocus{% endif %}>
+  {% if message %}
+    {% if message_is_error %}
+  <p class="flash-error" role="alert"><strong>Error:</strong> {{ message }}</p>
+    {% else %}
+  <p class="flash-success" role="status"><strong>Success:</strong> {{ message }}</p>
+    {% endif %}
+  {% endif %}
+</div>
+
+<h2>Configuration</h2>
+<dl>
+  <dt>Sending</dt>
+  <dd>{{ 'Configured' if email_ready else 'Not configured. POSTMARK_SERVER_TOKEN is unset.' }}</dd>
+  <dt>Inbound address</dt>
+  <dd>{{ inbound_address or 'Not set. POSTMARK_INBOUND_ADDRESS is unset, so replies cannot reach GLOW.' }}</dd>
+  <dt>Webhook secret</dt>
+  <dd>{{ 'Set' if webhook_secret_set else 'Not set. Both webhook routes return 503 until POSTMARK_WEBHOOK_TOKEN is set.' }}</dd>
+  <dt>Two-way conversations</dt>
+  <dd>{{ 'Working' if available else 'Unavailable' }}</dd>
+  <dt>Inbound webhook URL</dt>
+  <dd><code>{{ inbound_url }}</code> — paste this into Postmark, with the secret as the password or as <code>?token=</code>.</dd>
+  <dt>Events webhook URL</dt>
+  <dd><code>{{ events_url }}</code> — for bounce, spam complaint, delivery and subscription change.</dd>
+</dl>
+
+<h2>Help desk</h2>
+<p>
+  Support tickets raised from the feedback form go to FreeScout, not to the
+  conversations above. GLOW writes the message straight into the help desk's
+  mail bridge, so the ticket arrives from the person who raised it and the
+  agent's reply goes to them directly.
+</p>
+<dl>
+  <dt>Status</dt>
+  <dd>
+    {% if helpdesk.configured %}
+    Configured. Tickets are filed for: {{ helpdesk.categories | join(', ') }}.
+    {% else %}
+    Not configured. Feedback is still stored and still reaches GitHub; no
+    ticket is opened. Set <code>HELPDESK_BRIDGE_URL</code>,
+    <code>HELPDESK_BRIDGE_USER</code> and <code>HELPDESK_BRIDGE_PASSWORD</code>.
+    {% endif %}
+  </dd>
+  <dt>Bridge</dt>
+  <dd>{% if helpdesk.bridge_url %}<code>{{ helpdesk.bridge_url }}</code>{% else %}Not set{% endif %}</dd>
+  <dt>Support address</dt>
+  <dd><code>{{ helpdesk.support_email }}</code> — must be in the bridge's recipient allow-list.</dd>
+  <dt>Agent interface</dt>
+  <dd><a href="{{ helpdesk.helpdesk_url }}">{{ helpdesk.helpdesk_url }}</a></dd>
+</dl>
+
+<h2>Conversations{% if unread %} ({{ unread }} unread){% endif %}</h2>
+{% if threads %}
+<ul class="conversation-list" role="list">
+  {% for thread in threads %}
+  <li>
+    <h3>
+      <a href="{{ url_for('postmark.admin_thread', thread_id=thread.id) }}">
+        {{ thread.subject or 'Conversation' }}
+      </a>
+      {% if thread.unread_for_staff %}<span class="badge">Unread</span>{% endif %}
+    </h3>
+    <p>
+      {{ thread.participant_email }}
+      {%- if thread.participant_name %} ({{ thread.participant_name }}){% endif %},
+      {{ thread.context_kind }}{% if thread.session_code %} / {{ thread.session_code }}{% endif %},
+      {{ thread.status }}.
+    </p>
+    <p>{{ thread.preview or 'No messages yet.' }}</p>
+    <p>{{ thread.message_count }} message{{ '' if thread.message_count == 1 else 's' }}, last on {{ thread.updated_at_utc[:10] }}.</p>
+  </li>
+  {% endfor %}
+</ul>
+{% else %}
+<p>No conversations yet.</p>
+{% endif %}
+
+<h2>Do-not-send list</h2>
+<p>
+  Addresses Postmark reported as a hard bounce, a spam complaint or an
+  unsubscribe. GLOW will not mail them from any feature until they are
+  cleared here.
+</p>
+{% if suppressions %}
+<table>
+  <caption>Suppressed addresses</caption>
+  <thead>
+    <tr>
+      <th scope="col">Address</th><th scope="col">Reason</th>
+      <th scope="col">Since</th><th scope="col">Action</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for entry in suppressions %}
+    <tr>
+      <th scope="row">{{ entry.email }}</th>
+      <td>{{ entry.reason }}</td>
+      <td>{{ entry.created_at_utc[:10] }}</td>
+      <td>
+        <form method="post" action="{{ url_for('postmark.admin_clear_suppression') }}">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+          <input type="hidden" name="email" value="{{ entry.email }}">
+          <button type="submit">Allow {{ entry.email }} again</button>
+        </form>
+      </td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% else %}
+<p>Nothing is suppressed.</p>
+{% endif %}
+
+<h2>Recent Postmark events</h2>
+{% if events %}
+<table>
+  <caption>The last {{ events | length }} webhook records</caption>
+  <thead>
+    <tr><th scope="col">When</th><th scope="col">Type</th><th scope="col">Address</th><th scope="col">Detail</th></tr>
+  </thead>
+  <tbody>
+    {% for event in events %}
+    <tr>
+      <td>{{ event.created_at_utc[:16].replace('T', ' ') }}</td>
+      <th scope="row">{{ event.record_type }}</th>
+      <td>{{ event.email or '—' }}</td>
+      <td>{{ event.summary or '—' }}</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% else %}
+<p>No events recorded yet. If Postmark is configured and mail is moving, this list fills in on its own.</p>
+{% endif %}
+
+<h2>Housekeeping</h2>
+<form method="post" action="{{ url_for('postmark.admin_purge') }}">
+  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+  <button type="submit" data-confirm="Delete every conversation untouched for the retention window? This cannot be undone.">
+    Purge expired conversations now
+  </button>
+</form>
+<p><a href="{{ url_for('postmark.admin_health') }}">Machine-readable status (JSON)</a></p>
+{% endblock %}

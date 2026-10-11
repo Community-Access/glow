@@ -1,12 +1,15 @@
-"""The four-tier AI model: paper, house AI, your own assistant, your own agent.
+"""The two paths: GLOW in a browser, and your own assistant if you want one.
 
-Tiers 0 and 2 are the workshop. This covers Tier 2 -- the prompt a
-participant pastes into whatever assistant they already have -- and Tier 3,
-the optional agent package and the optional lab for running it.
+The house AI is gone and so is every mention of plumbing. What remains is the
+prompt a participant pastes into whatever assistant they already have, and the
+agent package they take home. Both must be usable by someone who has never
+heard of MCP, a CLI, or a plugin -- and the tests below are what hold that
+line, because plumbing creeps back one helpful sentence at a time.
 """
 
 from __future__ import annotations
 
+import re
 from pathlib import Path
 
 import pytest
@@ -19,7 +22,6 @@ from acb_large_print_web.routes.workshop import (
     OPTIONAL_ACTIVITY_ORDER,
 )
 from acb_large_print_web.workshop_skills import (
-    MCP_TOOLS,
     build_activity_prompt,
     build_skill_markdown,
     build_skill_zip_bytes,
@@ -164,44 +166,65 @@ def test_the_copy_button_is_an_accelerator_not_the_only_route(client, app: Flask
 
 
 # ---------------------------------------------------------------------------
-# Tier 3: the agent package and its tool layer
+# The agent package: no plumbing, anywhere
 # ---------------------------------------------------------------------------
 
+# Words a participant should never have to meet. Locked as L5 and L12 in
+# docs/ahg-2026/plan.md: the audience is disability services staff and faculty,
+# not developers, and every piece of plumbing on a page is a slice of the room
+# deciding this is not for them.
+PLUMBING = (
+    "mcp",
+    "model context protocol",
+    "endpoint",
+    "localhost",
+    "npm",
+    "cli",
+    "command line",
+    "terminal",
+    "api key",
+    "install",
+    "vs code",
+    "copilot",
+    "gemini",
+    "plugin",
+    "extension",
+)
 
-def test_the_generated_skill_names_glows_own_tools():
-    skill = build_skill_markdown(VALUES, mcp_base_url="https://letitglow.app/mcp")
 
-    assert "## Tools" in skill
-    for endpoint, _purpose in MCP_TOOLS:
-        assert endpoint in skill
+def _mentions(text: str, word: str) -> bool:
+    """Whole-word match. Without the boundaries, "cli" matches "click"."""
+    return re.search(r"\b" + re.escape(word) + r"\b", text) is not None
 
 
-def test_the_skill_says_what_to_do_when_the_tools_are_missing():
-    """Capability negotiation: a missing tool is a stated gap, not a guess."""
-    skill = build_skill_markdown(VALUES, mcp_base_url="https://letitglow.app/mcp")
+def test_the_generated_package_names_no_plumbing():
+    skill = build_skill_markdown(VALUES).lower()
 
-    assert "If these tools are not available" in skill
-    assert "stated gap" in skill
+    for word in PLUMBING:
+        assert not _mentions(skill, word), f"generated agent package mentions {word!r}"
 
 
-def test_a_skill_generated_without_a_tool_layer_is_still_complete():
-    skill = build_skill_markdown(VALUES, mcp_base_url="")
+def test_the_package_is_complete_without_a_tool_layer():
+    skill = build_skill_markdown(VALUES)
 
-    assert "## Tools" not in skill
     assert "## Verification truth" in skill
     assert "## Workflow" in skill
+    assert "## Do not activate for" in skill
 
 
-def test_the_package_carries_the_tool_layer_through(app: Flask):
-    _filename, payload = build_skill_zip_bytes(VALUES, mcp_base_url="https://example.test/mcp")
+def test_the_zip_carries_no_plumbing_either(app: Flask):
+    _filename, payload = build_skill_zip_bytes(VALUES)
 
     import zipfile
     from io import BytesIO
 
     with zipfile.ZipFile(BytesIO(payload)) as zf:
-        skill = zf.read([n for n in zf.namelist() if n.endswith("SKILL.md")][0]).decode("utf-8")
+        body = " ".join(
+            zf.read(name).decode("utf-8", "ignore") for name in zf.namelist()
+        ).lower()
 
-    assert "https://example.test/mcp" in skill
+    for word in PLUMBING:
+        assert not _mentions(body, word), f"agent package zip mentions {word!r}"
 
 
 # ---------------------------------------------------------------------------

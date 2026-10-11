@@ -18,6 +18,19 @@
 <p class="help-text">If GitHub sync is not enabled, your feedback remains stored locally until an administrator reviews or syncs it.</p>
 {% endif %}
 
+{% if ticket_filed %}
+<h2>Somebody will reply</h2>
+<p>
+  A support conversation has been opened from what you wrote. You will get an
+  email from <code>{{ helpdesk_email }}</code>; reply to it and your answer
+  reaches the same person, so you do not need to come back here.
+</p>
+<p>
+  If nothing arrives within a day, check your spam folder, or write to
+  <a href="mailto:{{ helpdesk_email }}">{{ helpdesk_email }}</a> directly.
+</p>
+{% endif %}
+
 <p class="help-text">Support hub repository: <code>{{ support_repo }}</code></p>
 
 <p>

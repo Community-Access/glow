@@ -103,6 +103,21 @@
 </p>
 {% endif %}
 
+<h2>Messages</h2>
+{% if conversations_available %}
+<p>
+  When GLOW emails you, you can simply reply. Your reply and our answer both
+  appear on your
+  <a href="{{ url_for('postmark.conversations') }}">messages page</a>, so a
+  conversation started on your phone can be finished here.
+</p>
+{% else %}
+<p>
+  This server can send email but cannot receive replies, so messages from
+  GLOW come from an address that is not monitored.
+</p>
+{% endif %}
+
 <h2>Delete everything</h2>
 <p>
   This removes your passport, your settings, your address and your history
