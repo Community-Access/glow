@@ -1,23 +1,38 @@
 {% extends "base.html" %}
 
-{% block title %}Accessibility Agents at AHG 2026 - Setup and kit{% endblock %}
+{% block title %}Accessibility Agents at AHG 2026{% endblock %}
 {% block heading %}Accessibility Agents at AHG 2026{% endblock %}
 
 {% block content %}
 <p>
-  Accessibility Agents: Building Human-Centered AI Workflows for Trusted
-  Accessibility Automation at Scale. A full-day workshop at Accessing Higher
-  Ground, Monday 16 November 2026, 10:30 AM to 4:30 PM Mountain Time.
+  Accessibility Agents: Building Human-Centered AI Workflows for
+  Trusted Accessibility Automation at Scale. A full-day, hands-on
+  workshop at Accessing Higher Ground, Monday 16 November 2026, 10:30 AM to
+  4:30 PM Mountain Time, in Matchless at the Hilton Denver City Center.
 </p>
 <p>
-  You will design your own accessibility agent, add it to a team of agents
-  that works through a whole course, and contribute it to an open-source
-  project with your name on it. You do not need to be a developer.
+  Bring a Windows or Mac laptop, and headphones if you use a screen reader.
+  You do not need to be a developer, and you do not need to have used VS
+  Code or GitHub before. Every step comes with a step card and a helper.
 </p>
 
-<h2 id="setup">Before the day: four steps, about 20 minutes</h2>
+<h2 id="what-you-will-do">What you will do</h2>
 <ol>
-  <li>Make a free GitHub account at github.com, and turn on Copilot Free in your GitHub settings.</li>
+  <li>Design your own accessibility agent, in plain English, for a real problem from your job.</li>
+  <li>Put it to work with GitHub Copilot on a sample course full of real barriers.</li>
+  <li>Ground it in evidence from GLOW, axe and Accessibility Insights, so it cites WCAG 2.2 instead of guessing.</li>
+  <li>Share it with one form and one button, with your name on it.</li>
+  <li>Add it to a team of agents that works through the whole course.</li>
+  <li>Leave with a 30-day plan for your own campus.</li>
+</ol>
+
+<h2 id="get-ready">Get ready: five steps, about 25 minutes</h2>
+<p>Do these any time before 16 November. Step card 0, below, has every click.</p>
+<ol>
+  <li>
+    Make a free GitHub account at github.com, then turn on Copilot Free in your
+    GitHub settings, under Copilot.
+  </li>
   <li>Install VS Code from code.visualstudio.com. On Windows it installs without administrator rights.</li>
   <li>
     Import the AHG 2026 profile. In VS Code, open the Command Palette
@@ -28,32 +43,79 @@
   </li>
   <li>
     <a href="{{ url_for('workshop.ahg_kit_zip') }}">Download the agent kit</a>
-    (a zip file), unzip it, and open the folder in VS Code. Then open Copilot
-    Chat and type <kbd>/ready-check</kbd>.
+    (a zip file), unzip it, and open the folder in VS Code. Open Copilot Chat
+    (Control+Alt+I on Windows, Command+Control+I on a Mac) and type
+    <kbd>/ready-check</kbd>.
+  </li>
+  <li>
+    Share your practice agent: open <a href="{{ url_for('workshop.ahg_share') }}">the share page</a>,
+    choose "My practice agent", choose <code>my-agent/SKILL.md</code> from the kit, and press the
+    button. GitHub replies within about a minute. That is the whole of sharing; on the day you do it
+    once more with your real agent.
   </li>
 </ol>
 <p>
   Stuck? Write to <a href="mailto:support@community-access.org">support@community-access.org</a>,
-  or come to the setup table outside the room from 10:00 on the day.
+  and a person answers. On the day, the setup table outside the room opens at 10:00.
 </p>
 
-<h2 id="on-the-day">On the day</h2>
+<h2 id="the-day">The day</h2>
+<p>Times are Mountain Time. Each block has its own step card and its own Copilot command.</p>
+<table>
+  <caption>The workshop, 10:30 AM to 4:30 PM</caption>
+  <thead><tr><th scope="col">Time</th><th scope="col">Block</th><th scope="col">What happens</th></tr></thead>
+  <tbody>
+  {% for row in schedule %}
+    <tr><td>{{ row.time }}</td><td>{{ row.title }}</td><td>{{ row.mode }}</td></tr>
+  {% endfor %}
+  </tbody>
+</table>
+
+<h2 id="share">Share your agent</h2>
 <ul>
-  <li><a href="{{ url_for('workshop.ahg_share') }}">Share your agent</a>: opens GitHub with your agent filled in, ready for your pull request.</li>
-  <li><a href="{{ url_for('workshop.workshop_deck') }}">The slides</a>, with speaker notes, in a reading mode for screen readers.</li>
+  <li><a href="{{ url_for('workshop.ahg_share') }}">The share page</a>: choose your agent file, press one button, and GitHub fills in the form for you.</li>
+  <li><a href="https://github.com/Community-Access/ahg-2026/blob/main/agents/README.md">The collection</a>: every agent shared at AHG 2026, with its author.</li>
+  <li><a href="https://github.com/Community-Access/ahg-2026">The workshop repository</a>: the kit, the collection, and how it all works.</li>
 </ul>
+<p>
+  At the end of the day every agent in the collection goes into the open-source
+  <a href="https://github.com/Community-Access/accessibility-agents">Accessibility Agents</a>
+  project, with each author credited.
+</p>
 
 <h2 id="step-cards">Step cards</h2>
-<p>One card per block, in the order things appear on screen. They are also in the kit, in the step-cards folder.</p>
+<p>One card per block, in the order things appear on screen, as large print Word files. They are also in the kit, in the step-cards folder.</p>
 <ul>
   {% for card in step_cards %}
   <li><a href="{{ url_for('workshop.ahg_step_card', name=card.file) }}">{{ card.title }}</a></li>
   {% endfor %}
 </ul>
 
+<h2 id="slides">The slides</h2>
+<p>
+  <a href="{{ url_for('workshop.workshop_deck') }}">The slides, with speaker notes</a>,
+  including a "Read as one page" mode for screen readers and a download as
+  one file, PowerPoint, Word or Markdown.
+</p>
+
 <h2 id="rules">The two rules</h2>
 <ol>
-  <li>Never paste anything private into any AI: student records, health or disability information, or anyone's name.</li>
+  <li>Never paste anything private into any AI: student records, health or disability information, or anyone's name. We use a sample course all day.</li>
   <li>Every agent ends with a person checking its work.</li>
 </ol>
+
+<h2 id="access">Access</h2>
+<p>
+  Large print, a particular seat, a pause, a repeat: ask for any of it,
+  before or during. That is not an interruption of this workshop; it is the
+  point of it. Write to
+  <a href="mailto:support@community-access.org">support@community-access.org</a>
+  any time.
+</p>
+
+<h2 id="more">More</h2>
+<ul>
+  <li><a href="https://accessinghigherground.org/accessibility-agents-building-human-centered-ai-workflows-for-trusted-accessibility-automation-at-scale/">The session on the Accessing Higher Ground site</a></li>
+  <li><a href="https://github.com/Community-Access/glow/blob/main/ahg.md">For facilitators and helpers: instructions and the test plan</a></li>
+</ul>
 {% endblock %}

@@ -162,3 +162,25 @@ against `https://letitglow.app` afterwards.
 
 With the workshop live, every remaining item in section 6 can now be run
 against `https://letitglow.app/workshop/ahg-2026` instead of a local copy.
+
+## 9. After this report: the workshop repository and the landing page
+
+Later on 10 October the design changed to make sharing easier for people
+who are not developers. These are recorded in `ahg.md`, which is the
+current test plan.
+
+- Community-Access/ahg-2026 now holds the share form, the collection and a
+  copy of the kit. Participants share with one form and one button; an
+  automation commits each agent in its author's name and replies within a
+  minute. No fork, no pull request, no Git.
+- Everyone shares a practice agent before the day.
+- At the end of the day, every agent goes into Accessibility Agents in one
+  pull request, with every author credited as a co-author.
+- `letitglow.app/ahg` is the one address for everything. It opens without a
+  consent form, and every way of typing it arrives there.
+
+The automation was tested against the real repository on 10 October: a
+practice agent, a real agent and a broken one all got the right reply, and
+both commits were authored by the person who shared. New cases Setup-13 to
+Setup-15, Share-01 to Share-11 and Repo-01 to Repo-07 in `ahg.md` cover it.
+

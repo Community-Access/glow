@@ -143,7 +143,7 @@ JOURNEY = (
     "Your agent: five plain-English answers.",
     "Your agent at work: Copilot uses it on one course document.",
     "Your agent, grounded: real evidence in, cited answers out.",
-    "Your agent, shared: a pull request to an open-source project, with your name on it.",
+    "Your agent, shared: in an open-source collection, with your name on it.",
     "Your agent in the team: the whole course, at once.",
     "Your campus: a 30-day plan.",
 )
@@ -228,7 +228,7 @@ def build_slides(ctx: DeckContext) -> list[Slide]:
             blocks=(
                 Bullets(items=(
                     f"10:30 to 4:30 Mountain Time. Lunch at {lunch.starts_at}. A break at {rest.starts_at}.",
-                    "Your laptop, with VS Code, the AHG 2026 profile and your GitHub account. Not set up yet? A helper is coming to you.",
+                    "Everything is at letitglow.app/ahg. Not set up yet? A helper is coming to you.",
                     "Seven blocks. Every one starts by showing you the finished result.",
                     f"The last five minutes, at {evaluation.starts_at}, are the session evaluation.",
                     "Ask for anything, any time: large print, a seat, a pause, a repeat.",
@@ -457,29 +457,30 @@ def build_slides(ctx: DeckContext) -> list[Slide]:
         Slide(
             id="s19", section="Afternoon", kicker=_you_are_here(5), title="Share it",
             blocks=(
-                Para("By the end of this block: your own pull request in the open-source Accessibility Agents project."),
+                Para("By the end of this block: your agent in the open-source AHG 2026 collection, committed in your name."),
                 Bullets(ordered=True, items=(
-                    "Open letitglow.app/workshop/ahg-2026/share in your browser, and choose your my-agent/SKILL.md.",
-                    "Press Open GitHub with my agent. GitHub opens with your agent filled in.",
-                    "Press Propose changes. GitHub makes your own copy, called a fork.",
-                    "Press Create pull request, then Create pull request again.",
+                    "Open letitglow.app/ahg/share, and choose your my-agent/SKILL.md.",
+                    "Press Open the share form on GitHub. The form opens, already filled in.",
+                    "Tick the privacy box, and press Submit new issue.",
+                    "Within a minute, the reply: Your agent is in.",
                 )),
-                Para("That is your contribution. Buttons only. No code."),
+                Para("You did this once already, with your practice agent. Same again."),
             ),
             notes=(
                 _journey_note(5),
-                "Step card 5 walks the GitHub pages one control at a time, with what a screen reader announces at each step.",
+                "Everyone shared a practice agent before the day, so this is the second time, not the first. Say so; it changes the room.",
+                "Helpers watch the issues labelled needs-a-hand and go to those people first. A Nearly there reply always says exactly what to fix.",
             ),
         ),
         Slide(
-            id="s20", section="Afternoon", kicker="Open source, live", title="Merged, with your name on it",
+            id="s20", section="Afternoon", kicker="Open source, live", title="In the collection, with your name on it",
             blocks=(
-                Para("As your pull requests arrive, I review and merge them, here, on the screen."),
-                Para("Every agent merged today lives in community/ahg-2026 in the Accessibility Agents project, for anyone in higher education to use and improve.", big=True),
+                Para("As your agents arrive, the collection grows, here, on the screen."),
+                Para("Tonight every one of them goes into the Accessibility Agents project, with every author credited, for anyone in higher education to use and improve.", big=True),
             ),
             notes=(
-                "Merge on the projector as they arrive, and read each name and agent title out loud. Applause is allowed and encouraged.",
-                "Started from a ready-made agent? It still counts. Say so: what matters is that it is yours now.",
+                "Project agents/README.md in github.com/Community-Access/ahg-2026 and refresh it as agents arrive. Read each name and agent title out loud. Applause is allowed and encouraged.",
+                "Each agent is committed in its author's name, so it shows on their own GitHub profile. Started from a ready-made agent? It still counts. Say so: what matters is that it is yours now.",
             ),
         ),
         # -- Block 6: build the office --------------------------------------
@@ -488,7 +489,7 @@ def build_slides(ctx: DeckContext) -> list[Slide]:
             blocks=(
                 Para("By the end of this block: your agent working inside a team, across the whole course, and one team report."),
                 Bullets(ordered=True, items=(
-                    "In Copilot Chat, type /run-the-office.",
+                    "In Copilot Chat in VS Code, type /run-the-office.",
                     "The coordinator sends each course file to its specialists, and yours where it fits.",
                     "The standards reviewer checks everyone's work.",
                     "You get the team report, with your agent's section in it.",
@@ -517,11 +518,11 @@ def build_slides(ctx: DeckContext) -> list[Slide]:
         Slide(
             id="s23", section="Afternoon", kicker="Agents in action", title="Everyone's agents, together",
             blocks=(
-                Para("One more run, on the screen: the office team with every agent this room merged."),
+                Para("One more run, on the screen: the office team with every agent this room shared."),
                 Para("Listen for yours."),
             ),
             notes=(
-                "Run the merged team on the projector against the sample course. Read out each agent's name as the coordinator calls it.",
+                "Copy every agents/<login>/<name>/ folder from the ahg-2026 repository into a room/ folder in your kit, then run /run-the-office on the projector. Read out each agent's name as the coordinator calls it.",
                 "If the run is slow, narrate it. If it stumbles, say what happened and why; a real failure explained well teaches more than a perfect demo.",
             ),
         ),

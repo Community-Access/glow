@@ -24,28 +24,36 @@ the GLOW repository, `S:\code\glow` on Jeff's machine, on the `main` branch.
 
 ### Live sites
 
-These are the addresses participants, the facilitator and testers use.
+These are the addresses participants, the facilitator and testers use. The
+one to give anyone is `letitglow.app/ahg`.
 
 | What | Address |
 |---|---|
-| Setup page: four steps, kit, profile, step cards | `https://letitglow.app/workshop/ahg-2026` |
-| The agent kit, as a zip | `https://letitglow.app/workshop/ahg-2026/kit.zip` |
+| The landing page: everything for the conference | `https://letitglow.app/ahg` |
+| Share page: opens the share form with an agent filled in | `https://letitglow.app/ahg/share` |
+| Share page, starting on "practice agent" | `https://letitglow.app/ahg/share?practice=1` |
+| Share page against a test copy, for rehearsals | `https://letitglow.app/ahg/share?repo=<account>/<repository>` |
+| The agent kit, as a zip | `https://letitglow.app/ahg/kit` |
 | The AHG 2026 VS Code profile, for Profiles: Import Profile | `https://letitglow.app/workshop/ahg-2026/ahg-2026.code-profile` |
-| Share page: opens GitHub with an agent filled in | `https://letitglow.app/workshop/ahg-2026/share` |
-| Share page against a test fork, for rehearsals | `https://letitglow.app/workshop/ahg-2026/share?repo=<account>/accessibility-agents` |
 | Step card downloads | `https://letitglow.app/workshop/ahg-2026/step-cards/<n>-<name>.docx` |
-| The deck, before a session exists | `https://letitglow.app/workshop/deck` |
+| The slides | `https://letitglow.app/ahg/slides` |
 | The deck for the room, with its join address | `https://letitglow.app/workshop/session/ahg-2026/deck` |
 | Commitment for the wall, participant | `https://letitglow.app/w/ahg-2026/11` |
 | The commitment wall, to project | `https://letitglow.app/workshop/session/ahg-2026/wall` |
 | Facilitator dashboard | `https://letitglow.app/workshop/session/ahg-2026/facilitator` |
+| The collection of shared agents | `https://github.com/Community-Access/ahg-2026/blob/main/agents/README.md` |
+| Anyone who needs a hand with sharing | `https://github.com/Community-Access/ahg-2026/issues?q=label:needs-a-hand` |
 | GLOW health | `https://letitglow.app/health` |
 | Help desk, for support mail | `https://helpdesk.community-access.org` |
 | Support address given to participants | `support@community-access.org` |
 
+The landing page also answers to `/AHG`, `/ahg2026`, `/ahg-2026`, to
+`www.letitglow.app/ahg`, and to the old `letitglow.app/workshop/ahg-2026`.
+It opens without GLOW's consent form, as do the kit, profile, share page and
+step cards; the GLOW tools themselves still ask.
+
 The addresses with `ahg-2026` in a session path work once the conference
-code is configured on the server, step 2 of section 1.5. The setup, kit,
-profile, share and step card addresses work now.
+code is configured on the server, step 2 of section 1.5.
 
 ### The conference
 
@@ -60,13 +68,13 @@ These are the conference's own pages and resources.
 
 ### Repositories and pull requests
 
-The code and the history of how the workshop was built.
+The code, the collection, and the history of how the workshop was built.
 
 | What | Where |
 |---|---|
-| GLOW | `https://github.com/Community-Access/glow` |
-| Accessibility Agents, where capstone pull requests land in `community/ahg-2026/` | `https://github.com/Community-Access/accessibility-agents` |
-| Pull requests to merge on the day | `https://github.com/Community-Access/accessibility-agents/pulls` |
+| The workshop repository: the share form, the collection, the kit | `https://github.com/Community-Access/ahg-2026` |
+| GLOW, where everything is written and built | `https://github.com/Community-Access/glow` |
+| Accessibility Agents: the source of the specialists, and where the collection goes at the end of the day, in `community/ahg-2026/` | `https://github.com/Community-Access/accessibility-agents` |
 | PR #116, the workshop | `https://github.com/Community-Access/glow/pull/116` |
 | PR #117, pages reflow at 320px | `https://github.com/Community-Access/glow/pull/117` |
 | PR #118, test report after the merge | `https://github.com/Community-Access/glow/pull/118` |
@@ -89,6 +97,7 @@ Everything Jeff reads or prints before and on the day.
 | `docs/ahg-2026/pre-event-message.md` | The setup message, sent three times |
 | `docs/ahg-2026/slides.html`, `.pptx`, `.docx`, `.md` | The deck in four formats, generated |
 | `docs/ahg-2026/workshop-frontfacing-guide.md` | The session description participants read in GLOW |
+| `docs/ahg-2026/repo/` | Everything in the workshop repository: share form, automation, README, end-of-day script |
 | `docs/ahg-2026/for-accessibility-agents/` | The `community/ahg-2026` folder, ready to copy into Accessibility Agents |
 
 ### The participant kit
@@ -120,6 +129,8 @@ Run from the repository root.
 |---|---|
 | `scripts/build_ahg_sample_course.py` | Rebuilds the sample course |
 | `scripts/build_ahg_kit.py` | Rebuilds the kit's agents, evidence, step card Word files and zip |
+| `scripts/sync_ahg_repo.py <ahg-2026 checkout>` | Publishes the kit and the repository files to Community-Access/ahg-2026 |
+| `scripts/promote_to_accessibility_agents.py`, in the ahg-2026 repository | The end-of-day step: every agent into Accessibility Agents, every author credited |
 | `flask --app acb_large_print_web.app:create_app workshop-deck --code ahg-2026` | Regenerates the deck |
 | `scripts/ahg_browser_checks.py --base <address>` | The 35 browser checks |
 | `scripts/check_ahg_sample_course.py` | Checks all 42 planted barriers are present |
@@ -135,7 +146,10 @@ For changing the workshop itself.
 | `web/src/acb_large_print_web/workshop_agenda.py` | The clock, `AHG_DAY` |
 | `web/src/acb_large_print_web/workshop_deck.py` | Every slide and speaker note |
 | `web/src/acb_large_print_web/routes/workshop.py` | The setup, kit, profile, share and step card pages, at the end of the file |
-| `web/src/acb_large_print_web/templates/workshop/ahg_home.html` | The setup page |
+| `web/src/acb_large_print_web/templates/workshop/ahg_home.html` | The landing page at /ahg |
+| `web/src/acb_large_print_web/routes/shortlinks.py` | The /ahg address and its variations |
+| `docs/ahg-2026/repo/.github/scripts/accept_agent.py` | The automation that adds each shared agent |
+| `web/tests/test_ahg_repo_intake.py` | Tests for that automation |
 | `web/src/acb_large_print_web/templates/workshop/ahg_share.html` | The share page |
 | `web/tests/test_workshop_ahg_kit.py` | Tests for the kit and its pages |
 
@@ -186,6 +200,8 @@ part is and who uses it.
 | `scripts/build_ahg_kit.py` | Rebuilds the kit's generated parts and the zip | Maintainer |
 | `scripts/audit_ahg_docs.py` | Runs GLOW's audits over every document | Maintainer, testers |
 | `scripts/check_material_conformance.py` | Checks materials against the program's promises | Maintainer, testers |
+| `scripts/sync_ahg_repo.py` | Publishes the kit and repository files to Community-Access/ahg-2026 | Maintainer |
+| `docs/ahg-2026/repo/` | The workshop repository's own files | Maintainer |
 
 ### 1.3 The agent kit
 
@@ -220,7 +236,7 @@ Copilot Chat.
 | 12:15 | Lunch | none | |
 | 1:15 | 4. Ground it | `/ground-my-agent` | Cited answers from evidence; a before and after |
 | 2:10 | Break | none | |
-| 2:20 | 5. Share it | the share page | Their own pull request |
+| 2:20 | 5. Share it | `letitglow.app/ahg/share` | Their agent in the collection, committed in their name |
 | 3:00 | 6. Build the office | `/run-the-office` | A team report with their agent's section |
 | 3:45 | 7. Take it home | `/my-30-day-plan` | `my-30-day-plan.md` and a commitment on the wall |
 | 4:15 | Commitments | GLOW wall | |
@@ -228,14 +244,12 @@ Copilot Chat.
 
 ### 1.5 Before the day: configuration
 
-PR #116 was merged and deployed on 10 October 2026, so steps 1 to 5 can
-be done now. Do them before the first setup message goes out.
+PR #116 was merged and deployed on 10 October 2026, and the workshop
+repository Community-Access/ahg-2026 exists, owned by Community Access with
+Jeff as admin. Do these before the first setup message goes out.
 
-1. Copy `docs/ahg-2026/for-accessibility-agents/community/ahg-2026/README.md`
-   into the Accessibility Agents repository at the same path. First confirm
-   that repository's `scripts/validate-skills.mjs`, its context budget check
-   and `scripts/install.mjs` skip `community/`. Add a CODEOWNERS line making
-   you the owner of `community/ahg-2026/`.
+1. Accept the admin invitation to Community-Access/ahg-2026 on the
+   jeffreybishop account (GitHub emails it).
 2. Add the AHG session to GLOW's conference codes, in
    `WORKSHOP_CONFERENCE_CODES_JSON` in `~/app/web/.env` or in
    `instance/workshop_conference_codes.json`:
@@ -247,24 +261,40 @@ be done now. Do them before the first setup message goes out.
      "facilitator_key": "choose-a-long-random-key"}]
    ```
 
-   Choose your own access code and facilitator key, and keep the key off
-   every slide.
-3. Open `https://letitglow.app/workshop/ahg-2026` and confirm the page, kit,
-   profile and share page all work (tests Setup-01 to Setup-04).
-4. Send the setup message in `pre-event-message.md` by 20 October, again on
-   6 November, and two days before.
-5. Upload `slides.pptx`, `slides.docx` and the step cards to the Cvent
+   Choose your own facilitator key, and keep it off every slide.
+3. The share form's workshop code is the `WORKSHOP_CODE` variable in the
+   ahg-2026 repository's settings, under Secrets and variables, then Actions.
+   It is `AHG2026` now; if you change it, change the table cards and the
+   setup message to match.
+4. Clear the test issues and the test agents from the ahg-2026 repository
+   before the setup message goes out (test cases Repo-01 to Repo-07 leave
+   some behind).
+5. Open `https://letitglow.app/ahg` and confirm the page, kit, profile and
+   share page all work (tests Setup-01 to Setup-04, Setup-14).
+6. Send the setup message in `pre-event-message.md` by 20 October, again on
+   6 November, and two days before. It asks everyone to share a practice
+   agent; watch `practice/` in the ahg-2026 repository fill up, and write to
+   anyone missing by 9 November.
+7. Upload `slides.pptx`, `slides.docx` and the step cards to the Cvent
    Speaker Resource Center under My Tasks.
+8. Before the end-of-day step, copy
+   `docs/ahg-2026/for-accessibility-agents/community/ahg-2026/README.md` into
+   the Accessibility Agents repository at the same path, after confirming its
+   `scripts/validate-skills.mjs`, context budget check and
+   `scripts/install.mjs` skip `community/`.
 
 ### 1.6 Rebuilding after a change
 
 Run these from the repository root after changing the course, the kit or
-the deck, then re-run the automated checks in section 2.4.
+the deck, then re-run the automated checks in section 2.4. Finish with the
+sync to the workshop repository, so participants who download it get the
+same kit.
 
 ```text
 python scripts/build_ahg_sample_course.py
 python scripts/build_ahg_kit.py --axe-js web/node_modules/axe-core/axe.min.js
 flask --app acb_large_print_web.app:create_app workshop-deck --code ahg-2026
+python scripts/sync_ahg_repo.py ../ahg-2026
 ```
 
 The kit build needs Python with python-docx, python-pptx, openpyxl, Pillow,
@@ -298,11 +328,14 @@ Follow `run-of-show.md`. In short:
    participants run the block's command with its step card.
 3. Anyone stuck uses a ready-made agent from `examples/agents/` and keeps
    going. Say often that this counts.
-4. In block 5, merge pull requests on the projector as they arrive and read
-   each name aloud.
+4. In block 5, project the collection and refresh it as agents arrive;
+   read each name aloud. Helpers watch the issues labelled needs-a-hand.
 5. In block 6, everyone runs their own team; the projector run with every
-   merged agent comes last.
+   shared agent comes last, from a `room/` folder in your kit.
 6. 4:25 is the session evaluation. Stop talking.
+7. After the session, send the collection into Accessibility Agents with
+   `scripts/promote_to_accessibility_agents.py`, as `run-of-show.md`
+   section 6a describes.
 
 ## Part 2: Test plan
 
@@ -334,7 +367,7 @@ The test plan needs the following people and accounts.
 
 | Role | Who | Needs |
 |---|---|---|
-| Facilitator tester | Jeff | Merge rights on the Accessibility Agents repository; facilitator key |
+| Facilitator tester | Jeff | Admin on Community-Access/ahg-2026 and merge rights on Accessibility Agents; facilitator key |
 | Beginner tester | Someone who has never opened VS Code | A brand-new GitHub account made for the test |
 | Screen reader tester, Windows | An experienced NVDA and JAWS user | A Windows laptop, a new GitHub account |
 | Screen reader tester, Mac | An experienced VoiceOver user | A Mac, a new GitHub account |
@@ -344,10 +377,9 @@ Every tester account must have Copilot Free turned on. Use new accounts:
 an account that already has Copilot Pro hides the free-tier limits this
 plan has to measure.
 
-Before testing the share page against the real repository, every tester
-forks `Community-Access/accessibility-agents` and uses the share page with
-`?repo=<their-account>/accessibility-agents` added to its address, so test
-pull requests land in their own fork, not in the real project.
+Testers share into the real workshop repository with "My practice
+agent", which lands in `practice/` and never reaches Accessibility Agents.
+Clear test agents and issues afterwards (section 1.5, step 4).
 
 ### 2.3 Test environments
 
@@ -391,7 +423,7 @@ These cover everything a participant does before the day.
 
 | ID | Steps | Expected | Result |
 |---|---|---|---|
-| Setup-01 | Open `/workshop/ahg-2026` | Page loads; heading "Accessibility Agents at AHG 2026"; four numbered setup steps; links to the kit, the profile, the share page, the slides and eight step cards; the two rules | Pass, Claude, 10 Oct |
+| Setup-01 | Open `/ahg` | Page loads; heading "Accessibility Agents at AHG 2026"; five numbered setup steps; the day's schedule; links to the kit, the profile, the share page, the slides and eight step cards; the two rules | Pass, Claude, 10 Oct |
 | Setup-02 | Make a new GitHub account and turn on Copilot Free, following step card 0 | Account made; Copilot Free shows as active in GitHub settings | |
 | Setup-03 | Install VS Code on Env-6 without administrator rights | Installs and opens | |
 | Setup-04 | In VS Code, Command Palette, "Profiles: Import Profile", paste the profile address from the setup page | VS Code shows the "AHG 2026 Accessibility Agents" profile; importing installs GitHub Copilot Chat, GitHub Pull Requests, GitHub Repositories and the axe Accessibility Linter; editor text is 18pt | |
@@ -403,7 +435,9 @@ These cover everything a participant does before the day.
 | Setup-10 | Rename `office-team` and run `/ready-check` again, then rename it back | Copilot reports that step as "Needs a hand", suggests one thing, and gives the support address | |
 | Setup-11 | Read the setup page with a screen reader | One H1, H2s for each part, numbered list announced, every link name says where it goes | Pass, Claude, 10 Oct, axe clean; screen reader listen still to do |
 | Setup-12 | Download `kit.zip` and the profile with no GLOW consent cookie (private window, direct links) | Both download without the consent page | Pass, Claude, 10 Oct |
-| Setup-13 | Open the share page in a private window | The consent page appears first, then the share page | Pass, Claude, 10 Oct |
+| Setup-13 | Open the landing page and the share page in a private window | Both open straight away, with no consent page; the GLOW tools still ask | |
+| Setup-14 | Open `letitglow.app/AHG`, `/ahg2026`, `/ahg-2026`, `/ahg/`, `www.letitglow.app/ahg` and `letitglow.app/workshop/ahg-2026` | Every one arrives at `letitglow.app/ahg` | |
+| Setup-15 | Share the practice agent from step card 0, step 8 | Within about a minute the issue gets a reply beginning "Well done", and the agent is in `practice/<account>/SKILL.md` | |
 
 ### 2.6 Block 1: Why we are here, and the deck
 
@@ -468,25 +502,31 @@ These prove that evidence changes the answers, for every kind of file.
 | Ground-10 | Check every answer from Ground-01 to 07 | None says "compliant" or "accessible" as a verdict; none invents a finding not in the evidence | |
 | Ground-11 | Spot check every evidence file against `answer-key.md` | Every GLOW rule in the evidence appears in the key | |
 
-### 2.10 Block 5: Share it
+### 2.10 Block 5: Share it, and the workshop repository
 
-Run these against a test fork first, using `?repo=` as described in section
-2.2. Run Share-09 against the real repository only after the
-`community/ahg-2026` folder exists.
+Run these with "My practice agent" unless the case says otherwise, so test
+agents land in `practice/`; clear them afterwards.
 
 | ID | Steps | Expected | Result |
 |---|---|---|---|
-| Share-01 | Open `/workshop/ahg-2026/share?repo=<account>/accessibility-agents`; choose `my-agent/SKILL.md` | The text box fills; the name fills from the file; a status message is announced | Pass, Claude, 10 Oct |
-| Share-02 | Press "Open GitHub with my agent" | A new tab opens GitHub's new-file page in the fork, path `community/ahg-2026/<name>/SKILL.md`, content filled in | Pass, Claude, 10 Oct |
-| Share-03 | Press "Commit changes" or "Propose changes", then "Create pull request" twice | A pull request is open in the fork | |
-| Share-04 | Repeat Share-01 to 03 with a brand-new account that has no fork | GitHub offers to fork, makes the fork, and the pull request opens against the target | |
+| Share-01 | Open `/ahg/share`; choose `my-agent/SKILL.md` | The text box fills; the name fills from the file; a status message is announced | Pass, Claude, 10 Oct |
+| Share-02 | Press "Open the share form on GitHub" | A new tab opens the Share my agent form in Community-Access/ahg-2026, with the workshop code, the kind and the agent filled in | |
+| Share-03 | Tick the privacy box and press Submit new issue | Within about a minute, a reply on the issue: "Your agent is in" with a link, or "Well done" for a practice agent; the issue closes | |
+| Share-04 | Repeat Share-01 to 03 with a brand-new GitHub account | Same result; the commit shows on that account's profile as theirs | |
 | Share-05 | Submit with the text box empty | Message "Your agent is empty"; focus moves to the text box | Pass, Claude, 10 Oct |
-| Share-06 | Submit with the name still "my-agent-name" | Message asks for a name of its own; focus moves to the name field | Pass, Claude, 10 Oct |
-| Share-07 | Paste an agent longer than about 7,000 characters | Message explains the manual Create new file route with the exact path | Pass, Claude, 10 Oct |
+| Share-06 | Submit a real agent with the name still "my-agent-name" | Message asks for a name of its own; focus moves to the name field | Pass, Claude, 10 Oct |
+| Share-07 | Paste an agent longer than about 7,000 characters | Message explains how to paste it into the form directly | Pass, Claude, 10 Oct |
 | Share-08 | Use the offline `share-my-agent.html` from the kit | Same as Share-01 and 02 | Pass, Claude, 10 Oct |
-| Share-09 | Real repository: submit one test agent, then review and merge it on GitHub | Merges cleanly into `community/ahg-2026/`; the repository's own checks do not fail on it | |
-| Share-10 | Do Share-01 to 03 with NVDA, JAWS and VoiceOver | Every control on the share page and on GitHub's pages is reachable and named | |
-| Share-11 | Merge five pull requests in a row on the projector, timed | Under five minutes for five | |
+| Share-09 | Open `/ahg/share?practice=1` | "My practice agent" is chosen | |
+| Share-10 | Do Share-01 to 03 with NVDA and JAWS | Every control on the share page and on GitHub's form is reachable and named; the reply is found by heading or by refreshing | |
+| Share-11 | Ten people share within two minutes | Every one gets a reply within five minutes; no commit is lost | |
+| Repo-01 | A practice agent through the form | Committed to `practice/<account>/SKILL.md` with the sharer as author; reply "Well done"; issue closed, label agent-added | Pass, Claude, 10 Oct |
+| Repo-02 | A real agent, with the code in lower case | Committed to `agents/<account>/<name>/SKILL.md` with the sharer as author; gallery updated; reply "Your agent is in", with its number | Pass, Claude, 10 Oct |
+| Repo-03 | A wrong code, the template's name and author | Reply "Nearly there" listing all three problems; issue stays open, label needs-a-hand; nothing committed | Pass, Claude, 10 Oct |
+| Repo-04 | Fix Repo-03 by editing the issue | Checked again on save; agent goes in; reply "Your agent is in" | |
+| Repo-05 | An agent containing an email address or a nine-digit number | Reply names what looks private; nothing committed | Pass by tests, 10 Oct |
+| Repo-06 | An author with an unquoted colon | Reply explains double quotes; nothing committed | Pass by tests, 10 Oct |
+| Repo-07 | Run `scripts/promote_to_accessibility_agents.py` against a scratch checkout of Accessibility Agents | Every agent copied to `community/ahg-2026/`; `commit-message.txt` has a Co-authored-by line per author | |
 
 ### 2.11 Block 6: Build the office
 
@@ -500,7 +540,7 @@ These check the agent team, and the Copilot Free allowance for a whole day.
 | Office-04 | Read the end of the report | A "Before this goes anywhere" checklist, then one sentence saying what the tester's agent added | |
 | Office-05 | Run with `my-agent/SKILL.md` still the template | The coordinator says so kindly and uses a ready-made agent or asks which one | |
 | Office-06 | If the run stops before the last file, type "continue" | It continues from where it stopped | |
-| Office-07 | Facilitator: copy every merged `community/ahg-2026/<name>/` folder from the Accessibility Agents repository into a `room/` folder in the kit, then type `/run-the-office` | The coordinator puts every room agent on the team and names each one with its author | |
+| Office-07 | Facilitator: copy every `agents/<login>/<name>/` folder from the ahg-2026 repository into a `room/` folder in the kit, then type `/run-the-office` | The coordinator puts every room agent on the team and names each one with its author | |
 | Office-08 | Count the Copilot Free usage for one full participant day, Setup-09 to Plan-02 | Recorded; under the monthly allowance with room to spare | |
 
 ### 2.12 Block 7: Take it home, and the commitment wall
@@ -576,8 +616,8 @@ no longer needed. What remains for Jeff, on Windows:
    own audits already score both files 100.
 4. The screen reader rows Env-2 and Env-3 with NVDA and JAWS, including
    Setup-11 and Share-10 by ear.
-5. Share-03, Share-04, Share-09 and Share-11 with real GitHub accounts and
-   a test fork.
+5. Share-02 to Share-04, Share-09 to Share-11, Repo-04 and Repo-07, with
+   real GitHub accounts, sharing practice agents.
 6. Fall-01 to Fall-05 and Dry-01.
 
 ### 2.15 Sign-off
@@ -593,6 +633,6 @@ The workshop is ready when every line below is signed and dated.
 | Materials, accessibility and fallbacks, section 2.13, all pass | | |
 | Defect log closed or every open defect accepted with a workaround | | |
 | Dry run done and run of show updated | | |
-| Accessibility Agents folder live and a test pull request merged | | |
+| Workshop repository cleared of test agents, and the Accessibility Agents folder in place for the end-of-day step | | |
 | Setup message sent with working links | | |
 | Facilitator ready to run the day | | |

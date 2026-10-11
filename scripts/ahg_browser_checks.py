@@ -2,7 +2,7 @@
 """Browser checks from the ahg.md test plan that need no Copilot sign-in.
 
 Runs against GLOW started locally from this branch (ahg.md section 1.7):
-Setup-01, Setup-11 to Setup-13, Deck-01 to Deck-03, Deck-06, Share-01,
+Setup-01, Setup-11 to Setup-14, Deck-01 to Deck-03, Deck-06, Share-01,
 Share-02, Share-05 to Share-08, A11y-01 on the share page, A11y-02 and
 Load-01, plus an axe scan of each page and a 320px reflow sweep of the
 main GLOW pages.
@@ -47,12 +47,30 @@ with sync_playwright() as p:
     ctx = browser.new_context(bypass_csp=True)
     page = ctx.new_page()
 
-    # Consent, once, as a person would.
-    page.goto(BASE + "/workshop/ahg-2026")
-    record("Setup-13", "/consent" in page.url, page.url.replace(BASE, ""))
-    page.check("#consent-agree-checkbox")
-    page.click("#consent-continue-btn")
-    page.wait_for_load_state("networkidle")
+    # Setup-13: the landing and share pages open with no consent form.
+    page.goto(BASE + "/ahg")
+    share_first = ctx.new_page()
+    share_first.goto(BASE + "/workshop/ahg-2026/share")
+    record("Setup-13", page.url.rstrip("/").endswith("/ahg") and "/consent" not in share_first.url,
+           f"{page.url.replace(BASE, '')} and {share_first.url.replace(BASE, '')}")
+    share_first.close()
+
+    # Setup-14: every way of typing the address arrives at /ahg.
+    arrived = {}
+    for path in ("/AHG", "/ahg2026", "/ahg-2026", "/ahg/", "/workshop/ahg-2026"):
+        page.goto(BASE + path)
+        arrived[path] = page.url.replace(BASE, "").rstrip("/")
+    record("Setup-14", all(v == "/ahg" for v in arrived.values()), str(arrived))
+    page.goto(BASE + "/ahg")
+
+    # Accept GLOW's consent once, for the tool pages in the reflow sweep.
+    tool = ctx.new_page()
+    tool.goto(BASE + "/audit/")
+    if "/consent" in tool.url:
+        tool.check("#consent-agree-checkbox")
+        tool.click("#consent-continue-btn")
+        tool.wait_for_load_state("networkidle")
+    tool.close()
 
     # Setup-01
     body = page.inner_text("main") if page.locator("main").count() else page.inner_text("body")
@@ -93,7 +111,7 @@ with sync_playwright() as p:
     record("Share-01", page.input_value("#agent-name") == "faculty-coach" and "loaded" in status, status)
     page.click("button[type=submit]")
     url = page.evaluate("window.__opened") or ""
-    record("Share-02", url.startswith("https://github.com/testfork/accessibility-agents/new/main?filename=community%2Fahg-2026%2Ffaculty-coach%2FSKILL.md&value="), url[:120])
+    record("Share-02", url.startswith("https://github.com/testfork/accessibility-agents/issues/new?template=submit-agent.yml") and "kind=My+real+agent" in url and "workshop-code=AHG2026" in url, url[:140])
 
     fresh_share()
     page.click("button[type=submit]")
@@ -109,7 +127,7 @@ with sync_playwright() as p:
     page.fill("#agent-name", "long-agent")
     page.click("button[type=submit]")
     msg = page.inner_text("#result")
-    record("Share-07", "Create new file" in msg and "community/ahg-2026/long-agent/SKILL.md" in msg and not page.evaluate("window.__opened"))
+    record("Share-07", "longer than GitHub accepts" in msg and "share form on GitHub" in msg and not page.evaluate("window.__opened"))
 
     page.goto((KIT / "share-my-agent.html").resolve().as_uri() + "?repo=testfork/accessibility-agents")
     page.evaluate("window.__opened = null; window.open = (u) => { window.__opened = u; return null; }")
@@ -155,11 +173,11 @@ with sync_playwright() as p:
     # Zoom: setup and share pages at 400 percent equivalent (320 CSS pixels wide)
     small = browser.new_context(viewport={"width": 320, "height": 640}, bypass_csp=True)
     sp = small.new_page()
-    sp.goto(BASE + "/workshop/ahg-2026")
+    sp.goto(BASE + "/ahg")
     if "/consent" in sp.url:
         sp.check("#consent-agree-checkbox"); sp.click("#consent-continue-btn"); sp.wait_for_load_state("networkidle")
     overflow = {}
-    for path in ("/workshop/ahg-2026", "/workshop/ahg-2026/share"):
+    for path in ("/ahg", "/workshop/ahg-2026/share"):
         sp.goto(BASE + path)
         overflow[path] = sp.evaluate("document.documentElement.scrollWidth - document.documentElement.clientWidth")
     record("A11y-02", all(v <= 1 for v in overflow.values()), f"horizontal overflow px at 320 wide: {overflow}")
@@ -190,14 +208,14 @@ record("Load-01", all(c == 200 for c in codes), f"{codes.count(200)} of 40 retur
 
 
 # Reflow sweep: no sideways scrolling at 320px, no axe violations at 1280px
-PAGES = ["/", "/privacy", "/workshop/", "/workshop/ahg-2026", "/workshop/ahg-2026/share",
+PAGES = ["/", "/privacy", "/workshop/", "/ahg", "/workshop/ahg-2026/share",
          "/workshop/deck", "/audit/", "/convert/"]
 with sync_playwright() as p:
     b = p.chromium.launch(channel="chrome")
     for width in (320, 1280):
         c = b.new_context(viewport={"width": width, "height": 800}, bypass_csp=True)
         pg = c.new_page()
-        pg.goto(BASE + "/workshop/ahg-2026")
+        pg.goto(BASE + "/audit/")
         if "/consent" in pg.url:
             pg.check("#consent-agree-checkbox"); pg.click("#consent-continue-btn"); pg.wait_for_load_state("networkidle")
         for path in PAGES:

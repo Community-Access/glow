@@ -151,9 +151,11 @@ psy101-syllabus.docx  score 0
 What changed: one habit instead of thirteen orders, real Word steps, a joke
 the instructor wrote herself, and the hard conversation handed to a person.
 
-## 5. In the repository
+## 5. In the collection
 
-`community/ahg-2026/faculty-coach/SKILL.md`, with Jordan's name in it.
+Shared from the share page in about a minute, as
+`agents/<Jordan's GitHub account>/faculty-coach/SKILL.md`, committed in
+Jordan's name.
 
 ## 6. In the team
 

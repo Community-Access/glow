@@ -31,7 +31,7 @@ The report names your agent and you as its author, in at least one file's sectio
 
 ## If you are stuck
 
-If the run stops, type: continue. If your agent is still the template, the coordinator uses the ready-made agent you chose. Watch the projector run too: the whole room's merged agents run together at the end of this block.
+If the run stops, type: continue. If your agent is still the template, the coordinator uses the ready-made agent you chose. Watch the projector run too: every agent the room shared runs together at the end of this block.
 
 Raise a hand at any time. A helper comes to you.
 

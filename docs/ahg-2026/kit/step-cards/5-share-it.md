@@ -11,35 +11,52 @@ Block 5 of 7, 2:20 to 3:00.
 
 ## Where we are
 
-Step 5 of 7: your agent, shared in an open-source project.
+Step 5 of 7: your agent, shared in an open-source collection, with your name
+on it.
 
 ## What you will have at the end
 
-Your own pull request in the open-source Accessibility Agents project, with your name on it.
+Your agent in the AHG 2026 collection on GitHub, committed in your name, and
+a reply that links to it.
 
 ## Steps
 
-1. In your browser, open letitglow.app/workshop/ahg-2026/share. No connection? Open share-my-agent.html from the kit folder instead; it works offline until the last step.
-2. On the page, choose Your agent file, and pick my-agent/SKILL.md from the kit folder. The page fills in your agent and its name.
-3. Press Open GitHub with my agent. GitHub opens in a new tab, signed in, with your agent already filled in.
-4. GitHub says you need your own copy of the project to make a change. That is a fork, and GitHub makes it for you.
-5. Move to the bottom of the page and press Propose changes.
-6. On the next page press Create pull request, then press Create pull request again.
+1. In your browser, open letitglow.app/ahg/share. You did this once before
+   the day, with your practice agent; this is the same.
+2. Leave "My real agent" chosen.
+3. Choose Your agent file, and pick my-agent/SKILL.md from the kit folder.
+   The page fills in your agent and its short name, and says so.
+4. Press Open the share form on GitHub. A new tab opens with GitHub's Share
+   my agent form, already filled in: the workshop code, "My real agent",
+   and your agent.
+5. Move to the end of the form. Tick the box that says your agent contains
+   nothing private.
+6. Press Submit new issue.
+7. Wait about a minute, then read the reply that appears on the page. Press
+   F5 to refresh if your screen reader does not announce it.
 
 ## You are on track if
 
-GitHub shows a page titled with your agent's file, with the words Open and pull request near the top.
+The reply begins: Your agent is in. It names your agent, gives it a number
+in the collection, and links to it.
 
 ## If you are stuck
 
-If the share page does not open GitHub, use the link it shows. If GitHub asks you to sign in, sign in and press the button again. If anything else goes wrong, a helper does it with you; a pull request made with help is still yours.
+If the reply begins Nearly there, it lists exactly what to fix. Open the
+menu at the top of the issue, choose Edit, fix it, and save; it is checked
+again straight away. If GitHub asks you to sign in, sign in and press the
+button again. Anything else: raise a hand, and a helper shares it with you.
+An agent shared with help is still yours.
 
 Raise a hand at any time. A helper comes to you.
 
 ## Your win
 
-You just contributed to an open-source project. In a few minutes your agent is merged on the screen, and your name is read out.
+Your agent is part of an open-source collection, committed in your name, so
+it shows on your own GitHub profile. At the end of the day it goes into the
+Accessibility Agents project with you credited.
 
 ## On Monday
 
-Every agent merged today lives in community/ahg-2026 in the Accessibility Agents project, for anyone in higher education to use and improve. Yours included.
+Your agent stays in the collection at github.com/Community-Access/ahg-2026,
+for anyone in higher education to use and improve. Yours included.

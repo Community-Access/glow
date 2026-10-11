@@ -31,7 +31,7 @@ every key and every expected result in words.
 | 2. Design your agent | 10:50 | /design-my-agent | Your own agent, in `my-agent/SKILL.md` |
 | 3. Your agent at work | 11:50 | /try-my-agent | Its first answer on a course document |
 | 4. Ground it | 1:15 | /ground-my-agent | Cited answers from real evidence |
-| 5. Share it | 2:20 | letitglow.app/workshop/ahg-2026/share | Your pull request |
+| 5. Share it | 2:20 | letitglow.app/ahg/share | Your agent in the collection, in your name |
 | 6. Build the office | 3:00 | /run-the-office | Your agent in a team, across the whole course |
 | 7. Take it home | 3:45 | /my-30-day-plan | A 30-day plan for your campus |
 

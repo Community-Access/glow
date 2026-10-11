@@ -53,7 +53,7 @@ Each row is one recommendation from the orientation, and where the workshop meet
 | Recommendation | Where it is met |
 |---|---|
 | More hands-on | Six of the seven blocks are hands-on, each with its own Copilot command |
-| Leave with a skill, a tool or a framework | An agent, a team report, a pull request and a 30-day plan, and the five-part agent formula |
+| Leave with a skill, a tool or a framework | An agent, a team report, an open-source contribution in their own name, a 30-day plan, and the five-part agent formula |
 | Fix pacing | One agenda module drives the deck and the run of show; the pacing rules say what to protect |
 | Title and content match | The deck's title is the program's title, word for word, and a test holds it there. Every promise in the session description is mapped to a block in `plan.md` section 5 |
 | Skilled demos | Every block opens with "watch me first" on the projector, with a written example to fall back on |

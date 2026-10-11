@@ -26,12 +26,14 @@ Everything participants need starts from the setup page.
 
 | What | Address |
 |---|---|
-| Setup page, kit, profile | letitglow.app/workshop/ahg-2026 |
-| Share page | letitglow.app/workshop/ahg-2026/share |
+| Everything, for everyone | letitglow.app/ahg |
+| Share page | letitglow.app/ahg/share |
+| The collection | github.com/Community-Access/ahg-2026, agents folder |
+| Anyone who needs a hand | github.com/Community-Access/ahg-2026/issues, label needs-a-hand |
 | Commitment for the wall | letitglow.app/w/ahg-2026/11 |
 | The wall, to project | letitglow.app/workshop/session/ahg-2026/wall |
 | The deck | letitglow.app/workshop/session/ahg-2026/deck |
-| Pull requests to merge | github.com/Community-Access/accessibility-agents/pulls |
+| End of day, into Accessibility Agents | scripts/promote_to_accessibility_agents.py in the ahg-2026 repository |
 
 Facilitator key: write it here, and never put it on a slide. -
 
@@ -47,7 +49,7 @@ The command in each row is what participants type into Copilot Chat.
 | 12:15 | Lunch | none |
 | 1:15 | 4. Ground it (55) | /ground-my-agent |
 | 2:10 | Break (10) | none |
-| 2:20 | 5. Share it (40), merge as they arrive | share page |
+| 2:20 | 5. Share it (40), read names as agents arrive | share page |
 | 3:00 | 6. Build the office (45), projector run last | /run-the-office |
 | 3:45 | 7. Take it home (30) | /my-30-day-plan |
 | 4:15 | Commitments (10) | the wall |
@@ -68,12 +70,12 @@ The command in each row is what participants type into Copilot Chat.
 1. One person stuck: a helper sits with them; a ready-made agent keeps them moving.
 2. Copilot limit reached: pair with a neighbor.
 3. Wifi slow: one block at a time, demo each step on the projector.
-4. GitHub down: collect agent files on a USB stick; open the pull requests together after.
+4. GitHub down: collect agent files on a USB stick; share them for people after, credited to them.
 
 ## Before the room fills
 
 - [ ] Your laptop, charger and adaptors; the deck open; Copilot signed in
-- [ ] A test pull request merged into community/ahg-2026 this morning
+- [ ] A test agent shared through letitglow.app/ahg/share this morning, and the reply arrived
 - [ ] The setup page, kit and share page open from a phone on cellular
 - [ ] Helpers briefed: who covers which tables, and the fallback ladder
 - [ ] Setup table outside the room, with two spare laptops if you can borrow them

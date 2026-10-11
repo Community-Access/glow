@@ -112,7 +112,7 @@ def test_the_privacy_rule_is_on_a_slide(ctx: deck.DeckContext):
 
 def test_every_promise_is_named_on_a_slide(ctx: deck.DeckContext):
     markdown = deck.build_deck_markdown(ctx)
-    for promise in ("VS Code", "Copilot", "GitHub", "pull request", "Accessibility Agents",
+    for promise in ("VS Code", "Copilot", "GitHub", "collection", "Accessibility Agents",
                     "axe", "Accessibility Insights", "WCAG 2.2", "Title II", "team",
                     "session evaluation"):
         assert promise in markdown, promise

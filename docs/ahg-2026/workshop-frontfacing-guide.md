@@ -29,8 +29,10 @@ scale without losing quality, accountability or transparency.
   course full of planted barriers.
 - Ground it in real evidence from GLOW, axe-core and Accessibility Insights,
   so it cites WCAG 2.2 instead of guessing.
-- Share it: open your own pull request to the open-source Accessibility
-  Agents repository on GitHub, with your name on it.
+- Share it: add your agent to the open-source AHG 2026 collection on
+  GitHub with one form and one button, committed in your name. At the end of
+  the day every agent goes into the Accessibility Agents project, with its
+  author credited.
 - Build the office: add your agent to an agent team of coordinated
   specialists and run the team across the whole course.
 - Leave with a 30-day plan for your own campus.
@@ -46,7 +48,7 @@ you do not need to have used VS Code or GitHub before.
 
 1. A free GitHub account, with Copilot Free turned on.
 2. VS Code, with the AHG 2026 profile, which installs everything else.
-3. The agent kit, from letitglow.app/workshop/ahg-2026.
+3. The agent kit, from letitglow.app/ahg.
 
 The setup takes about 20 minutes. The setup page has every step, and there
 is a setup table outside the room from 10:00 on the day.
@@ -62,7 +64,7 @@ By the end of the day you will be able to:
    step that catches them.
 4. Explain how an agent team of specialists and a coordinator scales work
    across a course.
-5. Contribute to an open-source project through a pull request on GitHub.
+5. Contribute to an open-source project on GitHub, and see your work credited.
 6. Plan one workflow to try on your own campus in the next 30 days.
 
 ## Two rules, all day

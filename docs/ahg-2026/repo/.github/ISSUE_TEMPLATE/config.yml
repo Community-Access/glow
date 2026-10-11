@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Ask for help
+    url: mailto:support@community-access.org
+    about: Stuck before or after the workshop? Write to us, and a person answers.
+  - name: The setup page
+    url: https://letitglow.app/workshop/ahg-2026
+    about: Setup steps, the agent kit, the VS Code profile and the share page.

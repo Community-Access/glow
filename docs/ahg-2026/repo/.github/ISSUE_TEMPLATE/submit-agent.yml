@@ -1,0 +1,44 @@
+name: Share my agent
+description: Add your accessibility agent to the AHG 2026 collection. One form, one button.
+title: "My agent"
+labels: ["agent-submission"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Welcome. If you came here from the share page, your agent is already filled in below.
+        Check the workshop code, tick the box, and press Submit new issue at the bottom of the page.
+        Within about a minute, a reply on this page tells you your agent is in, with a link to it.
+  - type: input
+    id: workshop-code
+    attributes:
+      label: Workshop code
+      description: The code on your table card and in your setup email.
+      placeholder: AHG2026
+    validations:
+      required: true
+  - type: dropdown
+    id: kind
+    attributes:
+      label: Is this your practice agent, or your real one?
+      description: Before the day, send the practice agent. On the day, send your real one.
+      options:
+        - My real agent
+        - My practice agent
+    validations:
+      required: true
+  - type: textarea
+    id: agent
+    attributes:
+      label: Your agent
+      description: The whole of your SKILL.md file, from the first line (three dashes) to the end.
+      render: markdown
+    validations:
+      required: true
+  - type: checkboxes
+    id: privacy
+    attributes:
+      label: Privacy
+      options:
+        - label: My agent contains nothing private. No student names, records, accommodation details or health information.
+          required: true

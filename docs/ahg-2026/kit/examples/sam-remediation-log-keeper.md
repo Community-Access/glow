@@ -138,9 +138,11 @@ What changed: every row has a source, a date and a reviewer, priorities have
 reasons a person can disagree with, and the gaps in the evidence are written
 down instead of hidden.
 
-## 5. In the repository
+## 5. In the collection
 
-`community/ahg-2026/remediation-log-keeper/SKILL.md`, with Sam's name in it.
+Shared from the share page in about a minute, as
+`agents/<Sam's GitHub account>/remediation-log-keeper/SKILL.md`, committed in
+Sam's name.
 
 ## 6. In the team
 
