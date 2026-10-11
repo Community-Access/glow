@@ -1,0 +1,77 @@
+{% extends "workshop/_shell.html" %}
+
+{% block title %}Workshop pre-flight{% endblock %}
+{% block heading %}Workshop pre-flight{% endblock %}
+
+{% block content %}
+{% if session_code %}<p>Session: {{ session_code }}</p>{% endif %}
+
+<p id="preflight-summary" role="status">
+  {% if overall == 'fail' %}
+  Not ready: {{ counts.fail }} blocking problem{{ '' if counts.fail == 1 else 's' }},
+  {{ counts.warn }} worth checking.
+  {% elif overall == 'warn' %}
+  Nothing blocking. {{ counts.warn }} thing{{ '' if counts.warn == 1 else 's' }} worth checking before the room fills.
+  {% else %}
+  Ready. All {{ counts.ok }} checks pass.
+  {% endif %}
+</p>
+
+<p>
+  These are configuration checks, so they answer immediately. For live
+  reachability — whether the AI provider and the worker are actually
+  responding right now — see <a href="/health">the health endpoint</a>.
+</p>
+
+<div class="workshop-table-wrap" tabindex="0" role="region" aria-label="Pre-flight checks, scrollable">
+  <table aria-describedby="preflight-summary">
+    <caption>Every setting the day depends on, and what to do about each one</caption>
+    <thead>
+      <tr>
+        <th scope="col">Check</th>
+        <th scope="col">Result</th>
+        <th scope="col">What it says</th>
+        <th scope="col">What to do</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for c in checks %}
+      <tr>
+        <th scope="row">{{ c.label }}</th>
+        <td>
+          {% if c.state == 'ok' %}OK
+          {% elif c.state == 'warn' %}Check
+          {% else %}Blocking
+          {% endif %}
+        </td>
+        <td>{{ c.detail }}</td>
+        <td>{% if c.fix %}{{ c.fix }}{% else %}Nothing.{% endif %}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+<h2>Before the room fills</h2>
+<p>
+  These are not settings, so nothing here can check them for you. They are on
+  the pocket card for the same reason.
+</p>
+<ul>
+  <li>A dozen worksheet packs printed:
+    <a href="{{ url_for('workshop.workshop_worksheets_docx') }}">Word</a> or
+    <a href="{{ url_for('workshop.workshop_worksheets_html') }}">HTML</a>.</li>
+  {% if session_code %}
+  <li><a href="{{ url_for('workshop.workshop_signage', session_code=session_code) }}">Room signage</a> printed and on the tables.</li>
+  <li><a href="{{ url_for('workshop.workshop_session_deck', session_code=session_code) }}">The deck</a> opened once, and downloaded as a file in case the network is not there.</li>
+  {% else %}
+  <li><a href="{{ url_for('workshop.workshop_deck') }}">The deck</a> opened once, and downloaded as a file.</li>
+  {% endif %}
+  <li>You have joined the session yourself, from a phone, on cellular rather than the venue wifi.</li>
+  <li>A test message sent from the admin email panel.</li>
+</ul>
+
+{% if session_code %}
+{% include "workshop/_session_nav.html" %}
+{% endif %}
+{% endblock %}

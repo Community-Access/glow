@@ -1,0 +1,401 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{{ deck_title }}</title>
+<style nonce="{{ csp_nonce }}">
+  /* GLOW deck. ACB large print baseline: Arial, 18pt (24px), flush left,
+     no hyphenation, generous letter and word spacing. Single file, no
+     network, no dependencies. Works as slides, as one readable page, and
+     on paper. */
+
+  :root {
+    color-scheme: light dark;
+    --bg: #ffffff;
+    --fg: #121212;
+    --muted: #3d3d3d;
+    --rule: #6b6b6b;
+    --accent: #8a1f00;      /* 8.0:1 on white */
+    --accent-bg: #fdf3ef;
+    --panel: #f2f2f2;
+    --focus: #0b3d91;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #101215;
+      --fg: #f2f2f2;
+      --muted: #cfcfcf;
+      --rule: #8b8b8b;
+      --accent: #ffb38a;    /* 9.6:1 on #101215 */
+      --accent-bg: #21262b;
+      --panel: #1c2026;
+      --focus: #9ec9ff;
+    }
+  }
+  html[data-theme="light"] {
+    color-scheme: light;
+    --bg: #ffffff; --fg: #121212; --muted: #3d3d3d; --rule: #6b6b6b;
+    --accent: #8a1f00; --accent-bg: #fdf3ef; --panel: #f2f2f2; --focus: #0b3d91;
+  }
+  html[data-theme="dark"] {
+    color-scheme: dark;
+    --bg: #101215; --fg: #f2f2f2; --muted: #cfcfcf; --rule: #8b8b8b;
+    --accent: #ffb38a; --accent-bg: #21262b; --panel: #1c2026; --focus: #9ec9ff;
+  }
+
+  * { box-sizing: border-box; }
+
+  html { font-size: 100%; }
+
+  body {
+    margin: 0;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 1.5rem;          /* 24px = ACB 18pt */
+    line-height: 1.5;
+    letter-spacing: 0.06em;
+    word-spacing: 0.12em;
+    hyphens: none;
+    -webkit-hyphens: none;
+    text-align: left;
+    background: var(--bg);
+    color: var(--fg);
+  }
+
+  :focus-visible {
+    outline: 4px solid var(--focus);
+    outline-offset: 3px;
+  }
+
+  .skip {
+    position: absolute; left: -9999px; top: 0;
+    background: var(--bg); color: var(--fg);
+    padding: 0.5rem 1rem; z-index: 100; border: 3px solid var(--focus);
+  }
+  .skip:focus { left: 0.5rem; top: 0.5rem; }
+
+  /* --- Controls bar --- */
+  .bar {
+    position: sticky; top: 0; z-index: 20;
+    display: flex; flex-wrap: wrap; gap: 0.5rem 0.75rem; align-items: center;
+    padding: 0.6rem clamp(0.75rem, 2vw, 1.5rem);
+    background: var(--panel);
+    border-bottom: 3px solid var(--rule);
+    font-size: 1.05rem;
+    letter-spacing: 0.02em;
+    word-spacing: normal;
+  }
+  .bar a.linkbtn {
+    font-size: inherit; color: var(--fg);
+    border: 2px solid var(--rule); border-radius: 6px;
+    padding: 0.55rem 0.75rem; text-decoration: underline;
+    display: inline-block; min-height: 44px;
+  }
+  .bar button, .bar select {
+    font: inherit; font-family: Arial, Helvetica, sans-serif;
+    background: var(--bg); color: var(--fg);
+    border: 2px solid var(--rule); border-radius: 6px;
+    padding: 0.4rem 0.75rem; min-height: 44px; cursor: pointer;
+  }
+  .bar button[aria-pressed="true"] {
+    background: var(--accent-bg);
+    border-color: var(--accent);
+    font-weight: 700;
+  }
+  .bar .spacer { flex: 1 1 auto; }
+  .bar.downloads { position: static; border-bottom-width: 1px; }
+  .bar .count { color: var(--muted); }
+  label.jump { display: flex; align-items: center; gap: 0.4rem; max-width: 100%; }
+  label.jump select { max-width: 100%; min-width: 0; }
+
+  main { padding: 0 clamp(0.75rem, 3vw, 2.5rem) 4rem; }
+
+  /* --- A slide --- */
+  .slide {
+    max-width: 54rem;
+    margin: 0 auto;
+    padding: 2rem 0 1rem;
+  }
+  body[data-mode="page"] .slide {
+    border-bottom: 3px solid var(--rule);
+    padding-bottom: 2.5rem;
+    margin-bottom: 1.5rem;
+  }
+  body[data-mode="slides"] .slide {
+    min-height: calc(100vh - 8rem);
+    display: flex; flex-direction: column; justify-content: center;
+  }
+
+  .kicker {
+    font-size: 1.5rem; letter-spacing: 0.02em; word-spacing: normal;
+    color: var(--accent); font-weight: 700;
+    margin: 0 0 0.5rem;
+  }
+  .slide h2 {
+    font-size: clamp(2rem, 4.5vw, 3rem);
+    line-height: 1.2; margin: 0 0 1.25rem; letter-spacing: 0.01em;
+  }
+  .slide h2:focus-visible { outline: 4px solid var(--focus); outline-offset: 6px; }
+  .slide h3 { font-size: 1.6rem; margin: 1.5rem 0 0.5rem; }
+  .slide p { margin: 0 0 1rem; max-width: 42rem; }
+  .slide ul, .slide ol { margin: 0 0 1rem; padding-left: 1.6rem; max-width: 42rem; }
+  .slide li { margin-bottom: 0.7rem; }
+  .lead { font-size: 1.75rem; }
+  .big {
+    font-size: clamp(2rem, 5vw, 2.75rem);
+    line-height: 1.25; font-weight: 700; color: var(--accent);
+    max-width: 30rem;
+  }
+  .url {
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: clamp(2rem, 6vw, 3.25rem);
+    font-weight: 700; letter-spacing: 0.02em; word-break: break-word;
+  }
+  .panel {
+    background: var(--panel); border-left: 8px solid var(--accent);
+    padding: 1rem 1.25rem; margin: 0 0 1.25rem; max-width: 42rem;
+  }
+  .panel > :last-child { margin-bottom: 0; }
+  dl.formula { margin: 0 0 1rem; max-width: 42rem; }
+  dl.formula dt { font-weight: 700; color: var(--accent); margin-top: 1rem; }
+  dl.formula dd { margin: 0.2rem 0 0; }
+
+  table {
+    border-collapse: collapse; width: 100%; max-width: 46rem;
+    font-size: 1.5rem; word-spacing: normal; margin-bottom: 1rem;
+  }
+  table.agenda { font-size: 1.5rem; }
+  table.agenda tr.rest { color: var(--muted); }
+  caption { text-align: left; font-weight: 700; padding-bottom: 0.5rem; }
+  th, td { border: 2px solid var(--rule); padding: 0.5rem 0.7rem; text-align: left; vertical-align: top; }
+  thead th { background: var(--panel); }
+
+  /* --- Speaker notes --- */
+  .notes {
+    max-width: 42rem;
+    margin-top: 1.5rem; padding: 1rem 1.25rem;
+    border: 3px dashed var(--rule); background: var(--panel);
+    font-size: 1.5rem; word-spacing: normal;
+  }
+  .notes h3 {
+    font-size: 1.6rem; margin: 0 0 0.5rem;
+  }
+  .notes p:last-child, .notes ul:last-child { margin-bottom: 0; }
+  body[data-notes="off"] .notes { display: none; }
+
+  .visually-hidden {
+    position: absolute; width: 1px; height: 1px;
+    margin: -1px; padding: 0; overflow: hidden;
+    clip: rect(0 0 0 0); white-space: nowrap; border: 0;
+  }
+
+  [hidden] { display: none !important; }
+
+  .slide-no { color: var(--muted); font-size: 1.5rem; word-spacing: normal; }
+
+  @media (prefers-reduced-motion: no-preference) {
+    html { scroll-behavior: smooth; }
+  }
+
+  @media print {
+    .bar, .skip, #announcer { display: none !important; }
+    body { font-size: 18pt; background: #fff; color: #000; }
+    .slide { display: block !important; min-height: 0 !important;
+             page-break-after: always; break-after: page;
+             border-bottom: none; max-width: none; padding: 0 0 1rem; }
+    .slide[hidden] { display: block !important; }
+    .notes { display: block !important; border: 1pt solid #000; background: #fff; }
+    .slide h2 { font-size: 22pt; }
+    .url { font-size: 22pt; }
+    a { color: #000; }
+  }
+</style>
+</head>
+<body data-mode="slides" data-notes="off">
+
+<a class="skip" href="#deck">Skip to the deck</a>
+
+<section class="bar" aria-label="Deck controls">
+  <button type="button" id="prev">Previous</button>
+  <button type="button" id="next">Next</button>
+  <span class="count" id="count">Slide 1 of {{ slides|length }}</span>
+  <label class="jump" for="jump">Go to
+    <select id="jump"></select>
+  </label>
+  <span class="spacer"></span>
+  <button type="button" id="mode" aria-pressed="false">Read as one page</button>
+  <button type="button" id="notesToggle" aria-pressed="false">Speaker notes</button>
+  <button type="button" id="theme">Dark or light</button>
+</section>
+
+<nav class="bar downloads" aria-label="Download this deck">
+  <span id="downloads-label">Download this deck:</span>
+  <a class="linkbtn" href="{{ download_urls.html }}" download>HTML, one file</a>
+  <a class="linkbtn" href="{{ download_urls.docx }}">Word</a>
+  <a class="linkbtn" href="{{ download_urls.pptx }}">PowerPoint</a>
+  <a class="linkbtn" href="{{ download_urls.md }}">Markdown</a>
+</nav>
+
+<p id="announcer" class="visually-hidden" role="status" aria-live="polite"></p>
+
+<main id="deck">
+
+<!-- The document needs one top-level heading so the slide headings have
+     something to nest under, and so a screen reader user arriving at the
+     page is told what it is. It is not painted: the title slide says the
+     same thing, larger, to the room. -->
+<h1 class="visually-hidden">{{ deck_title }}</h1>
+
+{% macro render_block(b) -%}
+  {%- if b.kind == 'para' -%}
+    <p{% if b.big %} class="big"{% elif b.lead %} class="lead"{% elif b.small %} class="slide-no"{% endif %}>{{ b.text }}</p>
+  {%- elif b.kind == 'url' -%}
+    <p class="url">{{ b.text }}</p>
+  {%- elif b.kind == 'bullets' -%}
+    {% if b.ordered %}<ol>{% else %}<ul>{% endif %}
+    {% for item in b.items %}<li>{{ item }}</li>{% endfor %}
+    {% if b.ordered %}</ol>{% else %}</ul>{% endif %}
+  {%- elif b.kind == 'definitions' -%}
+    <dl class="formula">
+      {% for term, meaning in b.items %}<dt>{{ term }}</dt><dd>{{ meaning }}</dd>{% endfor %}
+    </dl>
+  {%- elif b.kind == 'panel' -%}
+    <div class="panel">{% for line in b.lines %}<p>{{ line }}</p>{% endfor %}</div>
+  {%- elif b.kind == 'table' -%}
+    <table{% if b.compact %} class="agenda"{% endif %}>
+      <caption>{{ b.caption }}</caption>
+      <thead><tr>{% for h in b.headers %}<th scope="col">{{ h }}</th>{% endfor %}</tr></thead>
+      <tbody>
+        {% for row in b.rows %}
+        <tr>{% for cell in row %}{% if loop.first %}<th scope="row">{{ cell }}</th>{% else %}<td>{{ cell }}</td>{% endif %}{% endfor %}</tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  {%- endif -%}
+{%- endmacro %}
+
+{% for slide in slides %}
+<section class="slide">
+  {% if slide.kicker %}<p class="kicker">{{ slide.kicker }}</p>{% endif %}
+  <h2 id="{{ slide.id }}" tabindex="-1">{{ slide.title }}</h2>
+  {% for b in slide.blocks %}{{ render_block(b) }}{% endfor %}
+  {% if slide.notes %}
+  <div class="notes">
+    <h3>Speaker notes</h3>
+    {% for note in slide.notes %}<p>{{ note }}</p>{% endfor %}
+  </div>
+  {% endif %}
+</section>
+{% endfor %}
+
+</main>
+
+<script nonce="{{ csp_nonce }}">
+(function () {
+  var body = document.body;
+  var slides = Array.prototype.slice.call(document.querySelectorAll('.slide'));
+  var announcer = document.getElementById('announcer');
+  var count = document.getElementById('count');
+  var jump = document.getElementById('jump');
+  var prev = document.getElementById('prev');
+  var next = document.getElementById('next');
+  var modeBtn = document.getElementById('mode');
+  var notesBtn = document.getElementById('notesToggle');
+  var themeBtn = document.getElementById('theme');
+  var current = 0;
+
+  function titleOf(i) {
+    var h = slides[i].querySelector('h2');
+    return h ? h.textContent.trim() : ('Slide ' + (i + 1));
+  }
+
+  slides.forEach(function (s, i) {
+    var opt = document.createElement('option');
+    opt.value = String(i);
+    opt.textContent = (i + 1) + '. ' + titleOf(i);
+    jump.appendChild(opt);
+  });
+
+  function isSlideMode() { return body.getAttribute('data-mode') === 'slides'; }
+
+  function render(moveFocus) {
+    var slideMode = isSlideMode();
+    slides.forEach(function (s, i) { s.hidden = slideMode && i !== current; });
+    count.textContent = 'Slide ' + (current + 1) + ' of ' + slides.length;
+    jump.value = String(current);
+    prev.disabled = slideMode && current === 0;
+    next.disabled = slideMode && current === slides.length - 1;
+    if (slideMode) {
+      announcer.textContent = 'Slide ' + (current + 1) + ' of ' + slides.length + ': ' + titleOf(current);
+      if (moveFocus) {
+        var h = slides[current].querySelector('h2');
+        if (h) { h.focus(); }
+      }
+    }
+  }
+
+  function go(i, moveFocus) {
+    if (i < 0 || i >= slides.length) { return; }
+    current = i;
+    if (!isSlideMode()) {
+      slides[i].scrollIntoView();
+      var h = slides[i].querySelector('h2');
+      if (h && moveFocus) { h.focus(); }
+      count.textContent = 'Slide ' + (current + 1) + ' of ' + slides.length;
+      jump.value = String(current);
+      return;
+    }
+    render(moveFocus);
+  }
+
+  prev.addEventListener('click', function () { go(current - 1, true); });
+  next.addEventListener('click', function () { go(current + 1, true); });
+  jump.addEventListener('change', function () { go(parseInt(jump.value, 10), true); });
+
+  modeBtn.addEventListener('click', function () {
+    var toPage = isSlideMode();
+    body.setAttribute('data-mode', toPage ? 'page' : 'slides');
+    modeBtn.setAttribute('aria-pressed', toPage ? 'true' : 'false');
+    modeBtn.textContent = toPage ? 'Back to slide view' : 'Read as one page';
+    slides.forEach(function (s) { s.hidden = false; });
+    render(false);
+    announcer.textContent = toPage
+      ? 'Reading as one page. All ' + slides.length + ' slides are in order below.'
+      : 'Slide view. Use the previous and next buttons, or the left and right arrow keys.';
+    if (toPage) { slides[current].scrollIntoView(); }
+  });
+
+  notesBtn.addEventListener('click', function () {
+    var on = body.getAttribute('data-notes') === 'off';
+    body.setAttribute('data-notes', on ? 'on' : 'off');
+    notesBtn.setAttribute('aria-pressed', on ? 'true' : 'false');
+    announcer.textContent = on ? 'Speaker notes shown.' : 'Speaker notes hidden.';
+  });
+
+  themeBtn.addEventListener('click', function () {
+    var el = document.documentElement;
+    var now = el.getAttribute('data-theme');
+    var nextTheme = now === 'dark' ? 'light' : 'dark';
+    el.setAttribute('data-theme', nextTheme);
+    announcer.textContent = nextTheme === 'dark' ? 'Dark theme.' : 'Light theme.';
+  });
+
+  document.addEventListener('keydown', function (e) {
+    var t = e.target;
+    if (t && (t.tagName === 'INPUT' || t.tagName === 'SELECT' || t.tagName === 'TEXTAREA')) { return; }
+    if (e.altKey || e.ctrlKey || e.metaKey) { return; }
+    switch (e.key) {
+      case 'ArrowRight': case 'PageDown': go(current + 1, true); e.preventDefault(); break;
+      case 'ArrowLeft': case 'PageUp': go(current - 1, true); e.preventDefault(); break;
+      case 'Home': go(0, true); e.preventDefault(); break;
+      case 'End': go(slides.length - 1, true); e.preventDefault(); break;
+      case 'n': case 'N': notesBtn.click(); break;
+      default: break;
+    }
+  });
+
+  render(false);
+}());
+</script>
+</body>
+</html>

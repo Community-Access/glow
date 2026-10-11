@@ -56,6 +56,136 @@
   <p>{{ prompt_text }}</p>
 </section>
 
+{% if prompt_cards %}
+<section class="workshop-panel" id="prompt-cards">
+  <h2>
+    {% if activity_key == 'agent_formula' %}
+    Ready-made agents, to take apart
+    {% else %}
+    A ready-made agent you can adapt
+    {% endif %}
+  </h2>
+  <p>
+    {% if activity_key == 'agent_formula' %}
+    An agent is not a plugin and not an install. It is a role, a task, trusted
+    guidance, an output format, and a named human review gate. Here is the
+    whole set, written out. Pick one, read it through the five parts, and
+    decide what you would change for your own institution.
+    {% else %}
+    Somebody has already written one for this kind of work. Read it, argue
+    with it, and change it to fit where you work. Starting from something is
+    faster than starting from nothing, and adapting is the skill you actually
+    need on Monday.
+    {% endif %}
+  </p>
+
+  {% for card in prompt_cards %}
+  <article class="workshop-card">
+    <h3 id="card-{{ card.id }}">{{ card.title }}</h3>
+    <p class="help-text">For: {{ card.for_whom }}</p>
+
+    <h4>The five parts</h4>
+    <dl>
+      {% for label, value in card.formula %}
+      <dt>{{ label }}</dt><dd>{{ value }}</dd>
+      {% endfor %}
+    </dl>
+
+    {% if card.glow_steps %}
+    <h4>In GLOW, with no account and no AI</h4>
+    <ol>
+      {% for step in card.glow_steps %}<li>{{ step }}</li>{% endfor %}
+    </ol>
+    {% endif %}
+
+    <details>
+      <summary>The whole thing, ready to copy</summary>
+      <p class="help-text">
+        Paste this into whatever assistant you already use, if you use one.
+        Paste the text - do not upload files. You do not need an assistant to
+        use this card; the five parts above are the workflow.
+      </p>
+      <textarea readonly rows="12"
+                aria-label="Prompt for {{ card.title }}, ready to copy"
+      >{{ card.prompt }}</textarea>
+    </details>
+
+    {% if card.sources %}
+    <details>
+      <summary>Where this guidance comes from</summary>
+      <p class="help-text">
+        Derived from the <code>{{ card.source_agent }}</code> agent in the
+        Accessibility Agents project. You do not need to install anything to
+        use this card.
+      </p>
+      <ul>
+        {% for title, url in card.sources %}
+        <li><a href="{{ url }}">{{ title }}</a></li>
+        {% endfor %}
+      </ul>
+    </details>
+    {% endif %}
+  </article>
+  {% endfor %}
+</section>
+{% endif %}
+
+{% if specimen_set %}
+<section class="workshop-panel" id="specimens">
+  <h2>What a machine wrote, and what you make of it</h2>
+  <p>
+    Nobody has to generate anything. Below is output that was written to be
+    judged. Decide what you think of each one <em>before</em> you open the
+    notes underneath it.
+  </p>
+  <p class="help-text">
+    {{ specimen_set.specimens[0].provenance_label }}
+  </p>
+
+  {% if specimen_set.context %}
+  <h3>The context</h3>
+  <p class="help-text">
+    This is everything about the image except the image. That is deliberate:
+    what an image is <em>for</em> lives in the words around it, not in the
+    picture.
+  </p>
+  <dl>
+    <dt>The document</dt><dd>{{ specimen_set.context.document }}</dd>
+    <dt>Who reads it</dt><dd>{{ specimen_set.context.audience }}</dd>
+    <dt>Where the image sits</dt><dd>{{ specimen_set.context.placement }}</dd>
+    <dt>The text around it</dt><dd>{{ specimen_set.context.surrounding_text }}</dd>
+  </dl>
+  <h4>What is visible in the image</h4>
+  <ul>
+    {% for item in specimen_set.context.visible %}<li>{{ item }}</li>{% endfor %}
+  </ul>
+  {% endif %}
+
+  <h3>{{ specimen_set.title }}</h3>
+  <p class="help-text">It was asked: {{ specimen_set.prompt_used }}</p>
+
+  {% for specimen in specimen_set.specimens %}
+  <article class="workshop-specimen">
+    <h4>{{ specimen.label }}</h4>
+    <blockquote>{{ specimen.text }}</blockquote>
+    <details>
+      <summary>What we think, and why ({{ specimen.verdict_label }})</summary>
+      <ul>
+        {% for point in specimen.why %}<li>{{ point }}</li>{% endfor %}
+      </ul>
+    </details>
+  </article>
+  {% endfor %}
+
+  <p>
+    <strong>If you use an assistant of your own:</strong> paste the context
+    above and your own answer, and ask it to critique yours against the
+    questions in this activity. Paste the text. Do not upload anything - free
+    accounts limit uploads and do not limit text.
+  </p>
+</section>
+{% endif %}
+
 {% if scenario_cards %}
 <section class="workshop-panel" id="scenario">
   <h2>Scenario</h2>
@@ -147,15 +277,25 @@
 
     {% for field in activity_fields %}
       {% set has_error = field.name in missing_fields %}
+      {#- Help text and the error message are both associated with the field
+          through aria-describedby, in that order, so a screen reader hears
+          what went wrong before it hears the standing guidance. -#}
+      {% set described = [] %}
+      {% if has_error %}{% set _ = described.append(field.name ~ "-err") %}{% endif %}
+      {% if field.help %}{% set _ = described.append(field.name ~ "-help") %}{% endif %}
       <label for="{{ field.name }}">{{ field.label }}{% if field.required %} (required){% endif %}</label>
       {% if has_error %}
       <p class="flash-error" id="{{ field.name }}-err">This answer is needed before the activity can be saved.</p>
+      {% endif %}
+      {% if field.help %}
+      <p class="help-text" id="{{ field.name }}-help">{{ field.help }}</p>
       {% endif %}
       <textarea id="{{ field.name }}"
                 name="{{ field.name }}"
                 rows="{{ field.rows or 3 }}"
                 {% if field.required %}required{% endif %}
-                {% if has_error %}aria-invalid="true" aria-describedby="{{ field.name }}-err"{% endif %}
+                {% if has_error %}aria-invalid="true"{% endif %}
+                {% if described %}aria-describedby="{{ described | join(' ') }}"{% endif %}
       >{{ field_values.get(field.name, "") }}</textarea>
     {% endfor %}
 

@@ -67,6 +67,11 @@ CONSENT_EXEMPT_PREFIXES = (
     "/status",
     "/privacy",
     "/favicon",
+    # Static workshop downloads fetched by tools, not people: VS Code's
+    # "Import Profile" carries no cookie, and the setup email links the kit
+    # directly. Neither processes anything a visitor uploads.
+    "/workshop/ahg-2026/ahg-2026.code-profile",
+    "/workshop/ahg-2026/kit.zip",
 )
 
 

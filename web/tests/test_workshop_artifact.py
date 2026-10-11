@@ -44,6 +44,8 @@ PLAN = {
     "partner_team_30": "Chemistry teaching staff",
     "safeguard_30": "Keyboard test every page before it goes out",
     "first_step_30": "Email the chair on Monday",
+    "who_approves_30": "The department chair, and the comms lead who owns the template",
+    "what_worked_30": "Course announcements go out with real headings and nobody has to ask me first",
 }
 
 

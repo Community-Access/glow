@@ -1,0 +1,16 @@
+Evidence: GLOW accessibility audit of psy101-lab1-stroop.pdf
+Score: 50 out of 100. Findings: 4.
+Checked by GLOW (letitglow.app), which applies the same rules every time.
+
+CRITICAL PDF-FONT-SIZE  (1)
+         Text smaller than 18pt found on pages: 1
+CRITICAL PDF-TAGGED  (1)
+         PDF is not tagged; screen readers cannot determine document structure
+HIGH     PDF-LANGUAGE  (1)
+         PDF has no language set in document metadata
+HIGH     PDF-TITLE  (1)
+         PDF has no title set in document metadata
+
+What this report cannot see: anything a person has to judge, such as
+whether alt text is meaningful, whether color carries meaning, or
+whether the order of information makes sense. Ask a person.

@@ -217,3 +217,52 @@ html[data-theme="dark"] {
 .workshop-wall-promise {
   font-size: 1.2em;
 }
+
+/* --- Run of show ----------------------------------------------------------- */
+/* The current block is marked two ways on purpose: a heavier rule and the
+   word "now" in the time cell. Colour alone would tell a facilitator running
+   a high-contrast theme, or reading by ear, nothing at all. */
+#runofshow tr.is-now > * {
+  border-top-width: 4px;
+  border-bottom-width: 4px;
+  font-weight: 700;
+}
+
+#runofshow .now-marker {
+  white-space: nowrap;
+}
+
+/* --- Specimens ------------------------------------------------------------- */
+/* Machine output a participant is asked to judge. The quote is set apart so it
+   reads as something quoted rather than something the workshop is asserting,
+   and the verdict stays inside a <details> so nobody is handed the answer
+   before they have formed one. */
+.workshop-specimen {
+  border: 1px solid var(--workshop-border);
+  border-radius: 0.25rem;
+  padding: 0.75rem 1rem;
+  margin-bottom: 1rem;
+}
+
+.workshop-specimen blockquote {
+  margin: 0 0 0.75rem;
+  padding-left: 1rem;
+  border-left: 4px solid var(--workshop-border);
+}
+
+/* --- Prompt cards ---------------------------------------------------------- */
+/* A ready-made agent, written out in the five-part formula. The prompt sits in
+   a read-only textarea rather than a <pre> so it can be selected and copied
+   with the keyboard alone, and so a screen reader announces it as one field
+   instead of reading a wall of text on arrival. */
+.workshop-card {
+  border: 1px solid var(--workshop-border);
+  border-radius: 0.25rem;
+  padding: 0.75rem 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.workshop-card textarea {
+  width: 100%;
+  font-family: inherit;
+}

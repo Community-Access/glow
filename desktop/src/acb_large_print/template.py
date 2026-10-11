@@ -270,6 +270,25 @@ def _save_as_dotx(doc: Document, output_path: Path) -> None:
         os.unlink(tmp_path)
 
 
+def apply_acb_large_print(doc: Document, *, title: str = "", lang: str = "en-US") -> Document:
+    """Give a document built in code the same styles a template would.
+
+    For documents generated from scratch with python-docx, which otherwise
+    start from Word's defaults: 14pt blue headings, italic Heading 4, 1.25
+    inch margins and no page numbers. Call it before adding content, so every
+    paragraph inherits the ACB styles rather than overriding them.
+    """
+    if title:
+        doc.core_properties.title = title
+    doc.core_properties.language = lang
+    _configure_styles(doc)
+    _configure_page_setup(doc)
+    _disable_hyphenation(doc)
+    _add_page_numbers(doc)
+    _set_document_language(doc, lang)
+    return doc
+
+
 def create_template(
     output_path: str | Path,
     *,

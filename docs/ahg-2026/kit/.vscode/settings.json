@@ -1,0 +1,18 @@
+{
+  "editor.accessibilitySupport": "on",
+  "editor.fontSize": 18,
+  "editor.lineHeight": 1.6,
+  "editor.wordWrap": "on",
+  "markdown.preview.fontSize": 18,
+  "terminal.integrated.fontSize": 18,
+  "chat.editor.fontSize": 18,
+  "chat.agent.enabled": true,
+  "files.autoSave": "afterDelay",
+  "files.autoSaveDelay": 1000,
+  "workbench.startupEditor": "readme",
+  "workbench.tips.enabled": false,
+  "editor.minimap.enabled": false,
+  "editor.renderWhitespace": "none",
+  "accessibility.verbosity.panelChat": true,
+  "accessibility.verbosity.inlineChat": true
+}

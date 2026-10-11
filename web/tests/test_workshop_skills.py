@@ -318,12 +318,14 @@ class TestBuildReadme:
         assert "## Who it is for" not in readme
 
     def test_readme_usage_instructions(self, basic_values):
-        """README includes instructions for different use cases."""
+        """Three ways to use it, each needing less than the last, no plumbing."""
         readme = build_readme(basic_values)
 
-        assert "use an AI assistant in a browser" in readme
-        assert "Agent Plugins" in readme
-        assert "do not use AI at all" in readme
+        assert "On its own" in readme
+        assert "With GLOW" in readme
+        assert "if you already use one" in readme
+        # Uploads are capped on free accounts; text is not. See plan.md L12.
+        assert "Paste text rather than uploading files" in readme
 
     def test_readme_human_review_is_required(self, basic_values):
         """README emphasizes human review requirement."""
