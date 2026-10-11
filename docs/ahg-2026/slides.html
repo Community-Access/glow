@@ -106,7 +106,8 @@
   .bar .spacer { flex: 1 1 auto; }
   .bar.downloads { position: static; border-bottom-width: 1px; }
   .bar .count { color: var(--muted); }
-  label.jump { display: flex; align-items: center; gap: 0.4rem; }
+  label.jump { display: flex; align-items: center; gap: 0.4rem; max-width: 100%; }
+  label.jump select { max-width: 100%; min-width: 0; }
 
   main { padding: 0 clamp(0.75rem, 3vw, 2.5rem) 4rem; }
 
@@ -215,10 +216,10 @@
 
 <a class="skip" href="#deck">Skip to the deck</a>
 
-<div class="bar" role="group" aria-label="Deck controls">
+<section class="bar" aria-label="Deck controls">
   <button type="button" id="prev">Previous</button>
   <button type="button" id="next">Next</button>
-  <span class="count" id="count">Slide 1 of 30</span>
+  <span class="count" id="count">Slide 1 of 26</span>
   <label class="jump" for="jump">Go to
     <select id="jump"></select>
   </label>
@@ -226,7 +227,7 @@
   <button type="button" id="mode" aria-pressed="false">Read as one page</button>
   <button type="button" id="notesToggle" aria-pressed="false">Speaker notes</button>
   <button type="button" id="theme">Dark or light</button>
-</div>
+</section>
 
 <nav class="bar downloads" aria-label="Download this deck">
   <span id="downloads-label">Download this deck:</span>
