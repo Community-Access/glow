@@ -9,7 +9,7 @@
     participant meets only the conference. ahg_site is "" on the server and
     "https://letitglow.app" in the kit's offline copy of the share page. -#}
 {%- set site = ahg_site | default("") -%}
-<title>{% block title %}{% endblock %} - AHG 2026</title>
+<title>{% block title %}{% endblock %}{% if not ahg_home %} - AHG 2026{% endif %}</title>
 <style nonce="{{ csp_nonce }}">
   /* ACB large print baseline: Arial, 18pt (24px), flush left, generous
      line height. Contrast is at least 7:1 for text in both schemes. */

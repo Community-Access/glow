@@ -3124,7 +3124,10 @@ def render_ahg_kit_index():
             continue
         if rel.startswith("step-cards/") and rel.endswith(".docx"):
             continue  # offered beside its card
-        entry = {"rel": rel, "label": kit_online.label_for(rel)}
+        label = kit_online.label_for(rel)
+        if rel.endswith(".md") and label == rel.split("/")[-1]:
+            label = kit_online.title_for(rel, (kit / rel).read_text(encoding="utf-8"))
+        entry = {"rel": rel, "label": label}
         if rel.startswith("step-cards/"):
             entry["label"] = _ahg_card_title(kit / rel)
             entry["docx"] = rel[:-3] + ".docx" if (kit / (rel[:-3] + ".docx")).is_file() else ""
@@ -3158,7 +3161,7 @@ def render_ahg_kit_file(rel: str):
     front, body = ([], None)
     if suffix == ".md":
         front, body = kit_online.markdown_page(text)
-    title = _ahg_card_title(path) if rel.startswith("step-cards/") else kit_online.label_for(rel)
+    title = _ahg_card_title(path) if rel.startswith("step-cards/") else kit_online.title_for(rel, text)
     docx = rel[:-3] + ".docx" if rel.startswith("step-cards/") and (kit / (rel[:-3] + ".docx")).is_file() else ""
     return render_template(
         "workshop/ahg_kit_file.html",
