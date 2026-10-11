@@ -323,8 +323,12 @@
         {% endif %}
 
       </ul>
+      {# Inside the sidebar, where its styles expect it. Outside, it became a
+         third column in the page's flex row: 433px wide on a desktop, and on
+         a phone or at 400% zoom it took the whole width and left the page
+         content zero pixels wide. #}
+      {% include 'partials/ai_meter.html' %}
     </nav>
-    {% include 'partials/ai_meter.html' %}
     <!-- -- End sidebar ---------------------------------------------------------------- -->
 
     <!-- ================================================================ -->
