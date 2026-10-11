@@ -133,13 +133,28 @@ def test_the_step_cards_pass_glow_s_own_audit(tmp_path):
 
 
 def test_the_setup_page_has_every_step_and_link(client):
-    resp = client.get("/workshop/ahg-2026")
+    resp = client.get("/ahg")
     assert resp.status_code == 200
     body = resp.get_data(as_text=True)
     for needle in ("/workshop/ahg-2026/kit.zip", "/workshop/ahg-2026/ahg-2026.code-profile",
                    "/workshop/ahg-2026/share", "Profiles: Import Profile", "Mountain Time",
-                   "support@community-access.org", "Never paste anything private"):
+                   "support@community-access.org", "Never paste anything private",
+                   "practice agent", "Community-Access/ahg-2026", "Session evaluation"):
         assert needle in body, needle
+
+
+@pytest.mark.parametrize("path", ["/ahg/", "/AHG", "/Ahg", "/ahg2026", "/ahg-2026", "/AHG2026",
+                                  "/workshop/ahg-2026"])
+def test_every_way_of_typing_the_address_reaches_the_landing_page(client, path):
+    resp = client.get(path, follow_redirects=True)
+    assert resp.status_code == 200
+    assert resp.request.path.rstrip("/") == "/ahg"
+
+
+def test_the_short_addresses_reach_the_share_page_kit_and_slides(client):
+    assert client.get("/ahg/share?practice=1").headers["Location"].endswith("/workshop/ahg-2026/share?practice=1")
+    assert client.get("/ahg/kit").headers["Location"].endswith("/workshop/ahg-2026/kit.zip")
+    assert client.get("/ahg/slides").headers["Location"].endswith("/workshop/deck")
 
 
 def test_the_kit_downloads_as_one_zip_without_the_answer_key(client):
@@ -167,7 +182,7 @@ def test_the_share_page_works_under_the_content_security_policy(client):
     nonce = re.search(r"'nonce-([^']+)'", resp.headers["Content-Security-Policy"]).group(1)
     assert f'<script nonce="{nonce}">' in body
     assert f'<style nonce="{nonce}">' in body
-    assert "community/ahg-2026/" in body
+    assert "Community-Access/ahg-2026" in body and "submit-agent.yml" in body
     assert 'for="agent-file"' in body and 'for="agent-name"' in body
 
 
@@ -178,17 +193,19 @@ def test_step_cards_download_and_nothing_else_does(client):
     assert client.get("/workshop/ahg-2026/step-cards/nope.docx").status_code == 404
 
 
-def test_vs_code_can_import_the_profile_without_a_consent_cookie():
-    """VS Code's Import Profile fetches the URL with no cookie at all."""
+def test_the_conference_pages_open_without_a_consent_form():
+    """A programme link must open the page; VS Code's Import Profile has no cookie."""
     from types import SimpleNamespace
 
     from acb_large_print_web.routes.consent import consent_required
 
-    for path in ("/workshop/ahg-2026/ahg-2026.code-profile", "/workshop/ahg-2026/kit.zip"):
+    for path in ("/ahg", "/ahg/", "/AHG", "/workshop/ahg-2026/ahg-2026.code-profile",
+                 "/workshop/ahg-2026/kit.zip", "/workshop/ahg-2026/share",
+                 "/workshop/ahg-2026/step-cards/2-design-your-agent.docx"):
         req = SimpleNamespace(path=path, cookies={}, headers={})
         assert consent_required(req) is False, path
-    page = SimpleNamespace(path="/workshop/ahg-2026/share", cookies={}, headers={})
-    assert consent_required(page) is True
+    tool = SimpleNamespace(path="/audit/", cookies={}, headers={})
+    assert consent_required(tool) is True, "the tools themselves still ask"
 
 
 def test_no_text_file_in_the_workshop_carries_control_characters():
@@ -205,7 +222,7 @@ def test_no_text_file_in_the_workshop_carries_control_characters():
 def test_the_share_page_can_be_rehearsed_against_a_test_fork(client):
     body = client.get("/workshop/ahg-2026/share").get_data(as_text=True)
     assert 'params.get("repo")' in body
-    assert "Community-Access/accessibility-agents/new/main" in body, "the real target stays the default"
+    assert 'REPO = testRepo || "Community-Access/ahg-2026"' in body, "the real target stays the default"
 
 
 def test_the_coordinator_can_run_the_whole_room_s_agents():

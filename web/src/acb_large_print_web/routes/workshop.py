@@ -2942,15 +2942,22 @@ def _ahg_step_cards() -> list[dict[str, str]]:
     return cards
 
 
-@workshop_bp.route("/ahg-2026", methods=["GET"])
-def ahg_home():
+def render_ahg_landing():
+    """The conference landing page. Served at /ahg; see routes/shortlinks.py."""
     if not _workshop_enabled():
         abort(404)
     return render_template(
         "workshop/ahg_home.html",
         profile_url=url_for("workshop.ahg_profile", _external=True),
         step_cards=_ahg_step_cards(),
+        schedule=agenda.ahg_schedule_rows(),
     )
+
+
+@workshop_bp.route("/ahg-2026", methods=["GET"])
+def ahg_home():
+    # The first address, kept working: setup emails and slides already use it.
+    return redirect(url_for("shortlinks.ahg_landing"), code=301)
 
 
 @workshop_bp.route("/ahg-2026/kit.zip", methods=["GET"])

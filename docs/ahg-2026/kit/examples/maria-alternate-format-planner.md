@@ -170,12 +170,15 @@ What changed: the agent stopped guessing, because it had evidence. It cited
 the right criterion, knew what it could not see, and handed the decisions to
 a person.
 
-## 5. Her agent in the repository
+## 5. Her agent in the collection
 
-At 2:20 Maria presses Share. Her agent goes to the Accessibility Agents
-repository as `community/ahg-2026/alternate-format-planner/SKILL.md`, with
-her name in it. At about 2:50 it is merged on the projector, with the room
-watching.
+At 2:20 Maria opens the share page, chooses her file and presses the button.
+GitHub's share form opens already filled in; she ticks the privacy box and
+presses Submit new issue. A minute later the reply says "Your agent is in",
+and her agent is in the AHG 2026 collection as
+`agents/<her GitHub account>/alternate-format-planner/SKILL.md`, committed in
+her name. At the end of the day it goes into the Accessibility Agents
+project, with her credited.
 
 ## 6. Her agent in the team
 

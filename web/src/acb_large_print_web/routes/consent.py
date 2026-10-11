@@ -67,11 +67,16 @@ CONSENT_EXEMPT_PREFIXES = (
     "/status",
     "/privacy",
     "/favicon",
-    # Static workshop downloads fetched by tools, not people: VS Code's
-    # "Import Profile" carries no cookie, and the setup email links the kit
-    # directly. Neither processes anything a visitor uploads.
-    "/workshop/ahg-2026/ahg-2026.code-profile",
-    "/workshop/ahg-2026/kit.zip",
+    # AHG 2026: the landing page, its short addresses, the kit, the VS Code
+    # profile, the share page and the step cards. A conference link must
+    # open the page, not a consent form, and VS Code's "Import Profile"
+    # carries no cookie at all. Nothing on these pages processes a visitor's
+    # documents; the share page runs in the browser and sends nothing to
+    # GLOW. The tools they link to still ask for consent as usual.
+    "/workshop/ahg-2026",
+    "/ahg",
+    "/AHG",
+    "/Ahg",
 )
 
 

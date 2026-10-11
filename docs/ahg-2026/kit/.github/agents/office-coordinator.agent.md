@@ -27,9 +27,10 @@ that specialist.
 | The room's agents, if a `room/` folder exists | `room/<name>/SKILL.md`, one per folder | Whatever each one's Task says it takes |
 
 The `room/` folder exists only on the facilitator's laptop, for the last run of
-the day: it holds every agent the room merged into the Accessibility Agents
-project. When it exists, every agent in it is on the team, and the report
-names each one and its author.
+the day: it holds every agent the room shared to the AHG 2026 collection,
+copied from the `agents/` folder of Community-Access/ahg-2026. When it exists,
+every agent in it is on the team, and the report names each one and its
+author.
 
 ## How to run the team
 

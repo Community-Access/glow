@@ -91,7 +91,7 @@ The map for today
 2. Your agent: five plain-English answers.
 3. Your agent at work: Copilot uses it on one course document.
 4. Your agent, grounded: real evidence in, cited answers out.
-5. Your agent, shared: a pull request to an open-source project, with your name on it.
+5. Your agent, shared: in an open-source collection, with your name on it.
 6. Your agent in the team: the whole course, at once.
 7. Your campus: a 30-day plan.
 
@@ -108,7 +108,7 @@ The map for today
 Housekeeping
 
 - 10:30 to 4:30 Mountain Time. Lunch at 12:15. A break at 2:10.
-- Your laptop, with VS Code, the AHG 2026 profile and your GitHub account. Not set up yet? A helper is coming to you.
+- Everything is at letitglow.app/ahg. Not set up yet? A helper is coming to you.
 - Seven blocks. Every one starts by showing you the finished result.
 - The last five minutes, at 4:25, are the session evaluation.
 - Ask for anything, any time: large print, a seat, a pause, a repeat.
@@ -382,36 +382,38 @@ Next, your agent goes public. Nicely.
 
 Block 5 of 7 - 2:20-3:00 - 40 minutes
 
-By the end of this block: your own pull request in the open-source Accessibility Agents project.
+By the end of this block: your agent in the open-source AHG 2026 collection, committed in your name.
 
-1. Open letitglow.app/workshop/ahg-2026/share in your browser, and choose your `my-agent/SKILL.md`.
-2. Press Open GitHub with my agent. GitHub opens with your agent filled in.
-3. Press Propose changes. GitHub makes your own copy, called a fork.
-4. Press Create pull request, then Create pull request again.
+1. Open letitglow.app/ahg/share, and choose your `my-agent/SKILL.md`.
+2. Press Open the share form on GitHub. The form opens, already filled in.
+3. Tick the privacy box, and press Submit new issue.
+4. Within a minute, the reply: Your agent is in.
 
-That is your contribution. Buttons only. No code.
+You did this once already, with your practice agent. Same again.
 
 ### Speaker notes, slide 19
 
-> Say where we are on the journey: step 5 of 7, "Your agent, shared: a pull request to an open-source project, with your name on it." Then show what they will have at the end of this block before anyone starts.
+> Say where we are on the journey: step 5 of 7, "Your agent, shared: in an open-source collection, with your name on it." Then show what they will have at the end of this block before anyone starts.
 >
-> Step card 5 walks the GitHub pages one control at a time, with what a screen reader announces at each step.
+> Everyone shared a practice agent before the day, so this is the second time, not the first. Say so; it changes the room.
+>
+> Helpers watch the issues labelled needs-a-hand and go to those people first. A Nearly there reply always says exactly what to fix.
 
 ---
 
-## 20. Merged, with your name on it
+## 20. In the collection, with your name on it
 
 Open source, live
 
-As your pull requests arrive, I review and merge them, here, on the screen.
+As your agents arrive, the collection grows, here, on the screen.
 
-Every agent merged today lives in community/ahg-2026 in the Accessibility Agents project, for anyone in higher education to use and improve.
+Tonight every one of them goes into the Accessibility Agents project, with every author credited, for anyone in higher education to use and improve.
 
 ### Speaker notes, slide 20
 
-> Merge on the projector as they arrive, and read each name and agent title out loud. Applause is allowed and encouraged.
+> Project agents/README.md in github.com/Community-Access/ahg-2026 and refresh it as agents arrive. Read each name and agent title out loud. Applause is allowed and encouraged.
 >
-> Started from a ready-made agent? It still counts. Say so: what matters is that it is yours now.
+> Each agent is committed in its author's name, so it shows on their own GitHub profile. Started from a ready-made agent? It still counts. Say so: what matters is that it is yours now.
 
 ---
 
@@ -421,7 +423,7 @@ Block 6 of 7 - 3:00-3:45 - 45 minutes
 
 By the end of this block: your agent working inside a team, across the whole course, and one team report.
 
-1. In Copilot Chat, type /run-the-office.
+1. In Copilot Chat in VS Code, type /run-the-office.
 2. The coordinator sends each course file to its specialists, and yours where it fits.
 3. The standards reviewer checks everyone's work.
 4. You get the team report, with your agent's section in it.
@@ -455,13 +457,13 @@ That is quality, accountability and transparency, at scale. It is also a Tuesday
 
 Agents in action
 
-One more run, on the screen: the office team with every agent this room merged.
+One more run, on the screen: the office team with every agent this room shared.
 
 Listen for yours.
 
 ### Speaker notes, slide 23
 
-> Run the merged team on the projector against the sample course. Read out each agent's name as the coordinator calls it.
+> Copy every agents/<login>/<name>/ folder from the ahg-2026 repository into a room/ folder in your kit, then run /run-the-office on the projector. Read out each agent's name as the coordinator calls it.
 >
 > If the run is slow, narrate it. If it stumbles, say what happened and why; a real failure explained well teaches more than a perfect demo.
 

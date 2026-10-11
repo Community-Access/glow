@@ -40,12 +40,15 @@ before. Every step on the day comes with a step card and a helper.
    it.
 2. Install VS Code from code.visualstudio.com. On Windows it installs
    without administrator rights.
-3. Open the setup page, letitglow.app/workshop/ahg-2026, and follow step 3
-   there to import the AHG 2026 profile into VS Code. Say yes when VS Code
-   asks. That installs everything else.
+3. Open letitglow.app/ahg and follow step 3 there to import the AHG 2026
+   profile into VS Code. Say yes when VS Code asks. That installs everything
+   else.
 4. On the same page, download the agent kit, open it in VS Code, open
    Copilot Chat and type /ready-check. It takes two minutes and tells you
    whether you are set.
+5. Share your practice agent at letitglow.app/ahg/share: one form, one
+   button, and a reply within a minute. On the day you do it once more, with
+   your real agent.
 
 If a step does not work, write to support@community-access.org before the
 day, or come to the setup table outside the room from 10:00 on the day.
@@ -66,8 +69,9 @@ nobody is left out on the day.
   document with GitHub Copilot.
 - After lunch: ground it in real evidence from GLOW, axe and Accessibility
   Insights, so it cites WCAG 2.2 instead of guessing.
-- Afternoon: share it on GitHub with a pull request, then add it to an agent
-  team in VS Code and watch the team work through the whole course.
+- Afternoon: share it to the open-source AHG 2026 collection on GitHub,
+  with one form and your name on it, then add it to an agent team in VS Code
+  and watch the team work through the whole course.
 - The last five minutes are the session evaluation. It shapes next year's
   conference.
 

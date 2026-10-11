@@ -66,3 +66,47 @@ def short_activity(session_code: str, number: int):
             **({"scenario": "surprise"} if request.args.get("surprise") else {}),
         )
     )
+
+
+# ---------------------------------------------------------------------------
+# Accessing Higher Ground 2026: one address for everything
+# ---------------------------------------------------------------------------
+#
+# letitglow.app/ahg is the address on the program, the slides and the table
+# cards. It is the landing page itself, not a redirect, so it is the page a
+# person bookmarks. The variations people will type all arrive there too.
+# www.letitglow.app and lp.csedesigns.com redirect to letitglow.app with the
+# path kept, in the Caddyfile, so they reach this route unchanged.
+
+
+@short_bp.route("/ahg", methods=["GET"], strict_slashes=False)
+def ahg_landing():
+    from .workshop import render_ahg_landing
+
+    return render_ahg_landing()
+
+
+@short_bp.route("/AHG", methods=["GET"], strict_slashes=False)
+@short_bp.route("/Ahg", methods=["GET"], strict_slashes=False)
+@short_bp.route("/ahg2026", methods=["GET"], strict_slashes=False)
+@short_bp.route("/ahg-2026", methods=["GET"], strict_slashes=False)
+@short_bp.route("/AHG2026", methods=["GET"], strict_slashes=False)
+def ahg_landing_alias():
+    return redirect(url_for("shortlinks.ahg_landing"), code=301)
+
+
+@short_bp.route("/ahg/share", methods=["GET"], strict_slashes=False)
+def ahg_share_short():
+    query = request.query_string.decode("utf-8")
+    target = url_for("workshop.ahg_share")
+    return redirect(f"{target}?{query}" if query else target)
+
+
+@short_bp.route("/ahg/kit", methods=["GET"], strict_slashes=False)
+def ahg_kit_short():
+    return redirect(url_for("workshop.ahg_kit_zip"))
+
+
+@short_bp.route("/ahg/slides", methods=["GET"], strict_slashes=False)
+def ahg_slides_short():
+    return redirect(url_for("workshop.workshop_deck"))

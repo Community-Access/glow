@@ -101,8 +101,10 @@ These replace L1 to L14 in the September plan.
 | D6 | Grounding comes from checkers, not from the AI: GLOW for documents, Accessibility Insights FastPass and axe-core for the web page. Agents must cite WCAG and the sources the Accessibility Agents citation policy names |
 | D7 | Every agent has a human review step the participant writes. Nothing an agent produces goes anywhere without a named person approving it |
 | D8 | Every participant builds the agent team in VS Code with Copilot: they add their own specialist to the ready-made office and run the team across the sample course |
-| D9 | Every participant commits their own agent to the Accessibility Agents repository from their own GitHub account, by pull request, using buttons only |
-| D10 | The facilitator reviews and merges the room's pull requests live, so everyone sees the open-source workflow, then runs the merged team on the projector |
+| D9 | Every participant shares their agent into the workshop collection, Community-Access/ahg-2026, with one form and one button. The automation commits it with them as the author, so it is their commit, on their GitHub profile. No fork, no pull request, no Git |
+| D10 | At the end of the day the facilitator sends the whole collection to the Accessibility Agents repository in one pull request with every author credited as a co-author, which keeps the program's promise that participants commit to that repository. Accessibility Agents is the read-only source of the specialists until then |
+| D16 | Everyone shares a practice agent before the day, so sharing on the day is the second time, not the first |
+| D17 | letitglow.app/ahg is the one address for everything, on the program, the slides, the cards and the setup message |
 | D15 | Setup is one VS Code profile, the AHG 2026 profile, plus the agent kit. The kit's own settings recommend the same extensions, as a safety net if the profile does not import |
 | D11 | Documents are the center of the day. The sample course is three documents and one web page |
 | D12 | Nothing taught depends on GLOW. Every step names the general skill and shows it working with tools people already have, so the day still pays off if GLOW is never opened again |
@@ -124,12 +126,12 @@ If a block is cut, this table shows which promise breaks.
 | Agent teams of coordinated specialists | Block 6: the coordinator routes the course to specialists, including the participant's own |
 | At scale | Block 6: one team run across the whole course, one prioritized report |
 | Quality, accountability, transparency | The team report: every finding has evidence, a citation and a named reviewer |
-| Open-source collaboration; capstone commit | Block 5: each participant opens their own pull request; the facilitator merges them live |
+| Open-source collaboration; capstone commit | Block 5: each participant commits their agent to the open-source workshop collection in their own name; after the session the collection goes into Accessibility Agents with every author credited (D10) |
 | Cognitive and learning accessibility, alternate formats, student success | The alternate format role card, and the plain language specialist in the team |
 | Beginner, bring a laptop | The setup message, the step cards, the helpers |
 
 No promise depends on a demonstration alone. The live team run on the
-projector is a bonus at the end, with everyone's merged agents in it, not a
+projector is a bonus at the end, with everyone's shared agents in it, not a
 substitute for anyone's own hands-on work.
 
 ## 6. The journey
@@ -215,8 +217,8 @@ Each role card has the same seven artifacts.
 | 12:15 | 60 | Lunch | |
 | 1:15 | 55 | 4. Ground it | A before and after: the same agent, with evidence and citations |
 | 2:10 | 10 | Break | |
-| 2:20 | 40 | 5. Share it | Their own pull request in the Accessibility Agents repository |
-| 3:00 | 45 | 6. Build the office, at scale | In VS Code: their specialist added to the team, the team run across the course, then everyone's merged agents run once on the projector |
+| 2:20 | 40 | 5. Share it | Their agent in the open-source collection, committed in their name |
+| 3:00 | 45 | 6. Build the office, at scale | In VS Code: their specialist added to the team, the team run across the course, then everyone's shared agents run once on the projector |
 | 3:45 | 30 | 7. Take it home | A 30-day plan and a one-page artifact |
 | 4:15 | 10 | Commitments | The commitment wall, anonymous |
 | 4:25 | 5 | Session evaluation | |
@@ -266,15 +268,18 @@ tool.
 
 No AI and no key. Built on 9 October.
 
-1. The setup page, letitglow.app/workshop/ahg-2026: the four setup steps,
-   the kit download, the profile and the step cards in one place.
+1. The landing page, letitglow.app/ahg: everything for the conference in
+   one place, the setup steps, the kit, the profile, the share page, the
+   schedule, the step cards, the slides and the collection. It opens without
+   a consent form, and every way of typing it, with or without www, arrives
+   there.
 2. The kit, served as a zip from that page, so nobody clones anything.
 3. The AHG 2026 profile at a stable address, for VS Code's Import Profile.
-4. The share page, letitglow.app/workshop/ahg-2026/share: it opens GitHub
-   with the participant's agent already filled in, in
-   `community/ahg-2026/` of the Accessibility Agents repository. They press
-   "Propose changes" and "Create pull request" on their own account; GitHub
-   makes the fork for them. GLOW holds no GitHub token. An offline copy is in
+4. The share page, letitglow.app/ahg/share: it opens the Share my agent
+   form in Community-Access/ahg-2026 with the participant's agent already
+   filled in. They tick the privacy box and press Submit new issue; the
+   repository's automation checks the agent, commits it in their name, and
+   replies within a minute. GLOW holds no GitHub token. An offline copy is in
    the kit.
 5. The evidence: GLOW's audit of every course document, as text in the kit,
    generated by `scripts/build_ahg_kit.py`.
@@ -282,6 +287,25 @@ No AI and no key. Built on 9 October.
 
 Copilot, not GLOW, turns the five answers into the agent file, through the
 kit's /design-my-agent command, in the Accessibility Agents skill format.
+
+## 13a. The workshop repository
+
+Community-Access/ahg-2026, public, MIT, owned by Community Access with Jeff
+Bishop as admin. Its files live in GLOW under `docs/ahg-2026/repo/` and are
+published with the kit by `scripts/sync_ahg_repo.py`.
+
+| Part | What it does |
+|---|---|
+| `.github/ISSUE_TEMPLATE/submit-agent.yml` | The Share my agent form: workshop code, practice or real, the agent, and a privacy box |
+| `.github/workflows/accept-agent.yml` and `.github/scripts/accept_agent.py` | Checks each shared agent, commits it with the participant as author, rebuilds the gallery, and replies within a minute: "Your agent is in", or exactly what to fix |
+| `agents/` | Every real agent, one folder per GitHub account, and the gallery in `agents/README.md` |
+| `practice/` | Practice agents from before the day |
+| `kit/` | A copy of the kit |
+| `scripts/promote_to_accessibility_agents.py` | The end-of-day step into Accessibility Agents, with every author credited |
+
+The checks: the workshop code (the `WORKSHOP_CODE` repository variable), a
+readable header, a name and author of the person's own, the six headings,
+and nothing that looks private, such as an email address or a long number.
 
 ## 14. The agent kit and the profile
 
@@ -346,8 +370,9 @@ path:
    dropped from the office.
 3. A GLOW audit report, pasted into Copilot with a sample agent, gives cited,
    useful answers, inside Copilot Free's monthly allowance.
-4. The share button, the automatic fork and the pull request, start to
-   finish, with GitHub Repositories instead of Git.
+4. The share page, the issue form and the automation's reply, start to
+   finish, with a brand-new GitHub account. Proven on 10 October with test
+   accounts: practice, real and needs-a-hand all work.
 5. Every participant step with NVDA, JAWS and VoiceOver.
 
 ## 17. What carries over from the September build
@@ -376,7 +401,7 @@ Each row is one risk and what we do about it.
 | Accessibility Agents specialists do not run well under Copilot on documents | Proven first; the live team is trimmed to what works |
 | Free AI tools give different answers | Checks ask "did it find these barriers and cite the standard", not "does it match the screen" |
 | Free AI tools keep what is pasted | No private data, ever; we show where to turn training off |
-| Thirty pull requests at once | Pull requests open from 2:20; merges batched and shown live; everyone's own team run does not wait for a merge |
+| Thirty shares at once | The automation runs one at a time and replies to each within a minute or two; nothing waits for a person |
 | People arrive without setup done | Three setup messages, the ready check, the setup table at 10:00, pairing |
 | The profile does not import on someone's laptop | The kit recommends the same extensions when it opens; a helper installs them with the person |
 | Wifi | Sample course and audit text downloadable in advance; the live team run is on the facilitator's laptop |
@@ -385,8 +410,8 @@ Each row is one risk and what we do about it.
 ## 19. Open decisions
 
 1. Lunch time: assumed 12:15 to 1:15. Confirm with AHG.
-2. The folder in the Accessibility Agents repository for workshop
-   contributions, its checks, and who merges.
+2. Copy `for-accessibility-agents/community/ahg-2026/README.md` into the
+   Accessibility Agents repository before the end-of-day pull request.
 3. Helpers: who, and how many.
 4. Maria as the persona, or someone else.
 

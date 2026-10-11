@@ -19,6 +19,8 @@ If all five are ready, end with exactly this, on its own line:
 
 You are ready for 16 November. Getting set up was the hardest part of the day, and it is done.
 
+Then add one more line: Last step: share your practice agent at letitglow.app/ahg/share. Choose "My practice agent", choose my-agent/SKILL.md, and press the button. It takes a minute, and GitHub replies to say it worked.
+
 If anything needs a hand, say which step, suggest one simple thing to try,
 and say: write to support@community-access.org, or come to the setup table
 from 10:00 on the day. Nobody gets left behind.

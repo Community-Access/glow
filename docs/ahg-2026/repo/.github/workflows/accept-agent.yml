@@ -1,0 +1,87 @@
+name: Accept a shared agent
+
+# Someone pressed "Submit new issue" on the Share my agent form. Check the
+# agent, commit it with them as the author, and reply on their issue within
+# about a minute, so the moment of sharing is a moment of success.
+
+on:
+  issues:
+    types: [opened, edited, reopened]
+
+permissions:
+  contents: write
+  issues: write
+
+# One at a time, so thirty people pressing the button together never race
+# each other's commits.
+concurrency:
+  group: accept-agent
+  cancel-in-progress: false
+
+jobs:
+  accept:
+    if: contains(github.event.issue.labels.*.name, 'agent-submission')
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Check the agent
+        id: check
+        env:
+          WORKSHOP_CODE: ${{ vars.WORKSHOP_CODE || 'AHG2026' }}
+        run: |
+          pip install --quiet pyyaml
+          python .github/scripts/accept_agent.py
+
+      - name: Commit it, with the participant as the author
+        if: steps.check.outputs.status == 'accepted'
+        env:
+          LOGIN: ${{ github.event.issue.user.login }}
+          USER_ID: ${{ github.event.issue.user.id }}
+          TITLE: ${{ steps.check.outputs.title }}
+          NUMBER: ${{ github.event.issue.number }}
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add agents practice
+          if git diff --cached --quiet; then
+            echo "Nothing changed."
+            exit 0
+          fi
+          git commit --author "$LOGIN <$USER_ID+$LOGIN@users.noreply.github.com>" \
+            -m "Add $TITLE, shared in #$NUMBER"
+          for attempt in 1 2 3; do
+            git pull --rebase --quiet origin main && git push origin HEAD:main && exit 0
+            sleep 5
+          done
+          exit 1
+
+      - name: Reply on the issue
+        # Never say "your agent is in" unless the commit really landed.
+        if: steps.check.outputs.status == 'needs-a-hand' || (steps.check.outputs.status == 'accepted' && success())
+        env:
+          GH_TOKEN: ${{ github.token }}
+          NUMBER: ${{ github.event.issue.number }}
+          STATUS: ${{ steps.check.outputs.status }}
+        run: |
+          gh issue comment "$NUMBER" --body-file reply.md
+          if [ "$STATUS" = "accepted" ]; then
+            gh issue edit "$NUMBER" --add-label agent-added --remove-label needs-a-hand || true
+            gh issue close "$NUMBER" --reason completed
+          else
+            gh issue edit "$NUMBER" --add-label needs-a-hand || true
+          fi
+
+      - name: Say so if anything went wrong on our side
+        if: failure()
+        env:
+          GH_TOKEN: ${{ github.token }}
+          NUMBER: ${{ github.event.issue.number }}
+        run: |
+          gh issue comment "$NUMBER" --body "Something went wrong on our side, not yours. Your agent is safe in this issue, and a helper will add it for you. Nothing else to do."
+          gh issue edit "$NUMBER" --add-label needs-a-hand || true

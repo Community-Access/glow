@@ -10,13 +10,17 @@
     :root { --fg: #f2f2f2; --bg: #121212; --accent: #8cc4ff; --panel: #1e2a36; --focus: #fbbf24; }
   }
   body { font-family: Arial, Helvetica, sans-serif; font-size: 1.5rem; line-height: 1.5;
-         color: var(--fg); background: var(--bg); margin: 0 auto; max-width: 46rem; padding: 1.5rem 1rem 4rem; }
+         color: var(--fg); background: var(--bg); margin: 0 auto; max-width: 46rem; padding: 1.5rem 1rem 4rem;
+         overflow-wrap: anywhere; }
   h1 { font-size: 2.2rem; line-height: 1.2; }
   h2 { font-size: 1.8rem; margin-top: 2rem; }
-  label { display: block; font-weight: 700; margin-top: 1.25rem; }
+  label, legend { display: block; font-weight: 700; margin-top: 1.25rem; }
+  fieldset { border: 2px solid var(--fg); padding: 0.5rem 1rem 1rem; margin-top: 1.5rem; min-width: 0; }
+  fieldset label { font-weight: 400; margin-top: 0.5rem; }
   .hint { margin: 0.25rem 0 0.5rem; }
   input[type="text"], input[type="file"], textarea { font: inherit; width: 100%; box-sizing: border-box;
          padding: 0.5rem; border: 2px solid var(--fg); background: var(--bg); color: var(--fg); }
+  input[type="radio"] { width: 1.25rem; height: 1.25rem; margin-right: 0.5rem; }
   textarea { min-height: 12rem; }
   button { font: inherit; font-weight: 700; margin-top: 1.5rem; padding: 0.6rem 1.2rem;
            background: var(--accent); color: var(--bg); border: 2px solid var(--accent); cursor: pointer; }
@@ -29,57 +33,60 @@
 <body>
 <main>
 <h1>Share your agent</h1>
-<p>This page puts your agent into the open-source Accessibility Agents project,
-under your own GitHub account, with your name on it. It takes about three
-minutes. Nothing here is sent anywhere until you press the green button on
-GitHub yourself.</p>
+<p>One form, one button. Your agent goes into the AHG 2026 collection with
+your name on it, and you get a reply within about a minute. No Git, no fork,
+no pull request.</p>
 
 <form id="share-form" novalidate>
+  <fieldset>
+    <legend>Which agent are you sharing?</legend>
+    <label><input type="radio" name="kind" value="My real agent" checked> My real agent, on the day</label>
+    <label><input type="radio" name="kind" value="My practice agent"> My practice agent, before the day</label>
+  </fieldset>
+
   <label for="agent-file">Your agent file</label>
-  <p class="hint" id="agent-file-hint">Choose <code>my-agent/SKILL.md</code> from the kit folder. Or skip this and paste it into the box below.</p>
+  <p class="hint" id="agent-file-hint">Choose <code>my-agent/SKILL.md</code> from the kit folder. Or skip this and paste your agent into the box below.</p>
   <input type="file" id="agent-file" accept=".md,text/markdown,text/plain" aria-describedby="agent-file-hint">
 
   <label for="agent-text">Your agent, as text</label>
-  <p class="hint" id="agent-text-hint">Filled in for you when you choose the file. You can also paste it here.</p>
+  <p class="hint" id="agent-text-hint">Filled in for you when you choose the file.</p>
   <textarea id="agent-text" aria-describedby="agent-text-hint"></textarea>
 
   <label for="agent-name">Your agent's short name</label>
-  <p class="hint" id="agent-name-hint">Lowercase words joined by hyphens, like <code>alternate-format-planner</code>. Filled in from the file when it can be.</p>
+  <p class="hint" id="agent-name-hint">Lowercase words joined by hyphens, like <code>alternate-format-planner</code>. Filled in from the file. Not needed for a practice agent.</p>
   <input type="text" id="agent-name" autocomplete="off" aria-describedby="agent-name-hint">
 
-  <button type="submit">Open GitHub with my agent</button>
+  <button type="submit">Open the share form on GitHub</button>
 </form>
 
 <div id="result" class="panel" role="status" aria-live="polite" hidden></div>
 
 <h2>What happens on GitHub</h2>
 <ol>
-  <li>GitHub opens a new file, already filled in, in the workshop folder of the Accessibility Agents project.</li>
-  <li>GitHub says you need your own copy of the project to propose a change. That is called a fork, and GitHub makes it for you.</li>
-  <li>Scroll to the bottom and press <strong>Propose changes</strong>.</li>
-  <li>On the next page, press <strong>Create pull request</strong>, then <strong>Create pull request</strong> again.</li>
+  <li>GitHub opens the "Share my agent" form, already filled in: the workshop code, which agent it is, and your agent.</li>
+  <li>Move to the end of the form and tick the privacy box: your agent contains nothing private.</li>
+  <li>Press <strong>Submit new issue</strong>.</li>
 </ol>
-<p>That is your pull request. Your agent is now part of an open-source
-project, and it will be merged on the projector this afternoon. Well done.</p>
+<p>Within about a minute, a reply appears on that page. Either your agent is
+in, with a link to it, or the reply says exactly what to fix: edit the issue,
+fix it, and save, and it is checked again straight away. Your agent is
+committed in your name, so it shows on your own GitHub profile.</p>
 
 <h2>If anything goes wrong</h2>
-<p>Raise a hand, or use the ready-made agent you started from in
-<code>examples/agents/</code>. Every pull request counts, including one that
-started from an example.</p>
+<p>Raise a hand, or write to support@community-access.org. If you are stuck,
+share one of the ready-made agents from <code>examples/agents/</code> with
+your name on its author line. That counts.</p>
 </main>
 
 <script nonce="{{ csp_nonce }}">
 (function () {
   "use strict";
-  // For rehearsals only: ?repo=owner/name&branch=main sends the agent to a
-  // test fork instead of the real project. Anything else is ignored.
+  // ?repo=owner/name sends to a test copy for rehearsals; ?practice=1 starts
+  // on "practice". Anything else in the address is ignored.
   var params = new URLSearchParams(window.location.search);
   var testRepo = /^[A-Za-z0-9-]+\/[A-Za-z0-9._-]+$/.test(params.get("repo") || "") ? params.get("repo") : "";
-  var testBranch = /^[A-Za-z0-9._\/-]+$/.test(params.get("branch") || "") ? params.get("branch") : "main";
-  var REPO = testRepo
-    ? "https://github.com/" + testRepo + "/new/" + testBranch
-    : "https://github.com/Community-Access/accessibility-agents/new/main";
-  var FOLDER = "community/ahg-2026/";
+  var REPO = testRepo || "Community-Access/ahg-2026";
+  var CODE = "AHG2026";
   var MAX_URL = 7500;
 
   var form = document.getElementById("share-form");
@@ -87,6 +94,10 @@ started from an example.</p>
   var text = document.getElementById("agent-text");
   var nameInput = document.getElementById("agent-name");
   var result = document.getElementById("result");
+
+  if (params.get("practice") === "1") {
+    form.querySelector('input[value="My practice agent"]').checked = true;
+  }
 
   function slug(value) {
     return (value || "").toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "").slice(0, 60);
@@ -117,6 +128,8 @@ started from an example.</p>
 
   form.addEventListener("submit", function (event) {
     event.preventDefault();
+    var kind = form.querySelector('input[name="kind"]:checked').value;
+    var practice = kind === "My practice agent";
     var body = text.value.trim();
     var name = slug(nameInput.value) || nameFromText(body);
     if (!body) {
@@ -124,21 +137,28 @@ started from an example.</p>
       text.focus();
       return;
     }
-    if (!name || name === "my-agent-name") {
-      say("Give your agent a short name of its own, like <code>faculty-coach</code>.");
+    if (!practice && (!name || name === "my-agent-name")) {
+      say("Give your agent a short name of its own, like <code>faculty-coach</code>. Or choose practice agent above.");
       nameInput.focus();
       return;
     }
-    var url = REPO + "?filename=" + encodeURIComponent(FOLDER + name + "/SKILL.md") +
-              "&value=" + encodeURIComponent(body + "\n");
+    var query = new URLSearchParams({
+      template: "submit-agent.yml",
+      title: practice ? "My practice agent" : "My agent: " + name,
+      "workshop-code": CODE,
+      kind: kind,
+      agent: body
+    });
+    var url = "https://github.com/" + REPO + "/issues/new?" + query.toString();
     if (url.length > MAX_URL) {
-      say("Your agent is longer than GitHub accepts in one link. On GitHub, open the project, " +
-          "choose Add file, then Create new file, name it <code>" + FOLDER + name + "/SKILL.md</code>, and paste your agent in.");
+      say("Your agent is longer than GitHub accepts in one link. Open the <a href=\"https://github.com/" + REPO +
+          "/issues/new?template=submit-agent.yml\" target=\"_blank\" rel=\"noopener\">share form on GitHub</a> " +
+          "and paste your agent into it.");
       return;
     }
     window.open(url, "_blank", "noopener");
-    say("GitHub is open in a new tab, with your agent filled in. Follow the four steps below. " +
-        "If no tab opened, <a href=\"" + url + "\" target=\"_blank\" rel=\"noopener\">open GitHub with your agent</a>.");
+    say("The share form is open in a new tab, filled in. Tick the privacy box, then press Submit new issue. " +
+        "If no tab opened, <a href=\"" + url + "\" target=\"_blank\" rel=\"noopener\">open the share form</a>.");
   });
 }());
 </script>

@@ -27,7 +27,8 @@ program's promises.
 | 6 | `pre-event-message.md` | The setup message participants are sent three times |
 | 7 | `answer-key.md` | Every barrier planted in the sample course. Facilitators only; not in the kit |
 | 8 | `ahg-speaker-guidance.md` | Every recommendation from the AHG speaker orientation, and where it is met |
-| 9 | `for-accessibility-agents/` | What the Accessibility Agents repository needs for the capstone pull requests, ready to copy in |
+| 9 | `repo/` | Everything in the workshop repository Community-Access/ahg-2026: the share form, the automation that adds each agent, the README and the end-of-day script. `scripts/sync_ahg_repo.py` publishes it with the kit |
+| 9a | `for-accessibility-agents/` | The `community/ahg-2026` folder that receives the collection at the end of the day |
 | 10 | `workshop-frontfacing-guide.md` | The session description participants can read in GLOW |
 | 11 | `plan-2026-09-glow-only.md`, `status-2026-09-21.md`, `readiness-plan.md`, `workshop-mode-*.md`, `workshop-frontfacing-exercises.md`, `workshop-frontfacing-utilization.md` | September: Workshop Mode's eleven-activity day, which GLOW still offers for other trainings |
 
