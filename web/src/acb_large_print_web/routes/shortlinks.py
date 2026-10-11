@@ -104,9 +104,45 @@ def ahg_share_short():
 
 @short_bp.route("/ahg/kit", methods=["GET"], strict_slashes=False)
 def ahg_kit_short():
+    # The kit, online: every file readable without unzipping anything.
+    from .workshop import render_ahg_kit_index
+
+    return render_ahg_kit_index()
+
+
+@short_bp.route("/ahg/kit.zip", methods=["GET"])
+def ahg_kit_zip_short():
     return redirect(url_for("workshop.ahg_kit_zip"))
+
+
+@short_bp.route("/ahg/kit/raw/<path:rel>", methods=["GET"])
+def ahg_kit_raw(rel: str):
+    from .workshop import send_ahg_kit_raw
+
+    return send_ahg_kit_raw(rel)
+
+
+@short_bp.route("/ahg/kit/<path:rel>", methods=["GET"])
+def ahg_kit_file(rel: str):
+    from .workshop import render_ahg_kit_file
+
+    return render_ahg_kit_file(rel)
 
 
 @short_bp.route("/ahg/slides", methods=["GET"], strict_slashes=False)
 def ahg_slides_short():
     return redirect(url_for("workshop.workshop_deck"))
+
+
+@short_bp.route("/ahg/site", methods=["GET"], strict_slashes=False)
+def ahg_site():
+    from .workshop import render_ahg_site
+
+    return render_ahg_site()
+
+
+@short_bp.route("/ahg/site/<path:name>", methods=["GET"])
+def ahg_site_file(name: str):
+    from .workshop import send_ahg_site_file
+
+    return send_ahg_site_file(name)

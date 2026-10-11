@@ -25,6 +25,7 @@ The same agent, giving cited answers from real evidence, and a before and after 
 4. Your agent reads that file's checker report from sample-course/evidence: GLOW's audit for the documents, axe-core for the web page.
 5. Read the new answer, then Copilot's before and after.
 6. Optional: open the syllabus in Word, choose Review, then Check Accessibility, and paste the results into Copilot Chat with your agent. Same skill, different checker.
+7. Optional: the course announcement is online at letitglow.app/ahg/site. Run Accessibility Insights FastPass on it and compare with its checker report.
 
 ## You are on track if
 

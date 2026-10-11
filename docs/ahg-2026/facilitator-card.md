@@ -28,6 +28,8 @@ Everything participants need starts from the setup page.
 |---|---|
 | Everything, for everyone | letitglow.app/ahg |
 | Share page | letitglow.app/ahg/share |
+| The kit, online, no unzipping | letitglow.app/ahg/kit |
+| The sample course, online | letitglow.app/ahg/site |
 | The collection | github.com/Community-Access/ahg-2026, agents folder |
 | Anyone who needs a hand | github.com/Community-Access/ahg-2026/issues, label needs-a-hand |
 | Commitment for the wall | letitglow.app/w/ahg-2026/11 |

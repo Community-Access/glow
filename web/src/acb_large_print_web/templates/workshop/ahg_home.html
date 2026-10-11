@@ -1,4 +1,4 @@
-{% extends "base.html" %}
+{% extends "workshop/ahg_base.html" %}
 
 {% block title %}Accessibility Agents at AHG 2026{% endblock %}
 {% block heading %}Accessibility Agents at AHG 2026{% endblock %}
@@ -38,7 +38,7 @@
     Import the AHG 2026 profile. In VS Code, open the Command Palette
     (Control+Shift+P on Windows, Command+Shift+P on a Mac), type
     <kbd>Profiles: Import Profile</kbd>, and paste this address:
-    <code style="overflow-wrap: anywhere;">{{ profile_url }}</code>.
+    <code>{{ profile_url }}</code>.
     Or <a href="{{ url_for('workshop.ahg_profile') }}">download the AHG 2026 profile file</a> and import that.
   </li>
   <li>
@@ -61,8 +61,9 @@
 
 <h2 id="the-day">The day</h2>
 <p>Times are Mountain Time. Each block has its own step card and its own Copilot command.</p>
+<div class="table-scroll" role="region" aria-labelledby="schedule-caption" tabindex="0">
 <table>
-  <caption>The workshop, 10:30 AM to 4:30 PM</caption>
+  <caption id="schedule-caption">The workshop, 10:30 AM to 4:30 PM</caption>
   <thead><tr><th scope="col">Time</th><th scope="col">Block</th><th scope="col">What happens</th></tr></thead>
   <tbody>
   {% for row in schedule %}
@@ -70,6 +71,23 @@
   {% endfor %}
   </tbody>
 </table>
+</div>
+
+<h2 id="kit-online">The kit, online</h2>
+<p>
+  <a href="{{ url_for('shortlinks.ahg_kit_short') }}">Every file in the agent kit, readable online</a>:
+  the step cards, the ready-made agents, the office team and the Copilot
+  commands, each with a plain-text address you can paste into Copilot or any
+  AI. Nothing to unzip to look around.
+</p>
+
+<h2 id="sample-course">The sample course</h2>
+<p>
+  <a href="{{ url_for('shortlinks.ahg_site') }}">PSY 101, the sample course</a>:
+  the web page and documents everyone works on, with barriers planted on
+  purpose, and each one's checker report. Online, so you can run axe or
+  Accessibility Insights on a real address. The same files are in the kit.
+</p>
 
 <h2 id="share">Share your agent</h2>
 <ul>

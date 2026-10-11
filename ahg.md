@@ -33,10 +33,13 @@ one to give anyone is `letitglow.app/ahg`.
 | Share page: opens the share form with an agent filled in | `https://letitglow.app/ahg/share` |
 | Share page, starting on "practice agent" | `https://letitglow.app/ahg/share?practice=1` |
 | Share page against a test copy, for rehearsals | `https://letitglow.app/ahg/share?repo=<account>/<repository>` |
-| The agent kit, as a zip | `https://letitglow.app/ahg/kit` |
+| The agent kit, every file readable online, each with a plain-text address | `https://letitglow.app/ahg/kit` |
+| One kit file online, and as plain text | `https://letitglow.app/ahg/kit/<path>` and `https://letitglow.app/ahg/kit/raw/<path>` |
+| The agent kit, as a zip | `https://letitglow.app/ahg/kit.zip` |
+| The sample course online: web page, documents, checker reports | `https://letitglow.app/ahg/site` |
 | The AHG 2026 VS Code profile, for Profiles: Import Profile | `https://letitglow.app/workshop/ahg-2026/ahg-2026.code-profile` |
 | Step card downloads | `https://letitglow.app/workshop/ahg-2026/step-cards/<n>-<name>.docx` |
-| The slides | `https://letitglow.app/ahg/slides` |
+| The slides, no consent page | `https://letitglow.app/ahg/slides` |
 | The deck for the room, with its join address | `https://letitglow.app/workshop/session/ahg-2026/deck` |
 | Commitment for the wall, participant | `https://letitglow.app/w/ahg-2026/11` |
 | The commitment wall, to project | `https://letitglow.app/workshop/session/ahg-2026/wall` |
@@ -49,8 +52,11 @@ one to give anyone is `letitglow.app/ahg`.
 
 The landing page also answers to `/AHG`, `/ahg2026`, `/ahg-2026`, to
 `www.letitglow.app/ahg`, and to the old `letitglow.app/workshop/ahg-2026`.
-It opens without GLOW's consent form, as do the kit, profile, share page and
-step cards; the GLOW tools themselves still ask.
+It opens without GLOW's consent form, as do the kit, profile, share page,
+sample course, step cards and slides; the GLOW tools themselves still ask.
+These conference pages use their own plain frame, with none of GLOW's
+navigation, AI meter or footer links: just the page, a link home to `/ahg`,
+the privacy policy and a "Hosted by GLOW" line.
 
 The addresses with `ahg-2026` in a session path work once the conference
 code is configured on the server, step 2 of section 1.5.
@@ -438,6 +444,9 @@ These cover everything a participant does before the day.
 | Setup-13 | Open the landing page and the share page in a private window | Both open straight away, with no consent page; the GLOW tools still ask | |
 | Setup-14 | Open `letitglow.app/AHG`, `/ahg2026`, `/ahg-2026`, `/ahg/`, `www.letitglow.app/ahg` and `letitglow.app/workshop/ahg-2026` | Every one arrives at `letitglow.app/ahg` | |
 | Setup-15 | Share the practice agent from step card 0, step 8 | Within about a minute the issue gets a reply beginning "Well done", and the agent is in `practice/<account>/SKILL.md` | |
+| Setup-16 | Open `/ahg/kit`, then a step card, an agent and a Copilot command from it | Each reads as a page with its headings; each has a plain-text address that opens as text; the step cards offer their Word file | |
+| Setup-17 | Open `/ahg/site`, then the course announcement; run Accessibility Insights FastPass on it | The index is accessible; the announcement shows its planted barriers, and FastPass finds what its checker report lists | |
+| Setup-18 | Tab once on `/ahg`, `/ahg/kit`, `/ahg/site` and the share page, then press Enter | The first stop is Skip to main content, and Enter moves to the page content; no GLOW navigation on any of them | Pass, Claude, 10 Oct |
 
 ### 2.6 Block 1: Why we are here, and the deck
 

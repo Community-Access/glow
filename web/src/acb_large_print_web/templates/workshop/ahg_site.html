@@ -1,0 +1,50 @@
+{% extends "workshop/ahg_base.html" %}
+{% block title %}The sample course: PSY 101{% endblock %}
+{% block heading %}The sample course: PSY 101{% endblock %}
+
+{% block content %}
+<p>
+  Introduction to Psychology, the course everyone works on at the workshop.
+  Its web page and documents have accessibility barriers in them on purpose:
+  finding them, and fixing them, is the day. Every file here is also in the
+  agent kit, in the <code>sample-course</code> folder.
+</p>
+<p>
+  This page itself is built to be accessible. The course files it links to
+  are not, by design.
+</p>
+
+<h2 id="files">The course files</h2>
+<ul>
+  {% for f in files %}
+  <li>
+    <a href="{{ url_for('shortlinks.ahg_site_file', name=f.name) }}">{{ f.title }}</a>,
+    {{ f.kind }}, {{ f.size }}{% if f.kind != "Web page" %}, downloads{% endif %}.
+    {% if f.evidence %}<a href="{{ url_for('shortlinks.ahg_site_file', name=f.evidence) }}">Its checker report<span class="visually-hidden">: {{ f.title }}</span></a>, as text.{% endif %}
+  </li>
+  {% endfor %}
+</ul>
+
+<h2 id="check-the-page">Check the web page yourself</h2>
+<p>
+  The course announcement is a real web page at a real address, so the same
+  checkers you use at work run on it.
+</p>
+<ol>
+  <li>Open <a href="{{ url_for('shortlinks.ahg_site_file', name='psy101-announcement.html') }}">the course announcement</a>.</li>
+  <li>Run Accessibility Insights for Web, FastPass, or the axe DevTools extension, on that page.</li>
+  <li>Compare what you find with its checker report above. They use the same engine, axe-core.</li>
+</ol>
+<p>
+  The documents work the same way: open the syllabus in Word and choose
+  Review, then Check Accessibility. Step card 4 has the details.
+</p>
+
+<h2 id="rules">Remember</h2>
+<p>
+  Everything here is invented. No real student, course or record is in it,
+  which is why it is safe to paste into any AI.
+</p>
+
+<p><a href="{{ url_for('shortlinks.ahg_landing') }}">Back to everything for AHG 2026</a></p>
+{% endblock %}
