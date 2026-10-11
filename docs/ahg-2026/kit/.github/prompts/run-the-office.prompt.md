@@ -1,6 +1,6 @@
 ---
 description: Block 6. Run the whole accessibility office across the course, with your agent on the team.
-mode: agent
+agent: agent
 ---
 Read `.github/agents/office-coordinator.agent.md` and act as the office
 coordinator, following it exactly. The participant's own agent is in

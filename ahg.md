@@ -222,6 +222,10 @@ pull requests land in their own fork, not in the real project.
 Each required row must be run at least once, start to finish, from Setup-02
 to Office-06.
 
+Jeff tests on Windows only. The Mac rows, Env-4 and Env-5, need a separate
+tester with a Mac; until one is found they stay open, and sign-off lists
+them as the one remaining gap rather than marking them Not applicable.
+
 | ID | Operating system | Browser | Assistive technology | Required |
 |---|---|---|---|---|
 | Env-1 | Windows 11 | Chrome | None, mouse and keyboard | Yes |
@@ -240,13 +244,14 @@ before manual testing starts, and again after any fix.
 
 | ID | Command | Expected | Result |
 |---|---|---|---|
-| Auto-01 | `python -m pytest web/tests -q` with `PYTHONPATH=web/src;desktop/src` | All pass (1106 passed, 31 skipped at build time) | |
-| Auto-02 | `python -m pytest web/tests/test_workshop_ahg_kit.py web/tests/test_workshop_deck.py web/tests/test_workshop_deck_formats.py web/tests/test_workshop_agenda.py -q` | All pass | |
-| Auto-03 | `python -m pytest desktop/tests/test_md_auditor_false_positives.py desktop/tests/test_md_auditor_feature_parity.py -q` with `PYTHONPATH=desktop/src` | All pass | |
-| Auto-04 | `python scripts/check_material_conformance.py` | "Every material conforms" | |
-| Auto-05 | `python scripts/audit_ahg_docs.py` | "0 not passing" | |
+| Auto-01 | `python -m pytest web/tests -q` with `PYTHONPATH=web/src;desktop/src` | All pass (1106 passed, 31 skipped at build time) | Pass, Claude, 10 Oct: 1112 passed, 31 skipped |
+| Auto-02 | `python -m pytest web/tests/test_workshop_ahg_kit.py web/tests/test_workshop_deck.py web/tests/test_workshop_deck_formats.py web/tests/test_workshop_agenda.py -q` | All pass | Pass, Claude, 10 Oct |
+| Auto-03 | `python -m pytest desktop/tests/test_md_auditor_false_positives.py desktop/tests/test_md_auditor_feature_parity.py -q` with `PYTHONPATH=desktop/src` | All pass | Pass, Claude, 10 Oct: 16 passed |
+| Auto-04 | `python scripts/check_material_conformance.py` | "Every material conforms" | Pass, Claude, 10 Oct |
+| Auto-08 | `python scripts/check_ahg_sample_course.py` | 42 of 42 pass | Pass, Claude, 10 Oct |
+| Auto-05 | `python scripts/audit_ahg_docs.py` | "0 not passing" | Pass, Claude, 10 Oct: 34 documents |
 | Auto-06 | The axe sweep in `web/e2e`, run as described in `web/e2e/README.md` | No violations on the workshop deck pages | |
-| Auto-07 | GitHub Actions on PR #116 | All required checks green | |
+| Auto-07 | GitHub Actions on PR #116 | All required checks green | Pass, Claude, 10 Oct, after fixing D-001 |
 
 ### 2.5 Setup and the setup page
 
@@ -254,7 +259,7 @@ These cover everything a participant does before the day.
 
 | ID | Steps | Expected | Result |
 |---|---|---|---|
-| Setup-01 | Open `/workshop/ahg-2026` | Page loads; heading "Accessibility Agents at AHG 2026"; four numbered setup steps; links to the kit, the profile, the share page, the slides and eight step cards; the two rules | |
+| Setup-01 | Open `/workshop/ahg-2026` | Page loads; heading "Accessibility Agents at AHG 2026"; four numbered setup steps; links to the kit, the profile, the share page, the slides and eight step cards; the two rules | Pass, Claude, 10 Oct |
 | Setup-02 | Make a new GitHub account and turn on Copilot Free, following step card 0 | Account made; Copilot Free shows as active in GitHub settings | |
 | Setup-03 | Install VS Code on Env-6 without administrator rights | Installs and opens | |
 | Setup-04 | In VS Code, Command Palette, "Profiles: Import Profile", paste the profile address from the setup page | VS Code shows the "AHG 2026 Accessibility Agents" profile; importing installs GitHub Copilot Chat, GitHub Pull Requests, GitHub Repositories and the axe Accessibility Linter; editor text is 18pt | |
@@ -264,9 +269,9 @@ These cover everything a participant does before the day.
 | Setup-08 | Open the kit in a VS Code without the profile | VS Code offers the kit's recommended extensions; installing them gives the same set as Setup-04 | |
 | Setup-09 | Open Copilot Chat with Control+Alt+I or Command+Control+I and type `/ready-check` | The command appears in the slash list with its description; Copilot reports five checks as Ready and ends with "You are ready for 16 November." | |
 | Setup-10 | Rename `office-team` and run `/ready-check` again, then rename it back | Copilot reports that step as "Needs a hand", suggests one thing, and gives the support address | |
-| Setup-11 | Read the setup page with a screen reader | One H1, H2s for each part, numbered list announced, every link name says where it goes | |
-| Setup-12 | Download `kit.zip` and the profile with no GLOW consent cookie (private window, direct links) | Both download without the consent page | |
-| Setup-13 | Open the share page in a private window | The consent page appears first, then the share page | |
+| Setup-11 | Read the setup page with a screen reader | One H1, H2s for each part, numbered list announced, every link name says where it goes | Pass, Claude, 10 Oct, axe clean; screen reader listen still to do |
+| Setup-12 | Download `kit.zip` and the profile with no GLOW consent cookie (private window, direct links) | Both download without the consent page | Pass, Claude, 10 Oct |
+| Setup-13 | Open the share page in a private window | The consent page appears first, then the share page | Pass, Claude, 10 Oct |
 
 ### 2.6 Block 1: Why we are here, and the deck
 
@@ -274,12 +279,12 @@ These cover the opening and every format of the deck.
 
 | ID | Steps | Expected | Result |
 |---|---|---|---|
-| Deck-01 | Open `/workshop/session/ahg-2026/deck` | 26 slides; first title "Accessibility Agents"; subtitle is the program title word for word | |
-| Deck-02 | Move through the deck with arrow keys, Page Up and Page Down, Home and End | Each change moves focus to the slide heading and is announced politely | |
-| Deck-03 | Turn speaker notes on and off with the `n` key and the button | Notes show and hide; state is announced | |
+| Deck-01 | Open `/workshop/session/ahg-2026/deck` | 26 slides; first title "Accessibility Agents"; subtitle is the program title word for word | Pass, Claude, 10 Oct |
+| Deck-02 | Move through the deck with arrow keys, Page Up and Page Down, Home and End | Each change moves focus to the slide heading and is announced politely | Pass, Claude, 10 Oct |
+| Deck-03 | Turn speaker notes on and off with the `n` key and the button | Notes show and hide; state is announced | Pass, Claude, 10 Oct |
 | Deck-04 | Use "Read as one page" | The deck becomes one document with one heading per slide | |
 | Deck-05 | Print or print to PDF | One slide per page, notes included, body text 18pt | |
-| Deck-06 | Download the deck as one file with `?download=1`, open it offline | Works with no network; no external scripts or styles | |
+| Deck-06 | Download the deck as one file with `?download=1`, open it offline | Works with no network; no external scripts or styles | Pass, Claude, 10 Oct |
 | Deck-07 | Open `slides.pptx` in PowerPoint; run Review, Check Accessibility | No errors; every slide has a title; reading order matches the screen | |
 | Deck-08 | Read `slides.pptx` with NVDA or JAWS in PowerPoint | Titles, body and table on slides 3, 8, 10, 16 and 24 read in order; speaker notes in the notes pane | |
 | Deck-09 | Open `slides.docx` in Word; run Check Accessibility | No errors; one heading per slide; speaker notes under "Speaker notes, slide N" | |
@@ -339,14 +344,14 @@ Run these against a test fork first, using `?repo=` as described in section
 
 | ID | Steps | Expected | Result |
 |---|---|---|---|
-| Share-01 | Open `/workshop/ahg-2026/share?repo=<account>/accessibility-agents`; choose `my-agent/SKILL.md` | The text box fills; the name fills from the file; a status message is announced | |
-| Share-02 | Press "Open GitHub with my agent" | A new tab opens GitHub's new-file page in the fork, path `community/ahg-2026/<name>/SKILL.md`, content filled in | |
+| Share-01 | Open `/workshop/ahg-2026/share?repo=<account>/accessibility-agents`; choose `my-agent/SKILL.md` | The text box fills; the name fills from the file; a status message is announced | Pass, Claude, 10 Oct |
+| Share-02 | Press "Open GitHub with my agent" | A new tab opens GitHub's new-file page in the fork, path `community/ahg-2026/<name>/SKILL.md`, content filled in | Pass, Claude, 10 Oct |
 | Share-03 | Press "Commit changes" or "Propose changes", then "Create pull request" twice | A pull request is open in the fork | |
 | Share-04 | Repeat Share-01 to 03 with a brand-new account that has no fork | GitHub offers to fork, makes the fork, and the pull request opens against the target | |
-| Share-05 | Submit with the text box empty | Message "Your agent is empty"; focus moves to the text box | |
-| Share-06 | Submit with the name still "my-agent-name" | Message asks for a name of its own; focus moves to the name field | |
-| Share-07 | Paste an agent longer than about 7,000 characters | Message explains the manual Create new file route with the exact path | |
-| Share-08 | Use the offline `share-my-agent.html` from the kit | Same as Share-01 and 02 | |
+| Share-05 | Submit with the text box empty | Message "Your agent is empty"; focus moves to the text box | Pass, Claude, 10 Oct |
+| Share-06 | Submit with the name still "my-agent-name" | Message asks for a name of its own; focus moves to the name field | Pass, Claude, 10 Oct |
+| Share-07 | Paste an agent longer than about 7,000 characters | Message explains the manual Create new file route with the exact path | Pass, Claude, 10 Oct |
+| Share-08 | Use the offline `share-my-agent.html` from the kit | Same as Share-01 and 02 | Pass, Claude, 10 Oct |
 | Share-09 | Real repository: submit one test agent, then review and merge it on GitHub | Merges cleanly into `community/ahg-2026/`; the repository's own checks do not fail on it | |
 | Share-10 | Do Share-01 to 03 with NVDA, JAWS and VoiceOver | Every control on the share page and on GitHub's pages is reachable and named | |
 | Share-11 | Merge five pull requests in a row on the projector, timed | Under five minutes for five | |
@@ -385,15 +390,15 @@ wrong.
 
 | ID | Steps | Expected | Result |
 |---|---|---|---|
-| Mat-01 | Open each of the seven sample course files | Each opens in its own application | |
-| Mat-02 | Check each planted barrier in `answer-key.md` against the files | Every barrier is present exactly as described | |
+| Mat-01 | Open each of the seven sample course files | Each opens in its own application | Pass, Claude, 10 Oct: opened in Word, PowerPoint, Excel; PDFs and page parsed |
+| Mat-02 | Check each planted barrier in `answer-key.md` against the files | Every barrier is present exactly as described | Pass, Claude, 10 Oct: 42 of 42 by scripts/check_ahg_sample_course.py |
 | Mat-03 | Read the three worked examples aloud | Facts, times and names match the deck; examples are labelled as written examples | |
 | Mat-04 | Open each step card Word file in Word; Check Accessibility | No errors; headings and numbered lists real | |
 | Mat-05 | Compare each step card's steps with what testers actually did | Every key, label and expected result matches the real screens; fix any that do not | |
 | Mat-06 | Read `pre-event-message.md` as a participant | Four steps, about 20 minutes, the support address, Mountain Time, the privacy rule | |
 | Mat-07 | Replace the written before and after answers in the worked examples with real Copilot output captured in Ground-08 | Examples show real output, still labelled | |
 | A11y-01 | Use every GLOW page in this plan by keyboard only | Every control reachable, visible focus, logical order | |
-| A11y-02 | Zoom the setup page, share page and deck to 200 and 400 percent | No loss of content or function; no horizontal scrolling at 400 percent on the setup and share pages | |
+| A11y-02 | Zoom the setup page, share page and deck to 200 and 400 percent | No loss of content or function; no horizontal scrolling at 400 percent on the setup and share pages | Pass, Claude, 10 Oct, after fixing D-002 to D-004 |
 | A11y-03 | Turn on reduced motion | Nothing animates | |
 | A11y-04 | Use the kit in VS Code at the profile's 18pt with VS Code zoomed in twice | Chat and editor remain usable | |
 | Fall-01 | Turn off wifi after setup | The kit, sample course, evidence, step cards and examples all still open; only Copilot and GitHub fail | |
@@ -401,7 +406,7 @@ wrong.
 | Fall-03 | Profile import refused on Env-6 | Setup-08 route works | |
 | Fall-04 | GitHub unreachable during block 5 | The agent file can be saved from the kit to a USB stick for a later pull request | |
 | Fall-05 | Projector off | The facilitator can run the block from the pocket card and step cards alone | |
-| Load-01 | 40 downloads of `kit.zip` from one network within a minute | All succeed; no rate limit refusal | |
+| Load-01 | 40 downloads of `kit.zip` from one network within a minute | All succeed; no rate limit refusal | Pass, Claude, 10 Oct: 40 of 40 |
 | Dry-01 | Timed dry run of the whole day with the beginner tester, facilitator presenting | Real minutes per block written into `run-of-show.md` section 2; any block over by more than five minutes has a fix | |
 
 ### 2.14 Defect log
@@ -411,7 +416,31 @@ that found it passes again.
 
 | Defect | Test | What happened | Fix | Re-test result |
 |---|---|---|---|---|
-| D-001 | | | | |
+| D-001 | Auto-07 | Six ready-made agents had author lines like "Example: Maria Alvarez": invalid YAML. Vale stopped on it; VS Code would have misread the headers | Header text quoted by the kit build; template and /design-my-agent keep quotes; a test parses every front matter block (`1d4f1fd`) | Pass, 10 Oct |
+| D-002 | A11y-02 | On every GLOW page, at 320px wide, page content was 0px wide: the AI meter sat outside the sidebar and became a column. Live on letitglow.app | Meter moved inside the sidebar; PR #117 for production, same commits on this branch | Pass, 10 Oct |
+| D-003 | A11y-02 | Home, privacy, audit and convert pages overflowed sideways at 320px | Wrapping and width rules for main content and form controls (PR #117) | Pass, 10 Oct |
+| D-004 | A11y-02, Deck axe | Setup page's profile address and the deck's slide picker overflowed at 320px; deck controls outside any landmark; count said "of 30" | Fixed in `41f1fd7` | Pass, 10 Oct |
+| D-005 | Setup-04 | Prompt files used the older `mode:` header; VS Code 1.141 reads `agent:` | All six commands now use `agent: agent` | Pass by inspection; confirm in Setup-09 |
+
+### 2.14a Results so far
+
+Run by Claude on Windows, 10 October 2026, against GLOW running locally
+from this branch (section 1.7). Everything that needs no Copilot sign-in,
+no screen reader by ear and no Mac is done, and passes. What remains for
+Jeff, on Windows:
+
+1. Setup-02 to Setup-10: make a fresh GitHub account, import the profile,
+   open the kit, and run `/ready-check`. The four extensions in the profile
+   were confirmed to install in VS Code 1.141; GitHub Copilot Chat is built
+   into that version.
+2. Every case in sections 2.7 to 2.12 that runs a Copilot command.
+3. Deck-07 and Deck-09: the Office Accessibility Checker on the deck. GLOW's
+   own audits already score both files 100.
+4. The screen reader rows Env-2 and Env-3 with NVDA and JAWS, including
+   Setup-11 and Share-10 by ear.
+5. Share-03, Share-04, Share-09 and Share-11 with real GitHub accounts and
+   a test fork.
+6. Fall-01 to Fall-05 and Dry-01.
 
 ### 2.15 Sign-off
 

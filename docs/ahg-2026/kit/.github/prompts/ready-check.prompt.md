@@ -1,6 +1,6 @@
 ---
 description: Check you are ready for the AHG 2026 workshop. Takes two minutes.
-mode: agent
+agent: agent
 ---
 You are running the ready check for a participant at the AHG 2026 workshop.
 Be warm and brief. They may be new to VS Code and Copilot.

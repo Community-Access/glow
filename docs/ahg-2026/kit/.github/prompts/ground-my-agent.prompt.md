@@ -1,6 +1,6 @@
 ---
 description: Block 4. Give your agent real evidence, and compare before and after.
-mode: agent
+agent: agent
 ---
 Read `my-agent/SKILL.md` and act as that agent, following it exactly.
 

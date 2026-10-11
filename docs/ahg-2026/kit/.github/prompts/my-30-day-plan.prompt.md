@@ -1,6 +1,6 @@
 ---
 description: Block 7. Turn today into a 30-day plan for your own campus.
-mode: agent
+agent: agent
 ---
 Help the participant write a 30-day plan for using their agent at work. Ask
 one question at a time and keep each answer short:
