@@ -566,6 +566,9 @@ main {
   flex: 1;
   padding: 1.5rem clamp(1rem, 3vw, 2.5rem);
   max-width: min(66rem, 100%);
+  /* Long addresses, file paths and code must wrap rather than push the
+     page sideways at 320px (WCAG 2.2, 1.4.10 Reflow). */
+  overflow-wrap: anywhere;
 }
 
 /* --- Print: hide sidebar, show content normally --------------------------- */

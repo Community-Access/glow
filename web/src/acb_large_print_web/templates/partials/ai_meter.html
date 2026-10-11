@@ -4,7 +4,7 @@
 <div
   class="ai-meter"
   id="ai-meter"
-  role="complementary"
+  role="group"
   aria-label="AI usage"
   data-session-url="{{ url_for('ai.ollama_session_status', provider=ai_primary_provider_id) }}"
   data-extend-url="{{ url_for('ai.extend_ollama_session', provider=ai_primary_provider_id) }}"
@@ -27,7 +27,7 @@
 <div
   class="ai-meter ai-meter--shared"
   id="ai-meter"
-  role="complementary"
+  role="group"
   aria-label="AI usage"
 >
   <span class="ai-meter__label">AI (shared)</span>
@@ -40,7 +40,7 @@
   <span class="ai-meter__detail" id="ai-meter-quota" hidden></span>
 </div>
 {% elif ai_entry_enabled is defined and ai_entry_enabled %}
-<div class="ai-meter ai-meter--inactive" role="complementary" aria-label="AI usage">
+<div class="ai-meter ai-meter--inactive" role="group" aria-label="AI usage">
   <span class="ai-meter__label">AI features</span>
   <a href="{{ url_for('ai.settings_ai_page') }}" class="ai-meter__link">Enable with your Ollama key</a>
 </div>
