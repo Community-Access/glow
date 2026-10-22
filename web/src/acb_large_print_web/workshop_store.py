@@ -421,6 +421,19 @@ def count_submissions(
     return int(row["n"]) if row else 0
 
 
+def count_submissions_by_activity(session_code: str) -> dict[str, int]:
+    """Count finished submissions for every activity in one query."""
+    code = normalize_session_code(session_code)
+    conn = _conn()
+    rows = conn.execute(
+        "SELECT activity_key, COUNT(*) AS n FROM workshop_submissions "
+        "WHERE session_code=? AND is_draft=0 GROUP BY activity_key",
+        (code,),
+    ).fetchall()
+    conn.close()
+    return {str(row["activity_key"]): int(row["n"]) for row in rows}
+
+
 def list_submissions(
     session_code: str,
     *,
