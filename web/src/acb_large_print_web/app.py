@@ -611,6 +611,22 @@ def create_app(config: dict | None = None) -> Flask:
     except Exception:
         pass
 
+    # Prime configured workshop access codes before the first participant
+    # arrives. The landing page still checks for configuration changes, but
+    # the normal first visit no longer has to perform conference-code writes
+    # on the shared workshop SQLite database.
+    try:
+        from .workshop_store import (
+            load_conference_codes_from_env,
+            load_conference_codes_from_file,
+        )
+
+        with app.app_context():
+            load_conference_codes_from_env()
+            load_conference_codes_from_file()
+    except Exception:
+        app.logger.debug("Failed to load workshop conference codes at startup", exc_info=True)
+
     # Startup ready log -- emitted once per worker process launch
     try:
         from importlib.metadata import version as _pkg_version
