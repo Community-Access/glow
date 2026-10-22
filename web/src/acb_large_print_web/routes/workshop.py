@@ -1011,6 +1011,11 @@ def workshop_activity(session_code: str, activity_key: str):
                 display_name,
                 participant_key=(participant.get("participant_key") if participant else None),
                 login_email=_active_login_email(),
+                # _current_participant already refreshes last-seen at most
+                # once every five minutes. Avoid another participant-row
+                # commit for every activity submission unless their profile
+                # values actually changed.
+                touch_last_seen=False,
             )
             participant = participant_row
             participant_name = str(participant_row.get("display_name", display_name)).strip() or display_name

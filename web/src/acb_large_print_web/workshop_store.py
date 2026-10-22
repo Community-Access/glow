@@ -523,6 +523,7 @@ def create_or_update_participant(
     *,
     participant_key: str | None = None,
     login_email: str | None = None,
+    touch_last_seen: bool = True,
 ) -> dict:
     code = normalize_session_code(session_code)
     name = (display_name or "Participant").strip() or "Participant"
@@ -536,11 +537,16 @@ def create_or_update_participant(
         (key,),
     ).fetchone()
     if row and str(row["session_code"]) == code:
-        conn.execute(
-            "UPDATE workshop_participants SET display_name=?, login_email=COALESCE(?, login_email), updated_at_utc=?, last_seen_at_utc=? "
-            "WHERE participant_key=?",
-            (name, email, now, now, key),
-        )
+        email_changed = email is not None and email != row["login_email"]
+        if touch_last_seen or name != row["display_name"] or email_changed:
+            conn.execute(
+                "UPDATE workshop_participants SET display_name=?, login_email=COALESCE(?, login_email), updated_at_utc=?, last_seen_at_utc=? "
+                "WHERE participant_key=?",
+                (name, email, now, now, key),
+            )
+        else:
+            conn.close()
+            return dict(row)
     elif row:
         # Prevent cross-session token reuse; issue new token.
         key = secrets.token_urlsafe(24)
