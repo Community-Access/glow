@@ -431,6 +431,34 @@ def test_conference_codes_only_reload_when_environment_content_changes(
     assert calls[-1][1]["session_title"] == "AHG Updated"
 
 
+def test_activity_submission_can_skip_unchanged_participant_update(
+    app: Flask, monkeypatch: pytest.MonkeyPatch
+):
+    with app.app_context():
+        ensure_session("writeopt75")
+        participant = workshop_store.create_or_update_participant(
+            "writeopt75", "Casey", participant_key="write-opt-participant"
+        )
+        monkeypatch.setattr(workshop_store, "_utc_now", lambda: "later")
+
+        unchanged = workshop_store.create_or_update_participant(
+            "writeopt75",
+            "Casey",
+            participant_key="write-opt-participant",
+            touch_last_seen=False,
+        )
+        assert unchanged["updated_at_utc"] == participant["updated_at_utc"]
+
+        renamed = workshop_store.create_or_update_participant(
+            "writeopt75",
+            "Casey Updated",
+            participant_key="write-opt-participant",
+            touch_last_seen=False,
+        )
+        assert renamed["display_name"] == "Casey Updated"
+        assert renamed["updated_at_utc"] == "later"
+
+
 def test_participant_can_export_their_own_artifacts_without_facilitator_access(client, app: Flask):
     """Session-wide exports are gated, so participants need their own route."""
     code = "selfexport75"
