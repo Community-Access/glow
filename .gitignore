@@ -63,6 +63,8 @@ web/instance/*.db-wal
 web/instance/.cleanup_lock
 web/instance/.cleanup_lock.tmp
 web/e2e/instance/*.db
+web/e2e/instance/jobs/
+web/e2e/instance/site_audit_jobs/
 
 # Local secret material (never commit)
 glow-*-firebase-adminsdk-*.json

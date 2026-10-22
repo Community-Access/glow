@@ -169,14 +169,19 @@ def detect_fix_customizations(form_data) -> tuple[bool, list[str]]:
     if _get_bool(form_data, "preserve_heading_alignment"):
         customizations.append("Heading alignment preservation enabled")
 
-    if _get_bool(form_data, "detect_headings"):
+    detect_headings = (
+        _get_bool(form_data, "detect_headings")
+        if "detect_headings" in form_data
+        else True
+    )
+    if not detect_headings:
+        customizations.append("Heading detection disabled")
+    else:
         heading_accuracy = form_data.get("heading_accuracy", "balanced")
         if heading_accuracy != "balanced":
             customizations.append(
                 f"Heading detection enabled ({heading_accuracy} accuracy)"
             )
-        else:
-            customizations.append("Heading detection enabled")
 
     # Check suppressed rules via the rule_policy if available
     suppressed_ids: list[str] = []
