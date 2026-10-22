@@ -85,6 +85,12 @@ def _conn() -> sqlite3.Connection:
     return conn
 
 
+def initialize_store() -> None:
+    """Prepare this worker's database connection and schema cache at startup."""
+    conn = _conn()
+    conn.close()
+
+
 def reset_schema_cache() -> None:
     """Forget which databases have been prepared. For tests only."""
     with _SCHEMA_LOCK:
