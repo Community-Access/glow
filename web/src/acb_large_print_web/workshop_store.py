@@ -280,6 +280,16 @@ def normalize_session_code(raw: str) -> str:
 def ensure_session(session_code: str, *, title: str = "GLOW Workshop Session", event_name: str = "") -> None:
     code = normalize_session_code(session_code)
     conn = _conn()
+    existing = conn.execute(
+        "SELECT 1 FROM workshop_sessions WHERE session_code=?",
+        (code,),
+    ).fetchone()
+    if existing:
+        conn.close()
+        return
+
+    # Keep the insert-or-ignore for the concurrent first-visit case: multiple
+    # participants can arrive before any of them has created the session.
     conn.execute(
         "INSERT OR IGNORE INTO workshop_sessions (session_code, title, event_name, created_at_utc) VALUES (?, ?, ?, ?)",
         (code, title, event_name, _utc_now()),
