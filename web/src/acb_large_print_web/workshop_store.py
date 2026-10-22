@@ -66,6 +66,14 @@ def _conn() -> sqlite3.Connection:
                 _ensure_schema(conn)
                 _SCHEMA_READY.add(key)
 
+    # With WAL, FULL synchronizes the WAL on every commit. That makes a burst
+    # of independent participant saves wait on a disk sync one at a time.
+    # NORMAL keeps transactions atomic/consistent and durable across app
+    # process crashes, while batching syncs at checkpoints; a host power loss
+    # can roll back commits since the last checkpoint. Workshop responses are
+    # rebuildable participant content, so prefer responsive saves here.
+    conn.execute("PRAGMA synchronous=NORMAL")
+
     return conn
 
 
