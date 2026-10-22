@@ -31,9 +31,8 @@ Python 3.13 Linux CI remains the merge gate.
 - Read-only production validation: all required checks pass. One health request
   took 2.5 seconds and produced a response-time warning.
 - Web npm audit, including development dependencies: zero vulnerabilities.
-- Office runtime npm audit: zero vulnerabilities. The full development tree
-  still reports 12 high-severity package findings rooted in unpatched
-  `node-forge` and `braces` advisories. None have been dismissed.
+- Office runtime and full development dependency audits: zero vulnerabilities
+  after the Office development-toolchain replacement recorded below.
 - Python 3.13 Linux CI: 1,153 web tests passed, 31 skipped; 8 MCP tests passed.
 - Corrected Windows document browser regressions: 8 passed; the optional
   audio upload case is skipped because its external fixture is unavailable.
@@ -48,12 +47,9 @@ Python 3.13 Linux CI remains the merge gate.
   passed. A separate Node fetch check, in two batches of 20, returned 200
   for all 40 requests. This suggests a client or network-path issue but does
   not establish its cause. Recheck from another network before signing off.
-- Office development dependencies still need upstream patches for
-  [the node-forge signature-verification advisory](https://github.com/advisories/GHSA-86w9-cpqp-85rv)
-  and [the braces recursion advisory](https://github.com/advisories/GHSA-vfj7-8cjw-p6xm).
-  Keep local development tools on trusted inputs and local interfaces; do not
-  expose the development server publicly. Do not downgrade packages merely
-  to make an audit command report fewer findings.
+- The former Office tooling findings no longer apply to the locked dependency
+  tree. The server and CI workflow require Node.js only; desktop Word is an
+  optional local environment for trying the add-in itself.
 
 These findings remain open in
 [the development dependency tracker](https://github.com/Community-Access/glow/issues/124)
@@ -92,6 +88,23 @@ in the first [AHG test report](ahg-test-report.md).
 - Dated facilitator sign-off and the setup message with working links.
 
 ## Change record
+
+### Office development-toolchain replacement, 22 October 2026
+
+- Removed `office-addin-debugging`, `office-addin-dev-certs`, and
+  `webpack-dev-server`, which brought in the affected `node-forge` and `braces`
+  dependency paths.
+- Kept webpack for production and development builds. Vite now serves the
+  built files on loopback; `vite-plugin-mkcert` supplies trusted local HTTPS.
+  The sideload helper uses the Word test-document template and registers the
+  development manifest on Windows or macOS. It also supports an existing
+  document path.
+- `npm ci --ignore-scripts`, `npm run build`, the sideload helper help check,
+  the full `npm audit`, and HTTP smoke requests for `taskpane.html` and
+  `commands.html` passed. The full audit reports zero vulnerabilities.
+- No Word installation is needed on the server or in CI. Desktop Word sideload
+  and cleanup are optional local checks for developers who want to exercise the
+  add-in in the host application; they are not prerequisites for issue 124.
 
 The replacement changes and CI results are tracked in
 [pull request 123](https://github.com/Community-Access/glow/pull/123).
