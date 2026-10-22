@@ -78,7 +78,9 @@ module.exports = {
     devServer: {
         static: path.resolve(__dirname, "dist"),
         port: 3000,
-        server: "https",
+        server: {
+            type: "https",
+        },
         headers: {
             "Access-Control-Allow-Origin": "*",
         },
