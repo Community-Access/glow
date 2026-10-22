@@ -78,7 +78,9 @@ module.exports = {
     devServer: {
         static: path.resolve(__dirname, "dist"),
         port: 3000,
-        https: true, // Office add-ins require HTTPS
+        server: {
+            type: "https",
+        },
         headers: {
             "Access-Control-Allow-Origin": "*",
         },

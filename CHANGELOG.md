@@ -48,6 +48,14 @@ Releases are tagged in the [GitHub repository](https://github.com/Community-Acce
 
 ### Security
 
+- Refresh the web accessibility tooling and its transitive dependencies,
+  including a patched FTP parser used by the browser driver downloader.
+- Update the MCP server's multipart parser to 0.0.31 to address parsing
+  denial-of-service and parameter-smuggling advisories.
+- Refresh Office add-in dependencies and development tools. Runtime
+  dependencies audit clean; unpatched development-tool advisories remain
+  tracked in [issue 124](https://github.com/Community-Access/glow/issues/124).
+
 - **Site Audit no longer fetches internal addresses (SSRF fix).** The auditor fetched whatever URL an anonymous visitor submitted and packed the response body into the downloadable `artifacts.zip`, so a request for `http://169.254.169.254/...` or `http://redis:6379/` would let the submitter read cloud-metadata credentials and internal services. Added an `_is_public_url` gate (rejects loopback, private, link-local, reserved, multicast addresses and non-web ports) and an `_http_get` wrapper that re-validates every redirect hop and caps the response body at 8 MB against decompression bombs. All three fetch sites (scan, crawl, sitemap) go through it, and the sitemap XML is now parsed with `defusedxml`. ([web/src/acb_large_print_web/site_audit.py](web/src/acb_large_print_web/site_audit.py))
 - **Rate-limit keys can no longer be rotated to bypass the brute-force caps.** `rate_limit_key` keyed on the `glow_workshop_participant` cookie for every route, so an attacker sending a fresh random cookie per request got a new bucket each time -- defeating the admin-login 10/min cap and the upload caps. The cookie key is now scoped to workshop routes only; everywhere else keys on the remote address. ([web/src/acb_large_print_web/app.py](web/src/acb_large_print_web/app.py))
 - **Closed an open redirect in the consent gate.** The `next` guard was bypassable with `HTTPS://evil.com` (case) and `/\evil.com` (backslash). Replaced with a positive same-site test; the consent page is the first page a new visitor sees, so this was a strong phishing lure. ([web/src/acb_large_print_web/routes/consent.py](web/src/acb_large_print_web/routes/consent.py))
@@ -57,6 +65,15 @@ Releases are tagged in the [GitHub repository](https://github.com/Community-Acce
 - **Deduplicated security headers between Caddy and Flask.** Production responses were emitting `X-Content-Type-Options`, `X-Frame-Options`, and `Referrer-Policy` twice (once from Caddy, once from Flask), and the two `X-Frame-Options` values disagreed (`DENY` from Caddy versus `SAMEORIGIN` from Flask). Removed those three directives from the `letitglow.app` and `@sse` blocks in [web/Caddyfile](web/Caddyfile) and let Flask's existing `_add_security_headers` `after_request` hook own them. Caddy continues to emit only the transport-level / policy headers it should own (`Strict-Transport-Security`, `Permissions-Policy`).
 
 ### Fixed
+
+- Default web Fix runs no longer show a custom-settings warning for balanced
+  heading detection. Disabling detection or changing its accuracy is still
+  reported as a customization, with regression tests for both form inputs
+  and normalized options.
+- Document browser regressions use a tracked sample on every platform,
+  exercise the current conversion download links, and run without a separate
+  job worker. The AHG browser checker records download connection failures
+  without skipping the remaining reflow and accessibility checks.
 
 - **Site Audit's deep scanner never ran in production, and said so unreadably.**
   Every scanned page carried an `AXE-UNAVAILABLE` finding containing a raw npm

@@ -13,6 +13,9 @@
     "test:e2e:report": "playwright test --config=e2e/playwright.config.mjs || true; node e2e/scripts/generate-issue-report.mjs",
     "test:e2e:issues": "node e2e/scripts/generate-issue-report.mjs"
   },
+  "overrides": {
+    "basic-ftp": "^6.2.3"
+  },
   "devDependencies": {
     "@axe-core/cli": "^4.11.2",
     "@axe-core/playwright": "^4.11.2",

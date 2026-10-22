@@ -47,6 +47,7 @@ export default defineConfig({
     url: `${baseURL}/health`,
     env: {
       ...process.env,
+      GLOW_CONVERT_ASYNC: process.env.GLOW_CONVERT_ASYNC || '0',
       GLOW_BYPASS_CONSENT_FOR_AUTOMATION: process.env.GLOW_BYPASS_CONSENT_FOR_AUTOMATION || '1',
       GLOW_ENABLE_AUTOMATION_CONSENT_ENDPOINT: process.env.GLOW_ENABLE_AUTOMATION_CONSENT_ENDPOINT || '1',
       GLOW_AUTOMATION_CONSENT_TOKEN: automationConsentToken,
