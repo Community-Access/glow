@@ -39,6 +39,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import re
 import statistics
 import sys
 import tempfile
@@ -132,6 +133,7 @@ def run_participant(index: int, client_factory, code: str, results: Results, app
         results.record(name, elapsed, response.status_code)
         return response
 
+    timed("join preflight", lambda: client.get(f"/workshop/?code={code}"))
     timed("join", lambda: client.post(
         "/workshop/",
         data={"action": "join", "session_code": code, "display_name": f"Rehearsal {index}"},
@@ -177,16 +179,31 @@ def build_http(base_url: str):
     import requests
     from acb_large_print_web.routes import workshop as workshop_routes
 
+    csrf_pattern = re.compile(r'<meta\s+name="csrf-token"\s+content="([^"]+)"', re.IGNORECASE)
+
     class HttpClient:
         def __init__(self) -> None:
             self.session = requests.Session()
             self.session.cookies.set("glow_consent_v1", "1")
+            self.csrf_token = ""
+
+        def _remember_csrf(self, response) -> None:
+            match = csrf_pattern.search(response.text)
+            if match:
+                self.csrf_token = match.group(1)
 
         def get(self, path: str):
-            return self.session.get(base_url.rstrip("/") + path, timeout=30)
+            response = self.session.get(base_url.rstrip("/") + path, timeout=30)
+            self._remember_csrf(response)
+            return response
 
         def post(self, path: str, data=None):
-            return self.session.post(base_url.rstrip("/") + path, data=data or {}, timeout=30)
+            form = dict(data or {})
+            if self.csrf_token:
+                form.setdefault("csrf_token", self.csrf_token)
+            response = self.session.post(base_url.rstrip("/") + path, data=form, timeout=30)
+            self._remember_csrf(response)
+            return response
 
     return HttpClient, workshop_routes, ""
 
