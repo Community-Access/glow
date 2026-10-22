@@ -2,6 +2,9 @@
   "name": "acb-large-print-addin",
   "version": "8.0.0",
   "description": "ACB Large Print Guidelines compliance add-in for Microsoft Word",
+  "engines": {
+    "node": ">=22.15.0"
+  },
   "scripts": {
     "build": "webpack --mode production",
     "dev": "webpack serve --mode development",
@@ -33,13 +36,13 @@
     "copy-webpack-plugin": "^14.0.0",
     "css-loader": "^7.1.2",
     "html-webpack-plugin": "^5.6.7",
-    "office-addin-debugging": "^6.0.7",
-    "office-addin-dev-certs": "^2.0.7",
+    "office-addin-debugging": "^7.0.1",
+    "office-addin-dev-certs": "^3.0.1",
     "style-loader": "^4.0.0",
     "ts-loader": "^9.5.1",
     "typescript": "^6.0.3",
     "webpack": "^5.106.2",
     "webpack-cli": "^7.0.2",
-    "webpack-dev-server": "^5.2.4"
+    "webpack-dev-server": "^6.1.0"
   }
 }

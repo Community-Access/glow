@@ -20,6 +20,7 @@ _parser.add_argument("--axe", default="web/node_modules/axe-core/axe.min.js")
 _args = _parser.parse_args()
 import concurrent.futures
 import json
+import urllib.error
 import urllib.request
 from pathlib import Path
 
@@ -197,13 +198,18 @@ with sync_playwright() as p:
 
 # Load-01: 40 kit downloads at once
 def fetch(_):
-    with urllib.request.urlopen(BASE + "/workshop/ahg-2026/kit.zip", timeout=60) as r:
-        return r.status
+    try:
+        with urllib.request.urlopen(BASE + "/workshop/ahg-2026/kit.zip", timeout=60) as r:
+            return r.status
+    except (urllib.error.URLError, TimeoutError) as error:
+        return str(error)
 
 
 with concurrent.futures.ThreadPoolExecutor(max_workers=20) as pool:
     codes = list(pool.map(fetch, range(40)))
 record("Load-01", all(c == 200 for c in codes), f"{codes.count(200)} of 40 returned 200")
+for failure in sorted({str(code) for code in codes if code != 200}):
+    print(f"Load-01 failure: {failure}")
 
 
 

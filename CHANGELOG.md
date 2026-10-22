@@ -8,13 +8,6 @@ Releases are tagged in the [GitHub repository](https://github.com/Community-Acce
 
 ## [Unreleased]
 
-### Fixed
-
-- Default web Fix runs no longer show a custom-settings warning for balanced
-  heading detection. Disabling detection or changing its accuracy is still
-  reported as a customization, with regression tests for both form inputs
-  and normalized options.
-
 ### Added
 
 - **Site Audit checks heading structure and page title quality.** Two optional
@@ -69,6 +62,11 @@ Releases are tagged in the [GitHub repository](https://github.com/Community-Acce
 - **Deduplicated security headers between Caddy and Flask.** Production responses were emitting `X-Content-Type-Options`, `X-Frame-Options`, and `Referrer-Policy` twice (once from Caddy, once from Flask), and the two `X-Frame-Options` values disagreed (`DENY` from Caddy versus `SAMEORIGIN` from Flask). Removed those three directives from the `letitglow.app` and `@sse` blocks in [web/Caddyfile](web/Caddyfile) and let Flask's existing `_add_security_headers` `after_request` hook own them. Caddy continues to emit only the transport-level / policy headers it should own (`Strict-Transport-Security`, `Permissions-Policy`).
 
 ### Fixed
+
+- Default web Fix runs no longer show a custom-settings warning for balanced
+  heading detection. Disabling detection or changing its accuracy is still
+  reported as a customization, with regression tests for both form inputs
+  and normalized options.
 
 - **Site Audit's deep scanner never ran in production, and said so unreadably.**
   Every scanned page carried an `AXE-UNAVAILABLE` finding containing a raw npm

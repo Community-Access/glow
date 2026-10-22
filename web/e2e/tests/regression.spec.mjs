@@ -1,18 +1,16 @@
 import fs from 'node:fs';
 import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { test, expect } from '@playwright/test';
 
-const uploadDocx = process.env.E2E_UPLOAD_DOCX || 'd:/code/test.docx';
-const hasUploadDocx = fs.existsSync(uploadDocx);
+const uploadDocx = process.env.E2E_UPLOAD_DOCX || path.resolve(
+  path.dirname(fileURLToPath(import.meta.url)), '../../../samples/GLOW_Test_2-fixed.docx',
+);
+if (!fs.existsSync(uploadDocx)) {
+  throw new Error(`Document regression fixture is missing: ${uploadDocx}`);
+}
 const uploadAudio = process.env.E2E_UPLOAD_AUDIO || 'S:/code/bw/Samples/ronaldreaganchallengeraddressatt3232.mp3';
 const hasUploadAudio = fs.existsSync(uploadAudio);
-
-function skipIfMissingUploadFile() {
-  test.skip(
-    !hasUploadDocx,
-    `Upload regression tests require a DOCX file. Set E2E_UPLOAD_DOCX or place a file at ${uploadDocx}`,
-  );
-}
 
 function skipIfMissingAudioFile() {
   test.skip(
@@ -49,8 +47,6 @@ test.describe('GLOW web regression suite', () => {
   });
 
   test('audit flow uploads docx and returns report', async ({ page }) => {
-    skipIfMissingUploadFile();
-
     await page.goto('/audit/');
     await ensureConsent(page);
     await page.locator('#document').setInputFiles(uploadDocx);
@@ -61,8 +57,6 @@ test.describe('GLOW web regression suite', () => {
   });
 
   test('fix flow uploads docx and returns fix results', async ({ page }) => {
-    skipIfMissingUploadFile();
-
     await page.goto('/fix/');
     await ensureConsent(page);
     await page.locator('#document').setInputFiles(uploadDocx);
@@ -80,8 +74,6 @@ test.describe('GLOW web regression suite', () => {
   });
 
   test('export-via-convert flow uploads docx and downloads CMS html', async ({ page }) => {
-    skipIfMissingUploadFile();
-
     // Export was folded into Convert in v2.7.0. /export/ now redirects to
     // /convert/ and the format is selected via the "direction" radios.
     await page.goto('/convert/');
@@ -93,9 +85,11 @@ test.describe('GLOW web regression suite', () => {
       await cmsRadio.check();
     }
 
+    await page.getByRole('button', { name: /Convert My Document/i }).click();
+    await expect(page.getByRole('heading', { level: 1, name: 'Conversion Complete' })).toBeVisible();
     const [download] = await Promise.all([
       page.waitForEvent('download'),
-      page.getByRole('button', { name: /Convert My Document/i }).click(),
+      page.getByRole('link', { name: /^Download .*\.html$/i }).click(),
     ]);
 
     const suggested = download.suggestedFilename();
@@ -103,15 +97,15 @@ test.describe('GLOW web regression suite', () => {
   });
 
   test('convert flow uploads docx and downloads markdown', async ({ page }) => {
-    skipIfMissingUploadFile();
-
     await page.goto('/convert/');
     await ensureConsent(page);
     await page.locator('#document').setInputFiles(uploadDocx);
 
+    await page.getByRole('button', { name: /Convert My Document/i }).click();
+    await expect(page.getByRole('heading', { level: 1, name: 'Conversion Complete' })).toBeVisible();
     const [download] = await Promise.all([
       page.waitForEvent('download'),
-      page.getByRole('button', { name: /Convert My Document/i }).click(),
+      page.getByRole('link', { name: /^Download .*\.md$/i }).click(),
     ]);
 
     const suggested = download.suggestedFilename();
