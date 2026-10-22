@@ -46,6 +46,14 @@ def _db_path() -> Path:
 _SCHEMA_READY: set[str] = set()
 _SCHEMA_LOCK = threading.Lock()
 
+# Conference mappings are loaded from the landing page for convenience. Avoid
+# repeating their SQLite upserts for every visitor: those commits contend
+# with participant submissions in the same single-writer database. The
+# content hash makes changes to either source visible without storing the
+# configuration values themselves in this cache.
+_CONFERENCE_CODE_LOADS: dict[tuple[str, str, str], int] = {}
+_CONFERENCE_CODE_LOAD_LOCK = threading.Lock()
+
 
 def _conn() -> sqlite3.Connection:
     path = _db_path()
@@ -883,39 +891,59 @@ def get_conference_code(access_code: str) -> dict | None:
     return dict(row) if row else None
 
 
+def _load_conference_codes(payload: object, *, source: str, fingerprint: str) -> int:
+    if not isinstance(payload, list):
+        return 0
+
+    key = (str(_db_path()), source, fingerprint)
+    with _CONFERENCE_CODE_LOAD_LOCK:
+        if key in _CONFERENCE_CODE_LOADS:
+            return _CONFERENCE_CODE_LOADS[key]
+
+        count = 0
+        failed = False
+        for item in payload:
+            if not isinstance(item, dict):
+                continue
+            access = (str(item.get("access_code", "")) or "").strip()
+            session_code = (str(item.get("session_code", "")) or "").strip()
+            if not access or not session_code:
+                continue
+            try:
+                upsert_conference_code(
+                    access,
+                    session_code=session_code,
+                    session_title=(str(item.get("session_title", "GLOW Workshop Session")) or "").strip() or "GLOW Workshop Session",
+                    event_name=(str(item.get("event_name", "")) or "").strip(),
+                    active=bool(item.get("active", True)),
+                    facilitator_key=(str(item.get("facilitator_key", "")) or "").strip(),
+                )
+                count += 1
+            except Exception:
+                failed = True
+
+        # Keep retrying a partially failed load on a later request. Successful
+        # full loads are cached only for this exact source content and DB path.
+        if not failed:
+            _CONFERENCE_CODE_LOADS[key] = count
+        return count
+
+
 def load_conference_codes_from_file() -> int:
     """Load conference access code mappings from instance/workshop_conference_codes.json."""
     p = Path(current_app.instance_path) / "workshop_conference_codes.json"
     if not p.exists():
         return 0
     try:
-        payload = json.loads(p.read_text(encoding="utf-8"))
+        raw = p.read_text(encoding="utf-8")
+        payload = json.loads(raw)
     except Exception:
         return 0
-    if not isinstance(payload, list):
-        return 0
-
-    count = 0
-    for item in payload:
-        if not isinstance(item, dict):
-            continue
-        access = (str(item.get("access_code", "")) or "").strip()
-        session_code = (str(item.get("session_code", "")) or "").strip()
-        if not access or not session_code:
-            continue
-        try:
-            upsert_conference_code(
-                access,
-                session_code=session_code,
-                session_title=(str(item.get("session_title", "GLOW Workshop Session")) or "").strip() or "GLOW Workshop Session",
-                event_name=(str(item.get("event_name", "")) or "").strip(),
-                active=bool(item.get("active", True)),
-                facilitator_key=(str(item.get("facilitator_key", "")) or "").strip(),
-            )
-            count += 1
-        except Exception:
-            continue
-    return count
+    return _load_conference_codes(
+        payload,
+        source="file",
+        fingerprint=hashlib.sha256(raw.encode("utf-8")).hexdigest(),
+    )
 
 
 def load_conference_codes_from_env() -> int:
@@ -927,29 +955,11 @@ def load_conference_codes_from_env() -> int:
         payload = json.loads(raw)
     except Exception:
         return 0
-    if not isinstance(payload, list):
-        return 0
-    count = 0
-    for item in payload:
-        if not isinstance(item, dict):
-            continue
-        access = (str(item.get("access_code", "")) or "").strip()
-        session_code = (str(item.get("session_code", "")) or "").strip()
-        if not access or not session_code:
-            continue
-        try:
-            upsert_conference_code(
-                access,
-                session_code=session_code,
-                session_title=(str(item.get("session_title", "GLOW Workshop Session")) or "").strip() or "GLOW Workshop Session",
-                event_name=(str(item.get("event_name", "")) or "").strip(),
-                active=bool(item.get("active", True)),
-                facilitator_key=(str(item.get("facilitator_key", "")) or "").strip(),
-            )
-            count += 1
-        except Exception:
-            continue
-    return count
+    return _load_conference_codes(
+        payload,
+        source="env",
+        fingerprint=hashlib.sha256(raw.encode("utf-8")).hexdigest(),
+    )
 
 
 def add_feedback(
