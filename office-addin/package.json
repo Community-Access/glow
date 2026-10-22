@@ -3,14 +3,17 @@
   "version": "8.0.0",
   "description": "ACB Large Print Guidelines compliance add-in for Microsoft Word",
   "engines": {
-    "node": ">=22.15.0"
+    "node": ">=22.19.0"
   },
   "scripts": {
     "build": "webpack --mode production",
-    "dev": "webpack serve --mode development",
-    "start": "webpack serve --mode development --open",
+    "dev": "node scripts/dev.js",
+    "start": "node scripts/dev.js --open",
+    "dev:serve": "vite dist --config vite.config.mjs",
     "lint": "eslint src/**/*.ts",
-    "sideload": "office-addin-debugging start manifest.xml"
+    "sideload": "node scripts/sideload.js start",
+    "unsideload": "node scripts/sideload.js stop",
+    "cert:remove": "node scripts/remove-dev-ca.js"
   },
   "dependencies": {
     "@fluentui/web-components": "^2.6.1"
@@ -29,20 +32,20 @@
     "uuid": ">=14.0.0",
     "nanoid": "^3.3.18",
     "browserslist": "^4.28.7",
-    "adm-zip": ">=0.6.0"
+    "adm-zip": "^0.6.1"
   },
   "devDependencies": {
+    "adm-zip": "^0.6.1",
     "@types/office-js": "^1.0.589",
     "copy-webpack-plugin": "^14.0.0",
     "css-loader": "^7.1.2",
     "html-webpack-plugin": "^5.6.7",
-    "office-addin-debugging": "^7.0.1",
-    "office-addin-dev-certs": "^3.0.1",
     "style-loader": "^4.0.0",
     "ts-loader": "^9.5.1",
     "typescript": "^6.0.3",
     "webpack": "^5.106.2",
     "webpack-cli": "^7.0.2",
-    "webpack-dev-server": "^6.1.0"
+    "vite": "^8.3.5",
+    "vite-plugin-mkcert": "^2.1.0"
   }
 }

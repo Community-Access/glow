@@ -539,3 +539,5 @@ The `desktop/` directory contains a standalone desktop application (CLI and GUI)
 ## Office Add-in
 
 The `office-addin/` directory contains an Office.js Web Add-in that integrates ACB Large Print audit, fix, and template tools directly into the Microsoft Word ribbon. TypeScript port of the Python core. Deployed to GitHub Pages automatically on push.
+
+For local Word development, use Node.js 22.19 or later. From `office-addin/`, run `npm ci` and then `npm run dev`; this keeps the webpack build and serves the add-in at trusted `https://localhost:3000` with full-page reloads after changes. The first HTTPS run uses `vite-plugin-mkcert` to install a local development CA in the user's trust store. In a second terminal, run `npm run sideload` to register the development manifest and open a Word test document. Run `npm run unsideload` when finished. To open an existing document, use `npm run sideload -- --document <path>`. The sideload helper supports desktop Word on Windows and macOS. If you later remove the toolchain, run `npm run cert:remove` to remove mkcert's shared local CA; other local projects using mkcert may need it installed again.

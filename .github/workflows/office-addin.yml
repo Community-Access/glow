@@ -36,12 +36,12 @@ jobs:
         run: npm audit --omit=dev --audit-level=high
       - name: Build the add-in
         run: npm run build
-      - name: Check sideload CLI
-        run: npx --no-install office-addin-debugging --help
+      - name: Check local sideload helper
+        run: node scripts/sideload.js --help
       - name: Start the development server
         shell: bash
         run: |
-          npx --no-install webpack serve --mode development --no-open --server-type http --port 3100 > dev-server.log 2>&1 &
+          GLOW_OFFICE_DEV_HTTP=1 npm run dev:serve -- --host 127.0.0.1 --port 3100 > dev-server.log 2>&1 &
           server_pid=$!
           trap 'kill "$server_pid" 2>/dev/null || true' EXIT
           for attempt in {1..30}; do
