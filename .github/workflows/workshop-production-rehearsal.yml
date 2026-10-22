@@ -1,0 +1,123 @@
+name: Workshop Production Rehearsal
+
+# Manual only. This writes synthetic workshop content to a uniquely named,
+# isolated session, then removes that session in a finally-style cleanup step.
+# The production environment can require reviewer approval before any SSH step.
+on:
+  workflow_dispatch:
+    inputs:
+      confirmation:
+        description: "Type RUN-PRODUCTION-LOAD-TEST to run against letitglow.app"
+        type: choice
+        options:
+          - NO
+          - RUN-PRODUCTION-LOAD-TEST
+        default: NO
+        required: true
+      participants:
+        description: "Number of simulated participants"
+        type: choice
+        options:
+          - "30"
+        default: "30"
+        required: true
+
+permissions:
+  contents: read
+
+concurrency:
+  group: workshop-production-rehearsal
+  cancel-in-progress: false
+
+jobs:
+  rehearse:
+    if: ${{ inputs.confirmation == 'RUN-PRODUCTION-LOAD-TEST' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    environment: production
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.13"
+
+      - name: Install rehearsal dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -e ./desktop -e ./web
+
+      - name: Generate isolated session identity
+        id: identity
+        shell: bash
+        run: |
+          set -euo pipefail
+          code="ahg-load-test-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
+          echo "code=$code" >> "$GITHUB_OUTPUT"
+          echo "run_id=$GITHUB_RUN_ID" >> "$GITHUB_OUTPUT"
+          echo "attempt=$GITHUB_RUN_ATTEMPT" >> "$GITHUB_OUTPUT"
+
+      - name: Provision isolated production session
+        id: provision
+        uses: appleboy/ssh-action@v1
+        env:
+          REHEARSAL_CODE: ${{ steps.identity.outputs.code }}
+          REHEARSAL_RUN_ID: ${{ steps.identity.outputs.run_id }}
+          REHEARSAL_ATTEMPT: ${{ steps.identity.outputs.attempt }}
+        with:
+          host: ${{ secrets.DEPLOY_HOST }}
+          username: ${{ secrets.DEPLOY_USER }}
+          key: ${{ secrets.DEPLOY_SSH_KEY }}
+          port: 22
+          command_timeout: 2m
+          envs: REHEARSAL_CODE,REHEARSAL_RUN_ID,REHEARSAL_ATTEMPT
+          script: |
+            set -eu
+            cd ~/app/web
+            docker compose -f docker-compose.prod.yml exec -T web \
+              python -m acb_large_print_web.workshop_rehearsal_admin provision \
+              --code "$REHEARSAL_CODE" --run-id "$REHEARSAL_RUN_ID" --attempt "$REHEARSAL_ATTEMPT"
+
+      - name: Run 30-participant rehearsal against the deployment
+        id: load
+        env:
+          REHEARSAL_CODE: ${{ steps.identity.outputs.code }}
+          PARTICIPANTS: ${{ inputs.participants }}
+          RUNNER_TEMP: ${{ runner.temp }}
+        run: |
+          python scripts/workshop_load_rehearsal.py \
+            --participants "$PARTICIPANTS" \
+            --base-url https://letitglow.app \
+            --code "$REHEARSAL_CODE" \
+            --gate all \
+            --json "$RUNNER_TEMP/workshop-production-rehearsal.json"
+
+      - name: Remove the isolated rehearsal session
+        id: cleanup
+        if: ${{ always() && steps.identity.outputs.code != '' }}
+        uses: appleboy/ssh-action@v1
+        env:
+          REHEARSAL_CODE: ${{ steps.identity.outputs.code }}
+          REHEARSAL_RUN_ID: ${{ steps.identity.outputs.run_id }}
+          REHEARSAL_ATTEMPT: ${{ steps.identity.outputs.attempt }}
+        with:
+          host: ${{ secrets.DEPLOY_HOST }}
+          username: ${{ secrets.DEPLOY_USER }}
+          key: ${{ secrets.DEPLOY_SSH_KEY }}
+          port: 22
+          command_timeout: 2m
+          envs: REHEARSAL_CODE,REHEARSAL_RUN_ID,REHEARSAL_ATTEMPT
+          script: |
+            set -eu
+            cd ~/app/web
+            docker compose -f docker-compose.prod.yml exec -T web \
+              python -m acb_large_print_web.workshop_rehearsal_admin cleanup \
+              --code "$REHEARSAL_CODE" --run-id "$REHEARSAL_RUN_ID" --attempt "$REHEARSAL_ATTEMPT"
+
+      - name: Upload timing samples
+        if: ${{ always() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: workshop-production-rehearsal-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/workshop-production-rehearsal.json
+          if-no-files-found: ignore
