@@ -547,6 +547,30 @@ def _save_activity(client, code, activity="journey_check_in", **overrides):
     return client.post(f"/workshop/session/{code}/activity/{activity}", data=data)
 
 
+def test_activity_save_skips_participant_lookup_when_profile_is_unchanged(
+    client, app: Flask, monkeypatch: pytest.MonkeyPatch
+):
+    code = "readskip75"
+    with app.app_context():
+        ensure_session(code)
+    client.post("/workshop/", data={"action": "join", "session_code": code, "display_name": "Rowan"})
+
+    calls = 0
+    original = workshop_routes.create_or_update_participant
+
+    def track_update(*args, **kwargs):
+        nonlocal calls
+        calls += 1
+        return original(*args, **kwargs)
+
+    monkeypatch.setattr(workshop_routes, "create_or_update_participant", track_update)
+    _save_activity(client, code)
+    assert calls == 0
+
+    _save_activity(client, code, display_name="Casey")
+    assert calls == 1
+
+
 def test_resaving_an_activity_revises_instead_of_duplicating(client, app: Flask):
     """save_submission is an upsert.
 

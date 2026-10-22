@@ -666,8 +666,8 @@ def _serialize_activity_submission(
     return "\n".join(lines).strip()
 
 
-def _resolve_session_from_access_code(raw_code: str) -> tuple[str, str, str]:
-    """Resolve a user-entered access code to (session_code, title, event_name).
+def _resolve_session_from_access_code(raw_code: str) -> tuple[str, str, str, bool]:
+    """Resolve an access code to session metadata and whether it exists.
 
     Supports configured conference codes, direct existing session codes, and
     ad-hoc session creation.
@@ -682,6 +682,7 @@ def _resolve_session_from_access_code(raw_code: str) -> tuple[str, str, str]:
             str(mapped.get("session_code", "")).strip(),
             str(mapped.get("session_title", "GLOW Workshop Session")).strip() or "GLOW Workshop Session",
             str(mapped.get("event_name", "")).strip(),
+            False,
         )
 
     code = normalize_session_code(value)
@@ -691,9 +692,10 @@ def _resolve_session_from_access_code(raw_code: str) -> tuple[str, str, str]:
             code,
             str(existing.get("title", "GLOW Workshop Session")).strip() or "GLOW Workshop Session",
             str(existing.get("event_name", "")).strip(),
+            True,
         )
 
-    return (code, "GLOW Workshop Session", "")
+    return (code, "GLOW Workshop Session", "", False)
 
 
 def _active_login_email() -> str | None:
@@ -766,8 +768,9 @@ def workshop_home():
     query_code = (request.args.get("code") or "").strip()
     if query_code:
         try:
-            session_code, session_title, session_event = _resolve_session_from_access_code(query_code)
-            ensure_session(session_code, title=session_title, event_name=session_event)
+            session_code, session_title, session_event, session_exists = _resolve_session_from_access_code(query_code)
+            if not session_exists:
+                ensure_session(session_code, title=session_title, event_name=session_event)
             join_mode = True
         except ValueError as exc:
             error = str(exc)
@@ -783,8 +786,9 @@ def workshop_home():
         if action == "lookup":
             raw_code = (request.form.get("access_code") or "").strip()
             try:
-                code, title, event_name = _resolve_session_from_access_code(raw_code)
-                ensure_session(code, title=title, event_name=event_name)
+                code, title, event_name, session_exists = _resolve_session_from_access_code(raw_code)
+                if not session_exists:
+                    ensure_session(code, title=title, event_name=event_name)
                 return redirect(url_for("workshop.workshop_home", code=code))
             except ValueError as exc:
                 error = str(exc)
@@ -1006,17 +1010,25 @@ def workshop_activity(session_code: str, activity_key: str):
                 bonus_note,
                 scenario_title=chosen.title if chosen else "",
             )
-            participant_row = create_or_update_participant(
-                code,
-                display_name,
-                participant_key=(participant.get("participant_key") if participant else None),
-                login_email=_active_login_email(),
-                # _current_participant already refreshes last-seen at most
-                # once every five minutes. Avoid another participant-row
-                # commit for every activity submission unless their profile
-                # values actually changed.
-                touch_last_seen=False,
-            )
+            participant_row = participant
+            current_email = _active_login_email()
+            if (
+                participant is None
+                or display_name != participant.get("display_name")
+                or (current_email and current_email != participant.get("login_email"))
+            ):
+                participant_row = create_or_update_participant(
+                    code,
+                    display_name,
+                    participant_key=(participant.get("participant_key") if participant else None),
+                    login_email=current_email,
+                    # _current_participant already refreshes last-seen at most
+                    # once every five minutes. Avoid another participant-row
+                    # commit for every activity submission unless their profile
+                    # values actually changed.
+                    touch_last_seen=False,
+                )
+            assert participant_row is not None
             participant = participant_row
             participant_name = str(participant_row.get("display_name", display_name)).strip() or display_name
             stored_values = dict(field_values)
