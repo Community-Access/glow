@@ -617,11 +617,16 @@ def create_app(config: dict | None = None) -> Flask:
     # on the shared workshop SQLite database.
     try:
         from .workshop_store import (
+            initialize_store,
             load_conference_codes_from_env,
             load_conference_codes_from_file,
         )
 
         with app.app_context():
+            # _SCHEMA_READY is process-local; prepare the schema in each
+            # worker now so a concurrent first wave of participants cannot
+            # trigger the migration/DDL path on demand.
+            initialize_store()
             load_conference_codes_from_env()
             load_conference_codes_from_file()
     except Exception:
