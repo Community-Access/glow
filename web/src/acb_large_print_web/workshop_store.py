@@ -608,11 +608,32 @@ def get_participant(participant_key: str) -> dict | None:
         (key,),
     ).fetchone()
     if row:
-        conn.execute(
-            "UPDATE workshop_participants SET last_seen_at_utc=?, updated_at_utc=? WHERE participant_key=?",
-            (_utc_now(), _utc_now(), key),
-        )
-        conn.commit()
+        # Participant identity is checked on nearly every workshop request.
+        # Touching the row on every read turns otherwise read-only page loads
+        # into SQLite writes, serializing all active participants behind the
+        # single writer lock. Keep last-seen useful for activity reporting,
+        # while writing at most once every five minutes per participant.
+        now = datetime.now(UTC)
+        last_seen_raw = str(row["last_seen_at_utc"] or "").strip()
+        should_touch = True
+        if last_seen_raw:
+            try:
+                last_seen = datetime.fromisoformat(last_seen_raw)
+                if last_seen.tzinfo is None:
+                    last_seen = last_seen.replace(tzinfo=UTC)
+                should_touch = now - last_seen >= timedelta(minutes=5)
+            except ValueError:
+                # Repair malformed legacy timestamps on the next access.
+                pass
+        if should_touch:
+            touched_at = now.isoformat()
+            update = conn.execute(
+                "UPDATE workshop_participants SET last_seen_at_utc=?, updated_at_utc=? "
+                "WHERE participant_key=? AND last_seen_at_utc IS ?",
+                (touched_at, touched_at, key, row["last_seen_at_utc"]),
+            )
+            if update.rowcount:
+                conn.commit()
     conn.close()
     return dict(row) if row else None
 
