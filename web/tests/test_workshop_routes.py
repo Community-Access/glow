@@ -402,6 +402,35 @@ def test_workshop_code_lookup_then_name_join_and_my_content(client, app: Flask):
     assert "Participant: Pat" in mine.get_data(as_text=True)
 
 
+def test_conference_codes_only_reload_when_environment_content_changes(
+    app: Flask, monkeypatch: pytest.MonkeyPatch
+):
+    calls: list[tuple[str, dict]] = []
+
+    def record_upsert(access_code: str, **kwargs) -> None:
+        calls.append((access_code, kwargs))
+
+    monkeypatch.setattr(workshop_store, "upsert_conference_code", record_upsert)
+    monkeypatch.setenv(
+        "WORKSHOP_CONFERENCE_CODES_JSON",
+        '[{"access_code":"AHG2026","session_code":"ahg26","session_title":"AHG"}]',
+    )
+
+    with app.app_context():
+        assert workshop_store.load_conference_codes_from_env() == 1
+        assert workshop_store.load_conference_codes_from_env() == 1
+        assert len(calls) == 1
+
+        monkeypatch.setenv(
+            "WORKSHOP_CONFERENCE_CODES_JSON",
+            '[{"access_code":"AHG2026","session_code":"ahg26","session_title":"AHG Updated"}]',
+        )
+        assert workshop_store.load_conference_codes_from_env() == 1
+        assert len(calls) == 2
+
+    assert calls[-1][1]["session_title"] == "AHG Updated"
+
+
 def test_participant_can_export_their_own_artifacts_without_facilitator_access(client, app: Flask):
     """Session-wide exports are gated, so participants need their own route."""
     code = "selfexport75"
