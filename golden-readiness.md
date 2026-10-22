@@ -15,9 +15,10 @@ being run.
   Word is not needed on the server or in CI.
 - [x] Earlier release-readiness cleanup #123 is merged. Its production
   deployment and independent production-validation runs succeeded.
-- [ ] #125 is still open. The hosted-browser download recheck passed; remaining
-  items are the production latency rehearsal, human usability/accessibility
-  checks, and the completed dated sign-off below.
+- [ ] #125 is still open. The hosted-browser download recheck passed. The
+  production 30-participant rehearsal ran and cleaned up its isolated data, but
+  missed the latency gate; human usability/accessibility checks and dated
+  sign-offs also remain.
 
 The current hosted-browser run returned 40/40 HTTP 200 responses in 2.9 seconds.
 The local workstation Python run returned 36/40; four requests timed out. The
@@ -85,15 +86,20 @@ the failure is unexplained or unaccepted.
 
 ## Step 3: Measure latency against the deployed service
 
-**Current status:** Production automation is now implemented in the manually
-triggered [Workshop Production Rehearsal workflow](./.github/workflows/workshop-production-rehearsal.yml).
-It provisions a run-specific disposable session, runs the 30-participant
-latency gate, and attempts guarded cleanup even if the load command fails.
-The workflow was not dispatched during this change. It needs the production
-GitHub environment/secrets and reviewer approval, if configured, before use.
-The prior local result failed the strict latency gate (p95 5,274 ms).
+**Current status:** The manually triggered
+[Workshop Production Rehearsal workflow](./.github/workflows/workshop-production-rehearsal.yml)
+ran against production in [run 39846481244](https://github.com/Community-Access/glow/actions/runs/39846481244).
+The first dispatch exposed a missing CSRF token in the harness; that failure
+was corrected in [PR #129](https://github.com/Community-Access/glow/pull/129)
+before the production run recorded here. The corrected run returned HTTP 200
+for all 1,110 requests, with no 429s or error responses, but failed the strict
+latency gate: p95 3,603 ms, slowest 14,315 ms, and 176 requests exceeded two
+seconds. The guarded cleanup step passed and removed the run-specific session.
+This is valid production evidence, but not a capacity sign-off. Slow responses
+were concentrated in concurrent activity reads and writes. The earlier local
+result also failed the gate (p95 5,274 ms).
 
-To run it after this change is deployed: in GitHub Actions, select **Workshop
+To repeat after addressing the latency issue: in GitHub Actions, select **Workshop
 Production Rehearsal** → **Run workflow**, select
 `RUN-PRODUCTION-LOAD-TEST`, and run the 30-participant default. The `production`
 environment must provide `DEPLOY_HOST`, `DEPLOY_USER`, and `DEPLOY_SSH_KEY`;
@@ -253,7 +259,7 @@ that block. Copy the final actual timings into section 2 of
 | 2026-10-22 | Load-01, hosted browser | Hosted Playwright; network identity unavailable | 40/40 HTTP 200 in 2.9 s | [Production Validation run 39838421311](https://github.com/Community-Access/glow/actions/runs/39838421311); hosted browser batch | Local workstation discrepancy remains: 36/40, four timeouts |
 | 2026-10-22 | Browser/axe/reflow sweep | Local Windows workstation | 49/50; UI, axe, reflow passed; Load-01 36/40 | `scripts/ahg_browser_checks.py`; production `https://letitglow.app` | Four `WinError 10060` timeouts; investigate/accept explicitly |
 | 2026-10-22 | Load-01, controlled workstation repeat | Windows workstation; 20 concurrent workers | 40/40 HTTP 200; average 1.84 s, max 3.17 s; 583,659 bytes each | PowerShell `HttpClient`/`Invoke-WebRequest` repeat against production | No timeout reproduced; endpoint responds `no-cache` and `Server: gunicorn`; dynamic ZIP generation is a plausible workload factor, not a confirmed cause |
-| Pending | Production 30-participant latency | Not run | Blocked pending isolated session and safe cleanup/staging | None | Do not write test activity to live session |
+| 2026-10-22 | Production 30-participant latency; rehearsal run 39846481244 | GitHub Actions runner; 30 participants; production `https://letitglow.app` | 1,110/1,110 HTTP 200; 0 rate limits; 0 error responses; median 982 ms; p95 3,603 ms; slowest 14,315 ms; 176 requests over 2 s; latency gate failed; guarded cleanup passed | [Workshop Production Rehearsal run 39846481244](https://github.com/Community-Access/glow/actions/runs/39846481244); artifact `workshop-production-rehearsal-39846481244-1` | CSRF harness defect fixed in PR #129; remaining production latency defect. No sign-off until optimized and retested |
 | | Auto-06 axe sweep | | | | |
 | | Setup and Copilot cases | | | | |
 | | Screen-reader matrix Env-2/3/4 | | | | |
