@@ -95,5 +95,8 @@ in the first [AHG test report](ahg-test-report.md).
 
 The replacement changes and CI results are tracked in
 [pull request 123](https://github.com/Community-Access/glow/pull/123).
-Dependency triage and broader validation are still in progress; this document
-does not certify the release as golden.
+The Office add-in now has a dedicated CI gate for its locked installation,
+runtime dependency audit, production build, sideload CLI, and development
+server startup. Final CI results are attached to that pull request.
+This cleanup does not certify the workshop as golden: the two open trackers
+and human sign-offs above must be resolved or explicitly accepted.
