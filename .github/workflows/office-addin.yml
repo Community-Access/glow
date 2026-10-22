@@ -1,0 +1,54 @@
+name: Office Add-in Validation
+
+on:
+  pull_request:
+    paths:
+      - "office-addin/**"
+      - ".github/workflows/office-addin.yml"
+  push:
+    branches: [main]
+    paths:
+      - "office-addin/**"
+      - ".github/workflows/office-addin.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    name: Office build and development server
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    defaults:
+      run:
+        working-directory: office-addin
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: office-addin/package-lock.json
+      - name: Install locked dependencies
+        run: npm ci --ignore-scripts
+      - name: Audit runtime dependencies
+        run: npm audit --omit=dev --audit-level=high
+      - name: Build the add-in
+        run: npm run build
+      - name: Check sideload CLI
+        run: npx --no-install office-addin-debugging --help
+      - name: Start the development server
+        shell: bash
+        run: |
+          npx --no-install webpack serve --mode development --no-open --server-type http --port 3100 > dev-server.log 2>&1 &
+          server_pid=$!
+          trap 'kill "$server_pid" 2>/dev/null || true' EXIT
+          for attempt in {1..30}; do
+            if curl --fail --silent http://127.0.0.1:3100/taskpane.html > /dev/null; then
+              exit 0
+            fi
+            sleep 2
+          done
+          cat dev-server.log
+          exit 1
