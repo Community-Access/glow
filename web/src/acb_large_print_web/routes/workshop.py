@@ -62,6 +62,7 @@ from ..workshop_store import (
     consume_return_link,
     count_participants,
     count_submissions,
+    count_submissions_by_activity,
     create_or_update_participant,
     create_return_link,
     decode_field_values,
@@ -1589,7 +1590,12 @@ def workshop_gallery(session_code: str):
     if activity_filter and activity_filter not in ACTIVITY_PROMPTS:
         activity_filter = ""
 
-    total = count_submissions(code, activity_key=activity_filter or None)
+    submission_counts = count_submissions_by_activity(code)
+    total = (
+        submission_counts.get(activity_filter, 0)
+        if activity_filter
+        else sum(submission_counts.values())
+    )
     total_pages = max(1, (total + GALLERY_PAGE_SIZE - 1) // GALLERY_PAGE_SIZE)
     try:
         page = int((request.args.get("page") or "1").strip())
@@ -1610,7 +1616,7 @@ def workshop_gallery(session_code: str):
     reviewer_default = str(participant.get("display_name", "")).strip() if participant else ""
 
     activity_choices = [
-        {"key": key, "title": _activity_title(key), "count": count_submissions(code, activity_key=key)}
+        {"key": key, "title": _activity_title(key), "count": submission_counts.get(key, 0)}
         for key in ACTIVITY_ORDER
     ]
 
