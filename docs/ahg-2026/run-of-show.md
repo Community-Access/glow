@@ -17,9 +17,11 @@ page gets fixed.
 - When: Monday 16 November 2026, 10:30 AM to 4:30 PM Mountain Time
 - Where: Matchless, Hilton Denver City Center
 - Format: bring your own Windows or Mac laptop; beginner level
-- Participants use: VS Code with the AHG 2026 profile, GitHub Copilot Free,
-  their own GitHub account, the agent kit, and GLOW for the evidence and the
-  commitment wall
+- Participants use one of three paths (`plan.md`, D18): the browser path
+  with ChatGPT or another assistant and letitglow.app/ahg/assistant; VS Code
+  on a computer with the AHG 2026 profile and the kit; or VS Code for the Web
+  at vscode.dev with the kit. Everyone uses their own GitHub account to share,
+  and GLOW for the evidence and the commitment wall
 - Facilitator: Jeff Bishop, with at least one helper per ten participants
 
 ## 1. The one thing to hold on to
@@ -32,8 +34,10 @@ team and shared an agent in their own name. Say so out loud, more than once.
 
 ## 2. The day, by the clock
 
-Each row is one block. The command is what participants type into Copilot
-Chat; the step card has every key and expected result.
+Each row is one block. The command is what VS Code participants type into
+Copilot Chat; browser path participants paste the same block's text from
+letitglow.app/ahg/assistant. The step card has every key and expected result
+for both.
 
 | Clock | Minutes | Block | Command | Say |
 |---|---|---|---|---|
@@ -93,7 +97,10 @@ Run down this ladder. Do not jump to the bottom.
 | What broke | What you do | What the room hears |
 |---|---|---|
 | One person's setup | A helper fixes it with them; they use a ready-made agent until it works | Nothing. Handle it at the table |
-| Copilot Free limit reached | Pair with a neighbor for the rest of the block | Nothing |
+| Copilot Free limit reached | Move to the browser path with another assistant, from the same block; their agent goes with them | Nothing |
+| VS Code will not install, sign in or open the kit | Move to the browser path; nothing to install | Nothing |
+| An assistant asks the participant to log in, or refuses the paste | Sign in or make a free account; if it still refuses, another assistant | Nothing |
+| A browser path participant's assistant forgets their agent | Paste the agent as its own message, then the block's text again | Nothing |
 | The profile did not import | Open the kit; VS Code offers the recommended extensions; a helper installs them | Nothing |
 | Conference wifi degrades | Everything except Copilot and GitHub is in the kit already; slow the room to one block at a time and demo each step on the projector | "We will do this one together on the screen." |
 | GitHub is unreachable in block 5 | Collect agent files from the kit on a USB stick; share them for people after the session, credited to them | "Your agent still goes in with your name on it." |
@@ -118,8 +125,9 @@ The second table is the rehearsal; the day works badly without it.
 | # | Item | Done when |
 |---|---|---|
 | 6 | The walkthrough in `plan.md` section 16: profile import, Copilot reading the kit, the commands, the share page, all with NVDA, JAWS and VoiceOver | Every step done by ear, with notes |
-| 7 | Copilot Free's allowance measured against one participant's full day | A number written down, with headroom |
-| 8 | Timed dry run with a second person playing a participant who has never opened VS Code | Real minutes written beside section 2 |
+| 7 | Copilot Free's allowance measured against one participant's full day; Copilot now bills in GitHub AI Credits and publishes no chat count for Free | The share of the allowance one day uses, written down, with headroom |
+| 7a | Every block run on the browser path in ChatGPT, signed in, and on both VS Code paths | `ahg.md` sections 2.7 to 2.12, each path column |
+| 8 | Timed dry run with a second person playing a participant who has never opened VS Code, once on the browser path and once in VS Code | Real minutes written beside section 2 |
 | 9 | Freeze: tag the release, rebuild the kit, print the pocket card | No merges in the final week |
 
 ## 6a. After the session: into Accessibility Agents

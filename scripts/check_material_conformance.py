@@ -5,7 +5,7 @@ The AHG program promises a full-day, laptop, hands-on workshop in which
 participants build accessibility agents and agent teams with VS Code, GitHub
 and Copilot, grounded in axe-core and Accessibility Insights, and commit an
 agent to the open-source Accessibility Agents repository. ``plan.md`` records
-how each promise is kept (D1 to D15).
+how each promise is kept (D1 to D20).
 
 The September plan said the opposite in several places: no AI, no
 development tools, a phone is enough, no account. Materials written then
@@ -55,7 +55,8 @@ MATERIALS = [
     AHG / "kit" / "examples" / "sam-remediation-log-keeper.md",
     AHG / "kit" / ".github" / "copilot-instructions.md",
     AHG / "kit" / ".github" / "agents" / "office-coordinator.agent.md",
-    *sorted((AHG / "kit" / ".github" / "prompts").glob("*.prompt.md")),
+    *sorted((AHG / "kit" / ".github" / "skills").glob("*/SKILL.md")),
+    *sorted((AHG / "kit" / "any-assistant").glob("*.txt")),
     *sorted((AHG / "kit" / "step-cards").glob("*.md")),
     AHG / "ahg-speaker-guidance.md",
 ]
@@ -103,7 +104,7 @@ RULES = [
     Rule(
         "D3: the September tiers are gone",
         r"\bTier [0-3]\b|\bfour tiers\b|\bthree ways\b|\btwo ways today\b|\bthe first one is enough\b",
-        "One path: Copilot all day, VS Code and GitHub in the afternoon.",
+        "The September tiers are gone. The day has three paths (D18), called paths, each running every block.",
     ),
     Rule(
         "D2: a laptop is required",
@@ -143,6 +144,9 @@ REQUIRED_SOMEWHERE = [
     ("Title II", "Promise: the higher education Title II context"),
     ("WCAG 2.2", "Promise: grounded in WCAG 2.2"),
     ("session evaluation", "D14: time saved for the AHG session evaluation"),
+    ("ChatGPT", "D18: the browser path, tested with ChatGPT"),
+    ("vscode.dev", "D18: the VS Code for the Web path"),
+    ("letitglow.app/ahg/assistant", "D18/D20: one text per block for the browser path"),
 ]
 
 
@@ -169,7 +173,7 @@ def main() -> int:
     parser.add_argument("--verbose", action="store_true")
     args = parser.parse_args()
 
-    print("Checking workshop materials against the program's promises (plan.md, D1 to D15)")
+    print("Checking workshop materials against the program's promises (plan.md, D1 to D20)")
     print("=" * 74)
 
     problems: list[str] = []

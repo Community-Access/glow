@@ -29,6 +29,8 @@ Everything participants need starts from the setup page.
 | Everything, for everyone | letitglow.app/ahg |
 | Share page | letitglow.app/ahg/share |
 | The kit, online, no unzipping | letitglow.app/ahg/kit |
+| The browser path: one text per block | letitglow.app/ahg/assistant |
+| Choosing a path, and assistant setup | letitglow.app/ahg/paths |
 | The sample course, online | letitglow.app/ahg/site |
 | The collection | github.com/Community-Access/ahg-2026, agents folder |
 | Anyone who needs a hand | github.com/Community-Access/ahg-2026/issues, label needs-a-hand |
@@ -41,7 +43,9 @@ Facilitator key: write it here, and never put it on a slide. -
 
 ## The clock
 
-The command in each row is what participants type into Copilot Chat.
+The command in each row is what VS Code participants type into Copilot
+Chat. Browser path participants paste that block's text from
+letitglow.app/ahg/assistant.
 
 | Time | Block | Command |
 |---|---|---|
@@ -63,6 +67,7 @@ The command in each row is what participants type into Copilot Chat.
 - First minutes: "Forty thousand files and three people. Here is where we will be at four o'clock."
 - Every block: "Here is what you will have at the end." Then show it.
 - Often: "Stuck? Start from a ready-made agent and put your name on it. That counts."
+- When VS Code fights back: "Take the browser path. Same block, nothing to install."
 - Whenever an assistant comes up: "Never paste anything private."
 - Whatever you project: say what is on it.
 - At 4:25: "Before you go: the session evaluation." Then stop talking.
@@ -70,13 +75,14 @@ The command in each row is what participants type into Copilot Chat.
 ## If something breaks
 
 1. One person stuck: a helper sits with them; a ready-made agent keeps them moving.
-2. Copilot limit reached: pair with a neighbor.
+2. Copilot limit reached, or VS Code will not cooperate: the browser path, same block.
 3. Wifi slow: one block at a time, demo each step on the projector.
 4. GitHub down: collect agent files on a USB stick; share them for people after, credited to them.
 
 ## Before the room fills
 
 - [ ] Your laptop, charger and adaptors; the deck open; Copilot signed in
+- [ ] ChatGPT signed in on a second browser, block 1 text pasted once this morning
 - [ ] A test agent shared through letitglow.app/ahg/share this morning, and the reply arrived
 - [ ] The setup page, kit and share page open from a phone on cellular
 - [ ] Helpers briefed: who covers which tables, and the fallback ladder

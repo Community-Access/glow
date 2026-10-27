@@ -229,7 +229,7 @@ AHG_DAY: tuple[Block, ...] = (
     Block(
         start=11 * 60 + 50, minutes=25,
         title="Your agent at work",
-        mode="Copilot uses your agent on one course document", kind=BLOCK,
+        mode="Your AI uses your agent on one course document", kind=BLOCK,
         note="The first answer will not be perfect. That is the point of the afternoon.",
     ),
     Block(
@@ -251,7 +251,7 @@ AHG_DAY: tuple[Block, ...] = (
     Block(
         start=14 * 60 + 20, minutes=40,
         title="Share it",
-        mode="Your pull request to the Accessibility Agents repository", kind=BLOCK,
+        mode="Your agent shared on GitHub, in your name", kind=BLOCK,
         note="Merge on the projector as they arrive. Read each name out.",
     ),
     Block(

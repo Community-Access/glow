@@ -1,0 +1,61 @@
+{#- The Copy buttons on the AHG pages. Each button names the textarea it
+    copies (data-copy) and the status region that says what happened
+    (data-status). The text always lives in a real, readable textarea inside
+    a details element, so a person can read it before pasting, and so the
+    fallback can select it when the browser refuses the clipboard.
+
+    The status region itself stays in the page, empty and unstyled; each
+    message is a new child paragraph, so screen readers hear a change to a
+    region they already know about. Buttons start hidden and appear only
+    when this script runs, so nobody meets a button that does nothing. -#}
+<script nonce="{{ csp_nonce }}">
+(function () {
+  "use strict";
+  var isMac = /Mac|iPhone|iPad/.test(navigator.platform || navigator.userAgent || "");
+  var paste = isMac ? "Command+V" : "Control+V";
+  var copyKey = isMac ? "Command+C" : "Control+C";
+  var last = {};
+
+  function say(region, text) {
+    // The same words twice would not be announced again, so a repeat says so.
+    if (last[region.id] === text) { text = "Done again. " + text; }
+    last[region.id] = text;
+    var p = document.createElement("p");
+    p.className = "panel";
+    p.textContent = text;
+    region.replaceChildren(p);
+  }
+
+  function selectForCopy(box, region, what) {
+    // The message goes first, and the textarea is described by the region,
+    // so the instruction is read on focus even if the selection talks over it.
+    say(region, "This browser did not let the page copy for you. The " + what +
+        " is selected: press " + copyKey + " to copy it.");
+    var details = box.closest("details");
+    if (details) { details.open = true; }
+    box.focus();
+    box.select();
+  }
+
+  Array.prototype.forEach.call(document.querySelectorAll("button[data-copy]"), function (button) {
+    button.hidden = false;
+    button.addEventListener("click", function () {
+      var box = document.getElementById(button.getAttribute("data-copy"));
+      var region = document.getElementById(button.getAttribute("data-status"));
+      var what = button.getAttribute("data-what") || "text";
+      var next = button.getAttribute("data-next") || "";
+      if (!box || !region) { return; }
+      var done = "Copied the " + what + "." + (next ? " " + next.replace("{paste}", paste) : "");
+      if (navigator.clipboard && window.isSecureContext) {
+        navigator.clipboard.writeText(box.value).then(function () {
+          say(region, done);
+        }, function () {
+          selectForCopy(box, region, what);
+        });
+      } else {
+        selectForCopy(box, region, what);
+      }
+    });
+  });
+}());
+</script>

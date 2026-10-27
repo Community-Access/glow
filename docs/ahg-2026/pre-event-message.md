@@ -17,7 +17,7 @@ Keep the first screen to what to do. Everything else comes after.
 
 ## Subject
 
-Accessibility Agents workshop, 16 November: four setup steps, about 20 minutes
+Accessibility Agents workshop, 16 November: choose a path, 10 to 25 minutes
 
 ## Body
 
@@ -33,27 +33,34 @@ contributed it to an open-source project with your name on it. You do not
 need to be a developer. You do not need to have used VS Code or GitHub
 before. Every step on the day comes with a step card and a helper.
 
-### Before the day: four steps, about 20 minutes
+### Before the day: choose a path
 
-1. Make a free GitHub account at github.com, then turn on Copilot Free
-   (Settings, then Copilot). Use your work email if your institution allows
-   it.
-2. Install VS Code from code.visualstudio.com. On Windows it installs
-   without administrator rights.
-3. Open letitglow.app/ahg and follow step 3 there to import the AHG 2026
-   profile into VS Code. Say yes when VS Code asks. That installs everything
-   else.
-4. On the same page, download the agent kit, open it in VS Code, open
-   Copilot Chat and type /ready-check. It takes two minutes and tells you
-   whether you are set.
-5. Share your practice agent at letitglow.app/ahg/share: one form, one
+There are three paths into the same day, and every one ends with your own
+agent, shared on GitHub with your name on it. letitglow.app/ahg/paths
+compares them. Not sure? Take the browser path.
+
+- The browser path, about 10 minutes, nothing to install: use ChatGPT,
+  Copilot on github.com, Claude, Gemini or your campus assistant, signed in.
+- VS Code on your computer, about 25 minutes: install VS Code and import the
+  AHG 2026 profile.
+- VS Code for the Web, about 15 minutes, nothing to install: the same VS
+  Code at vscode.dev, in Chrome or Edge.
+
+Then, on any path:
+
+1. Make a free GitHub account at github.com, if you do not have one. Use your
+   work email if your institution allows it.
+2. Follow your path's steps at letitglow.app/ahg/paths, and run the ready
+   check. It takes two minutes and tells you whether you are set.
+3. Share your practice agent at letitglow.app/ahg/share: one form, one
    button, and a reply within a minute. On the day you do it once more, with
    your real agent.
 
 If a step does not work, write to support@community-access.org before the
 day, or come to the setup table outside the room from 10:00 on the day.
-Locked-down work laptop? Write to us; we will sort it out together, and
-nobody is left out on the day.
+Locked-down work laptop? Take the browser path: it needs nothing
+installed. Or write to us; we will sort it out together, and nobody is left
+out on the day.
 
 ### Bring
 
@@ -66,12 +73,12 @@ nobody is left out on the day.
 ### What the day looks like
 
 - Morning: design your agent in plain English, and see it work on a course
-  document with GitHub Copilot.
+  document with GitHub Copilot or the assistant you chose.
 - After lunch: ground it in real evidence from GLOW, axe and Accessibility
   Insights, so it cites WCAG 2.2 instead of guessing.
 - Afternoon: share it to the open-source AHG 2026 collection on GitHub,
-  with one form and your name on it, then add it to an agent team in VS Code
-  and watch the team work through the whole course.
+  with one form and your name on it, then add it to an agent team and watch
+  the team work through the whole course.
 - The last five minutes are the session evaluation. It shapes next year's
   conference.
 
@@ -92,8 +99,10 @@ BITS, an affiliate of the American Council of the Blind
 
 - Before the first send, open the setup page in a private window on
   Windows and on a Mac, import the profile, and run the ready check.
-- Second send (6 November): the same four steps, plus "if you have done
-  these, open the ready check once more."
+- Second send (6 November): this version, with the three paths. Say plainly
+  that anyone who already set up VS Code is done and stays on that path; the
+  browser path is a simpler option, not a change of plan. Add: "if you have
+  done these, run the ready check once more."
 - Last send (two days before): three lines. Bring your laptop and charger;
   open the ready check; the setup table opens at 10:00.
 - Keep the privacy line. Nothing private goes into any AI, ever.

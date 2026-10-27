@@ -19,48 +19,68 @@
 <h2 id="what-you-will-do">What you will do</h2>
 <ol>
   <li>Design your own accessibility agent, in plain English, for a real problem from your job.</li>
-  <li>Put it to work with GitHub Copilot on a sample course full of real barriers.</li>
+  <li>Put it to work with GitHub Copilot, or the AI assistant you already use, on a sample course full of real barriers.</li>
   <li>Ground it in evidence from GLOW, axe and Accessibility Insights, so it cites WCAG 2.2 instead of guessing.</li>
   <li>Share it with one form and one button, with your name on it.</li>
   <li>Add it to a team of agents that works through the whole course.</li>
   <li>Leave with a 30-day plan for your own campus.</li>
 </ol>
 
-<h2 id="get-ready">Get ready: five steps, about 25 minutes</h2>
-<p>Do these any time before 16 November. Step card 0, below, has every click.</p>
+<h2 id="get-ready">Get ready: choose a path</h2>
+<p>
+  There are three paths into the same day. Each one ends with your own agent,
+  a team report on the whole course, and your agent shared on GitHub with
+  your name on it. <a href="{{ url_for('shortlinks.ahg_paths') }}">Choosing a path</a>
+  compares them and has every setup step. Step card 0 has every click.
+</p>
+<ul>
+  <li>
+    <a href="{{ url_for('shortlinks.ahg_paths') }}#browser">The browser path</a>:
+    nothing to install. Use ChatGPT, Copilot on github.com, Claude, Gemini or
+    your campus assistant, and paste one text per block from
+    <a href="{{ url_for('shortlinks.ahg_assistant') }}">the browser path page</a>.
+    About 10 minutes to set up. Not sure? Take this one.
+  </li>
+  <li>
+    <a href="{{ url_for('shortlinks.ahg_paths') }}#vscode">VS Code on your computer</a>:
+    install VS Code, import the AHG 2026 profile, open the kit, and type one
+    Copilot command per block. About 25 minutes.
+  </li>
+  <li>
+    <a href="{{ url_for('shortlinks.ahg_paths') }}#vscode-web">VS Code for the Web</a>:
+    the same VS Code and Copilot in Chrome or Edge at vscode.dev, with the kit
+    opened from your laptop and nothing to install. About 15 minutes.
+  </li>
+</ul>
+<p>Whichever you choose, finish setup the same way:</p>
 <ol>
+  <li>Make a free GitHub account at github.com, if you do not have one. Everyone needs it to share.</li>
+  <li>Run the ready check: block 1 on the browser path page, or <kbd>/ready-check</kbd> in Copilot Chat in VS Code.</li>
   <li>
-    Make a free GitHub account at github.com, then turn on Copilot Free in your
-    GitHub settings, under Copilot.
-  </li>
-  <li>Install VS Code from code.visualstudio.com. On Windows it installs without administrator rights.</li>
-  <li>
-    Import the AHG 2026 profile. In VS Code, open the Command Palette
-    (Control+Shift+P on Windows, Command+Shift+P on a Mac), type
-    <kbd>Profiles: Import Profile</kbd>, and paste this address:
-    <code>{{ profile_url }}</code>.
-    Or <a href="{{ url_for('workshop.ahg_profile') }}">download the AHG 2026 profile file</a> and import that.
-  </li>
-  <li>
-    <a href="{{ url_for('workshop.ahg_kit_zip') }}">Download the agent kit</a>
-    (a zip file), unzip it, and open the folder in VS Code. Open Copilot Chat
-    (Control+Alt+I on Windows, Command+Control+I on a Mac) and type
-    <kbd>/ready-check</kbd>.
-  </li>
-  <li>
-    Share your practice agent: open <a href="{{ url_for('workshop.ahg_share') }}">the share page</a>,
-    choose "My practice agent", choose <code>my-agent/SKILL.md</code> from the kit, and press the
-    button. GitHub replies within about a minute. That is the whole of sharing; on the day you do it
-    once more with your real agent.
+    Share your practice agent: open <a href="{{ url_for('workshop.ahg_share') }}?practice=1">the share page</a>,
+    press "Fill in the practice template" (or choose <code>my-agent/SKILL.md</code> from the kit),
+    and press the button. GitHub replies within about a minute. That is the whole of sharing; on the
+    day you do it once more with your real agent.
   </li>
 </ol>
+<p>
+  For both VS Code paths:
+  <a href="{{ url_for('workshop.ahg_kit_zip') }}">download the agent kit</a>
+  (a zip file) and unzip it. The browser path does not need it.
+</p>
+<p>
+  The AHG 2026 profile, for VS Code on a computer: in VS Code, open File, then
+  Preferences, then Profiles, open the menu on the New Profile button, choose
+  Import Profile, and paste <code>{{ profile_url }}</code>.
+  Or <a href="{{ url_for('workshop.ahg_profile') }}">download the AHG 2026 profile file</a> and import that.
+</p>
 <p>
   Stuck? Write to <a href="mailto:support@community-access.org">support@community-access.org</a>,
   and a person answers. On the day, the setup table outside the room opens at 10:00.
 </p>
 
 <h2 id="the-day">The day</h2>
-<p>Times are Mountain Time. Each block has its own step card and its own Copilot command.</p>
+<p>Times are Mountain Time. Each block has its own step card, its own Copilot command in VS Code, and its own text on the browser path.</p>
 <div class="table-scroll" role="region" aria-labelledby="schedule-caption" tabindex="0">
 <table>
   <caption id="schedule-caption">The workshop, 10:30 AM to 4:30 PM</caption>

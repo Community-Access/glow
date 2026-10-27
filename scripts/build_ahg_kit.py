@@ -14,6 +14,9 @@ consistent with each other and with the sample course:
   the web page.
 * ``step-cards/*.docx`` -- each step card as an ACB large print Word file.
 * ``share-my-agent.html`` -- the offline copy of GLOW's share page.
+* ``any-assistant/*.txt`` -- one text per block for the browser path: the
+  block's instructions and every kit file it needs, to paste into ChatGPT,
+  Copilot on github.com, Claude, Gemini or a campus assistant.
 * ``ahg-2026-agent-kit.zip`` in ``docs/ahg-2026/dist/`` -- the whole kit, for
   download. GLOW also serves it at /workshop/ahg-2026/kit.zip.
 
@@ -427,6 +430,281 @@ def captions_evidence() -> Path:
 
 
 # ---------------------------------------------------------------------------
+# The browser path: one text per block, for any chat assistant
+# ---------------------------------------------------------------------------
+#
+# In VS Code, Copilot reads the kit's files itself. In ChatGPT, Copilot on
+# github.com, Claude, Gemini or a campus assistant, nothing can read the kit,
+# so each block's text carries the files it needs, between FILE lines the
+# assistant can find again. A participant copies one text, pastes it as one
+# message, and the conversation runs exactly as the VS Code command does.
+
+ASSISTANT = KIT / "any-assistant"
+
+COURSE_FILES = [
+    ("psy101-syllabus.docx", "The syllabus, a Word document"),
+    ("psy101-week3-lecture.pptx", "The week 3 lecture, a PowerPoint deck"),
+    ("psy101-gradebook.xlsx", "The gradebook, an Excel workbook"),
+    ("psy101-reading-forgetting-scanned.pdf", "The required reading, a scanned PDF"),
+    ("psy101-lab1-stroop.pdf", "The lab 1 handout, a PDF with a form"),
+    ("psy101-announcement.html", "The course announcement, a web page"),
+    ("psy101-week3-captions.vtt", "The week 3 lecture captions, a WebVTT file"),
+]
+
+ASK_FOR_AGENT = """\
+The participant's agent: if their agent (a SKILL.md text beginning with three
+dashes and "name:") is already earlier in this conversation, use the latest
+version of it and say which one you are using, by its name. If it is not,
+ask them to paste it now, as one message, and wait. If they have no agent
+yet, tell them that is fine: they can open one of the six ready-made agents
+below, press its Copy button, and paste it here. That counts as their agent.
+
+The six ready-made agents, each a page with a Copy button:
+
+""" + "\n".join(
+    f"- {s['title']}: letitglow.app/ahg/kit/examples/agents/{s['name']}/SKILL.md" for s in READY
+)
+
+ASSISTANT_TEXTS = {
+    "1-ready-check": dict(
+        title="Block 1: the ready check",
+        files=["my-agent/SKILL.md"],
+        task="""\
+You are running the ready check for a participant at the AHG 2026 workshop.
+They are using you in a web browser, not in VS Code. Be warm and brief.
+
+Check these three things, in order, and report each as "Ready" or "Needs a
+hand", with one plain sentence:
+
+1. You received the agent template below: name its six headings.
+2. You can follow the workshop's rules: say the two rules in one line each,
+   in your own words. They are: nothing private goes into any AI, and a
+   person reviews everything an agent writes.
+3. You can give back a file the participant can copy: show the agent
+   template below, exactly as it is, inside one code block. Then tell them
+   how to copy it in one sentence: most assistants put a Copy button just
+   under or above a code block.
+
+If all three are ready, end with exactly this, on its own line:
+
+You are ready for 16 November. Getting set up was the hardest part of the day, and it is done.
+
+Then add one more line: Last step: share your practice agent at
+letitglow.app/ahg/share. Choose "My practice agent", press "Fill in the
+practice template", then press "Open the share form on GitHub". It takes a
+minute, and GitHub replies to say it worked.
+
+If anything needs a hand, say which check, suggest one simple thing to try,
+and say: write to support@community-access.org, or come to the setup table
+from 10:00 on the day. Nobody gets left behind.""",
+    ),
+    "2-design-my-agent": dict(
+        title="Block 2: design your agent",
+        files=["my-agent/SKILL.md", *[f"examples/agents/{s['name']}/SKILL.md" for s in READY]],
+        task="""\
+You are helping a participant design their own accessibility agent. They are
+probably not a developer. Make this feel easy and make them feel good about
+what they are building.
+
+1. Ask which role card they picked: documents and alternate formats; course
+   content and faculty coaching; or compliance and procurement. Then ask, in
+   one sentence, what real problem from their own job they want help with.
+   Remind them: nothing private, no student names or records.
+2. From the six ready-made agents below, tell them, in one line each, which
+   two are closest. Offer to start from one.
+3. Ask the five questions one at a time, and wait for each answer:
+   - Role: who is this agent, and who does it work for?
+   - Task: what is the one job it does?
+   - Trusted guidance: which standards and local policies must it use?
+   - Output format: what should come back, in what shape?
+   - Human review: who checks it before anything goes out?
+   If they are unsure, offer the example's answer and let them change it.
+4. Ask for their name and institution, for the author line.
+5. Write their agent from the template below (my-agent/SKILL.md), keeping its
+   headings and its "Never" section exactly. Set name to a short lowercase
+   name with hyphens, and author to the name and institution they gave you.
+   Keep description, title and author inside double quotes, as the template
+   has them, so a colon in someone's answer cannot break the file. Keep the
+   WCAG 2.2 links in Trusted guidance.
+6. Give back the whole finished agent inside ONE code block, from the first
+   three dashes to the last line, and nothing else inside that block.
+7. After the code block, in five lines or fewer: tell them one specific thing
+   their agent does well, then how to keep it: press the Copy button on the
+   code block, open letitglow.app/ahg/share in a new tab, paste it into the
+   box "Your agent, as text", and press "Download as SKILL.md". That saves it
+   on their computer. Do not share it yet; that is block 5.
+
+End with: Your agent exists. Next, we put it to work.
+
+Keep this conversation open all day: the next blocks use the agent you just
+wrote.""",
+    ),
+    "3-try-my-agent": dict(
+        title="Block 3: your agent at work",
+        files=[],
+        course_list=True,
+        task="""\
+Put the participant's agent to work on one course document, before it has
+any evidence.
+
+""" + ASK_FOR_AGENT + """
+
+Then act as that agent, following it exactly.
+
+Ask the participant which file in the PSY 101 sample course they want their
+agent to work on (the list is below), and suggest the one that best fits its
+Task. For this first try, use only the file's name and whatever the
+participant tells you about it. You have no checker report yet, and that is
+on purpose.
+
+Answer as the agent would. Then step out of the agent and add a short note to
+the participant:
+
+- One thing the answer does well.
+- One thing to watch: anywhere it had to guess because it had no evidence.
+
+End with: That is your agent's first answer. After lunch, we give it real evidence and watch it get better.""",
+    ),
+    "4-ground-my-agent": dict(
+        title="Block 4: ground it",
+        files=[f"sample-course/evidence/{n.rsplit('.', 1)[0]}.txt" for n, _ in COURSE_FILES],
+        course_list=True,
+        task="""\
+Give the participant's agent real evidence, and compare before and after.
+
+""" + ASK_FOR_AGENT + """
+
+Then act as that agent, following it exactly.
+
+1. Ask which course file to use. Use the same one as this morning if they
+   remember it, or if it is earlier in this conversation.
+2. Find that file's checker report below: the FILE with the same name ending
+   .txt in sample-course/evidence. Answer again as the agent, using only that
+   evidence. Cite WCAG 2.2 criteria with links.
+3. Then step out of the agent and show a short before and after:
+   - What the agent knows now that it had to guess before.
+   - Which WCAG criteria it now cites.
+   - What the evidence says no checker can see, which a person must check.
+4. Offer one more try: if they open the syllabus in Word and run Review, then
+   Check Accessibility, they can paste Word's results here as text, and the
+   agent will work from those instead. The skill is the evidence, not the
+   tool.
+
+End with: Your agent just stopped guessing. That is what "grounded" means.""",
+    ),
+    "6-run-the-office": dict(
+        title="Block 6: build the office",
+        files=[
+            ".github/agents/office-coordinator.agent.md",
+            *[f"office-team/{s['name']}/SKILL.md" for s in OFFICE],
+            *[f"sample-course/evidence/{n.rsplit('.', 1)[0]}.txt" for n, _ in COURSE_FILES],
+        ],
+        course_list=True,
+        task="""\
+Run the whole accessibility office across the PSY 101 course, with the
+participant's agent on the team.
+
+Every file the office needs is below, between FILE lines: the coordinator,
+the eight specialists in office-team, and each course file's checker report
+in sample-course/evidence. Wherever the coordinator says to read a file, read
+the FILE below with that path. The participant's own agent is my-agent/SKILL.md,
+and it is a member of the team. There is no room/ folder in this
+conversation; skip that row of the coordinator's table.
+
+""" + ASK_FOR_AGENT + """
+
+Before you start, tell the participant in two lines what is about to happen:
+every file in the course will go to the right specialists, theirs included,
+and they will get one team report.
+
+Then act as the office coordinator, following it exactly, and write the
+report. Work through the course files one at a time, and after each file
+write one line saying which specialists worked on it, so a screen reader user
+hears progress rather than silence. If you have to stop before the last file,
+say so and tell the participant to type: continue.""",
+    ),
+    "7-my-30-day-plan": dict(
+        title="Block 7: take it home",
+        files=[],
+        task="""\
+Help the participant write a 30-day plan for using their agent at work. If
+their agent is earlier in this conversation, use its name; if not, ask what
+it is called. Ask one question at a time and keep each answer short:
+
+1. One workflow you will actually try.
+2. One partner or team you will try it with.
+3. One safeguard you will use every time.
+4. One first step, small enough to do this week.
+5. Who needs to know, or approve it.
+6. What it will look like if it worked, in one sentence you could say to them.
+
+Give back the plan inside ONE code block, as a short Markdown table with
+their agent's name in a heading at the top. Then tell them one specific
+reason their plan is realistic, and how to keep it: press the Copy button on
+the code block and paste it into an email to themselves or a Word document.
+
+End with: You came in with a problem. You are leaving with an agent, a team, and a plan. Go make one more champion.""",
+    ),
+}
+
+
+def _workshop_rules() -> str:
+    """The kit's rules for Copilot, without the part about its folders."""
+    text = (KIT / ".github" / "copilot-instructions.md").read_text(encoding="utf-8")
+    body = text.split("## What is in this folder", 1)[0].strip()
+    lines = body.splitlines()
+    if lines and lines[0].startswith("# "):
+        lines = lines[1:]
+    # One level down, so they sit under "The workshop's rules".
+    return "\n".join("#" + line if line.startswith("## ") else line for line in lines).strip()
+
+
+def _file_block(rel: str) -> str:
+    text = (KIT / rel).read_text(encoding="utf-8").rstrip()
+    return f"===== FILE: {rel} =====\n{text}\n===== END FILE: {rel} ====="
+
+
+def assistant_text(key: str) -> str:
+    spec = ASSISTANT_TEXTS[key]
+    parts = [
+        f"AHG 2026 Accessibility Agents workshop. {spec['title']}.",
+        "",
+        "This whole message is one instruction for you, the AI assistant. The",
+        "participant pasted it from letitglow.app/ahg/assistant. Do not summarize",
+        "it back to them; start the task.",
+        "",
+        "## The workshop's rules, for every answer",
+        "",
+        _workshop_rules(),
+        "",
+        "## Your task",
+        "",
+        spec["task"],
+    ]
+    if spec.get("course_list"):
+        parts += ["", "## The PSY 101 sample course", "",
+                  "Fictional: PSY 101, Introduction to Psychology, Mesa Ridge State",
+                  "University. Barriers were planted on purpose.", ""]
+        parts += [f"- {name}: {about}" for name, about in COURSE_FILES]
+    if spec["files"]:
+        parts += ["", "## Files from the kit", "",
+                  "Each file is between a FILE line and an END FILE line.", ""]
+        for rel in spec["files"]:
+            parts += [_file_block(rel), ""]
+    return "\n".join(parts).rstrip() + "\n"
+
+
+def write_assistant_texts() -> list[Path]:
+    ASSISTANT.mkdir(parents=True, exist_ok=True)
+    out = []
+    for key in ASSISTANT_TEXTS:
+        path = ASSISTANT / f"{key}.txt"
+        path.write_text(assistant_text(key), encoding="utf-8")
+        out.append(path)
+    return out
+
+
+# ---------------------------------------------------------------------------
 # Step cards as Word, and the offline share page
 # ---------------------------------------------------------------------------
 
@@ -448,15 +726,52 @@ def _md_to_docx(md_path: Path, docx_path: Path) -> None:
     paragraph: list[str] = []
     item: tuple[str, list[str]] | None = None
 
+    # Step cards have one numbered list per path. Word's List Number style
+    # keeps counting across the whole document, so each new list gets its own
+    # numbering instance that starts again at 1.
+    current_list: list[int] = []  # the numbering instance of the list being written
+
+    def new_numbering() -> int:
+        from docx.oxml import OxmlElement
+        from docx.oxml.ns import qn
+
+        style_num = doc.styles["List Number"].element.pPr.numPr.numId.val
+        numbering = doc.part.numbering_part.element
+        abstract = next(n for n in numbering.findall(qn("w:num")) if n.get(qn("w:numId")) == str(style_num))
+        abstract_id = abstract.find(qn("w:abstractNumId")).get(qn("w:val"))
+        new_id = max(int(n.get(qn("w:numId"))) for n in numbering.findall(qn("w:num"))) + 1
+        num = OxmlElement("w:num")
+        num.set(qn("w:numId"), str(new_id))
+        ref = OxmlElement("w:abstractNumId")
+        ref.set(qn("w:val"), abstract_id)
+        num.append(ref)
+        override = OxmlElement("w:lvlOverride")
+        override.set(qn("w:ilvl"), "0")
+        start = OxmlElement("w:startOverride")
+        start.set(qn("w:val"), "1")
+        override.append(start)
+        num.append(override)
+        numbering.append(num)
+        return new_id
+
     def flush():
         nonlocal paragraph, item
         if item:
             style, words = item
-            doc.add_paragraph(" ".join(words), style=style)
+            para = doc.add_paragraph(" ".join(words), style=style)
+            if style == "List Number":
+                if not current_list:
+                    current_list.append(new_numbering())
+                num_pr = para._p.get_or_add_pPr().get_or_add_numPr()
+                num_pr.get_or_add_ilvl().val = 0
+                num_pr.get_or_add_numId().val = current_list[0]
+            else:
+                current_list.clear()
             item = None
         if paragraph:
             doc.add_paragraph(" ".join(paragraph))
             paragraph = []
+            current_list.clear()
 
     for line in lines:
         stripped = line.strip()
@@ -468,6 +783,7 @@ def _md_to_docx(md_path: Path, docx_path: Path) -> None:
         bullet = re.match(r"^- (.*)$", stripped)
         if heading:
             flush()
+            current_list.clear()
             doc.add_heading(heading.group(2), level=len(heading.group(1)))
         elif numbered:
             flush()
@@ -475,7 +791,7 @@ def _md_to_docx(md_path: Path, docx_path: Path) -> None:
         elif bullet:
             flush()
             item = ("List Bullet", [bullet.group(1)])
-        elif item and line.startswith("   "):
+        elif item and line.startswith("  "):
             item[1].append(stripped)
         else:
             if item:
@@ -501,7 +817,10 @@ def build_offline_share_page() -> Path:
 
     templates = REPO / "web" / "src" / "acb_large_print_web" / "templates"
     env = jinja2.Environment(loader=jinja2.FileSystemLoader(str(templates)), autoescape=True)
-    html = env.get_template("workshop/ahg_share.html").render(ahg_site="https://letitglow.app", csp_nonce="")
+    html = env.get_template("workshop/ahg_share.html").render(
+        ahg_site="https://letitglow.app", csp_nonce="",
+        practice_template=(KIT / "my-agent" / "SKILL.md").read_text(encoding="utf-8"),
+    )
     html = html.replace(' nonce=""', "")
     target = KIT / "share-my-agent.html"
     target.write_text(html, encoding="utf-8")
@@ -541,6 +860,8 @@ def main() -> int:
         if path:
             print(f"  {path.relative_to(KIT)}")
     print(f"  {captions_evidence().relative_to(KIT)}")
+    for path in write_assistant_texts():
+        print(f"  {path.relative_to(KIT)}")
     print(f"  {build_zip().relative_to(REPO)}")
     return 0
 

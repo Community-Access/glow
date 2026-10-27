@@ -7,6 +7,12 @@ description: "Results of the first test pass of the AHG 2026 Accessibility Agent
 
 # AHG 2026 workshop: test report, updated 10 October 2026
 
+On 27 October 2026 the workshop gained three paths (the browser path with
+ChatGPT, VS Code on a computer, and VS Code for the Web), and the commands
+became agent skills. Every result was cleared for a fresh run against the
+new test plan; `ahg.md` section 2.14a has the current results. This report
+stays as the record of the 10 October pass.
+
 This reports the first test pass of the Accessing Higher Ground 2026
 workshop, "Accessibility Agents: Building Human-Centered AI Workflows for
 Trusted Accessibility Automation at Scale", against the test plan in

@@ -86,12 +86,15 @@ no pull request.</p>
   </fieldset>
 
   <label for="agent-file">Your agent file</label>
-  <p class="hint" id="agent-file-hint">Choose <code>my-agent/SKILL.md</code> from the kit folder. Or skip this and paste your agent into the box below.</p>
+  <p class="hint" id="agent-file-hint">In VS Code, your agent is <code>my-agent/SKILL.md</code> in the kit folder. On the browser path, choose the SKILL.md you downloaded, or skip this and paste your agent into the box below.</p>
   <input type="file" id="agent-file" accept=".md,text/markdown,text/plain" aria-describedby="agent-file-hint">
 
   <label for="agent-text">Your agent, as text</label>
-  <p class="hint" id="agent-text-hint">Filled in for you when you choose the file.</p>
-  <textarea id="agent-text" aria-describedby="agent-text-hint"></textarea>
+  <p class="hint" id="agent-text-hint">Filled in for you when you choose the file, or by "Fill in the practice template". Or paste the agent your assistant gave you.</p>
+  <p class="hint" id="agent-text-error" hidden></p>
+  <textarea id="agent-text" aria-describedby="agent-text-hint agent-text-error"></textarea>
+  <button type="button" id="fill-template" hidden>Fill in the practice template</button>
+  <button type="button" id="download-skill" hidden>Download as SKILL.md</button>
 
   <label for="agent-name">Your agent's short name</label>
   <p class="hint" id="agent-name-hint">Lowercase words joined by hyphens, like <code>alternate-format-planner</code>. Filled in from the file. Not needed for a practice agent.</p>
@@ -100,7 +103,7 @@ no pull request.</p>
   <button type="submit">Open the share form on GitHub</button>
 </form>
 
-<div id="result" class="panel" role="status" aria-live="polite"></div>
+<div id="result" role="status"></div>
 
 <h2>What happens on GitHub</h2>
 <ol>
@@ -115,8 +118,9 @@ committed in your name, so it shows on your own GitHub profile.</p>
 
 <h2>If anything goes wrong</h2>
 <p>Raise a hand, or write to <a href="mailto:support@community-access.org">support@community-access.org</a>. If you are stuck,
-share one of the ready-made agents from <code>examples/agents/</code> with
-your name on its author line. That counts.</p>
+share one of the <a href="https://letitglow.app/ahg/kit#examples-agents">ready-made agents</a>
+(in the kit, <code>examples/agents/</code>) with your name on its author
+line. That counts.</p>
 
 <p><a href="https://letitglow.app/ahg">Back to everything for AHG 2026</a></p>
 
@@ -131,6 +135,7 @@ your name on its author line. That counts.</p>
   </div>
 </footer>
 
+<script type="application/json" id="practice-template">"---\nname: my-agent-name\ndescription: \"One sentence. What this agent does, for whom, in plain words.\"\nlicense: MIT\nmetadata:\n  tier: specialist\n  domain: documents\n  output: findings\n  title: \"My Agent Title\"\n  workshop: AHG 2026\n  author: \"Your Name, Your Institution\"\n---\n## Role\n\nWho this agent is, and who it works for. Example: \"You are an alternate\nformat planner in a university disability resource center. You work for the\nspecialist who handles accommodation requests.\"\n\n## Task\n\nThe one job it does, said plainly. One job, not five.\n\n## Trusted guidance\n\nThe sources it must use, and cite by name and link in every answer:\n\n- [WCAG 2.2](https://www.w3.org/TR/WCAG22/)\n- [Understanding WCAG 2.2](https://www.w3.org/WAI/WCAG22/Understanding/)\n- Add your own: your institution\u0027s accessibility policy, style guide, or\n  procedure.\n\nWork only from the evidence you are given: a checker\u0027s report, the text of a\ndocument, or what the person tells you. If something is not in the evidence,\nsay you cannot see it. Do not guess.\n\n## Output format\n\nWhat comes back, in what shape, so a busy person can use it. Example: \"A\nnumbered list, most urgent first. For each item: the barrier, who it affects,\nthe WCAG criterion with its link, and the fix in one or two sentences.\"\n\n## Human review\n\nWho checks what before anything goes out. End every answer with a \"Before\nyou send this\" checklist for that person.\n\n## Never\n\n- Never ask for, or use, student names, records, accommodation details or\n  health information.\n- Never say a document is \"compliant\" or \"accessible\". Say what you checked,\n  what you found, and what a person still needs to check.\n"</script>
 <script>
 (function () {
   "use strict";
@@ -147,6 +152,12 @@ your name on its author line. That counts.</p>
   var text = document.getElementById("agent-text");
   var nameInput = document.getElementById("agent-name");
   var result = document.getElementById("result");
+  var err = document.getElementById("agent-text-error");
+  var fillButton = document.getElementById("fill-template");
+  var downloadButton = document.getElementById("download-skill");
+  var templateData = document.getElementById("practice-template");
+  var practiceTemplate = templateData ? JSON.parse(templateData.textContent || "\"\"") : "";
+  var lastSaid = "";
 
   if (params.get("practice") === "1") {
     form.querySelector('input[value="My practice agent"]').checked = true;
@@ -162,10 +173,65 @@ your name on its author line. That counts.</p>
   }
 
   function say(html) {
-    // The live region is always in the page and only its text changes, so
-    // screen readers announce each message.
-    result.innerHTML = html;
+    // The live region stays in the page, empty and unstyled; each message is
+    // a new paragraph inside it, so screen readers announce every change.
+    if (html === lastSaid) { html = "Done again. " + html; }
+    lastSaid = html;
+    var p = document.createElement("p");
+    p.className = "panel";
+    p.innerHTML = html;
+    result.replaceChildren(p);
   }
+
+  function showEmpty(message) {
+    // Read on focus, through aria-describedby, so the move does not swallow it.
+    err.textContent = message;
+    err.hidden = false;
+    text.setAttribute("aria-invalid", "true");
+    say(message);
+    text.focus();
+  }
+
+  text.addEventListener("input", function () {
+    if (!err.hidden) {
+      err.hidden = true;
+      err.textContent = "";
+      text.removeAttribute("aria-invalid");
+    }
+  });
+
+  if (practiceTemplate) {
+    fillButton.hidden = false;
+    fillButton.addEventListener("click", function () {
+      if (text.value.trim() && text.value !== practiceTemplate &&
+          !window.confirm("Replace the text in Your agent, as text, with the practice template?")) {
+        return;
+      }
+      text.value = practiceTemplate;
+      text.dispatchEvent(new Event("input"));
+      form.querySelector('input[value="My practice agent"]').checked = true;
+      say("The practice template is in Your agent, as text, and My practice agent is chosen.");
+    });
+  }
+
+  downloadButton.hidden = false;
+  downloadButton.addEventListener("click", function () {
+    var body = text.value.trim();
+    if (!body) {
+      showEmpty("Your agent is empty. Paste it in, or choose your SKILL.md file.");
+      return;
+    }
+    var url = URL.createObjectURL(new Blob([body + "
+"], { type: "text/markdown;charset=utf-8" }));
+    var link = document.createElement("a");
+    link.href = url;
+    link.download = "SKILL.md";
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    window.setTimeout(function () { URL.revokeObjectURL(url); }, 1000);
+    say("Your browser is saving SKILL.md, usually to your Downloads folder.");
+  });
 
   fileInput.addEventListener("change", function () {
     var file = fileInput.files && fileInput.files[0];
@@ -187,8 +253,7 @@ your name on its author line. That counts.</p>
     var body = text.value.trim();
     var name = slug(nameInput.value) || nameFromText(body);
     if (!body) {
-      say("Your agent is empty. Choose your <code>SKILL.md</code> file, or paste it in.");
-      text.focus();
+      showEmpty("Your agent is empty. Paste it in, or choose your SKILL.md file.");
       return;
     }
     if (!practice && (!name || name === "my-agent-name")) {
