@@ -25,8 +25,8 @@ scale without losing quality, accountability or transparency.
 - Design your own accessibility agent: five plain-English answers about its
   role, its task, the standards it must cite, what it produces, and who
   reviews it. No code.
-- Put it to work with GitHub Copilot in VS Code, on a realistic sample
-  course full of planted barriers.
+- Put it to work on a realistic sample course full of planted barriers,
+  with GitHub Copilot in VS Code or with the AI assistant you already use.
 - Ground it in real evidence from GLOW, axe-core and Accessibility Insights,
   so it cites WCAG 2.2 instead of guessing.
 - Share it: add your agent to the open-source AHG 2026 collection on
@@ -46,12 +46,21 @@ you do not need to have used VS Code or GitHub before.
 
 ## What you need
 
-1. A free GitHub account, with Copilot Free turned on.
-2. VS Code, with the AHG 2026 profile, which installs everything else.
-3. The agent kit, from letitglow.app/ahg.
+A laptop, a free GitHub account for sharing your agent, and one of three
+paths into the same day. Every path gives you the same agent, the same team
+report and the same share on GitHub. letitglow.app/ahg/paths compares them
+and has every setup step.
 
-The setup takes about 20 minutes. The setup page has every step, and there
-is a setup table outside the room from 10:00 on the day.
+1. The browser path: nothing to install. ChatGPT, Copilot on github.com,
+   Claude, Gemini or your campus assistant, signed in, with one text per
+   block from letitglow.app/ahg/assistant. About 10 minutes to set up.
+2. VS Code on your computer: VS Code with the AHG 2026 profile, the agent
+   kit from letitglow.app/ahg, and Copilot Free. About 25 minutes.
+3. VS Code for the Web: the same VS Code and Copilot at vscode.dev, in
+   Chrome or Edge, with the kit opened from your laptop. About 15 minutes.
+
+Not sure? Take the browser path. There is a setup table outside the room
+from 10:00 on the day.
 
 ## Learning outcomes
 
