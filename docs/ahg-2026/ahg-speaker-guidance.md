@@ -52,7 +52,7 @@ Each row is one recommendation from the orientation, and where the workshop meet
 
 | Recommendation | Where it is met |
 |---|---|
-| More hands-on | Six of the seven blocks are hands-on, each with its own Copilot command |
+| More hands-on | Six of the seven blocks are hands-on, each with its own Copilot command in VS Code and its own text on the browser path |
 | Leave with a skill, a tool or a framework | An agent, a team report, an open-source contribution in their own name, a 30-day plan, and the five-part agent formula |
 | Fix pacing | One agenda module drives the deck and the run of show; the pacing rules say what to protect |
 | Title and content match | The deck's title is the program's title, word for word, and a test holds it there. Every promise in the session description is mapped to a block in `plan.md` section 5 |
@@ -80,7 +80,7 @@ Each row is one recommendation from the orientation, and where the workshop meet
 | Save time for the session evaluation | The last five minutes of the AHG day in the agenda module; slides 5 and 26 |
 | Bring your own laptop, charger and adaptors | The pocket card checklist |
 | Visit the room ahead of time | The pocket card checklist |
-| BYOD: attendees may lack admin rights | VS Code installs without administrator rights on Windows; the setup message and setup page say so, and support is offered before the day |
+| BYOD: attendees may lack admin rights | The browser path and VS Code for the Web need nothing installed; VS Code installs without administrator rights on Windows; the setup message and setup page say so, and support is offered before the day |
 | Times are Mountain Time | The setup message, the setup page, the run of show, the pocket card and slide 5 |
 | Upload materials to Cvent (DOC, DOCX, PPTX, PDF; under 250 MB) | Run of show pre-flight item 5: `slides.pptx`, `slides.docx` and the step cards |
 

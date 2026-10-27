@@ -51,7 +51,7 @@ The table lists each folder and what it holds.
 |---|---|
 | `agents/` | Every agent shared on the day, one folder per person, and the gallery in `agents/README.md` |
 | `practice/` | Practice agents shared before the day |
-| `kit/` | The agent kit: open this folder in VS Code. The same kit downloads from the setup page |
+| `kit/` | The agent kit: open this folder in VS Code on a computer or at vscode.dev. The browser path uses its `any-assistant/` texts, also at letitglow.app/ahg/assistant. The same kit downloads from the setup page |
 | `.github/` | The share form and the automation that adds each agent |
 | `scripts/` | The script that sends every agent to the Accessibility Agents project |
 
