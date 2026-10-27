@@ -7,7 +7,8 @@ description: "How the AHG 2026 Accessibility Agents workshop keeps every promise
 
 # AHG 2026 workshop plan: Accessibility Agents for higher education
 
-Status: built 9 October 2026, ready for review and testing. Everything in
+Status: built 9 October 2026; three paths added 27 October 2026 (D18 to
+D20). Ready for review and testing. Everything in
 this plan exists except what section 16 says must be proven by a person, and
 the Accessibility Agents folder, which is ready to copy in from
 `for-accessibility-agents/`.
@@ -79,13 +80,20 @@ Copilot. We make that as small as it can be.
    needs Git), and the axe Accessibility Linter, with large text and screen
    reader settings already on.
 
-That is all. No terminal, no command line, no Git install, no code. Anyone
-who prefers another AI assistant for the morning, such as their campus
-Copilot or free ChatGPT, may use it; the afternoon is in VS Code with GitHub
-Copilot for everyone.
+That is all. No terminal, no command line, no Git install, no code.
 
-Anyone who cannot install VS Code pairs with a neighbor for the afternoon
-and still submits their own agent from the browser.
+Since 27 October there are three paths into the same day (D18). Each keeps
+every block and every artifact; only the place the participant types
+changes.
+
+| Path | Needs | Each block starts with |
+|---|---|---|
+| The browser path | A browser, an AI assistant account (ChatGPT is the tested one), and a GitHub account for sharing | One text copied from letitglow.app/ahg/assistant and pasted as one message |
+| VS Code on a computer | VS Code 1.143 or later, the AHG 2026 profile, the kit, a GitHub account with Copilot Free | A command such as /ready-check in Copilot Chat |
+| VS Code for the Web | Chrome or Edge, the kit unzipped on the laptop, a GitHub account with Copilot Free | The same commands, at vscode.dev with the kit folder opened |
+
+Anyone whose VS Code will not cooperate, or whose Copilot allowance runs
+out, moves to the browser path and loses nothing.
 
 ## 4. Decisions
 
@@ -110,6 +118,9 @@ These replace L1 to L14 in the September plan.
 | D12 | Nothing taught depends on GLOW. Every step names the general skill and shows it working with tools people already have, so the day still pays off if GLOW is never opened again |
 | D13 | Support on request at support@community-access.org, before and after the day |
 | D14 | The last five minutes are the AHG session evaluation |
+| D18 | Three paths, one day: the browser path with any AI assistant, VS Code on a computer, and VS Code for the Web. The browser path is the default for anyone unsure. Every path ends with the same agent, team report and share. The facilitator demonstrates in VS Code, so every participant sees agent teams built in VS Code with Copilot |
+| D19 | The six commands are agent skills in `.github/skills/`, not prompt files. Since VS Code 1.143 prompt files run only in Local chat sessions; skills run in the default Copilot sessions too |
+| D20 | The browser path pastes text, never files: one generated text per block, carrying the block's instructions and every kit file it needs, built by `scripts/build_ahg_kit.py` into `kit/any-assistant/`. Participants on it must sign in to their assistant; ChatGPT without an account stops after a message or two |
 
 ## 5. Every promise, and where it is kept
 
@@ -121,7 +132,7 @@ If a block is cut, this table shows which promise breaks.
 | Agents analyze content, find barriers, generate remediation guidance | Blocks 2 and 3 |
 | Grounded in authoritative standards; axe-core and Accessibility Insights | Block 4: evidence from GLOW, Accessibility Insights and axe-core, with citations required |
 | Human-centered, extending experts | The review step in every agent, and the named reviewer in the team report |
-| VS Code, GitHub and Copilot | Every participant: Copilot all day, VS Code in block 6, GitHub in block 5 |
+| VS Code, GitHub and Copilot | GitHub for every participant in block 5. Copilot and VS Code hands-on for everyone on the two VS Code paths, and in every demonstration for everyone on the browser path, who may also use Copilot on github.com as their assistant (D18) |
 | Learn to build agent teams | Block 6: each participant adds their specialist to the office team and runs the team themselves |
 | Agent teams of coordinated specialists | Block 6: the coordinator routes the course to specialists, including the participant's own |
 | At scale | Block 6: one team run across the whole course, one prioritized report |
@@ -316,7 +327,8 @@ Built: `kit/`, what participants download and open in VS Code.
 | `ahg-2026.code-profile` | The AHG 2026 VS Code profile: GitHub Copilot Chat, GitHub Pull Requests, GitHub Repositories and the axe Accessibility Linter, with 18pt text, word wrap and screen reader support |
 | `.vscode/` | The same settings and recommendations, the safety net if the profile was skipped |
 | `.github/copilot-instructions.md` | The workshop's rules for Copilot: plain language, encouragement, evidence only, cite WCAG 2.2, never "compliant", nothing private |
-| `.github/prompts/` | One command per block: /ready-check, /design-my-agent, /try-my-agent, /ground-my-agent, /run-the-office, /my-30-day-plan |
+| `.github/skills/` | One command per block, as agent skills: /ready-check, /design-my-agent, /try-my-agent, /ground-my-agent, /run-the-office, /my-30-day-plan |
+| `any-assistant/` | The same six blocks as texts for the browser path, each carrying the files it needs |
 | `.github/agents/office-coordinator.agent.md` | The coordinator that routes the course to the specialists, the participant's agent included, and writes the team report |
 | `office-team/` | Eight specialists adapted from the Accessibility Agents project: Word, PowerPoint, Excel, PDF, web pages, captions and media, plain language, and a standards reviewer |
 | `my-agent/SKILL.md` | The participant's agent, from a template with the never-do list built in |
@@ -400,6 +412,8 @@ Each row is one risk and what we do about it.
 |---|---|
 | Accessibility Agents specialists do not run well under Copilot on documents | Proven first; the live team is trimmed to what works |
 | Free AI tools give different answers | Checks ask "did it find these barriers and cite the standard", not "does it match the screen" |
+| A free assistant refuses a long paste, or runs out | The texts are sized to fit, and tested in ChatGPT; the fallback is another assistant on the same block |
+| Prompt files stop working in a VS Code update | The commands are skills (D19); the browser path is the fallback for any VS Code problem |
 | Free AI tools keep what is pasted | No private data, ever; we show where to turn training off |
 | Thirty shares at once | The automation runs one at a time and replies to each within a minute or two; nothing waits for a person |
 | People arrive without setup done | Three setup messages, the ready check, the setup table at 10:00, pairing |

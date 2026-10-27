@@ -141,7 +141,7 @@ def _you_are_here(number: int) -> str:
 JOURNEY = (
     "The problem: a course full of barriers, and a team too small.",
     "Your agent: five plain-English answers.",
-    "Your agent at work: Copilot uses it on one course document.",
+    "Your agent at work: your AI uses it on one course document.",
     "Your agent, grounded: real evidence in, cited answers out.",
     "Your agent, shared: in an open-source collection, with your name on it.",
     "Your agent in the team: the whole course, at once.",
@@ -229,6 +229,7 @@ def build_slides(ctx: DeckContext) -> list[Slide]:
                 Bullets(items=(
                     f"10:30 to 4:30 Mountain Time. Lunch at {lunch.starts_at}. A break at {rest.starts_at}.",
                     "Everything is at letitglow.app/ahg. Not set up yet? A helper is coming to you.",
+                    "Three paths, one day: VS Code on your laptop, VS Code at vscode.dev, or any AI assistant in your browser.",
                     "Seven blocks. Every one starts by showing you the finished result.",
                     f"The last five minutes, at {evaluation.starts_at}, are the session evaluation.",
                     "Ask for anything, any time: large print, a seat, a pause, a repeat.",
@@ -238,6 +239,7 @@ def build_slides(ctx: DeckContext) -> list[Slide]:
                 "Name the exits and the restrooms, physically pointing.",
                 "Say the last bullet slowly, then add: that is not an interruption of this workshop - it is this workshop.",
                 "If anyone is not set up, do not wait for them. Helpers sit with them while the room carries on; the morning is designed so they catch up by lunch.",
+                "Say the three paths once: VS Code on a laptop, VS Code for the Web at vscode.dev, or the browser path with ChatGPT or another assistant at letitglow.app/ahg/assistant. Same blocks, same agent, same share. Anyone whose VS Code will not cooperate moves to the browser path and loses nothing.",
             ),
         ),
         Slide(
@@ -330,20 +332,21 @@ def build_slides(ctx: DeckContext) -> list[Slide]:
             ),
             notes=(
                 "Read Maria's answers aloud. Then type /design-my-agent in Copilot Chat on the projector and answer as Maria, so they hear the whole conversation once before they have theirs.",
+                "Say that the browser path is the same conversation: the block 2 text from letitglow.app/ahg/assistant pasted into ChatGPT asks the same questions in the same order.",
                 "Joke if the room is warm: Maria's coffee machine has been out of order since August. Her agent does not drink coffee, which is its main advantage.",
             ),
         ),
         Slide(
-            id="s11", section="Design", kicker="Your turn", title="Copilot asks, you answer",
+            id="s11", section="Design", kicker="Your turn", title="Your AI asks, you answer",
             blocks=(
                 Bullets(ordered=True, items=(
-                    "Open Copilot Chat: Control+Alt+I on Windows, Command+Control+I on a Mac.",
-                    "Type /design-my-agent and press Enter.",
+                    "In VS Code: open Copilot Chat (Control+Alt+I, or Control+Command+I on a Mac) and type /design-my-agent.",
+                    "In a browser: copy the block 2 text from letitglow.app/ahg/assistant and paste it into your assistant.",
                     "Answer the questions, one at a time. Borrow from the example whenever you like.",
-                    "Copilot writes your answers into my-agent/SKILL.md and reads it back.",
+                    "VS Code writes your agent into my-agent/SKILL.md. In a browser it comes back in a box with a Copy button: download it from the share page.",
                 )),
-                Para("You are on track if Copilot tells you one thing your agent does well."),
-                Para("Stuck? Copy a ready-made agent from examples/agents into my-agent. That counts. You are still in."),
+                Para("You are on track if your AI tells you one thing your agent does well."),
+                Para("Stuck? Start from a ready-made agent in examples/agents. That counts. You are still in."),
             ),
             notes=(
                 "Helpers move now. Look for the person who has not typed anything yet, and sit with them quietly.",
@@ -356,7 +359,7 @@ def build_slides(ctx: DeckContext) -> list[Slide]:
             blocks=(
                 Para("By the end of this block: your agent's first answer on a real course document."),
                 Bullets(ordered=True, items=(
-                    "In Copilot Chat, type /try-my-agent.",
+                    "In VS Code, type /try-my-agent. In a browser, paste the block 3 text.",
                     "Pick a file from the PSY 101 sample course.",
                     "Read what your agent says.",
                 )),
@@ -401,9 +404,9 @@ def build_slides(ctx: DeckContext) -> list[Slide]:
             blocks=(
                 Para("By the end of this block: the same agent, giving cited answers from real evidence. A before and an after."),
                 Bullets(ordered=True, items=(
-                    "In Copilot Chat, type /ground-my-agent.",
+                    "In VS Code, type /ground-my-agent. In a browser, paste the block 4 text.",
                     "Use the same file as this morning.",
-                    "Your agent reads that file's checker report from sample-course/evidence: GLOW for documents, axe for the web page.",
+                    "Your agent reads that file's checker report: GLOW for documents, axe for the web page.",
                     "Compare the two answers.",
                 )),
             ),
@@ -459,7 +462,7 @@ def build_slides(ctx: DeckContext) -> list[Slide]:
             blocks=(
                 Para("By the end of this block: your agent in the open-source AHG 2026 collection, committed in your name."),
                 Bullets(ordered=True, items=(
-                    "Open letitglow.app/ahg/share, and choose your my-agent/SKILL.md.",
+                    "Open letitglow.app/ahg/share, and choose your SKILL.md, or paste your agent in.",
                     "Press Open the share form on GitHub. The form opens, already filled in.",
                     "Tick the privacy box, and press Submit new issue.",
                     "Within a minute, the reply: Your agent is in.",
@@ -489,7 +492,7 @@ def build_slides(ctx: DeckContext) -> list[Slide]:
             blocks=(
                 Para("By the end of this block: your agent working inside a team, across the whole course, and one team report."),
                 Bullets(ordered=True, items=(
-                    "In Copilot Chat in VS Code, type /run-the-office.",
+                    "In VS Code, type /run-the-office. In a browser, paste the block 6 text.",
                     "The coordinator sends each course file to its specialists, and yours where it fits.",
                     "The standards reviewer checks everyone's work.",
                     "You get the team report, with your agent's section in it.",
@@ -498,6 +501,7 @@ def build_slides(ctx: DeckContext) -> list[Slide]:
             notes=(
                 _journey_note(6),
                 "This is building an agent team: they added a specialist, and their coordinator is running it. Copilot announces each file as it finishes, so screen reader users hear progress, not silence.",
+                "On the browser path the same coordinator and specialists travel inside the block 6 text, so ChatGPT or any assistant runs the same team. If an assistant stops part way, type continue.",
             ),
         ),
         Slide(
@@ -532,7 +536,7 @@ def build_slides(ctx: DeckContext) -> list[Slide]:
             blocks=(
                 Para("By the end of this block: a 30-day plan for your own campus."),
                 Bullets(ordered=True, items=(
-                    "In Copilot Chat, type /my-30-day-plan.",
+                    "In VS Code, type /my-30-day-plan. In a browser, paste the block 7 text.",
                     f"Then add your one-sentence commitment at {ctx.join_display}/11 for the wall.",
                 )),
                 Table(

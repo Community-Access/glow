@@ -22,7 +22,7 @@ program's promises.
 | 1 | `plan.md` | The plan: every promise in the program and where it is kept, decisions D1 to D15, the day, and the order of work |
 | 2 | `run-of-show.md` | The day by the clock, with the command for each block, pacing rules, the fallback ladder and pre-flight |
 | 3 | `facilitator-card.md` | The pocket card |
-| 4 | `kit/` | What every participant opens in VS Code: commands, office team, examples, ready-made agents, the sample course and its evidence, step cards. Start with `kit/README.md` |
+| 4 | `kit/` | What every VS Code participant opens: the commands as skills in `.github/skills/`, the browser path texts in `any-assistant/`, office team, examples, ready-made agents, the sample course and its evidence, step cards. Start with `kit/README.md` |
 | 5 | `slides.*` | The deck, generated from `workshop_deck.py`, in four formats |
 | 6 | `pre-event-message.md` | The setup message participants are sent three times |
 | 7 | `answer-key.md` | Every barrier planted in the sample course. Facilitators only; not in the kit |

@@ -1,6 +1,6 @@
 ---
-description: Block 3. Put your agent to work on one course document, before any evidence.
-agent: agent
+name: try-my-agent
+description: "Block 3. Put your agent to work on one course document, before any evidence."
 ---
 Read `my-agent/SKILL.md` and act as that agent, following it exactly.
 

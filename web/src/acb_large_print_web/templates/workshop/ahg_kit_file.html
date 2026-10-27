@@ -6,12 +6,22 @@
 <p>In the kit: <code>{{ rel }}</code>.</p>
 <ul>
   <li>
-    Plain text, for Copilot or any AI:
-    <a href="{{ raw_url }}">{{ raw_url }}</a>
+    <a href="{{ raw_url }}">This file as plain text</a>, at <code>{{ raw_url }}</code>
   </li>
   {% if docx %}<li><a href="{{ url_for('shortlinks.ahg_kit_file', rel=docx) }}">Download this card as a large print Word file</a></li>{% endif %}
   <li><a href="{{ url_for('shortlinks.ahg_kit_short') }}">Everything in the kit</a></li>
 </ul>
+
+<h2 id="copy">Copy it into ChatGPT or another assistant</h2>
+<button type="button" hidden data-copy="kit-text" data-status="kit-status"
+        data-what="text of {{ title }}"
+        data-next="Now go to your assistant, paste it with {paste}, and press Enter.">Copy this file's text</button>
+<div id="kit-status" role="status"></div>
+<details>
+  <summary>Read the plain text first</summary>
+  <label for="kit-text">The plain text of {{ title }}</label>
+  <textarea id="kit-text" readonly spellcheck="false" aria-describedby="kit-status">{{ raw_text }}</textarea>
+</details>
 
 {% if front %}
 <h2 id="about-this-file">About this file</h2>
@@ -32,4 +42,8 @@
 <h2 id="contents">The file</h2>
 <pre class="plain">{{ plain }}</pre>
 {% endif %}
+{% endblock %}
+
+{% block scripts %}
+{% include "workshop/_ahg_copy.html" %}
 {% endblock %}

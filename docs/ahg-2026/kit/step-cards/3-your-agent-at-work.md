@@ -19,10 +19,19 @@ Your agent's first answer on a real course document, and a sense of where it had
 
 ## Steps
 
-1. Open Copilot Chat: Control+Alt+I on Windows, or Command+Control+I on a Mac.
+### In a browser
+
+1. In the same conversation as block 2, paste the text for "Block 3: your agent at work" from letitglow.app/ahg/assistant, and press Enter.
+2. Your assistant uses your agent from block 2. If it asks for your agent, paste it, or open your downloaded SKILL.md and copy it from there.
+3. Choose a file from the PSY 101 sample course. Your assistant suggests the one that best fits your agent.
+4. Read your agent's answer. Then read the short note: one thing it did well, and where it guessed.
+
+### In VS Code
+
+1. Open Copilot Chat: Control+Alt+I on Windows, or Control+Command+I on a Mac.
 2. Type /try-my-agent and press Enter.
 3. Choose a file from the PSY 101 sample course. Copilot suggests the one that best fits your agent.
-4. Read your agent's answer. Then read Copilot's short note: one thing it did well, and where it guessed.
+4. Read your agent's answer. Then read Copilot's short note: one thing it did well, and where it guessed. To read a long answer as plain text, press Alt+F2 on Windows or Option+F2 on a Mac.
 
 ## You are on track if
 
@@ -30,7 +39,7 @@ You have an answer, and you can name one thing your agent had to guess.
 
 ## If you are stuck
 
-Use a ready-made agent from examples/agents for this step, or read the first answer in examples/maria-alternate-format-planner.md, section 4.
+Use a ready-made agent for this step, or read the first answer in examples/maria-alternate-format-planner.md, section 4.
 
 Raise a hand at any time. A helper comes to you.
 

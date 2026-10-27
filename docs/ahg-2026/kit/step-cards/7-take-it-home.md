@@ -19,15 +19,26 @@ A 30-day plan for your own campus, and your commitment on the wall.
 
 ## Steps
 
-1. Open Copilot Chat: Control+Alt+I on Windows, or Command+Control+I on a Mac.
+### In a browser
+
+1. In the same conversation, paste the text for "Block 7: take it home" from letitglow.app/ahg/assistant, and press Enter.
+2. Answer six short questions: one workflow, one partner, one safeguard, a first step this week, who needs to know, and what it looks like if it worked.
+3. Your assistant gives your plan back in a box with a Copy button. Copy it into an email to yourself or a Word document.
+
+### In VS Code
+
+1. Open Copilot Chat: Control+Alt+I on Windows, or Control+Command+I on a Mac.
 2. Type /my-30-day-plan and press Enter.
 3. Answer six short questions: one workflow, one partner, one safeguard, a first step this week, who needs to know, and what it looks like if it worked.
 4. Copilot saves your plan as my-30-day-plan.md in the kit.
-5. Open letitglow.app/w/ahg-2026/11 in your browser and add your one-sentence commitment for the wall. It appears with no name on it.
+
+### Everyone
+
+1. Open letitglow.app/w/ahg-2026/11 in your browser and add your one-sentence commitment for the wall. It appears with no name on it.
 
 ## You are on track if
 
-my-30-day-plan.md exists, and your commitment is in.
+Your plan is saved, and your commitment is in.
 
 ## If you are stuck
 

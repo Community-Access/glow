@@ -26,7 +26,8 @@ GROUPS: tuple[tuple[str, str, str], ...] = (
     ("examples", "Worked examples", "Three people, three agents, from first draft to team report."),
     ("examples/agents", "Ready-made agents", "Six finished agents. Stuck at any point? Take one, put your name on it, and keep going. That counts."),
     ("office-team", "The office team", "The specialists your agent joins in block 6, one per kind of file."),
-    (".github/prompts", "The Copilot commands", "What /ready-check, /design-my-agent and the rest of the commands tell Copilot to do."),
+    ("any-assistant", "The browser path texts", "One text per block for ChatGPT or any other assistant. Easier with a Copy button on the browser path page, letitglow.app/ahg/assistant."),
+    (".github/skills", "The Copilot commands", "What /ready-check, /design-my-agent and the rest of the commands tell Copilot to do in VS Code. Each is an agent skill."),
     (".github/agents", "The coordinator", "The agent that runs the office team."),
     (".github", "Copilot's instructions for the kit", "Read by Copilot whenever the kit is open."),
     (".vscode", "VS Code settings", "Large text, word wrap and the recommended extensions."),
@@ -70,6 +71,8 @@ def label_for(rel: str) -> str:
     if rel in LABELS:
         return LABELS[rel]
     parts = rel.split("/")
+    if rel.startswith(".github/skills/") and parts[-1] == "SKILL.md":
+        return "/" + parts[-2]
     if parts[-1] == "SKILL.md" and len(parts) >= 2:
         return parts[-2].replace("-", " ").capitalize()
     name = parts[-1]

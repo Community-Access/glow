@@ -89,7 +89,7 @@ The map for today
 
 1. The problem: a course full of barriers, and a team too small.
 2. Your agent: five plain-English answers.
-3. Your agent at work: Copilot uses it on one course document.
+3. Your agent at work: your AI uses it on one course document.
 4. Your agent, grounded: real evidence in, cited answers out.
 5. Your agent, shared: in an open-source collection, with your name on it.
 6. Your agent in the team: the whole course, at once.
@@ -109,6 +109,7 @@ Housekeeping
 
 - 10:30 to 4:30 Mountain Time. Lunch at 12:15. A break at 2:10.
 - Everything is at letitglow.app/ahg. Not set up yet? A helper is coming to you.
+- Three paths, one day: VS Code on your laptop, VS Code at vscode.dev, or any AI assistant in your browser.
 - Seven blocks. Every one starts by showing you the finished result.
 - The last five minutes, at 4:25, are the session evaluation.
 - Ask for anything, any time: large print, a seat, a pause, a repeat.
@@ -120,6 +121,8 @@ Housekeeping
 > Say the last bullet slowly, then add: that is not an interruption of this workshop - it is this workshop.
 >
 > If anyone is not set up, do not wait for them. Helpers sit with them while the room carries on; the morning is designed so they catch up by lunch.
+>
+> Say the three paths once: VS Code on a laptop, VS Code for the Web at vscode.dev, or the browser path with ChatGPT or another assistant at letitglow.app/ahg/assistant. Same blocks, same agent, same share. Anyone whose VS Code will not cooperate moves to the browser path and loses nothing.
 
 ---
 
@@ -226,22 +229,24 @@ Maria, from the Disability Resource Center, designing her alternate format plann
 
 > Read Maria's answers aloud. Then type /design-my-agent in Copilot Chat on the projector and answer as Maria, so they hear the whole conversation once before they have theirs.
 >
+> Say that the browser path is the same conversation: the block 2 text from letitglow.app/ahg/assistant pasted into ChatGPT asks the same questions in the same order.
+>
 > Joke if the room is warm: Maria's coffee machine has been out of order since August. Her agent does not drink coffee, which is its main advantage.
 
 ---
 
-## 11. Copilot asks, you answer
+## 11. Your AI asks, you answer
 
 Your turn
 
-1. Open Copilot Chat: Control+Alt+I on Windows, Command+Control+I on a Mac.
-2. Type /design-my-agent and press Enter.
+1. In VS Code: open Copilot Chat (Control+Alt+I, or Control+Command+I on a Mac) and type /design-my-agent.
+2. In a browser: copy the block 2 text from letitglow.app/ahg/assistant and paste it into your assistant.
 3. Answer the questions, one at a time. Borrow from the example whenever you like.
-4. Copilot writes your answers into `my-agent/SKILL.md` and reads it back.
+4. VS Code writes your agent into `my-agent/SKILL.md`. In a browser it comes back in a box with a Copy button: download it from the share page.
 
-You are on track if Copilot tells you one thing your agent does well.
+You are on track if your AI tells you one thing your agent does well.
 
-Stuck? Copy a ready-made agent from examples/agents into my-agent. That counts. You are still in.
+Stuck? Start from a ready-made agent in examples/agents. That counts. You are still in.
 
 ### Speaker notes, slide 11
 
@@ -257,7 +262,7 @@ Block 3 of 7 - 11:50-12:15 - 25 minutes
 
 By the end of this block: your agent's first answer on a real course document.
 
-1. In Copilot Chat, type /try-my-agent.
+1. In VS Code, type /try-my-agent. In a browser, paste the block 3 text.
 2. Pick a file from the PSY 101 sample course.
 3. Read what your agent says.
 
@@ -265,7 +270,7 @@ It will guess a little. That is not a mistake. It is the setup for this afternoo
 
 ### Speaker notes, slide 12
 
-> Say where we are on the journey: step 3 of 7, "Your agent at work: Copilot uses it on one course document." Then show what they will have at the end of this block before anyone starts.
+> Say where we are on the journey: step 3 of 7, "Your agent at work: your AI uses it on one course document." Then show what they will have at the end of this block before anyone starts.
 >
 > PSY 101 is fictional: a course about memory and procrastination that keeps forgetting things and running late. The barriers in it are planted on purpose; the answer key is in the facilitator folder.
 
@@ -311,9 +316,9 @@ Block 4 of 7 - 1:15-2:10 - 55 minutes
 
 By the end of this block: the same agent, giving cited answers from real evidence. A before and an after.
 
-1. In Copilot Chat, type /ground-my-agent.
+1. In VS Code, type /ground-my-agent. In a browser, paste the block 4 text.
 2. Use the same file as this morning.
-3. Your agent reads that file's checker report from sample-course/evidence: GLOW for documents, axe for the web page.
+3. Your agent reads that file's checker report: GLOW for documents, axe for the web page.
 4. Compare the two answers.
 
 ### Speaker notes, slide 15
@@ -384,7 +389,7 @@ Block 5 of 7 - 2:20-3:00 - 40 minutes
 
 By the end of this block: your agent in the open-source AHG 2026 collection, committed in your name.
 
-1. Open letitglow.app/ahg/share, and choose your `my-agent/SKILL.md`.
+1. Open letitglow.app/ahg/share, and choose your SKILL.md, or paste your agent in.
 2. Press Open the share form on GitHub. The form opens, already filled in.
 3. Tick the privacy box, and press Submit new issue.
 4. Within a minute, the reply: Your agent is in.
@@ -423,7 +428,7 @@ Block 6 of 7 - 3:00-3:45 - 45 minutes
 
 By the end of this block: your agent working inside a team, across the whole course, and one team report.
 
-1. In Copilot Chat in VS Code, type /run-the-office.
+1. In VS Code, type /run-the-office. In a browser, paste the block 6 text.
 2. The coordinator sends each course file to its specialists, and yours where it fits.
 3. The standards reviewer checks everyone's work.
 4. You get the team report, with your agent's section in it.
@@ -433,6 +438,8 @@ By the end of this block: your agent working inside a team, across the whole cou
 > Say where we are on the journey: step 6 of 7, "Your agent in the team: the whole course, at once." Then show what they will have at the end of this block before anyone starts.
 >
 > This is building an agent team: they added a specialist, and their coordinator is running it. Copilot announces each file as it finishes, so screen reader users hear progress, not silence.
+>
+> On the browser path the same coordinator and specialists travel inside the block 6 text, so ChatGPT or any assistant runs the same team. If an assistant stops part way, type continue.
 
 ---
 
@@ -475,7 +482,7 @@ Block 7 of 7 - 3:45-4:15 - 30 minutes
 
 By the end of this block: a 30-day plan for your own campus.
 
-1. In Copilot Chat, type /my-30-day-plan.
+1. In VS Code, type /my-30-day-plan. In a browser, paste the block 7 text.
 2. Then add your one-sentence commitment at letitglow.app/w/ahg-2026/11 for the wall.
 
 What you can do on Monday, with tools you already have:

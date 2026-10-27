@@ -3025,7 +3025,10 @@ def ahg_profile():
 def ahg_share():
     if not _workshop_enabled():
         abort(404)
-    return render_template("workshop/ahg_share.html")
+    kit = _ahg_kit_dir()
+    template = kit / "my-agent" / "SKILL.md" if kit else None
+    practice = template.read_text(encoding="utf-8") if template and template.is_file() else ""
+    return render_template("workshop/ahg_share.html", practice_template=practice)
 
 
 # The sample course, online at /ahg/site (routes in shortlinks.py). The same
@@ -3162,6 +3165,50 @@ def render_ahg_kit_index():
     return render_template("workshop/ahg_kit.html", groups=groups)
 
 
+# The browser path at /ahg/assistant: scripts/build_ahg_kit.py writes one
+# text per block into kit/any-assistant, carrying the instructions and every
+# kit file that block needs, so an assistant that cannot open the kit still
+# runs the block exactly as the VS Code command does.
+AHG_ASSISTANT_BLOCKS = (
+    ("1-ready-check", "Block 1: the ready check", "/ready-check"),
+    ("2-design-my-agent", "Block 2: design your agent", "/design-my-agent"),
+    ("3-try-my-agent", "Block 3: your agent at work", "/try-my-agent"),
+    ("4-ground-my-agent", "Block 4: ground it", "/ground-my-agent"),
+    ("6-run-the-office", "Block 6: build the office", "/run-the-office"),
+    ("7-my-30-day-plan", "Block 7: take it home", "/my-30-day-plan"),
+)
+
+
+def render_ahg_assistant():
+    if not _workshop_enabled():
+        abort(404)
+    kit = _ahg_kit_dir()
+    if kit is None:
+        abort(404)
+    blocks = []
+    for key, title, command in AHG_ASSISTANT_BLOCKS:
+        path = kit / "any-assistant" / f"{key}.txt"
+        if not path.is_file():
+            continue
+        text = path.read_text(encoding="utf-8")
+        blocks.append({
+            "key": key, "number": key.split("-", 1)[0], "short": "block " + key.split("-", 1)[0],
+            "title": title, "command": command,
+            "text": text, "kb": max(1, round(len(text.encode("utf-8")) / 1024)),
+            "raw_url": url_for("shortlinks.ahg_kit_raw", rel=f"any-assistant/{key}.txt", _external=True),
+        })
+    return render_template("workshop/ahg_assistant.html", blocks=blocks)
+
+
+def render_ahg_paths():
+    if not _workshop_enabled():
+        abort(404)
+    return render_template(
+        "workshop/ahg_paths.html",
+        profile_url=url_for("workshop.ahg_profile", _external=True),
+    )
+
+
 def _ahg_card_title(path: Path) -> str:
     for line in path.read_text(encoding="utf-8").splitlines():
         if line.startswith("# "):
@@ -3189,7 +3236,7 @@ def render_ahg_kit_file(rel: str):
     return render_template(
         "workshop/ahg_kit_file.html",
         rel=rel, title=title, front=front, body=body,
-        plain=text if body is None else "", docx=docx,
+        plain=text if body is None else "", docx=docx, raw_text=text,
         raw_url=url_for("shortlinks.ahg_kit_raw", rel=rel, _external=True),
     )
 

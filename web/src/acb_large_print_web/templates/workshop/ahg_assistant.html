@@ -1,0 +1,93 @@
+{% extends "workshop/ahg_base.html" %}
+{% block title %}The workshop in any AI assistant{% endblock %}
+{% block heading %}The workshop in any AI assistant{% endblock %}
+
+{% block content %}
+<p>
+  This is the browser path: the whole day in a web browser, with the AI
+  assistant you already have. Every block has one text. You copy it, paste it
+  into your assistant as one message, and answer its questions. It runs the
+  block exactly as the VS Code command does, and you finish with the same
+  agent, the same team report and the same plan.
+</p>
+<p>
+  Tested with ChatGPT, signed in to a free account. It also works with
+  GitHub Copilot on github.com, Claude, Gemini and Microsoft 365 Copilot
+  Chat, including the one your campus provides.
+  <a href="{{ url_for('shortlinks.ahg_paths') }}#browser">Setting up your assistant</a>
+  has the steps for each, and how to stop your chats being used for training.
+</p>
+
+<h2 id="before">Before you start</h2>
+<ol>
+  <li>Open your assistant in a second browser tab, and sign in. Signing in matters: ChatGPT without an account stops after a message or two and asks you to log in.</li>
+  <li>Start one new conversation, and use that same conversation all day. Your agent from block 2 stays in it, so the later blocks can find it.</li>
+  <li>Never paste anything private: no student names, records, accommodation or health details. We use a fictional course all day.</li>
+</ol>
+
+<h2 id="how">How every block works</h2>
+<ol>
+  <li>On this page, press the block's Copy button. A message under the button says the text is copied.</li>
+  <li>Switch to your assistant's tab: Control+Tab, on Windows or Mac.</li>
+  <li>Move to the message box, where you would type a question. Paste with Control+V on Windows, or Command+V on a Mac.</li>
+  <li>Press Enter to send. The assistant starts the block, usually by asking you one question.</li>
+  <li>Answer each question in the same message box. When it gives you something to keep, it puts it in a box with its own Copy button.</li>
+</ol>
+<p>
+  Want to read a text before you paste it? Each block has "Read the text
+  first". It is long because it carries the kit's files with it; that is
+  what lets your assistant work from evidence instead of guessing.
+</p>
+
+{% for b in blocks %}
+<h2 id="block-{{ b.number }}">{{ b.title }}</h2>
+{% if b.number == "1" %}
+<p>Do this before the day, and again at 10:30. Your assistant checks three things and tells you that you are ready.</p>
+{% elif b.number == "2" %}
+<p>Your assistant asks five questions, one at a time, and writes your agent. It gives your agent back in a box with a Copy button. Copy it, open the <a href="{{ url_for('shortlinks.ahg_share_short') }}">share page</a>, paste it into "Your agent, as text", and press "Download as SKILL.md" to keep it on your computer.</p>
+{% elif b.number == "3" %}
+<p>Your agent works on one course document, with no evidence yet. Watch where it has to guess.</p>
+{% elif b.number == "4" %}
+<p>The same agent, now with each course file's checker report. It cites WCAG 2.2 and stops guessing.</p>
+{% elif b.number == "6" %}
+<p>Your agent joins a team of eight specialists and a coordinator, and the team works through the whole course. This is the longest text; paste it all as one message. If your assistant stops before the last file, type <kbd>continue</kbd> and press Enter.</p>
+{% elif b.number == "7" %}
+<p>Six short questions, and a 30-day plan for your campus in a box with a Copy button. Paste it into an email to yourself or a Word document.</p>
+{% endif %}
+<p>In VS Code this block is <kbd>{{ b.command }}</kbd>. About {{ b.kb }} KB of text.</p>
+<button type="button" hidden data-copy="text-{{ b.key }}" data-status="status-{{ b.key }}"
+        data-what="text for {{ b.short }}"
+        data-next="Now go to your assistant, paste it with {paste}, and press Enter.">Copy the text for {{ b.title }}</button>
+<div id="status-{{ b.key }}" role="status"></div>
+<details>
+  <summary>Read the text first: {{ b.title }}</summary>
+  <label for="text-{{ b.key }}">The text for {{ b.title }}</label>
+  <textarea id="text-{{ b.key }}" readonly spellcheck="false" aria-describedby="status-{{ b.key }}">{{ b.text }}</textarea>
+  <p><a href="{{ b.raw_url }}">The text for {{ b.short }} as plain text</a>, at <code>{{ b.raw_url }}</code></p>
+</details>
+{% if b.number == "4" %}
+<h2 id="block-5">Block 5: share it</h2>
+<p>
+  No text to paste for this one. Open the <a href="{{ url_for('shortlinks.ahg_share_short') }}">share page</a>,
+  leave "My real agent" chosen, paste your agent into "Your agent, as text"
+  (or choose the SKILL.md you downloaded in block 2), and press "Open the
+  share form on GitHub". Step card 5 has every key.
+</p>
+{% endif %}
+{% endfor %}
+
+<h2 id="help">If something goes wrong</h2>
+<ul>
+  <li>The assistant asks you to log in: sign in or make a free account, then paste the block's text again.</li>
+  <li>The assistant says the message is too long: start a new conversation and paste again. If it still refuses, the free plan's limit is the problem; switch to another assistant, or ask a helper.</li>
+  <li>The assistant has forgotten your agent: paste your agent again as its own message, then paste the block's text.</li>
+  <li>The assistant has used up its free messages for now: switch to another assistant and carry on from this block. Your agent is on your computer, from block 2.</li>
+  <li>Anything else: raise a hand, or write to <a href="mailto:support@community-access.org">support@community-access.org</a>.</li>
+</ul>
+
+<p><a href="{{ url_for('shortlinks.ahg_landing') }}">Back to everything for AHG 2026</a></p>
+{% endblock %}
+
+{% block scripts %}
+{% include "workshop/_ahg_copy.html" %}
+{% endblock %}

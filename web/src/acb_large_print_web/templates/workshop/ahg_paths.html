@@ -1,0 +1,193 @@
+{% extends "workshop/ahg_base.html" %}
+{% block title %}Choosing a path{% endblock %}
+{% block heading %}Choosing a path{% endblock %}
+
+{% block content %}
+<p>
+  The day is the same whichever path you take: the same seven blocks, the
+  same agent, the same team report, and your agent shared to GitHub with your
+  name on it. Pick the one that suits your laptop and how you like to work.
+  You can switch at any time; your agent goes with you.
+</p>
+<p>
+  Not sure? Take the browser path. It has the least to set up, and your
+  agent is just as real.
+</p>
+
+<div class="table-scroll" tabindex="0" role="region" aria-labelledby="paths-caption">
+<table>
+  <caption id="paths-caption">The three paths compared</caption>
+  <thead>
+    <tr>
+      <th scope="col">Question</th>
+      <th scope="col">Browser path</th>
+      <th scope="col">VS Code on your computer</th>
+      <th scope="col">VS Code for the Web</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th scope="row">What you install</th>
+      <td>Nothing</td>
+      <td>VS Code, plus the AHG 2026 profile</td>
+      <td>Nothing</td>
+    </tr>
+    <tr>
+      <th scope="row">Browser</th>
+      <td>Any</td>
+      <td>Any, for sharing</td>
+      <td>Chrome or Edge, on Windows or Mac</td>
+    </tr>
+    <tr>
+      <th scope="row">Accounts</th>
+      <td>Your AI assistant, and a free GitHub account for sharing</td>
+      <td>A free GitHub account, with Copilot Free</td>
+      <td>A free GitHub account, with Copilot Free</td>
+    </tr>
+    <tr>
+      <th scope="row">Your AI</th>
+      <td>ChatGPT, Copilot on github.com, Claude, Gemini or your campus assistant</td>
+      <td>GitHub Copilot</td>
+      <td>GitHub Copilot</td>
+    </tr>
+    <tr>
+      <th scope="row">How each block starts</th>
+      <td>Copy one text, paste it as one message</td>
+      <td>Type a command, such as /ready-check</td>
+      <td>Type a command, such as /ready-check</td>
+    </tr>
+    <tr>
+      <th scope="row">Where your agent is kept</th>
+      <td>The SKILL.md you download, and your conversation</td>
+      <td>my-agent/SKILL.md in the kit folder</td>
+      <td>my-agent/SKILL.md in the kit folder</td>
+    </tr>
+    <tr>
+      <th scope="row">Setup time</th>
+      <td>About 10 minutes</td>
+      <td>About 25 minutes</td>
+      <td>About 15 minutes</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+<h2 id="browser">The browser path</h2>
+<p>
+  Everything happens in your web browser. Each block has one text on
+  <a href="{{ url_for('shortlinks.ahg_assistant') }}">the browser path page</a>:
+  copy it, paste it into your assistant as one message, and answer its
+  questions. Step cards have every key, under "In a browser".
+</p>
+<h3 id="browser-setup">Set it up: about 10 minutes</h3>
+<ol>
+  <li>Make a free GitHub account at github.com, if you do not have one. You need it only to share your agent in block 5.</li>
+  <li>Choose your assistant from the list below, open it, and sign in. Signing in matters: ChatGPT without an account stops after a message or two.</li>
+  <li>Turn off training, using the steps for your assistant below. Optional, and a good habit.</li>
+  <li>Open <a href="{{ url_for('shortlinks.ahg_assistant') }}#block-1">block 1 on the browser path page</a>, copy the text, paste it into your assistant, and press Enter. It tells you that you are ready.</li>
+  <li>Share your practice agent: open <a href="{{ url_for('shortlinks.ahg_share_short') }}?practice=1">the share page</a>, press "Fill in the practice template", then press "Open the share form on GitHub". On GitHub, tick the privacy box and press "Submit new issue".</li>
+</ol>
+
+<h3 id="chatgpt">ChatGPT</h3>
+<p>The assistant this path is tested with.</p>
+<ol>
+  <li>Go to chatgpt.com and choose "Sign up for free", or "Log in" if you have an account.</li>
+  <li>To turn off training: open your profile menu, then Settings, then Data controls, and turn off "Improve the model for everyone".</li>
+  <li>Use an ordinary chat, not a Temporary Chat, so your conversation is still there after lunch.</li>
+</ol>
+
+<h3 id="copilot-web">GitHub Copilot on github.com</h3>
+<p>Uses the same GitHub account you share with, so there is one account for the whole day.</p>
+<ol>
+  <li>Go to github.com/copilot and sign in to GitHub. Copilot Free needs no other setup.</li>
+  <li>Copilot Free has a monthly allowance. If it runs out during the day, switch to another assistant on this list and carry on from the same block.</li>
+</ol>
+
+<h3 id="claude">Claude</h3>
+<ol>
+  <li>Go to claude.ai and sign up or log in.</li>
+  <li>To turn off training: open the menu with your name, then Settings, then Privacy, and turn off "Help improve Claude".</li>
+  <li>The free plan has a usage limit that resets every few hours. If you reach it, switch assistants and carry on.</li>
+</ol>
+
+<h3 id="gemini">Gemini</h3>
+<ol>
+  <li>Go to gemini.google.com and sign in with a Google account.</li>
+  <li>To stop chats being kept: open Settings and help, then Activity, and turn off Keep Activity.</li>
+</ol>
+
+<h3 id="m365">Microsoft 365 Copilot Chat, or your campus assistant</h3>
+<ol>
+  <li>Go to m365copilot.com and sign in with your work or school account.</li>
+  <li>With a work or school account, enterprise data protection applies, and your campus may log what you type. That is why the rule is the same everywhere: nothing private, ever.</li>
+  <li>If your campus has its own assistant, use it the same way: one conversation, paste each block's text.</li>
+</ol>
+
+<h2 id="vscode">VS Code on your computer</h2>
+<p>
+  VS Code is a free editor from Microsoft, with GitHub Copilot built in. The
+  kit opens in it as a folder, and each block is a command you type into
+  Copilot Chat. This is the path the program describes: building agent teams
+  with VS Code, GitHub and Copilot. Step cards have every key, under "In VS
+  Code".
+</p>
+<h3 id="vscode-setup">Set it up: about 25 minutes</h3>
+<ol>
+  <li>Make a free GitHub account at github.com, if you do not have one.</li>
+  <li>Install VS Code from code.visualstudio.com. On Windows it installs without administrator rights. You need version 1.143 or later; Help, then About, shows yours.</li>
+  <li>Sign in: in VS Code, open the Accounts menu at the bottom of the left-hand bar, and choose to sign in with GitHub. An account with no Copilot plan is put on Copilot Free automatically.</li>
+  <li>Import the AHG 2026 profile: open File, then Preferences, then Profiles. Open the menu on the New Profile button, choose Import Profile, paste <code>{{ profile_url }}</code>, and choose Create. It makes the text larger and turns on screen reader support.</li>
+  <li>Download <a href="{{ url_for('workshop.ahg_kit_zip') }}">the agent kit</a>, unzip it, and open the folder: File, then Open Folder.</li>
+  <li>If a banner says Restricted Mode, choose Manage, then Trust. It is the workshop kit, and Copilot cannot work on its files until you trust it.</li>
+  <li>Open Copilot Chat: Control+Alt+I on Windows, or Control+Command+I on a Mac. Type <kbd>/ready-check</kbd> and press Enter.</li>
+  <li>Share your practice agent: open <a href="{{ url_for('shortlinks.ahg_share_short') }}?practice=1">the share page</a>, choose <code>my-agent/SKILL.md</code> from the kit folder, and press "Open the share form on GitHub".</li>
+</ol>
+<h3 id="vscode-keys">Keys worth knowing</h3>
+<ul>
+  <li>Read Copilot's whole answer in a plain text view: Alt+F2 on Windows, Option+F2 on a Mac.</li>
+  <li>Accessibility help for the chat: Alt+F1 on Windows, Option+F1 on a Mac.</li>
+  <li>Start a new chat: the New Chat button at the top of the Chat view.</li>
+  <li>Move between parts of the window: F6.</li>
+</ul>
+
+<h2 id="vscode-web">VS Code for the Web</h2>
+<p>
+  The same VS Code and the same Copilot Chat, running in your browser at
+  vscode.dev, with nothing to install. It opens the kit folder from your
+  laptop and saves your agent back into it. It needs Chrome or Edge: Safari
+  and Firefox cannot open a folder from your laptop. Step cards have every
+  key, under "In VS Code"; the steps are the same as on a computer.
+</p>
+<h3 id="vscode-web-setup">Set it up: about 15 minutes</h3>
+<ol>
+  <li>Make a free GitHub account at github.com, if you do not have one.</li>
+  <li>Download <a href="{{ url_for('workshop.ahg_kit_zip') }}">the agent kit</a> and unzip it. On Windows, open the zip and choose Extract all. On a Mac, open the zip and it unzips itself.</li>
+  <li>In Chrome or Edge, go to vscode.dev.</li>
+  <li>Choose Open Folder, and pick the unzipped ahg-2026-agent-kit folder. The browser asks whether vscode.dev may see the files, and later whether it may save changes. Allow both: that is how your agent is saved into the kit.</li>
+  <li>Sign in: open the Accounts menu at the bottom of the left-hand bar, and choose to sign in with GitHub.</li>
+  <li>Open Copilot Chat: Control+Alt+I on Windows, or Control+Command+I on a Mac. Type <kbd>/ready-check</kbd> and press Enter.</li>
+  <li>Share your practice agent from <a href="{{ url_for('shortlinks.ahg_share_short') }}?practice=1">the share page</a>, choosing <code>my-agent/SKILL.md</code> from the kit folder.</li>
+</ol>
+<h3 id="vscode-web-tips">Good to know in the browser</h3>
+<ul>
+  <li>Some keys belong to the browser first. Control+N opens a new browser window, not a new chat: use the New Chat button in the Chat view instead.</li>
+  <li>The AHG 2026 profile is for VS Code on a computer. In the browser, the kit's own settings still give you larger text.</li>
+  <li>Keep the vscode.dev tab open all day. If you close it, open vscode.dev again and choose the kit from Open Recent.</li>
+</ul>
+
+<h2 id="switching">Switching paths during the day</h2>
+<ul>
+  <li>From VS Code to the browser path: open <code>my-agent/SKILL.md</code>, copy all of it, paste it into your assistant as one message, then paste the next block's text.</li>
+  <li>From the browser path to VS Code: open <code>my-agent/SKILL.md</code> in the kit, select all of it, and paste your agent over it.</li>
+  <li>Copilot Free allowance used up: take the browser path with another assistant for the rest of the day.</li>
+</ul>
+
+<h2 id="rules">The two rules, on every path</h2>
+<ol>
+  <li>Never paste anything private into any AI: student records, health or disability information, or anyone's name. We use a fictional course all day.</li>
+  <li>Every agent ends with a person checking its work.</li>
+</ol>
+
+<p>Help, before or during the day: <a href="mailto:support@community-access.org">support@community-access.org</a>.</p>
+<p><a href="{{ url_for('shortlinks.ahg_landing') }}">Back to everything for AHG 2026</a></p>
+{% endblock %}

@@ -110,6 +110,24 @@ def ahg_kit_short():
     return render_ahg_kit_index()
 
 
+@short_bp.route("/ahg/assistant", methods=["GET"], strict_slashes=False)
+def ahg_assistant():
+    # The browser path: one text per block, with a Copy button, for ChatGPT,
+    # Copilot on github.com, Claude, Gemini or a campus assistant.
+    from .workshop import render_ahg_assistant
+
+    return render_ahg_assistant()
+
+
+@short_bp.route("/ahg/paths", methods=["GET"], strict_slashes=False)
+def ahg_paths():
+    # Choosing between the browser, VS Code on the computer and VS Code for
+    # the Web: the same day, three ways in.
+    from .workshop import render_ahg_paths
+
+    return render_ahg_paths()
+
+
 @short_bp.route("/ahg/kit.zip", methods=["GET"])
 def ahg_kit_zip_short():
     return redirect(url_for("workshop.ahg_kit_zip"))

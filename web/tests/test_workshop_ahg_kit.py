@@ -75,9 +75,16 @@ def test_no_agent_ever_claims_compliance_or_asks_for_student_data():
 
 def test_every_block_has_its_copilot_command_and_step_card():
     for command in COMMANDS:
-        prompt = KIT / ".github" / "prompts" / f"{command}.prompt.md"
-        assert prompt.is_file(), command
-        assert prompt.read_text(encoding="utf-8").startswith("---\ndescription: ")
+        # Agent skills, not prompt files: since VS Code 1.143 prompt files run
+        # only in Local chat sessions, and skills run in the default one too.
+        skill_file = KIT / ".github" / "skills" / command / "SKILL.md"
+        assert skill_file.is_file(), command
+        assert skill_file.read_text(encoding="utf-8").startswith(f"---\nname: {command}\ndescription: ")
+        assert not (KIT / ".github" / "prompts").exists()
+        number = {"ready-check": 1, "design-my-agent": 2, "try-my-agent": 3, "ground-my-agent": 4,
+                  "run-the-office": 6, "my-30-day-plan": 7}[command]
+        text = (KIT / "any-assistant" / f"{number}-{command}.txt").read_text(encoding="utf-8")
+        assert text.startswith("AHG 2026 Accessibility Agents workshop. Block"), command
     cards = sorted(p.name for p in (KIT / "step-cards").glob("*.md"))
     assert len(cards) == 8, "setup plus seven blocks"
     for card in cards:
@@ -137,7 +144,7 @@ def test_the_setup_page_has_every_step_and_link(client):
     assert resp.status_code == 200
     body = resp.get_data(as_text=True)
     for needle in ("/workshop/ahg-2026/kit.zip", "/workshop/ahg-2026/ahg-2026.code-profile",
-                   "/workshop/ahg-2026/share", "Profiles: Import Profile", "Mountain Time",
+                   "/workshop/ahg-2026/share", "Import Profile", "Mountain Time",
                    "support@community-access.org", "Never paste anything private",
                    "practice agent", "Community-Access/ahg-2026", "Session evaluation"):
         assert needle in body, needle
@@ -163,7 +170,7 @@ def test_the_kit_downloads_as_one_zip_without_the_answer_key(client):
     assert resp.mimetype == "application/zip"
     names = zipfile.ZipFile(io.BytesIO(resp.data)).namelist()
     for needle in ("ahg-2026-agent-kit/README.md", "ahg-2026-agent-kit/my-agent/SKILL.md",
-                   "ahg-2026-agent-kit/.github/prompts/design-my-agent.prompt.md",
+                   "ahg-2026-agent-kit/.github/skills/design-my-agent/SKILL.md",
                    "ahg-2026-agent-kit/sample-course/psy101-syllabus.docx"):
         assert needle in names, needle
     assert not any("answer-key" in n for n in names)
@@ -306,7 +313,7 @@ def test_the_kit_is_readable_online(client):
     body = client.get("/ahg/kit").get_data(as_text=True)
     for rel in ("README.md", "step-cards/0-before-the-day.md", "step-cards/0-before-the-day.docx",
                 "my-agent/SKILL.md", "examples/agents/faculty-coach/SKILL.md",
-                "office-team/word-documents/SKILL.md", ".github/prompts/ready-check.prompt.md"):
+                "office-team/word-documents/SKILL.md", ".github/skills/ready-check/SKILL.md"):
         assert f"/ahg/kit/{rel}" in body, rel
     assert "/ahg/kit.zip" in body or "/workshop/ahg-2026/kit.zip" in body
     card = client.get("/ahg/kit/step-cards/5-share-it.md").get_data(as_text=True)
@@ -325,3 +332,82 @@ def test_the_page_titles_name_the_conference_not_glow(client):
         title = body.split("<title>")[1].split("</title>")[0]
         assert title.endswith(" - AHG 2026") and "GLOW" not in title and ".md" not in title, (path, title)
 
+
+
+# ---------------------------------------------------------------------------
+# The browser path: one text per block, for any AI assistant
+# ---------------------------------------------------------------------------
+
+
+def test_each_browser_path_text_carries_the_files_its_block_needs():
+    texts = {p.stem: p.read_text(encoding="utf-8") for p in (KIT / "any-assistant").glob("*.txt")}
+    assert set(texts) == {"1-ready-check", "2-design-my-agent", "3-try-my-agent",
+                          "4-ground-my-agent", "6-run-the-office", "7-my-30-day-plan"}
+    for text in texts.values():
+        # The workshop's rules travel with every block.
+        assert "Never say a document is \"compliant\"" in text
+        assert "Never ask for, accept or repeat student names" in text
+    assert "===== FILE: my-agent/SKILL.md =====" in texts["1-ready-check"]
+    for agent in ("alternate-format-planner", "faculty-coach", "vendor-report-reader"):
+        assert f"===== FILE: examples/agents/{agent}/SKILL.md =====" in texts["2-design-my-agent"]
+    evidence = sorted(p.name for p in (KIT / "sample-course" / "evidence").glob("*.txt"))
+    for name in evidence:
+        assert f"===== FILE: sample-course/evidence/{name} =====" in texts["4-ground-my-agent"], name
+        assert f"===== FILE: sample-course/evidence/{name} =====" in texts["6-run-the-office"], name
+    office = texts["6-run-the-office"]
+    assert "===== FILE: .github/agents/office-coordinator.agent.md =====" in office
+    assert len(_agent_files("office-team")) == office.count("===== FILE: office-team/")
+    # Block 3 is the before: it must not see the evidence.
+    assert "===== FILE: sample-course/evidence" not in texts["3-try-my-agent"]
+
+
+def test_every_file_in_a_browser_path_text_is_the_kit_file_itself():
+    for path in (KIT / "any-assistant").glob("*.txt"):
+        text = path.read_text(encoding="utf-8")
+        for rel in re.findall(r"^===== FILE: (.+) =====$", text, re.M):
+            body = text.split(f"===== FILE: {rel} =====\n", 1)[1].split(f"\n===== END FILE: {rel} =====", 1)[0]
+            assert body == (KIT / rel).read_text(encoding="utf-8").rstrip(), (path.name, rel)
+
+
+def test_the_browser_path_page_offers_every_block_with_a_copy_button(client):
+    body = client.get("/ahg/assistant").get_data(as_text=True)
+    assert "<title>The workshop in any AI assistant - AHG 2026</title>" in body
+    for number in ("1", "2", "3", "4", "6", "7"):
+        assert f'id="block-{number}"' in body
+    assert 'id="block-5"' in body and "/ahg/share" in body.split('id="block-5"')[1]
+    assert body.count("data-copy=") == 6 and body.count('role="status"') == 6
+    assert body.count("<textarea") == 6 and "readonly" in body
+    assert "Copy the text for Block 2: design your agent" in body
+    assert "sign in" in body.lower()
+
+
+def test_the_paths_page_compares_three_paths_and_each_assistant(client):
+    body = client.get("/ahg/paths").get_data(as_text=True)
+    assert "<caption id=\"paths-caption\">The three paths compared</caption>" in body
+    for anchor in ("browser", "vscode", "vscode-web", "chatgpt", "copilot-web", "claude", "gemini", "m365"):
+        assert f'id="{anchor}"' in body, anchor
+    assert "Improve the model for everyone" in body and "Help improve Claude" in body
+    assert "Chrome or Edge" in body and "/workshop/ahg-2026/ahg-2026.code-profile" in body
+
+
+def test_the_landing_page_offers_the_three_paths(client):
+    body = client.get("/ahg").get_data(as_text=True)
+    assert "Get ready: choose a path" in body
+    assert "/ahg/paths#browser" in body and "/ahg/paths#vscode" in body and "/ahg/paths#vscode-web" in body
+    assert "/ahg/assistant" in body
+
+
+def test_the_share_page_fills_the_practice_template_and_downloads_the_agent(client):
+    body = client.get("/workshop/ahg-2026/share").get_data(as_text=True)
+    assert 'id="fill-template"' in body and 'id="download-skill"' in body
+    assert '<script type="application/json" id="practice-template"' in body
+    template = json.loads(body.split('id="practice-template"', 1)[1].split(">", 1)[1].split("</script>", 1)[0])
+    assert template == (KIT / "my-agent" / "SKILL.md").read_text(encoding="utf-8")
+    offline = (KIT / "share-my-agent.html").read_text(encoding="utf-8")
+    assert 'id="practice-template"' in offline and 'id="download-skill"' in offline
+
+
+def test_every_kit_file_page_can_copy_its_raw_text(client):
+    body = client.get("/ahg/kit/examples/agents/faculty-coach/SKILL.md").get_data(as_text=True)
+    assert "Copy this file&#39;s text" in body or "Copy this file's text" in body
+    assert 'id="kit-text"' in body and "name: faculty-coach" in body
