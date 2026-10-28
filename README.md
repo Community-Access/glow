@@ -535,7 +535,10 @@ behind it are in [docs/accessibility-testing.md](docs/accessibility-testing.md).
 We are adopting GitHub's
 [Open Source Accessibility Framework](https://open-source-accessibility.github.io/Open-Source-Accessibility-Framework/),
 an improvement framework, not a certification. Our progress, action by action,
-is in [docs/accessibility-framework.md](docs/accessibility-framework.md).
+is in [docs/accessibility-framework.md](docs/accessibility-framework.md), and
+tracked in public in [GLOW, issue 54](https://github.com/open-source-accessibility/Open-Source-Accessibility-Framework/issues/54).
+
+[![Open Source Accessibility Framework progress for GLOW](https://img.shields.io/badge/Accessibility%20Framework-GLOW-F143AB?logo=github&logoColor=000000)](https://github.com/open-source-accessibility/Open-Source-Accessibility-Framework/issues/54)
 
 ## License
 
