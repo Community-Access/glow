@@ -284,11 +284,6 @@ These are the barriers we know about. Please
   [#145](https://github.com/Community-Access/glow/issues/145). If you must
   deliver certified PDF/UA, check the file yourself, or export PDF from the
   fixed Word document in Word or LibreOffice.
-- **The user guide holds two editions of itself.** Its heading list shows most
-  sections twice, under two numbering schemes. Tracked in
-  [#147](https://github.com/Community-Access/glow/issues/147). Workaround: use
-  the "In This Guide" contents at the top, which belong to the current
-  edition; everything after "Earlier edition of this guide" is older.
 - **Feature-gated AI pages are tested only when enabled.** Document Chat, BITS
   Whisperer, the Alt-Text Helper and the AI Playground are off in CI, so the
   automated suites do not reach them. Treat them as untested.

@@ -6,7 +6,7 @@
 {% block content %}
 {% set tip_icon = "☞" %}
 {% set tip_text = "Starting a new document? Create a template first so your formatting is compliant from the start -- no fixing needed later." %}
-{% set tip_link_url = url_for('guide.guide_page') + '#how-template' %}
+{% set tip_link_url = url_for('guide.guide_page') + '#4-how-to-create-a-template' %}
 {% set tip_link_text = "Read the template guide" %}
 {% include '_workflow_tip.html' %}
 
@@ -57,7 +57,7 @@
 
   <h2>Where to go next</h2>
   <ul>
-    <li>Read the <a href="{{ url_for('guide.guide_page') }}#how-template">Template guide</a> for screenshots and a longer walkthrough.</li>
+    <li>Read the <a href="{{ url_for('guide.guide_page') }}#4-how-to-create-a-template">Template guide</a> for a longer walkthrough.</li>
     <li>Once you've drafted your document, run it through <a href="{{ url_for('audit.audit_form') }}"><strong>Audit</strong></a> to confirm it still meets ACB Large Print Guidelines.</li>
   </ul>
 </details>

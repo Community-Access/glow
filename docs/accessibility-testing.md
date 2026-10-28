@@ -291,7 +291,9 @@ read-through:
   regenerated, because their committed HTML has drifted from the Markdown
   sources and regenerating would drop content; their fixes show on GitHub.
 - **Tracked:** the duplicated user guide,
-  [#147](https://github.com/Community-Access/glow/issues/147).
+  [#147](https://github.com/Community-Access/glow/issues/147). Since fixed:
+  the guide is one edition, numbered in order, and a test keeps the page the
+  web app serves in step with its Markdown.
 - **Captions:** the documentation has no video. The home page's audio (the
   GLOW anthem) has its lyrics on the page.
 

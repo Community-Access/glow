@@ -111,6 +111,25 @@ Releases are tagged in the [GitHub repository](https://github.com/Community-Acce
   tags and metadata, and fails if any shipped code calls `write_pdf()`
   directly. `web/requirements.txt` now pins WeasyPrint 68 or later, matching
   `web/pyproject.toml`. A check with PAC or veraPDF is still to be recorded.
+- **The user guide is one edition (#147).** `docs/user-guide.md` and the page
+  the web app serves at `/guide/` held the current guide and then an earlier
+  edition, so the heading list showed most sections twice under two numbering
+  schemes. The earlier edition is gone. What it had that the current one did
+  not now lives in the current edition: heading detection in the desktop app
+  and how detection was tested, the APH profile's 1.25 line spacing, how long
+  a Whisperer session lasts, the ePub alt text fix, a "Reading the report"
+  heading for the finding list, the admin sign-in and dashboard details, and
+  the Product Requirements link. The "Keeping your settings across devices"
+  (passport) section, which existed only in the served HTML, is now in the
+  Markdown under Settings. Sections are numbered 1 to 22 with no repeats (two
+  were "12." and two "20."), the contents list matches them, and links into
+  the guide from the audit, fix, template, convert, export and guidelines
+  pages and from the FAQ, which pointed at anchors that did not exist, now
+  land on the right section. `scripts/build-doc-pages.py` gains a `render()`
+  function and a `drop_title` option, set for the guide, so the served page
+  has one `<h1>`; the other five pages build exactly as before. New
+  `web/tests/test_user_guide_page.py` checks one edition, one `<h1>`, section
+  order, every link, and that the committed page matches its Markdown.
 - **Documentation reads better with assistive technology.** 38 code blocks in
   nine files now name their language; shell comments in `web/README.md` that
   rendered as eight top-level headings are now a real "OIDC and Keycloak

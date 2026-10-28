@@ -1,14 +1,11 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
   <meta charset="utf-8" />
   <meta name="generator" content="pandoc" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
-  <title>user-guide</title>
+  <title>GLOW User Guide</title>
   <style>
-    /* Default styles provided by pandoc.
-    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
-    */
     html {
       color: #1a1a1a;
       background-color: #fdfdfd;
@@ -63,10 +60,6 @@
     img {
       max-width: 100%;
     }
-    svg {
-      height: auto;
-      max-width: 100%;
-    }
     h1, h2, h3, h4, h5, h6 {
       margin-top: 1.4em;
     }
@@ -91,7 +84,6 @@
       color: #606060;
     }
     code {
-      white-space: pre-wrap;
       font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
       font-size: 85%;
       margin: 0;
@@ -111,8 +103,8 @@
      overflow: visible;
     }
     hr {
+      background-color: #1a1a1a;
       border: none;
-      border-top: 1px solid #1a1a1a;
       height: 1px;
       margin: 1em 0;
     }
@@ -155,6 +147,7 @@
     #TOC a:not(:hover) {
       text-decoration: none;
     }
+    code{white-space: pre-wrap;}
     span.smallcaps{font-variant: small-caps;}
     div.columns{display: flex; gap: min(4vw, 1.5em);}
     div.column{flex: auto; overflow-x: auto;}
@@ -180,7 +173,7 @@ Large Print Guidelines and WCAG 2.2 Level AA.</p>
 <p>New to GLOW? Start at <a href="#1-quick-start">Quick Start</a>.
 Already familiar? Jump straight to the section you need.</p>
 <p>If AI is part of your setup, skip ahead to <a
-href="#whats-new-in-glow-6.0.0">What’s New in GLOW 6.0.0</a> and <a
+href="#whats-new-in-glow-600">What’s New in GLOW 6.0.0</a> and <a
 href="#ai-features-at-a-glance">AI Features at a Glance</a> for the
 short version of what GLOW can do when AI is on, and what stays hidden
 when it is not.</p>
@@ -294,14 +287,18 @@ Formats</a></li>
 <li><a href="#7-braille-studio-text-to-braille-translation">Braille
 Studio: Text-to-Braille Translation</a></li>
 <li><a href="#8-speech-studio-document-to-audio">Speech Studio:
-Document-to-Audio</a></li>
+Document-to-Audio</a>
+<ul>
+<li><a href="#pageflow-read-articles-and-narrate-them">PageFlow: read
+articles and narrate them</a></li>
+</ul></li>
 <li><a href="#9-bits-whisperer-transcribe-audio">BITS Whisperer:
 Transcribe Audio</a></li>
-<li><a href="#10-ai-playground-beta-explore-ollama-models">AI Playground
-(Beta): Explore Ollama Models</a></li>
+<li><a href="#10-ai-playground-beta-explore-personal-ai-models">AI
+Playground (Beta): Explore Personal AI Models</a></li>
 <li><a
-href="#11-markitdown--ai-integration-smarter-text-extraction">MarkItDown
-+ AI Integration: Smarter Text Extraction</a></li>
+href="#11-markitdown-and-ai-integration-smarter-text-extraction">MarkItDown
+and AI Integration: Smarter Text Extraction</a></li>
 <li><a href="#12-document-chat">Document Chat</a></li>
 <li><a href="#13-settings">Settings</a></li>
 <li><a href="#14-understanding-your-results">Understanding Your
@@ -317,9 +314,9 @@ Tools</a></li>
 Reader Tips</a></li>
 <li><a href="#20-frequently-asked-questions">Frequently Asked
 Questions</a></li>
-<li><a href="#20-website-accessibility-scans-site-audit">Website
+<li><a href="#21-website-accessibility-scans-site-audit">Website
 Accessibility Scans (Site Audit)</a></li>
-<li><a href="#21-getting-help">Getting Help</a></li>
+<li><a href="#22-getting-help">Getting Help</a></li>
 </ol>
 <hr />
 <h2 id="whats-new-in-glow-5.0.0">What’s New in GLOW 5.0.0</h2>
@@ -340,8 +337,8 @@ accessibility barriers</li>
 correcting and starting fresh</li>
 <li><strong>Transform</strong> – Convert Format and Braille Studio for
 format and medium changes</li>
-<li><strong>Listen and Speak</strong> – Speech Studio and Whisperer for
-audio workflows</li>
+<li><strong>Listen and Speak</strong> – Speech Studio, PageFlow, and
+Whisperer for read-aloud and audio workflows</li>
 <li><strong>Explore and Learn</strong> – Document Chat, Magic Lab,
 Guidelines, User Guide, FAQ, and Settings</li>
 </ul></li>
@@ -412,67 +409,67 @@ its route or UI surface may be hidden.</p>
 <col style="width: 16%" />
 </colgroup>
 <thead>
-<tr>
+<tr class="header">
 <th>Roadmap Item</th>
 <th>Where You Use It</th>
 <th>Flag</th>
 </tr>
 </thead>
 <tbody>
-<tr>
+<tr class="odd">
 <td>1.5 Back-translation quality scoring</td>
 <td>Braille Studio result panel</td>
 <td><code>GLOW_ENABLE_BRAILLE_BACK_TRANSLATION_SCORE</code></td>
 </tr>
-<tr>
+<tr class="even">
 <td>2.5 Pronunciation dictionary management</td>
 <td>Speech pronunciation tools + Speech synthesis pre-processing</td>
 <td><code>GLOW_ENABLE_SPEECH_PRONUNCIATION_DICTIONARY</code></td>
 </tr>
-<tr>
+<tr class="odd">
 <td>2.6 Real-time streaming preview</td>
 <td><code>POST /speech/stream</code> (API)</td>
 <td><code>GLOW_ENABLE_SPEECH_STREAM</code></td>
 </tr>
-<tr>
+<tr class="even">
 <td>3.3 Table accessibility advisor</td>
 <td><code>POST /magic/table-advisor</code> or core accessibility tools
 form</td>
 <td><code>GLOW_ENABLE_TABLE_ADVISOR</code></td>
 </tr>
-<tr>
+<tr class="odd">
 <td>3.4 Reading order detection (PDF)</td>
 <td><code>POST /magic/reading-order</code> or core accessibility tools
 form</td>
 <td><code>GLOW_ENABLE_READING_ORDER_DETECTION</code></td>
 </tr>
-<tr>
+<tr class="even">
 <td>3.5 OCR for scanned PDFs</td>
 <td><code>POST /magic/ocr</code> or core accessibility tools form</td>
 <td><code>GLOW_ENABLE_PDF_OCR</code></td>
 </tr>
-<tr>
+<tr class="odd">
 <td>3.6 Document compare and change tracking</td>
 <td><code>POST /magic/compare</code> or core accessibility tools
 form</td>
 <td><code>GLOW_ENABLE_DOCUMENT_COMPARE</code></td>
 </tr>
-<tr>
+<tr class="even">
 <td>4.3 OpenDocument Text export</td>
 <td>Convert direction <code>to-odt</code></td>
 <td><code>GLOW_ENABLE_CONVERT_TO_ODT</code></td>
 </tr>
-<tr>
+<tr class="odd">
 <td>7.3 Cognitive profile mode</td>
 <td>Settings toggle (Plain &amp; Simple mode)</td>
 <td><code>GLOW_ENABLE_COGNITIVE_PROFILE</code></td>
 </tr>
-<tr>
+<tr class="even">
 <td>7.4 Forced-colors support</td>
 <td>Automatic high-contrast CSS behavior</td>
 <td><code>GLOW_ENABLE_FORCED_COLORS_MODE</code></td>
 </tr>
-<tr>
+<tr class="odd">
 <td>9.1 Public rule contribution portal</td>
 <td>Rule proposal workflow</td>
 <td><code>GLOW_ENABLE_RULE_CONTRIBUTIONS</code></td>
@@ -521,29 +518,29 @@ engine trusted by screen readers worldwide.</p>
 <col style="width: 60%" />
 </colgroup>
 <thead>
-<tr>
+<tr class="header">
 <th>Code</th>
 <th>Standard</th>
 </tr>
 </thead>
 <tbody>
-<tr>
+<tr class="odd">
 <td>UEB Grade 1</td>
 <td>Unified English Braille, uncontracted (current BANA standard)</td>
 </tr>
-<tr>
+<tr class="even">
 <td>UEB Grade 2</td>
 <td>Unified English Braille, contracted (current BANA standard)</td>
 </tr>
-<tr>
+<tr class="odd">
 <td>EBAE Grade 1</td>
 <td>English Braille American Edition, uncontracted (legacy)</td>
 </tr>
-<tr>
+<tr class="even">
 <td>EBAE Grade 2</td>
 <td>English Braille American Edition, contracted (legacy)</td>
 </tr>
-<tr>
+<tr class="odd">
 <td>Computer Braille</td>
 <td>BANA Computer Braille Code, 8-dot (code and terminal content)</td>
 </tr>
@@ -632,29 +629,29 @@ braille endpoints are active:</p>
 <col style="width: 37%" />
 </colgroup>
 <thead>
-<tr>
+<tr class="header">
 <th>Flag</th>
 <th>Controls</th>
 <th>Default</th>
 </tr>
 </thead>
 <tbody>
-<tr>
+<tr class="odd">
 <td><code>GLOW_ENABLE_CONVERT_TO_SPEECH</code></td>
 <td>Text extraction and narration preparation endpoints</td>
 <td>Enabled</td>
 </tr>
-<tr>
+<tr class="even">
 <td><code>GLOW_ENABLE_EXPORT_SPEECH</code></td>
 <td>Audio file download endpoints</td>
 <td>Enabled</td>
 </tr>
-<tr>
+<tr class="odd">
 <td><code>GLOW_ENABLE_CONVERT_TO_BRAILLE</code></td>
 <td>Braille translation endpoint</td>
 <td>Enabled</td>
 </tr>
-<tr>
+<tr class="even">
 <td><code>GLOW_ENABLE_EXPORT_BRAILLE</code></td>
 <td>Braille result download endpoints</td>
 <td>Enabled</td>
@@ -683,41 +680,41 @@ form.</p>
 <p>Quick Start accepts every format GLOW supports:</p>
 <table>
 <thead>
-<tr>
+<tr class="header">
 <th>Format</th>
 <th>Extensions</th>
 </tr>
 </thead>
 <tbody>
-<tr>
+<tr class="odd">
 <td>Word</td>
 <td>.docx</td>
 </tr>
-<tr>
+<tr class="even">
 <td>Excel</td>
 <td>.xlsx</td>
 </tr>
-<tr>
+<tr class="odd">
 <td>PowerPoint</td>
 <td>.pptx</td>
 </tr>
-<tr>
+<tr class="even">
 <td>PDF</td>
 <td>.pdf</td>
 </tr>
-<tr>
+<tr class="odd">
 <td>Markdown</td>
 <td>.md</td>
 </tr>
-<tr>
+<tr class="even">
 <td>ePub</td>
 <td>.epub</td>
 </tr>
-<tr>
+<tr class="odd">
 <td>Image</td>
 <td>.jpg .jpeg .png .gif .webp .bmp .tiff</td>
 </tr>
-<tr>
+<tr class="even">
 <td>Audio</td>
 <td>.mp3 .wav .m4a .ogg .flac .aac .opus</td>
 </tr>
@@ -870,32 +867,32 @@ re-audit to confirm.</p>
 <col style="width: 66%" />
 </colgroup>
 <thead>
-<tr>
+<tr class="header">
 <th>Format</th>
 <th>What is checked</th>
 </tr>
 </thead>
 <tbody>
-<tr>
+<tr class="odd">
 <td>Word (.docx)</td>
 <td>Fonts, sizes, spacing, emphasis, alignment, margins, heading
 structure, alt text, table headers, document properties, language,
 hyperlink text</td>
 </tr>
-<tr>
+<tr class="even">
 <td>Excel (.xlsx)</td>
 <td>Sheet names, table headers, merged cells, alt text, color-only data,
 hyperlink text, workbook title, blank-row layout patterns, default table
 names</td>
 </tr>
-<tr>
+<tr class="odd">
 <td>PowerPoint (.pptx)</td>
 <td>Slide titles, reading order, alt text, font sizes, speaker notes,
 chart descriptions, duplicate titles, timing and animation safety
 (auto-advance speed, repeating animations, rapid sequences, fast
 transitions)</td>
 </tr>
-<tr>
+<tr class="even">
 <td>Markdown (.md)</td>
 <td>YAML front matter (presence, closed fence, title, lang fields),
 heading hierarchy, empty/overlong/punctuated headings, italic and
@@ -904,12 +901,12 @@ bold-abuse emphasis, bare URLs, ambiguous link text, alt text (presence
 code block language identifiers, raw HTML tables and moving content,
 fake lists, ALL CAPS body text</td>
 </tr>
-<tr>
+<tr class="odd">
 <td>PDF (.pdf)</td>
 <td>Title, language, tagging, font sizes, font families, scanned pages,
 bookmarks, form fields</td>
 </tr>
-<tr>
+<tr class="even">
 <td>ePub (.epub)</td>
 <td>Title, language, navigation, heading hierarchy, alt text, table
 headers, accessibility metadata, link text, MathML – plus 100+ axe-core
@@ -1034,7 +1031,8 @@ or losing your place in a long findings list. Auto-fixable rules show an
 page, the result page now shows an <strong>Audit This Document</strong>
 card. One click runs the audit on the converted file – no re-upload, no
 extra step.</p>
-<hr />
+<h3 id="reading-the-report">Reading the report</h3>
+<p>Each finding in the audit report includes:</p>
 <ul>
 <li><strong>Rule ID</strong> – a short code like
 <code>ACB-FONT-FAMILY</code> or <code>EPUB-MISSING-ALT-TEXT</code></li>
@@ -1083,13 +1081,13 @@ the privacy policy.</p>
 <col style="width: 80%" />
 </colgroup>
 <thead>
-<tr>
+<tr class="header">
 <th>Format</th>
 <th>What is corrected automatically</th>
 </tr>
 </thead>
 <tbody>
-<tr>
+<tr class="odd">
 <td>Word (.docx)</td>
 <td>Fonts changed to Arial; body text raised to 18pt minimum; headings
 to 22pt and 20pt; italic removed; bold-as-emphasis changed to underline;
@@ -1097,11 +1095,11 @@ alignment set to flush-left; line spacing normalized; margins set; widow
 and orphan control enabled; hyphenation disabled; document language
 set</td>
 </tr>
-<tr>
+<tr class="even">
 <td>Markdown (.md)</td>
 <td>Heading hierarchy corrected; italic removed; em-dashes replaced</td>
 </tr>
-<tr>
+<tr class="odd">
 <td>Excel, PowerPoint, PDF, ePub</td>
 <td>Audit report with step-by-step manual guidance; no auto-fix
 available</td>
@@ -1224,7 +1222,21 @@ Skip.</li>
 converted, then the normal fix pipeline runs.</li>
 </ol>
 <p>If no candidates meet the threshold, the fix proceeds without the
-review step.</p>
+review step. When it does run, the fix report lists every heading that
+was converted.</p>
+<p><strong>Using heading detection in the desktop app:</strong></p>
+<ol type="1">
+<li>Open the GLOW desktop application.</li>
+<li>On the options step of the fix wizard, find the <strong>Heading
+Detection</strong> group.</li>
+<li>Check <strong>Detect and convert faux headings to real heading
+styles</strong>.</li>
+<li>Check <strong>Refine with AI</strong> if it is available (it needs
+Ollama running locally).</li>
+<li>Set the confidence threshold.</li>
+<li>Finish the wizard. Detected headings are converted before the other
+fixes are applied.</li>
+</ol>
 <p><strong>Using heading detection on the CLI:</strong></p>
 <pre class="shell"><code># Heuristic only
 acb-lp fix document.docx --detect-headings
@@ -1237,6 +1249,19 @@ acb-lp detect-headings document.docx
 
 # Custom threshold and prompt file
 acb-lp detect-headings document.docx --ai --ai-prompt prompt.txt --threshold 75</code></pre>
+<h3 id="stress-testing-and-product-learning">Stress Testing and Product
+Learning</h3>
+<p>Heading detection was tested against a synthetic corpus of 1,000 Word
+documents built to behave like real uploads – meeting agendas pasted
+from email, newsletters with mixed fonts and centered headings, policy
+manuals with indentation drift, legal outlines, training handouts,
+appendices, plain text with no heading styles, and multilingual section
+labels. Each run checked that real headings were found, that common
+false positives (signature lines, reminders, short labels) were not,
+that the fixer converted headings cleanly, and that the repaired
+document then passed the ACB audit. Those runs are why Fix now cleans up
+converted headings afterwards (hierarchy repair, ALL CAPS removal) and
+treats signature-like and callout text with care.</p>
 <h3 id="preserve-centered-headings">Preserve centered headings</h3>
 <p>By default, Fix normalizes all paragraph alignment to flush-left per
 ACB requirements. Check <strong>Preserve centered headings</strong> on
@@ -1358,13 +1383,13 @@ those in the Template form. Sample content will use only your selected
 levels, so the generated file matches your actual workflow. Configure
 defaults in <strong>Settings &gt; Template Defaults</strong> to have the
 form pre-filled on every visit.</p>
-<h3 id="standards-profiles">Standards profiles</h3>
+<h3 id="template-standards-profiles">Template standards profiles</h3>
 <ul>
 <li><strong>ACB 2025 Baseline</strong> – current production defaults
 (Arial, ACB spacing). Use for day-to-day document production.</li>
 <li><strong>APH Submission</strong> – APH-oriented defaults (APHont
-preferred where available). Use when producing documents for APH
-submission or review.</li>
+preferred where available, and a 1.25 line spacing recommendation). Use
+when producing documents for APH submission or review.</li>
 <li><strong>Combined Strict</strong> – ACB template defaults with the
 strictest audit posture. Use for final pre-release quality gates.</li>
 </ul>
@@ -1473,10 +1498,23 @@ ACB Large Print stylesheet</li>
 for printed and bound output</li>
 <li><strong>Print stylesheet</strong> – adds <code>@media print</code>
 rules for ACB’s print line-height (1.15 instead of 1.5)</li>
+<li><strong>Generate clickable Table of Contents</strong> (on by
+default) – Pandoc builds a fresh <code>&lt;nav id="TOC"&gt;</code> with
+anchor links to every heading in the document. For Word (.docx) sources,
+the original auto-generated TOC field (which Pandoc otherwise flattens
+to unlinked paragraphs) is detected and removed so the output does not
+contain a duplicate unlinked TOC.</li>
+<li><strong>Format-faithful conversion</strong> (off by default) – skips
+ACB styling, binding-margin injection, and print-stylesheet
+post-processing so the HTML reflects the source document as closely as
+possible. When this is on, the three options above (ACB formatting,
+binding margin, print stylesheet) are ignored.</li>
 </ul>
 <p><strong>When to use:</strong> producing a web page for a browser, for
 printing from a browser, for email attachment, or for uploading to a
-website. Markdown input produces the cleanest output.</p>
+website. Markdown input produces the cleanest output. Turn on
+<strong>Format-faithful conversion</strong> when you want GLOW to act as
+a pure converter and leave the look and feel of the source alone.</p>
 <h3 id="to-word-document">To Word document</h3>
 <p><strong>Engine:</strong> Pandoc (with MarkItDown pre-processing for
 some formats)</p>
@@ -1529,10 +1567,13 @@ reStructuredText (.rst), OpenDocument (.odt), Rich Text (.rtf), ePub
 margin for printed and bound documents</li>
 </ul>
 <p><strong>When to use:</strong> producing a document that will be
-printed and distributed in large print. Note: WeasyPrint produces
-CSS-rendered PDFs that are visually formatted but may not carry full
-PDF/UA structural tags. For maximum tagged-PDF accessibility, fix the
-source document first and export from Word or LibreOffice.</p>
+printed and distributed in large print. The PDF is tagged and identifies
+itself as PDF/UA-1: headings, lists, tables, reading order, the document
+title and its language reach a screen reader. The tags are only as good
+as the source, so fix the document first (real headings, alternative
+text, table header rows). GLOW’s PDFs have not yet been checked with PAC
+or veraPDF; if you must deliver certified PDF/UA, check the file with
+one of them, or export PDF from Word or LibreOffice.</p>
 <h3 id="to-epub-or-daisy-daisy-pipeline">To EPUB or DAISY (DAISY
 Pipeline)</h3>
 <p><strong>Engine:</strong> DAISY Pipeline 2</p>
@@ -1559,45 +1600,45 @@ instance.</p>
 <col style="width: 33%" />
 </colgroup>
 <thead>
-<tr>
+<tr class="header">
 <th>If you need…</th>
 <th>Use…</th>
 </tr>
 </thead>
 <tbody>
-<tr>
+<tr class="odd">
 <td>A web page to view in a browser or print</td>
 <td>Accessible web page (HTML)</td>
 </tr>
-<tr>
+<tr class="even">
 <td>A print-ready PDF</td>
 <td>Accessible PDF</td>
 </tr>
-<tr>
+<tr class="odd">
 <td>A Word file to edit or run through Fix</td>
 <td>Word document</td>
 </tr>
-<tr>
+<tr class="even">
 <td>A quick e-book</td>
 <td>EPUB 3 e-book (Pandoc)</td>
 </tr>
-<tr>
+<tr class="odd">
 <td>A DAISY talking book or production EPUB</td>
 <td>EPUB or DAISY (Pipeline)</td>
 </tr>
-<tr>
+<tr class="even">
 <td>Raw content for editing or AI</td>
 <td>Plain text (Markdown)</td>
 </tr>
-<tr>
+<tr class="odd">
 <td>An HTML snippet for WordPress or Drupal</td>
 <td>Convert page – CMS Fragment direction</td>
 </tr>
-<tr>
+<tr class="even">
 <td>A PowerPoint or Excel file as a web page</td>
 <td>Accessible web page (HTML) – two-stage</td>
 </tr>
-<tr>
+<tr class="odd">
 <td>A PDF reformatted with ACB print styles</td>
 <td>Accessible PDF – two-stage</td>
 </tr>
@@ -1746,6 +1787,41 @@ preferences are remembered across sessions</li>
 Convert tool offers a direct <strong>Speech</strong> button. Jump
 straight to Speech Studio with your newly converted document — no
 re-upload needed.</p>
+<h3 id="pageflow-read-articles-and-narrate-them">PageFlow: read articles
+and narrate them</h3>
+<p>PageFlow is the browser-reading companion for articles, essays, and
+newsletters. It extracts the readable text from a URL, follows simple
+next-page pagination when a story spans multiple pages, shows you the
+cleaned text, and then lets you edit or narrate it before downloading
+audio.</p>
+<h3 id="how-to-use-pageflow">How to use PageFlow</h3>
+<ol type="1">
+<li><strong>Open PageFlow</strong> – Select <strong>PageFlow</strong>
+under the <strong>Listen and Speak</strong> group in the left
+sidebar.</li>
+<li><strong>Paste an article URL</strong> – Enter the page you want to
+read. PageFlow will try to detect pagination links and combine the story
+into one view.</li>
+<li><strong>Review the extracted text</strong> – Check the cleaned text,
+which removes most navigation and boilerplate content.</li>
+<li><strong>Edit if needed</strong> – Trim, correct, or rearrange the
+text before narration.</li>
+<li><strong>Choose a narration voice</strong> – Pick the voice you want
+PageFlow to use for the audio version.</li>
+<li><strong>Download audio</strong> – Generate an MP3 or WAV narration
+file from the article text.</li>
+</ol>
+<h3 id="when-to-use-pageflow">When to use PageFlow</h3>
+<ul>
+<li>You want a reading-mode style view for a long article instead of the
+original page layout.</li>
+<li>The article spans multiple pages and you want the pages merged into
+one readable flow.</li>
+<li>You want to skim or revise the extracted text before generating
+speech.</li>
+<li>You want a single place to read first and listen later without
+changing tools.</li>
+</ul>
 <hr />
 <h2 id="bits-whisperer-transcribe-audio">9. BITS Whisperer: Transcribe
 Audio</h2>
@@ -1784,6 +1860,10 @@ automatically.</li>
 <p>Keep the browser tab open while transcription runs. Navigating away
 does not cancel the job, but you will need the page open to trigger the
 download.</p>
+<p>Your GLOW session lasts four hours by default (the server’s
+<code>SESSION_TIMEOUT_MINUTES</code>), which is enough for most long
+recordings, and a running job keeps its temporary workspace, so cleanup
+never removes a job in progress.</p>
 <h3 id="background-mode-for-long-recordings">Background mode for long
 recordings</h3>
 <p>For recordings estimated to take more than 30 minutes to transcribe
@@ -1812,34 +1892,34 @@ email confirming the deletion.</p>
 <col style="width: 56%" />
 </colgroup>
 <thead>
-<tr>
+<tr class="header">
 <th>Limit</th>
 <th>Default</th>
 <th>Environment variable</th>
 </tr>
 </thead>
 <tbody>
-<tr>
+<tr class="odd">
 <td>File size</td>
 <td>500 MB</td>
 <td><code>WHISPER_MAX_AUDIO_MB</code></td>
 </tr>
-<tr>
+<tr class="even">
 <td>Recording length</td>
 <td>120 minutes</td>
 <td><code>WHISPER_MAX_AUDIO_MINUTES</code></td>
 </tr>
-<tr>
+<tr class="odd">
 <td>Background queue depth</td>
 <td>5 jobs</td>
 <td><code>GLOW_MAX_AUDIO_QUEUE_DEPTH</code></td>
 </tr>
-<tr>
+<tr class="even">
 <td>Background eligibility threshold</td>
 <td>30 minutes</td>
 <td><code>WHISPER_BACKGROUND_THRESHOLD_MINUTES</code></td>
 </tr>
-<tr>
+<tr class="odd">
 <td>Retrieval window</td>
 <td>4 hours after completion</td>
 <td><code>WHISPER_RETRIEVAL_HOURS</code></td>
@@ -1956,8 +2036,8 @@ are still refining the experience.</li>
 or Audit for serious accessibility analysis.</li>
 </ul>
 <hr />
-<h2 id="markitdown-ai-integration-smarter-text-extraction">11.
-MarkItDown + AI Integration: Smarter Text Extraction</h2>
+<h2 id="markitdown-and-ai-integration-smarter-text-extraction">11.
+MarkItDown and AI Integration: Smarter Text Extraction</h2>
 <p>MarkItDown is a powerful text extraction tool from Microsoft. GLOW
 6.0.0 combines it with an LLM to make document extraction smarter and
 faster.</p>
@@ -2124,7 +2204,7 @@ enabled)</li>
 <p>When strict mode is enabled and the guardrail engine is unavailable,
 the AI request is blocked instead of sending unredacted text.</p>
 <hr />
-<h2 id="settings">12. Settings</h2>
+<h2 id="settings">13. Settings</h2>
 <p>The <strong>Settings</strong> tab lets you configure default values
 once and apply them across every workflow.</p>
 <h3 id="what-settings-controls">What Settings controls</h3>
@@ -2140,10 +2220,10 @@ margin, and allowed heading levels</li>
 <li><strong>Export and Convert defaults</strong></li>
 </ul>
 <h3 id="privacy-and-persistence">Privacy and persistence</h3>
-<p>Settings are saved in your browser’s local storage. Nothing is sent
-to the server. Your preferences stay on the current browser and device
-only. Clearing browser data or site storage removes saved settings and
-returns GLOW to its built-in defaults.</p>
+<p>Settings are saved in your browser’s local storage. Unless you keep a
+passport (below), nothing is sent to the server: your preferences stay
+on the current browser and device only, and clearing browser data or
+site storage removes them and returns GLOW to its built-in defaults.</p>
 <h3 id="first-time-setup">First-time setup</h3>
 <ol type="1">
 <li>Open <strong>Settings</strong>.</li>
@@ -2152,8 +2232,38 @@ returns GLOW to its built-in defaults.</p>
 <li>Click <strong>Save My Settings</strong>.</li>
 <li>Open Audit or Fix and verify the defaults are pre-selected.</li>
 </ol>
+<h3 id="keeping-your-settings-across-devices">Keeping your settings
+across devices</h3>
+<p>GLOW remembers your appearance and reading settings in the browser
+you are using. If you switch to a phone, use a different computer, or
+clear your browser data, those settings are gone.</p>
+<p>A <strong>passport</strong> keeps a copy so they follow you. There is
+no password and no account to create:</p>
+<ol type="1">
+<li>Go to <strong>Settings</strong> and find <strong>Keep these
+settings</strong>.</li>
+<li>Enter an email address if you would like a link. It is used only to
+send you your own settings, and it is never shown to anyone else.</li>
+<li>Select <strong>Keep these settings</strong>.</li>
+<li>Open the emailed link on any other device. Your settings come with
+you.</li>
+</ol>
+<p>Each link works once, and you can send yourself another at any time.
+Your settings are kept for 90 days after you last use them, and one
+button on the passport page deletes everything – your settings, your
+address and your history – immediately.</p>
+<p>Two extras you can turn on, both off by default:</p>
+<ul>
+<li><strong>Email me when a long job finishes</strong>, so transcription
+and other slow work can tell you rather than you watching a progress
+bar.</li>
+<li><strong>Remember the documents I audit</strong>, so you can compare
+a document against its own past scores. This is the only option that
+records anything about the documents you work on, and turning it off
+deletes what it collected.</li>
+</ul>
 <hr />
-<h2 id="understanding-your-results">13. Understanding Your Results</h2>
+<h2 id="understanding-your-results">14. Understanding Your Results</h2>
 <h3 id="severity-levels">Severity levels</h3>
 <table>
 <colgroup>
@@ -2162,30 +2272,30 @@ returns GLOW to its built-in defaults.</p>
 <col style="width: 36%" />
 </colgroup>
 <thead>
-<tr>
+<tr class="header">
 <th>Level</th>
 <th>What it means</th>
 <th>What to do</th>
 </tr>
 </thead>
 <tbody>
-<tr>
+<tr class="odd">
 <td>Critical</td>
 <td>Makes the document unreadable for low-vision users or completely
 blocks assistive technology</td>
 <td>Fix before publishing. These are deal-breakers.</td>
 </tr>
-<tr>
+<tr class="even">
 <td>High</td>
 <td>Significant readability or structure problems</td>
 <td>Fix as part of your remediation pass.</td>
 </tr>
-<tr>
+<tr class="odd">
 <td>Medium</td>
 <td>Compliance gaps that affect quality but do not block reading</td>
 <td>Fix when time permits.</td>
 </tr>
-<tr>
+<tr class="even">
 <td>Low</td>
 <td>Minor issues and best-practice recommendations</td>
 <td>Address during polishing.</td>
@@ -2202,7 +2312,7 @@ rule contributes a base severity deduction, and repeated occurrences of
 the same rule add a capped surcharge. This means grouped findings in the
 table do not change the score calculation; they only improve readability
 of the report.</p>
-<h3 id="standards-profiles-1">Standards profiles</h3>
+<h3 id="standards-profiles">Standards profiles</h3>
 <p><strong>ACB 2025 Baseline</strong> – day-to-day production. No change
 from previous workflows.</p>
 <p><strong>APH Submission</strong> – filters the report to APH-aligned
@@ -2213,7 +2323,7 @@ across ACB, WCAG, and MSAC. Use for final pre-release quality gates.</p>
 <p>Profile selection changes report filtering and template defaults. It
 does not change the underlying auto-fix behavior for Word documents.</p>
 <hr />
-<h2 id="common-issues-and-how-to-fix-them">14. Common Issues and How to
+<h2 id="common-issues-and-how-to-fix-them">15. Common Issues and How to
 Fix Them</h2>
 <h3 id="all-text-must-use-arial-font-acb-font-family">“All text must use
 Arial font” (ACB-FONT-FAMILY)</h3>
@@ -2252,6 +2362,9 @@ what the image actually shows.</p>
 <strong>Edit Alt Text</strong>. Describe what the image shows in one or
 two sentences. If the image is purely decorative, check <strong>Mark as
 decorative</strong>.</p>
+<p><strong>Manual fix in ePub:</strong> Add an <code>alt</code>
+attribute to the <code>&lt;img&gt;</code> element in the content
+document.</p>
 <p><strong>Note:</strong> Legacy Word VML shapes with
 <code>alt=""</code> are treated as decorative by GLOW and do not trigger
 a finding.</p>
@@ -2308,7 +2421,7 @@ and <code>accessibilityHazard</code>. See the <a
 href="https://kb.daisy.org/publishing/docs/metadata/schema.org/index.html">DAISY
 Knowledge Base on schema.org metadata</a>.</p>
 <hr />
-<h2 id="tips-by-document-format">15. Tips by Document Format</h2>
+<h2 id="tips-by-document-format">16. Tips by Document Format</h2>
 <h3 id="word-.docx">Word (.docx)</h3>
 <ul>
 <li>Use Word’s built-in heading styles (Heading 1, Heading 2, etc.)
@@ -2391,7 +2504,7 @@ Display Guide 2.0.</li>
 specific guidance for mathematical content accessibility.</li>
 </ul>
 <hr />
-<h2 id="recommended-workflows">16. Recommended Workflows</h2>
+<h2 id="recommended-workflows">17. Recommended Workflows</h2>
 <h3 id="workflow-a-fix-an-existing-document-streamlined">Workflow A: Fix
 an existing document (streamlined)</h3>
 <ol type="1">
@@ -2495,7 +2608,7 @@ Document</strong> to confirm the score.</li>
 ready to publish.</li>
 </ol>
 <hr />
-<h2 id="daisy-accessibility-tools">17. DAISY Accessibility Tools</h2>
+<h2 id="daisy-accessibility-tools">18. DAISY Accessibility Tools</h2>
 <p>GLOW integrates with open source tools from the <a
 href="https://daisy.org/">DAISY Consortium</a>, an international
 association serving people with print disabilities.</p>
@@ -2538,7 +2651,7 @@ generates speech, braille, and navigation from MathML for screen
 readers. If your ePub uses MathML, ensure it is properly structured so
 MathCAT and MathJax can process it.</p>
 <hr />
-<h2 id="keyboard-and-screen-reader-tips">18. Keyboard and Screen Reader
+<h2 id="keyboard-and-screen-reader-tips">19. Keyboard and Screen Reader
 Tips</h2>
 <p>GLOW is designed to work fully without a mouse.</p>
 <ul>
@@ -2574,7 +2687,7 @@ and are announced as such.</li>
 Guide pages includes a “Back to table of contents” link.</li>
 </ul>
 <hr />
-<h2 id="frequently-asked-questions">19. Frequently Asked Questions</h2>
+<h2 id="frequently-asked-questions">20. Frequently Asked Questions</h2>
 <h3 id="is-my-document-stored-on-the-server">Is my document stored on
 the server?</h3>
 <p>Uploaded files are stored in an isolated temporary workspace for the
@@ -2660,12 +2773,28 @@ complete rule reference and audit rule mappings.</p>
 href="https://www.aph.org/resources/large-print-guidelines/">aph.org/resources/large-print-guidelines</a>.</p>
 <h3 id="is-there-an-admin-area">Is there an admin area?</h3>
 <p>Yes. GLOW includes an admin-only sign-in and approval workflow for
-operational dashboards. Admin features include viewing and managing the
-audio conversion queue, canceling queued jobs, and re-queuing failed
-jobs. No general user accounts are supported in the current release.
-Email configuration is required for admin sign-in features.</p>
+operational dashboards. No general user accounts are supported in the
+current release.</p>
+<ul>
+<li><strong>Signing in:</strong> email magic link, or Google, Apple,
+GitHub, Microsoft, Auth0 or WordPress. Only the providers the server has
+configured are shown, and admin sign-in needs email delivery to be
+configured.</li>
+<li><strong>Approval:</strong> anyone may request admin access, but an
+existing admin must approve the request before sign-in succeeds. Admins
+approve or deny pending requests.</li>
+<li><strong>Audio queue:</strong> view the audio conversion queue,
+cancel queued jobs and re-queue failed ones.</li>
+<li><strong>AI settings:</strong> configure and monitor cloud AI budget
+controls and API key status.</li>
+<li><strong>Feature flags:</strong> turn individual tools on or off
+without redeploying.</li>
+<li><strong>Tool usage analytics</strong>
+(<code>/admin/analytics</code>): visitor count, total tool uses, and a
+per-tool breakdown with share percentages and last-used times.</li>
+</ul>
 <hr />
-<h2 id="website-accessibility-scans-site-audit">20. Website
+<h2 id="website-accessibility-scans-site-audit">21. Website
 Accessibility Scans (Site Audit)</h2>
 <p>Site Audit is designed for page-level accessibility checks when your
 source is a URL instead of an uploaded document.</p>
@@ -2844,7 +2973,7 @@ you need fresh evidence.</li>
 </ul>
 <p>If <strong>Remember my settings</strong> is enabled, these defaults
 persist in local browser storage.</p>
-<h2 id="getting-help">21. Getting Help</h2>
+<h2 id="getting-help">22. Getting Help</h2>
 <ul>
 <li><strong>ACB Large Print Guidelines</strong> – <a
 href="https://acb.org/large-print-guidelines">acb.org/large-print-guidelines</a></li>
@@ -2882,1688 +3011,9 @@ guide to the Office accessibility checker</a></li>
 <li><strong>Project overview</strong> – <a href="/about/">About
 GLOW</a></li>
 <li><strong>Deployment and operations notes</strong> – <a
-href="/deployment/">Deployment Guide</a> # GLOW (Guided Layout &amp;
-Output Workflow) – User Guide</li>
-</ul>
-<p>Everything you need to know to audit, fix, convert, and template your
-documents for ACB Large Print compliance using <strong>GLOW (Guided
-Layout &amp; Output Workflow)</strong>. New to accessibility? Start with
-the <strong>Quick Start</strong> path below.</p>
-<h2 id="in-this-guide-1">In This Guide</h2>
-<ol type="1">
-<li><a href="#1-quick-start-beginner-path">Quick Start (Beginner
-Path)</a></li>
-<li><a href="#2-bits-whisperer-transcribe-audio">BITS Whisperer:
-Transcribe Audio</a></li>
-<li><a href="#3-quick-start-walkthrough-expert-path">Quick-Start
-Walkthrough (Expert Path)</a></li>
-<li><a href="#4-glow-v250-features">GLOW v2.5.0 Features</a></li>
-<li><a href="#5-how-to-audit-a-document">How to Audit a
-Document</a></li>
-<li><a href="#6-how-to-fix-a-document">How to Fix a Document</a></li>
-<li><a href="#7-how-to-create-a-template">How to Create a
-Template</a></li>
-<li><a href="#8-how-to-use-settings">How to Use Settings</a></li>
-<li><a href="#9-how-to-export-to-html">How to Export to HTML</a></li>
-<li><a href="#10-how-to-convert-between-formats">How to Convert Between
-Formats</a></li>
-<li><a href="#11-understanding-your-results">Understanding Your
-Results</a></li>
-<li><a href="#12-common-issues-and-how-to-fix-them">Common Issues and
-How to Fix Them</a></li>
-<li><a href="#13-tips-by-document-format">Tips by Document
-Format</a></li>
-<li><a href="#14-recommended-workflows">Recommended Workflows</a></li>
-<li><a href="#15-daisy-accessibility-tools">DAISY Accessibility
-Tools</a></li>
-<li><a href="#16-keyboard-and-screen-reader-tips">Keyboard and Screen
-Reader Tips</a></li>
-<li><a href="#17-frequently-asked-questions">Frequently Asked
-Questions</a></li>
-<li><a href="#18-getting-help">Getting Help</a></li>
-<li><a href="#19-document-chat-and-agentic-accessibility-tools">Document
-Chat and Agentic Accessibility Tools</a></li>
-</ol>
-<p><strong>Quick links to v2.5.0 features:</strong> - <a
-href="#1-quick-start-beginner-path">Quick Start Path</a> (for newcomers
-to accessibility) - <a href="#2-bits-whisperer-transcribe-audio">BITS
-Whisperer</a> (transcribe audio to text) - <a
-href="#image-descriptions-llm-generated-alt-text">MarkItDown image
-descriptions</a> (AI-powered alt text for images) - <a
-href="#19-document-chat-and-agentic-accessibility-tools">Document
-Chat</a> (ask accessibility questions in context)</p>
-<p><strong>Quick links to v1.2.0 features:</strong> - <a
-href="#quick-rule-exceptions">Quick Rule Exceptions</a> - <a
-href="#preserve-centered-headings">Preserve centered headings</a> - <a
-href="#per-level-list-indentation">Per-level list indentation</a> - <a
-href="#allowed-heading-levels">Allowed heading levels</a> - <a
-href="/faq/">FAQ page</a> (also accessible from the web app footer)</p>
-<hr />
-<h2 id="quick-start-beginner-path">1. Quick Start (Beginner Path)</h2>
-<p>If you’re new to GLOW (Guided Layout &amp; Output Workflow) or unsure
-which tool to use, the <strong>Quick Start</strong> path is for you.</p>
-<h3 id="how-to-use-quick-start">How to use Quick Start</h3>
-<ol type="1">
-<li>On the GLOW (Guided Layout &amp; Output Workflow) homepage, click
-<strong>“Quick Start: Upload &amp; Discover”</strong></li>
-<li>Upload any document (Word, Excel, PowerPoint, PDF, Markdown, image,
-audio, or ePub)</li>
-<li>GLOW (Guided Layout &amp; Output Workflow) will show you <strong>all
-available actions</strong> for your file type</li>
-<li>Click the action you want (Audit, Fix, Convert, Template, Export, or
-BITS Whisperer)</li>
-<li>Follow the step-by-step form for that action</li>
-</ol>
-<h3 id="what-each-action-does">What each action does</h3>
-<ul>
-<li><strong>Audit:</strong> Check your document for accessibility issues
-and get a compliance report</li>
-<li><strong>Fix:</strong> Auto-fix accessibility problems in Word
-documents</li>
-<li><strong>Convert:</strong> Transform your document to Markdown, HTML,
-PDF, Word, or ePub</li>
-<li><strong>Export:</strong> Convert Word to accessible HTML with
-built-in ACB styling</li>
-<li><strong>Template:</strong> Generate a Word template pre-formatted
-with ACB styles</li>
-<li><strong>BITS Whisperer:</strong> Transcribe audio files to Markdown
-or Word (see next section)</li>
-</ul>
-<hr />
-<h2 id="bits-whisperer-transcribe-audio-1">2. BITS Whisperer: Transcribe
-Audio</h2>
-<p><strong>BITS Whisperer</strong> transcribes audio files into
-accessible text documents without sending your audio anywhere.</p>
-<h3 id="supported-audio-formats">Supported audio formats</h3>
-<ul>
-<li>MP3 (.mp3)</li>
-<li>WAV (.wav)</li>
-<li>M4A (.m4a)</li>
-<li>OGG (.ogg)</li>
-<li>FLAC (.flac)</li>
-<li>AAC (.aac)</li>
-<li>Opus (.opus)</li>
-</ul>
-<h3 id="how-to-use-bits-whisperer">How to use BITS Whisperer</h3>
-<ol type="1">
-<li>Click the <strong>“BITS Whisperer”</strong> tab at the top, or from
-Quick Start upload an audio file</li>
-<li>Upload your audio file (max 500 MB)</li>
-<li>Review the estimated conversion time shown after file selection</li>
-<li>Check the confirmation box to acknowledge you want to proceed</li>
-<li>Optionally select a language (auto-detect is recommended for most
-recordings)</li>
-<li>Choose output format: <strong>Markdown</strong> (plain text) or
-<strong>Word</strong> (editable .docx)</li>
-<li>Click “Transcribe Audio”</li>
-<li>Keep the page open while progress updates run. When progress reaches
-100%, download starts automatically.</li>
-</ol>
-<h3 id="optional-background-mode-for-long-recordings">Optional
-background mode for long recordings</h3>
-<p>For recordings estimated at 30 minutes or longer
-(server-configurable), Whisperer can run in background mode:</p>
-<ol type="1">
-<li>Enable <strong>Process in background</strong> on the Whisperer
-form.</li>
-<li>Enter a notification email address.</li>
-<li>Create and confirm a retrieval password.</li>
-<li>Submit the job.</li>
-</ol>
-<p>When enabled, GLOW sends lifecycle emails (queued, started,
-completed). The completed email contains a single-use secure retrieval
-link. You must use both the link and the retrieval password to download
-the transcript.</p>
-<p>If the transcript is not retrieved within the configured window
-(default 4 hours after completion), GLOW clears it and sends a final
-email confirming removal.</p>
-<h3 id="long-recordings-and-session-behavior">Long recordings and
-session behavior</h3>
-<ul>
-<li>The web app session lifetime defaults to 4 hours
-(<code>SESSION_TIMEOUT_MINUTES=240</code>), which is typically enough
-for long jobs.</li>
-<li>Active transcription jobs keep their temporary workspace alive while
-running, so cleanup does not remove in-progress jobs.</li>
-<li>Files are retained for the time required to complete conversion
-successfully, then removed after download.</li>
-<li>If your browser is closed before download, stale files are still
-cleaned up by retention policy.</li>
-</ul>
-<h3 id="audio-limits-and-graceful-handling">Audio limits and graceful
-handling</h3>
-<ul>
-<li>Audio file size limit is configurable with
-<code>WHISPER_MAX_AUDIO_MB</code> (default 500 MB).</li>
-<li>Maximum audio length is configurable with
-<code>WHISPER_MAX_AUDIO_MINUTES</code> (default 120 minutes).</li>
-<li>Background queue depth is configurable with
-<code>GLOW_MAX_AUDIO_QUEUE_DEPTH</code> (default 5).</li>
-<li>Background eligibility threshold is configurable with
-<code>WHISPER_BACKGROUND_THRESHOLD_MINUTES</code> (default 30).</li>
-<li>Secure retrieval retention window is configurable with
-<code>WHISPER_RETRIEVAL_HOURS</code> (default 4).</li>
-<li>If a file exceeds limits, GLOW returns a clear message and guidance
-to split or compress the recording.</li>
-<li>For very long meetings, split audio into smaller segments (for
-example 20-30 minutes each) for more reliable turnaround and easier
-review.</li>
-</ul>
-<h3 id="tips-for-best-results-1">Tips for best results</h3>
-<ul>
-<li><strong>One speaker at a time:</strong> Whisper works best when one
-person is speaking. Multiple speakers talking at once reduces
-accuracy.</li>
-<li><strong>Minimize background noise:</strong> Close the microphone to
-the speaker. Loud background music, crowd noise, or HVAC hum will reduce
-accuracy.</li>
-<li><strong>Specify the language for short clips:</strong> If your audio
-is under 30 seconds, picking the language explicitly is faster and more
-accurate than auto-detect.</li>
-<li><strong>Review the transcript:</strong> Whisper is 95%+ accurate for
-clear English speech, but technical terms, proper nouns, and accents may
-need manual correction.</li>
-<li><strong>Edit in Markdown first:</strong> Download the .md file,
-review and fix it in any text editor, then use Convert to turn it into
-an accessible web page, PDF, or Word document. This two-step approach
-gives you full control.</li>
-</ul>
-<h3 id="privacy-1">Privacy</h3>
-<p>Your audio file is uploaded to GLOW, optionally normalized for
-compatibility, sent to the configured Whisper transcription service, and
-retained only as long as needed to complete conversion and deliver your
-download. After download or expiry, temporary files are deleted from
-GLOW. Nothing is stored as permanent account data.</p>
-<hr />
-<h2 id="document-chat-and-agentic-accessibility-tools">19. Document Chat
-and Agentic Accessibility Tools</h2>
-<p>GLOW (Guided Layout &amp; Output Workflow) 2.5.0 includes a chat
-experience that lets you interrogate uploaded documents in plain
-language.</p>
-<h3 id="what-document-chat-does">What Document Chat does</h3>
-<ul>
-<li>Reads your uploaded document content</li>
-<li>Uses accessibility-focused tools to answer questions</li>
-<li>Returns grounded, actionable responses</li>
-<li>Tracks history by turn (<code>Turn 1</code>, <code>Turn 2</code>,
-and so on)</li>
-<li>Lets you export the session to Markdown, Word, or PDF</li>
-</ul>
-<h3 id="agent-categories-and-tools-available-in-chat">Agent categories
-and tools available in chat</h3>
-<p>Document Chat has 24 callable tools across five categories.</p>
-<ol type="1">
-<li><strong>Document</strong> (7 tools)
-<ul>
-<li><code>extract_table</code> – extract a table by name or index</li>
-<li><code>find_section</code> – return a section by heading name</li>
-<li><code>search_text</code> – find keyword matches with line
-numbers</li>
-<li><code>get_document_stats</code> – word count, lines, headings,
-reading time</li>
-<li><code>summarize_section</code> – return section text for
-summary</li>
-<li><code>list_headings</code> – show heading hierarchy</li>
-<li><code>get_images</code> – list images (vision/scanned path)</li>
-</ul></li>
-<li><strong>Compliance Agent</strong> (4 tools)
-<ul>
-<li><code>run_accessibility_audit</code> – full GLOW audit summary with
-severity counts</li>
-<li><code>get_compliance_score</code> – score out of 100 with
-breakdown</li>
-<li><code>get_critical_findings</code> – critical and high severity
-findings with fix type</li>
-<li><code>get_auto_fixable_findings</code> – findings GLOW Fix can
-correct automatically</li>
-</ul></li>
-<li><strong>Structure Agent</strong> (4 tools)
-<ul>
-<li><code>check_heading_hierarchy</code> – detect skipped heading
-levels</li>
-<li><code>find_faux_headings</code> – find bold body paragraphs acting
-as headings</li>
-<li><code>check_list_structure</code> – inspect list nesting and
-consistency</li>
-<li><code>estimate_reading_order</code> – reading-order risk from tables
-and layout signals</li>
-</ul></li>
-<li><strong>Content Agent</strong> (4 tools)
-<ul>
-<li><code>check_emphasis_patterns</code> – detect italic and bold-abuse
-violations</li>
-<li><code>check_link_text</code> – flag bare URLs and generic link
-phrases</li>
-<li><code>check_reading_level</code> – sentence and word complexity
-estimate</li>
-<li><code>check_alignment_hints</code> – detect center/right alignment
-overrides</li>
-</ul></li>
-<li><strong>Remediation Agent</strong> (5 tools)
-<ul>
-<li><code>explain_rule</code> – plain-language explanation and fix steps
-for any ACB rule ID</li>
-<li><code>suggest_fix</code> – targeted fix instructions for a rule</li>
-<li><code>prioritize_findings</code> – rank all findings by severity and
-auto-fixability</li>
-<li><code>estimate_fix_impact</code> – score improvement estimate after
-auto-fix</li>
-<li><code>check_image_alt_text</code> – check images for missing or
-empty alt text</li>
-</ul></li>
-</ol>
-<h3 id="guided-question-cards-recommended-starter-prompts">Guided
-question cards (recommended starter prompts)</h3>
-<p>Use these prompts directly in chat:</p>
-<ul>
-<li>“Run an accessibility summary and tell me the top 5 issues.”</li>
-<li>“List critical findings only and explain why each matters.”</li>
-<li>“Show me where heading hierarchy is broken.”</li>
-<li>“Find faux headings and suggest the correct heading level.”</li>
-<li>“Are there any ambiguous links like ‘click here’ or bare URLs?”</li>
-<li>“Check emphasis patterns and flag italic usage.”</li>
-<li>“What is auto-fixable versus manual-fix in this document?”</li>
-<li>“Prioritize fixes by impact and effort.”</li>
-<li>“Explain rule ACB-LINK-TEXT in plain language.”</li>
-<li>“Summarize Section 3 for a board-ready update.”</li>
-</ul>
-<h3 id="best-practices-for-high-quality-answers">Best practices for
-high-quality answers</h3>
-<ul>
-<li>Ask one question at a time.</li>
-<li>Reference section names when possible.</li>
-<li>Ask for “critical only” when triaging quickly.</li>
-<li>Follow with “show evidence” to get concrete lines/sections.</li>
-<li>Export the session when done for audit trail and team handoff.</li>
-</ul>
-<h3 id="accessibility-behavior">Accessibility behavior</h3>
-<ul>
-<li>Conversation history is structured with heading-based turns for
-screen-reader navigation.</li>
-<li>All controls are keyboard accessible.</li>
-<li>Help content uses native
-<code>&lt;details&gt;/&lt;summary&gt;</code> patterns.</li>
-<li>No JavaScript is required for core chat usage.</li>
-</ul>
-<h3 id="privacy-and-retention">Privacy and retention</h3>
-<ul>
-<li>Chat runs through GLOW’s configured AI gateway in supported
-deployments.</li>
-<li>Conversation data stays in session storage.</li>
-<li>Session and uploaded content follow the 1-hour retention
-policy.</li>
-</ul>
-<hr />
-<h2 id="quick-start-walkthrough-expert-path">3. Quick-Start Walkthrough
-(Expert Path)</h2>
-<p>Tip: First-time users should use Full Audit mode to see everything.
-You can switch to Quick Audit later once you know what to look for.</p>
-<h3 id="step-2-fix-what-you-can-automatically">Step 2: Fix what you can
-automatically</h3>
-<p>Go to Fix and upload the same file. For Word documents, the tool
-automatically corrects fonts, sizes, spacing, alignment, and emphasis.
-You download a fixed copy – your original stays untouched.</p>
-<p>Tip: Not all issues can be auto-fixed. The fix report tells you
-exactly which issues need your manual attention and how to fix them step
-by step.</p>
-<h3 id="step-3-re-audit-to-confirm">Step 3: Re-audit to confirm</h3>
-<p>Upload the fixed document back to Audit to confirm all auto-fixable
-issues are resolved. Address any remaining manual items from the
-report.</p>
-<p>Tip: A perfect score means zero Critical and High findings. Medium
-and Low findings are best practices – good to fix but not blocking.</p>
-<h3 id="starting-from-scratch">Starting from scratch?</h3>
-<p>If you have not written your document yet, start with Create a
-Template. This gives you a Word document with all ACB styles
-pre-configured. Write your content in the template and it will be
-compliant from the start – no fixing needed.</p>
-<hr />
-<h2 id="glow-v2.5.0-features-and-aph-submission-track">4. GLOW v2.5.0
-Features and APH Submission Track</h2>
-<p>This section is the guided APH rollout workflow, written as an
-“instructor in your pocket” checklist. Follow each week in order and
-collect evidence at each gate.</p>
-<h3 id="week-by-week-execution">Week-by-week execution</h3>
-<ol type="1">
-<li><strong>Week 1 – Mapping and acceptance criteria</strong>
-<ul>
-<li>Build the APH mapping matrix from current ACB + WCAG rules.</li>
-<li>Define required submission artifacts and review criteria.</li>
-</ul></li>
-<li><strong>Week 2 – Core profile implementation</strong>
-<ul>
-<li>Add standards profile metadata and profile applicability in
-canonical constants.</li>
-<li>Sync the same rule semantics across Python core and Office
-add-in.</li>
-</ul></li>
-<li><strong>Week 3 – UI and reporting updates</strong>
-<ul>
-<li>Add standards profile controls in web workflows.</li>
-<li>Add standards source visibility in reports (ACB/WCAG/APH scope
-clarity).</li>
-</ul></li>
-<li><strong>Week 4 – Validation and package assembly</strong>
-<ul>
-<li>Run full parity and regression validation.</li>
-<li>Produce the APH submission package (summary, matrix, evidence, known
-limitations).</li>
-</ul></li>
-</ol>
-<h3 id="documentation-strategy-update">Documentation strategy
-update</h3>
-<p>The APH workflow is now embedded directly across the site, this user
-guide, and the guidelines reference. This replaces reliance on a
-standalone distribution document and keeps guidance versioned with
-code.</p>
-<h3 id="week-outputs">Week outputs</h3>
-<ul>
-<li><strong>Week 1 output:</strong> approved APH rule/evidence mapping
-table</li>
-<li><strong>Week 2 output:</strong> merged profile-aware constants and
-synchronization checks</li>
-<li><strong>Week 3 output:</strong> released profile UX/report updates
-with accessibility review</li>
-<li><strong>Week 4 output:</strong> final submission bundle and release
-notes for 1.2.0</li>
-</ul>
-<h3 id="standards-profiles-explained-acb-aph-combined-strict">Standards
-profiles explained (ACB, APH, Combined Strict)</h3>
-<p>Release 1.2.0 adds profile selection in Audit, Fix, and Template so
-teams can choose the right reporting lens and template defaults without
-changing the underlying remediation engine.</p>
-<ul>
-<li><strong>ACB 2025 Baseline (default):</strong> no impact to existing
-users. Selecting ACB keeps current behavior, current scoring
-assumptions, and the same operational workflow chapters already
-use.</li>
-<li><strong>APH Submission:</strong> uses the APH-aligned checks and
-defaults finalized in Release 1.2.0 for submission readiness and
-evidence packaging.</li>
-<li><strong>Combined Strict:</strong> includes all currently implemented
-checks (ACB + MSAC/WCAG-aligned rules) for maximum strictness.</li>
-</ul>
-<p>When to use each:</p>
-<ol type="1">
-<li>Use <strong>ACB 2025 Baseline</strong> for day-to-day production and
-continuity.</li>
-<li>Use <strong>APH Submission</strong> when preparing APH rollout
-evidence and review packets.</li>
-<li>Use <strong>Combined Strict</strong> for final pre-release quality
-gates.</li>
-</ol>
-<p>Important: Profile selection changes report filtering in Audit/Fix
-and template defaults in Template. It does not alter the core fixed
-behavior for Word auto-fix.</p>
-<h3 id="aph-source-review-findings-docx-pdf-aphont-package">APH source
-review findings (DOCX + PDF + APHont package)</h3>
-<p>The APH source documents were reviewed directly (not only the landing
-page). Key findings used for integration planning:</p>
-<ul>
-<li>APH confirms the core large-print sizing pattern: 18 body, 20
-subheading, 22 heading.</li>
-<li>APH recommends sans-serif fonts and provides APHont for low-vision
-document production.</li>
-<li>APH includes line-spacing/line-length and color palette guidance
-that goes beyond the currently enforced ACB/WCAG/MSAC rules.</li>
-</ul>
-<p>Font package review result:</p>
-<ul>
-<li>APHont ZIP includes TTF variants for Regular, Bold, Italic, and
-BoldItalic.</li>
-<li>Integration should ignore packaging metadata artifacts (for example
-<code>__MACOSX</code> entries) and use only the actual font files.</li>
-</ul>
-<p>Integration approach:</p>
-<ul>
-<li>Keep Arial as default for current ACB workflows.</li>
-<li>Add APHont as an optional profile-specific target as APH parity
-expands.</li>
-<li>Add fallback behavior and explicit status reporting when APHont is
-not available in runtime environments.</li>
-</ul>
-<hr />
-<h2 id="how-to-audit-a-document-1">3. How to Audit a Document</h2>
-<h3 id="supported-formats-2">Supported formats</h3>
-<ul>
-<li><strong>Word (.docx)</strong> – full ACB + WCAG rule set (fonts,
-sizes, spacing, emphasis, headings, margins, document properties)</li>
-<li><strong>Excel (.xlsx)</strong> – sheet names, table headers, merged
-cells, alt text, color-only data, hyperlink text</li>
-<li><strong>PowerPoint (.pptx)</strong> – slide titles, reading order,
-alt text, font sizes, speaker notes, chart descriptions</li>
-<li><strong>Markdown (.md)</strong> – heading hierarchy, emphasis
-violations, link text, alt text, emoji, em-dashes, tables</li>
-<li><strong>PDF (.pdf)</strong> – title, language, tagging, font sizes,
-font families, scanned pages, bookmarks</li>
-<li><strong>ePub (.epub)</strong> – title, language, navigation, heading
-hierarchy, alt text, table headers, accessibility metadata, link text,
-MathML detection. Includes comprehensive DAISY Ace checks (100+ axe-core
-rules).</li>
-</ul>
-<h3 id="choosing-an-audit-mode-1">Choosing an audit mode</h3>
-<ul>
-<li><strong>Full Audit</strong> (recommended for first use) – Checks
-every rule applicable to your file type. Gives you the complete picture.
-Use this until you know your document’s common issues.</li>
-<li><strong>Quick Audit</strong> – Checks only Critical and High
-severity rules. Use this for a fast pass when you are already familiar
-with your document’s formatting.</li>
-<li><strong>Custom Audit</strong> – Pick individual rules to check.
-Useful when you are working on specific issues (e.g., only font rules)
-or running a targeted re-check.</li>
-</ul>
-<h3 id="step-by-step-4">Step-by-step</h3>
-<ol type="1">
-<li>Go to Audit.</li>
-<li>Choose your rule categories (ACB Large Print, MS Accessibility
-Checker, or both).</li>
-<li>Select an audit mode.</li>
-<li>Upload your file (500 MB maximum).</li>
-<li>Optionally check <strong>Email me the report and findings
-CSV</strong> and enter your address (only shown when email delivery is
-configured for this instance).</li>
-<li>Click Run Audit.</li>
-<li>Review the report. Each finding shows the rule ID, severity,
-location in the document, and a description of what is wrong.</li>
-</ol>
-<p>Tip: The audit report groups findings by severity. Tackle Critical
-issues first – these make the document unreadable for low-vision users.
-Then work down through High, Medium, and Low.</p>
-<h3 id="email-delivery-1">Email delivery</h3>
-<p>When email delivery is enabled on the server, an optional
-<strong>Email Report</strong> section appears on the audit form. Check
-the box and enter your email address to receive the scorecard and a
-findings CSV attachment immediately after the audit completes. The CSV
-opens in Excel or any spreadsheet application and includes every finding
-with its rule ID, severity, WCAG criterion, and whether it can be
-auto-fixed. Your email address is used only to send this report and is
-never stored.</p>
-<hr />
-<h2 id="how-to-fix-a-document-1">4. How to Fix a Document</h2>
-<h3 id="what-gets-auto-fixed-1">What gets auto-fixed</h3>
-<table>
-<colgroup>
-<col style="width: 19%" />
-<col style="width: 35%" />
-<col style="width: 45%" />
-</colgroup>
-<thead>
-<tr>
-<th>Format</th>
-<th>Auto-Fix Level</th>
-<th>What Is Corrected</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>Word (.docx)</td>
-<td>Full auto-fix</td>
-<td>Fonts to Arial, sizes to 18pt/22pt/20pt, italic removed, bold
-emphasis to underline, flush-left alignment, line spacing, margins,
-widow/orphan control, hyphenation off, language set</td>
-</tr>
-<tr>
-<td>Markdown (.md)</td>
-<td>Partial auto-fix</td>
-<td>Heading hierarchy correction, italic removal, em-dash
-replacement</td>
-</tr>
-<tr>
-<td>Excel, PowerPoint, PDF, ePub</td>
-<td>Audit only</td>
-<td>You receive a detailed report with manual fix guidance for each
-finding</td>
-</tr>
-</tbody>
-</table>
-<h3 id="step-by-step-5">Step-by-step</h3>
-<ol type="1">
-<li>Go to Fix.</li>
-<li>Upload your document.</li>
-<li>Choose a fix mode (Full, Essentials, or Custom).</li>
-<li>Click Fix Document.</li>
-<li>For Word and Markdown: download the corrected file. Your original is
-untouched.</li>
-<li>For other formats: review the audit report with step-by-step manual
-fix instructions.</li>
-</ol>
-<p>Tip: The fix mode controls what appears in the report, not what gets
-corrected. Your Word document always receives all available auto-fixes
-regardless of mode.</p>
-<h3 id="recent-fix-workflow-updates">Recent Fix workflow updates</h3>
-<ul>
-<li>If you uncheck <strong>Detect and convert faux headings</strong>,
-<code>ACB-FAUX-HEADING</code> is now suppressed from post-fix scoring so
-you are not penalized for a rule you intentionally disabled.</li>
-<li>Fix Results now shows a page-growth warning when your source appears
-to use body text below 18pt, since normalization to the ACB minimum can
-increase page count.</li>
-<li>List indentation controls are always visible under <strong>List
-Indentation</strong> and are disabled while <strong>Flush all lists to
-the left margin</strong> is checked.</li>
-<li>Legacy Word VML shapes with <code>alt=""</code> are treated as
-decorative and no longer trigger missing-alt findings.</li>
-</ul>
-<h3 id="quick-rule-exceptions-1">Quick Rule Exceptions</h3>
-<p>On the Fix and Audit forms, a new <strong>Quick Rule
-Exceptions</strong> section lets you suppress specific findings per
-operation without changing your default settings. This is useful when
-you want to ignore certain rules for one document without affecting your
-usual workflow.</p>
-<p><strong>Available exceptions:</strong></p>
-<ul>
-<li><strong>Suppress ambiguous link text</strong>
-(<code>ACB-LINK-TEXT</code>) – ignore links that are not descriptive
-(e.g., “click here”, “more info”, “read more”). Use this when you know
-your links are contextually clear or when you are gathering feedback and
-do not want link-text errors to distract from other issues.</li>
-<li><strong>Suppress missing alt text</strong>
-(<code>ACB-MISSING-ALT-TEXT</code>) – ignore images without alt text.
-Use this when you are working on structural issues first and will add
-alt text in a later pass.</li>
-<li><strong>Suppress faux heading detection</strong>
-(<code>ACB-FAUX-HEADING</code>) – ignore bold, large text that looks
-like headings but are not styled as heading styles. Use this when you
-intentionally want to preserve visual “pseudo-headings” for design
-reasons and do not want them flagged.</li>
-</ul>
-<p><strong>How to use:</strong></p>
-<ol type="1">
-<li>On the Fix or Audit form, expand the <strong>Quick Rule
-Exceptions</strong> section.</li>
-<li>Check the rules you want to suppress for this operation only.</li>
-<li>Submit the form normally.</li>
-<li>The audit/fix results will not include findings for the suppressed
-rules, and a note will appear showing which rules were suppressed and
-why.</li>
-</ol>
-<h3 id="preserve-centered-headings-1">Preserve centered headings</h3>
-<p>By default, the fixer normalizes all paragraph alignment to
-flush-left (ragged-right) per ACB requirements. However, you may want to
-preserve intentional heading center-alignment for design reasons.</p>
-<p>The <strong>Preserve centered headings</strong> option on the Fix
-form skips alignment override for paragraphs identified as headings
-(those using Heading 1 through Heading 6 styles). Non-heading paragraphs
-are still normalized to flush-left.</p>
-<p><strong>How to use:</strong></p>
-<ol type="1">
-<li>On the Fix form, find the <strong>Heading Alignment
-Handling</strong> option.</li>
-<li>Check <strong>Preserve centered headings</strong> to leave heading
-alignment unchanged.</li>
-<li>Uncheck it (default) to normalize all paragraphs including headings
-to flush-left.</li>
-<li>Submit the form. Headings will retain their original alignment if
-the option is enabled.</li>
-</ol>
-<h3 id="per-level-list-indentation-1">Per-level list indentation</h3>
-<p>By default, the fixer applies a uniform left indent to all list items
-regardless of their nesting depth. The new <strong>Per-level list
-indentation</strong> option lets you specify different indent values for
-Level 1, Level 2, and Level 3 list items.</p>
-<p>This is useful when: - Your document has multiple indentation levels
-and you want each level to use a specific indent value - You want
-tighter spacing for nested lists (e.g., Level 1 at 0.25”, Level 2 at
-0.50”, Level 3 at 0.75”) - You are working with bulleted or numbered
-lists that need consistent per-depth formatting</p>
-<p><strong>How to use:</strong></p>
-<ol type="1">
-<li>On the Fix form, find the <strong>List Indentation</strong>
-section.</li>
-<li>Check <strong>Use per-level list indentation</strong>.</li>
-<li>Uncheck <strong>Flush all lists to the left margin</strong> if it is
-checked (the two options work together).</li>
-<li>Enter indent values (in inches) for Level 1, Level 2, and Level
-3.</li>
-<li>Submit the form. The auditor and fixer apply per-level indents based
-on the paragraph’s detected list style level.</li>
-</ol>
-<p>Tip: Leave a level blank or set it to 0 if your document does not
-have that depth.</p>
-<h3 id="allowed-heading-levels-1">Allowed heading levels</h3>
-<p>You can now restrict heading conversion and review to a selected
-subset of heading levels (for example, only Heading 1 through Heading 3,
-or include deeper levels when the document uses them).</p>
-<p>This is useful when: - Your publication style intentionally uses only
-part of the heading ladder. - You want review options to match your
-editorial policy. - You want heading detection, review, and template
-sample content to stay aligned.</p>
-<p><strong>How to use in Fix:</strong></p>
-<ol type="1">
-<li>In the <strong>Heading Detection</strong> section, select only the
-heading levels your workflow allows.</li>
-<li>Run Fix as normal.</li>
-<li>On the heading review page, only those allowed heading levels appear
-in the dropdown.</li>
-<li>Confirm and apply; out-of-range suggestions are mapped to the
-nearest allowed level.</li>
-</ol>
-<p><strong>How to set defaults:</strong></p>
-<ol type="1">
-<li>Open <strong>Settings</strong>.</li>
-<li>Under <strong>Fix Defaults</strong>, choose allowed heading levels
-for review and conversion.</li>
-<li>Under <strong>Template Defaults</strong>, choose allowed heading
-levels for sample content.</li>
-<li>Save with cookie opt-in enabled.</li>
-</ol>
-<h3 id="heading-detection-word-documents">Heading Detection (Word
-documents)</h3>
-<p>Many Word documents use bold, large text to simulate headings instead
-of using real heading styles (Heading 1, Heading 2, Heading 3). This
-causes accessibility problems because screen readers cannot navigate by
-headings, and the document has no logical structure.</p>
-<p>The fixer can detect these “faux headings” and convert them to proper
-heading styles automatically.</p>
-<p><strong>How it works:</strong></p>
-<ol type="1">
-<li><p><strong>Heuristic detection</strong> – The tool scores each
-paragraph on 10 signals: font size, bold formatting, short length,
-capitalization patterns, position in the document, and more. Paragraphs
-scoring above the confidence threshold (default 50 out of 100) are
-identified as likely headings.</p></li>
-<li><p><strong>AI refinement (optional)</strong> – If AI-assisted
-heading refinement is enabled in your deployment, the tool can send
-borderline candidates for a second opinion. The AI considers surrounding
-context to improve accuracy.</p></li>
-<li><p><strong>Heading level assignment</strong> – Detected headings can
-be assigned across Heading 1 through Heading 6 based on font size,
-document position, and the heading levels enabled for the run. Heading 1
-is typically the first primary heading; deeper levels are normalized to
-the lower-level subheading pattern when selected.</p></li>
-</ol>
-<h3 id="heading-detection-accuracy-modes">Heading detection accuracy
-modes</h3>
-<p>To balance speed and precision, the Fix workflow supports three
-accuracy modes:</p>
-<ul>
-<li><strong>Conservative</strong> – Heuristics-only with stricter
-filtering. Best when you want to minimize false positives such as names,
-times, or single-word labels (for example, “Agenda”).</li>
-<li><strong>Balanced</strong> (default) – Heuristics plus optional AI
-refinement (when enabled). Best for most documents.</li>
-<li><strong>Thorough</strong> – More inclusive candidate capture with AI
-refinement when available. Best when you want to catch subtle headings
-and are willing to review more candidates.</li>
-</ul>
-<p>Practical guidance:</p>
-<ul>
-<li>If names, times, or short labels are being flagged too often, switch
-to <strong>Conservative</strong>.</li>
-<li>If true headings are being missed, switch to
-<strong>Thorough</strong>.</li>
-<li>Keep <strong>Balanced</strong> for routine office documents.</li>
-</ul>
-<p><strong>Using heading detection on the web:</strong></p>
-<ol type="1">
-<li>On the Fix page, check “Detect and convert faux headings to real
-heading styles.”</li>
-<li>Optionally check “Refine with AI” if that feature is enabled in your
-deployment.</li>
-<li>Adjust the confidence threshold if needed (higher means fewer but
-more certain conversions).</li>
-<li>Choose a heading detection accuracy level:
-<ul>
-<li>Conservative (fewer false positives)</li>
-<li>Balanced (recommended default)</li>
-<li>Thorough (captures more candidates)</li>
-</ul></li>
-<li>Click Fix Document.</li>
-<li>If candidates are found, you are taken to an <strong>interactive
-heading review page</strong>. This page shows a table listing every
-detected heading candidate with:
-<ul>
-<li>The paragraph text along with font size and bold/caps formatting
-info</li>
-<li>The heuristic signals that fired and their point values</li>
-<li>A confidence score and confidence level (High or Medium)</li>
-<li>A heading level dropdown (H1 through H6) pre-set to the suggested
-level, plus a “Skip” option to exclude a candidate</li>
-<li>If AI was used, the AI’s reasoning is shown alongside the heuristic
-signals</li>
-</ul></li>
-<li>Review each candidate. Change heading levels or set any false
-positives to “Skip.”</li>
-<li>Click “Apply Selections and Fix” to proceed. The confirmed headings
-are converted to real heading styles, then the normal fix pipeline
-runs.</li>
-<li>The fix report details section shows every heading that was
-converted.</li>
-</ol>
-<p>If no candidates are found above the confidence threshold, the fix
-proceeds directly without the review step.</p>
-<p><strong>Using heading detection on the desktop GUI:</strong></p>
-<ol type="1">
-<li>Open the GLOW desktop application.</li>
-<li>In the fix wizard (Step 3: Options), look for the Heading Detection
-section.</li>
-<li>Check “Detect and convert faux headings to real heading
-styles.”</li>
-<li>Check “Refine with AI” if that feature is enabled in your
-deployment.</li>
-<li>Adjust the confidence threshold using the slider or spin
-control.</li>
-<li>Complete the wizard to run the fix. Detected headings are converted
-before other fixes are applied.</li>
-</ol>
-<p><strong>Using heading detection on the CLI:</strong></p>
-<pre class="shell"><code># Heuristic only
-acb-lp fix document.docx --detect-headings
-
-# With AI refinement
-acb-lp fix document.docx --detect-headings --ai
-
-# Standalone detection (report only, no fix)
-acb-lp detect-headings document.docx
-
-# With custom prompt file and threshold
-acb-lp detect-headings document.docx --ai --ai-prompt my-prompt.txt --threshold 75</code></pre>
-<h3 id="stress-testing-and-product-learning">Stress Testing and Product
-Learning</h3>
-<h3 id="how-we-tested-this-feature-and-what-we-learned">How We Tested
-This Feature And What We Learned</h3>
-<p>We did not rely on a few hand-made examples. We built a synthetic
-Word-document stress harness to imitate the kinds of files people
-actually upload.</p>
-<p>What the test set included:</p>
-<ul>
-<li>Meeting agendas</li>
-<li>Policy manuals</li>
-<li>Newsletters</li>
-<li>Legal outlines</li>
-<li>Appendices and flyers</li>
-<li>Email-style content</li>
-<li>Plain-text paste with no heading styles</li>
-<li>Mixed-font and font-size drift</li>
-<li>Centered and justified text that had to be repaired</li>
-<li>Multilingual section labels and numbering patterns</li>
-</ul>
-<p>What those 1,000 documents were meant to represent in everyday
-use:</p>
-<ul>
-<li>A meeting agenda someone pasted out of email</li>
-<li>A newsletter copied from a website with mixed fonts and centered
-headings</li>
-<li>A policy manual built from older templates with indentation
-drift</li>
-<li>A legal-outline document with numbering that has to stay
-structurally correct</li>
-<li>A training handout where short prompts may or may not be real
-headings</li>
-<li>An appendix or report supplement with short labels, notes, and
-reference items</li>
-</ul>
-<p>In other words, the documents were designed to behave like realistic
-user uploads, not toy examples. Each one placed the potential heading
-inside a fuller document context so the platform had to make a realistic
-decision and then repair the result to match ACB rules.</p>
-<p>What we measured:</p>
-<ol type="1">
-<li>Whether the detector found real headings</li>
-<li>Whether it avoided common false positives</li>
-<li>Whether the fixer converted those headings cleanly</li>
-<li>Whether the repaired document passed ACB audit rules afterward</li>
-</ol>
-<p>What we learned:</p>
-<ol type="1">
-<li>Short lines are not automatically headings. Signature lines,
-reminders, and similar short phrases must be treated carefully.</li>
-<li>Real documents often combine several problems at once. A heading may
-be visually strong while the surrounding document still has bad
-alignment, bad indentation, or font drift.</li>
-<li>Heading detection and ACB enforcement are connected. A heading can
-be detected correctly and still need further cleanup so the final
-document does not violate rules such as no ALL CAPS or no skipped
-heading levels.</li>
-</ol>
-<p>How the platform changed because of those lessons:</p>
-<ul>
-<li>We strengthened false-positive handling for signature-like and
-callout-style text.</li>
-<li>We expanded the random corpus to include plain-text/no-style
-negatives, font-only heading cues, and multilingual variants.</li>
-<li>We added a heading-normalization pass in the fixer so converted
-headings are cleaned up after detection, including heading hierarchy
-repair and ALL CAPS cleanup.</li>
-</ul>
-<p>What the latest validation showed:</p>
-<ul>
-<li>Full heading stress suite passed</li>
-<li>Larger randomized comparisons showed zero false positives and zero
-false negatives in the measured runs</li>
-<li>Full fix-then-audit validation showed zero remaining ACB findings
-across the 1,000-document corpus after the latest fixes</li>
-</ul>
-<hr />
-<h2 id="how-to-create-a-template-1">5. How to Create a Template</h2>
-<p>A template (.dotx) is the easiest way to start compliant. Every new
-document you create from this template inherits all ACB formatting
-automatically.</p>
-<h3 id="step-by-step-6">Step-by-step</h3>
-<ol type="1">
-<li>Go to Template.</li>
-<li>Enter a document title (or leave blank for the default).</li>
-<li>Optionally check “Include sample content” if you want to see
-examples of correct formatting.</li>
-<li>Check “Add binding margin” if the document will be printed and
-bound.</li>
-<li>Click Create Template and save the downloaded .dotx file.</li>
-<li>In Word, double-click the .dotx file to create a new document based
-on it.</li>
-</ol>
-<h3 id="template-profile-defaults">Template profile defaults</h3>
-<p>Template now supports standards profiles:</p>
-<ul>
-<li><strong>ACB 2025 Baseline:</strong> keeps the current production
-defaults (Arial + existing ACB spacing baseline).</li>
-<li><strong>APH Submission:</strong> uses APH-oriented defaults (APHont
-preferred and 1.25 line spacing recommendation).</li>
-<li><strong>Combined Strict:</strong> keeps ACB template defaults while
-teams use strict combined review posture in Audit/Fix.</li>
-</ul>
-<p>If your team repeatedly uses the same template profile and options,
-configure them once in <strong>Settings</strong> so Template opens
-pre-filled each visit.</p>
-<h3 id="template-heading-level-defaults">Template heading-level
-defaults</h3>
-<p>Template sample content can now follow your selected heading-level
-subset.</p>
-<ol type="1">
-<li>In Template, choose <strong>Allowed Heading Levels for Sample
-Content</strong>.</li>
-<li>If sample content is enabled, generated example headings will only
-use selected levels.</li>
-<li>You can persist this in <strong>Settings</strong> under Template
-defaults.</li>
-</ol>
-<h3 id="how-to-install-the-template-in-word">How to install the template
-in Word</h3>
-<ol type="1">
-<li>Save the downloaded .dotx file to your Templates folder:
-<ul>
-<li><strong>Windows:</strong>
-<code>%APPDATA%\Microsoft\Templates</code></li>
-<li><strong>macOS:</strong>
-<code>~/Library/Group Containers/UBF8T346G9.Office/User Content/Templates</code></li>
-</ul></li>
-<li>In Word, go to File, New, Personal (or Custom on Mac).</li>
-<li>Select the ACB Large Print template.</li>
-<li>Start writing. All styles are already configured.</li>
-</ol>
-<hr />
-<h2 id="how-to-use-settings">6. How to Use Settings</h2>
-<p>The <strong>Settings</strong> tab lets you set default values once
-and apply them across every workflow.</p>
-<h3 id="what-settings-controls-1">What Settings controls</h3>
-<ul>
-<li>Standards profile defaults for <strong>Audit</strong>,
-<strong>Fix</strong>, and <strong>Template</strong>.</li>
-<li>Audit defaults: mode, categories, and quick-rule suppressions.</li>
-<li>Fix defaults: mode, categories, heading options, list and paragraph
-indentation options, and suppressions.</li>
-<li>Template defaults: profile, sample content, binding margin, and
-allowed heading levels for sample content.</li>
-<li>Export and Convert defaults.</li>
-</ul>
-<h3 id="privacy-and-persistence-1">Privacy and persistence</h3>
-<ul>
-<li>Settings are saved only when you enable cookie opt-in.</li>
-<li>Settings stay on the current browser/device only.</li>
-<li>Turning opt-in off removes saved settings and returns GLOW to
-built-in defaults.</li>
-</ul>
-<h3 id="recommended-setup-flow">Recommended setup flow</h3>
-<ol type="1">
-<li>Open <strong>Settings</strong>.</li>
-<li>Enable cookie opt-in.</li>
-<li>Set your preferred defaults for each workflow.</li>
-<li>Save.</li>
-<li>Open Audit/Fix/Template/Export/Convert and verify defaults are
-pre-selected.</li>
-</ol>
-<hr />
-<h2 id="how-to-export-to-html">7. How to Export to HTML</h2>
-<p>Export converts a Word document to a web page with ACB-compliant CSS
-already applied. Choose between two output modes:</p>
-<ul>
-<li><strong>Standalone HTML</strong> – A complete web page with its own
-CSS file. Upload both files to your web server. Good for dedicated
-pages, intranet publishing, or email attachments.</li>
-<li><strong>CMS Fragment</strong> – An HTML snippet with embedded CSS
-scoped to a wrapper class. Paste it into WordPress, Drupal, or any CMS
-editor block. The scoped CSS will not conflict with your site
-theme.</li>
-</ul>
-<h3 id="step-by-step-7">Step-by-step</h3>
-<ol type="1">
-<li>Go to Export.</li>
-<li>Upload a Word (.docx) file.</li>
-<li>Optionally set a page title.</li>
-<li>Choose Standalone or CMS Fragment.</li>
-<li>Click Export and download your result.</li>
-</ol>
-<p>Tip: If your source is Markdown instead of Word, use Convert with the
-“Accessible web page” option instead.</p>
-<hr />
-<h2 id="how-to-convert-between-formats-1">8. How to Convert Between
-Formats</h2>
-<p>The Convert page offers six conversion directions, each powered by a
-different engine. Choose the one that matches what you need to
-produce.</p>
-<h3 id="to-markdown-plain-text-extraction-1">To Markdown (plain text
-extraction)</h3>
-<p><strong>Powered by:</strong> <a
-href="https://github.com/microsoft/markitdown">Microsoft
-MarkItDown</a></p>
-<p>Extracts readable text from any supported file. Good for feeding
-documents into AI tools, creating starting points for documentation, or
-getting a simple version you can search and copy-paste. MarkItDown
-handles the widest range of input formats but produces plain text, not a
-finished web page.</p>
-<p><strong>Accepts:</strong> Word (.docx), Excel (.xlsx, .xls),
-PowerPoint (.pptx), PDF (.pdf), HTML, CSV, JSON, XML, ePub (.epub), and
-ZIP files.</p>
-<p><strong>You get back:</strong> a <code>.md</code> (Markdown) file –
-plain text with formatting marks for headings, lists, and links. Opens
-in any text editor.</p>
-<p><strong>Best when:</strong> you need the raw content out of a
-document, regardless of its original format. Also the right first step
-if you plan to convert to HTML, Word, EPUB, or PDF later – extract to
-Markdown, clean up the result, then convert from there.</p>
-<h3 id="to-accessible-web-page-html-1">To accessible web page
-(HTML)</h3>
-<p><strong>Powered by:</strong> <a href="https://pandoc.org/">Pandoc</a>
-(John MacFarlane, UC Berkeley)</p>
-<p>Turns a document into a complete, accessible HTML page with ACB Large
-Print CSS built in. Pandoc is the gold standard for document-to-HTML
-conversion – it understands heading hierarchy, semantic lists, tables,
-footnotes, and cross-references, and produces clean, well-structured
-HTML. We embed our ACB Large Print CSS so the output meets accessibility
-standards out of the box.</p>
-<p><strong>Accepts:</strong> Markdown (.md), Word (.docx),
-reStructuredText (.rst), OpenDocument (.odt), Rich Text (.rtf), and ePub
-(.epub).</p>
-<p><strong>You get back:</strong> a standalone <code>.html</code> web
-page with all accessibility formatting included – Arial font, large
-text, proper spacing, high contrast, and all other ACB requirements.</p>
-<p><strong>Options:</strong></p>
-<ul>
-<li><strong>ACB formatting</strong> (on by default) – applies the full
-ACB Large Print stylesheet</li>
-<li><strong>Binding margin</strong> – shifts content right by 0.5 inches
-for printed/bound documents</li>
-<li><strong>Print stylesheet</strong> – adds <code>@media print</code>
-rules for ACB’s tighter print line-height (1.15 instead of 1.5)</li>
-</ul>
-<p><strong>Best when:</strong> you need a web page that people will read
-in a browser, print on paper, email as an attachment, or upload to a
-website. Markdown (.md) files produce the cleanest output because Pandoc
-was specifically designed for Markdown-to-HTML conversion.</p>
-<h3 id="to-word-document-.docx">To Word document (.docx)</h3>
-<p><strong>Powered by:</strong> <a href="https://pandoc.org/">Pandoc</a>
-(John MacFarlane, UC Berkeley)</p>
-<p>Converts a document into a Word file. Pandoc maps headings, lists,
-tables, and emphasis into Word’s native styles, so the output is
-immediately editable in Microsoft Word.</p>
-<p><strong>Accepts:</strong> Markdown (.md), reStructuredText (.rst),
-OpenDocument (.odt), Rich Text (.rtf), HTML (.html), and ePub
-(.epub).</p>
-<p><strong>You get back:</strong> a <code>.docx</code> file that opens
-directly in Microsoft Word or LibreOffice Writer.</p>
-<p><strong>Best when:</strong> you have a Markdown or HTML document and
-need a Word version for colleagues who work in Word, or when you want to
-run GLOW’s audit and auto-fix on content that started in another format.
-A common workflow: extract to Markdown, clean up, convert to Word, then
-run Fix for full ACB compliance.</p>
-<h3 id="to-epub-3-e-book-via-pandoc">To EPUB 3 e-book (via Pandoc)</h3>
-<p><strong>Powered by:</strong> <a href="https://pandoc.org/">Pandoc</a>
-(John MacFarlane, UC Berkeley)</p>
-<p>Creates a lightweight EPUB 3 e-book with ACB Large Print CSS embedded
-in the stylesheet. Pandoc generates proper EPUB structure including a
-navigation document, content documents with semantic markup, and EPUB
-metadata from the document title.</p>
-<p><strong>Accepts:</strong> Markdown (.md), Word (.docx),
-reStructuredText (.rst), OpenDocument (.odt), Rich Text (.rtf), and HTML
-(.html).</p>
-<p><strong>You get back:</strong> an <code>.epub</code> file that opens
-in any e-reader application (Apple Books, Calibre, Thorium, etc.).</p>
-<p><strong>Options:</strong></p>
-<ul>
-<li><strong>ACB formatting</strong> (on by default) – embeds the ACB
-Large Print stylesheet in the EPUB</li>
-<li><strong>Binding margin</strong> – not applicable to EPUB
-(ignored)</li>
-<li><strong>Print stylesheet</strong> – not applicable to EPUB
-(ignored)</li>
-</ul>
-<p><strong>Best when:</strong> you need a simple, portable e-book and do
-not require DAISY Pipeline’s advanced metadata and accessibility
-features. For a quick Markdown-to-EPUB conversion, this is the fastest
-path. For production-quality accessible EPUB with full schema.org
-metadata, use the DAISY Pipeline option instead.</p>
-<h3 id="to-accessible-pdf-1">To accessible PDF</h3>
-<p><strong>Powered by:</strong> <a href="https://pandoc.org/">Pandoc</a>
-+ <a href="https://weasyprint.org/">WeasyPrint</a> (CourtBouillon)</p>
-<p>Creates an accessible PDF formatted with ACB BOP print-optimized
-rules. Pandoc converts the source document to HTML, then WeasyPrint
-renders that HTML to PDF using a dedicated print stylesheet with <span
-class="citation" data-cites="page">@page</span> rules. The PDF uses
-Liberation Sans (metrically identical to Arial) for consistent
-typography, 18pt body text, 22pt headings, 1.15 line spacing (the ACB
-print specification), and 1-inch margins.</p>
-<p><strong>Accepts:</strong> Markdown (.md), Word (.docx),
-reStructuredText (.rst), OpenDocument (.odt), Rich Text (.rtf), ePub
-(.epub), and HTML (.html).</p>
-<p><strong>You get back:</strong> a <code>.pdf</code> file ready for
-printing or distribution.</p>
-<p><strong>Options:</strong></p>
-<ul>
-<li><strong>Binding margin</strong> – adds 0.5 inches of extra left
-margin for printed/bound documents</li>
-</ul>
-<p><strong>Best when:</strong> you need a print-ready document with
-ACB-compliant formatting. Good for meeting agendas, newsletters, and
-reports that will be printed and distributed in large print. Note:
-WeasyPrint produces CSS-rendered PDFs that are visually formatted but
-may not be fully PDF/UA tagged. For maximum PDF accessibility, fix the
-source document first and use your word processor’s PDF export.</p>
-<h3 id="to-epub-or-daisy-via-daisy-pipeline">To EPUB or DAISY (via DAISY
-Pipeline)</h3>
-<p><strong>Powered by:</strong> <a
-href="https://daisy.github.io/pipeline/">DAISY Pipeline 2</a> (DAISY
-Consortium)</p>
-<p>Creates accessible publications in structured formats designed for
-reading systems used by people with print disabilities. Unlike the other
-tools, Pipeline produces packaged publications – EPUB e-books and DAISY
-talking books – with proper accessibility metadata, navigation
-documents, and reading order.</p>
-<p>Available conversions:</p>
-<ul>
-<li><strong>Word to EPUB 3</strong> – converts a Word document (.docx)
-to an accessible EPUB 3 e-book through a DTBook intermediate format that
-preserves document structure</li>
-<li><strong>HTML to EPUB 3</strong> – packages an HTML page (.html) into
-a portable, accessible e-book</li>
-<li><strong>EPUB to DAISY 2.02</strong> – converts an ePub (.epub) to
-DAISY 2.02 talking book format for playback on dedicated DAISY
-hardware</li>
-<li><strong>EPUB to DAISY 3</strong> – converts an ePub (.epub) to DAISY
-3 / DTBook structured text format</li>
-</ul>
-<p><strong>You get back:</strong> an <code>.epub</code> file (for EPUB
-conversions) or a <code>.zip</code> file containing the DAISY output
-folder.</p>
-<p>Note: Pipeline conversions appear automatically when the DAISY
-Pipeline is installed on the server. If you do not see these options,
-Pipeline is not available on this server instance.</p>
-<h3 id="how-do-i-decide-between-them">How do I decide between them?</h3>
-<p>Think about <strong>who will read the result</strong> and <strong>how
-they will read it:</strong></p>
-<ul>
-<li><strong>Reading on screen or printing from a browser?</strong> Use
-“Accessible web page” – an HTML file with ACB formatting that works in
-any browser and prints cleanly.</li>
-<li><strong>Need a print-ready PDF?</strong> Use “Accessible PDF” –
-formatted with ACB print rules (1.15 line spacing, 1-inch margins, Arial
-18pt).</li>
-<li><strong>Need a Word file to edit or run through Fix?</strong> Use
-“Word document” – gives you a .docx to open in Microsoft Word.</li>
-<li><strong>Need a simple e-book?</strong> Use “EPUB 3 e-book (via
-Pandoc)” – a quick path to a portable .epub file.</li>
-<li><strong>Reading on a DAISY player or need full EPUB accessibility
-metadata?</strong> Use “EPUB or DAISY” via Pipeline – these are the
-formats those devices expect.</li>
-<li><strong>Editing, searching, or feeding to an AI tool?</strong> Use
-“Plain text” – raw content in a simple format that works
-everywhere.</li>
-<li><strong>Pasting into WordPress or Drupal?</strong> Use the Export
-page instead – it has CMS Fragment mode.</li>
-</ul>
-<h3 id="chaining-conversions-for-better-results">Chaining conversions
-for better results</h3>
-<p>You can get the best output by using two conversions in sequence:</p>
-<ol type="1">
-<li><strong>Extract to Markdown</strong> to pull text from a PDF,
-PowerPoint, or other complex format.</li>
-<li><strong>Edit the Markdown</strong> in any text editor to clean up
-headings, fix links, and improve structure.</li>
-<li><strong>Convert the Markdown</strong> to an accessible web page,
-Word document, EPUB, or PDF.</li>
-</ol>
-<p>This two-step approach almost always produces better results than a
-one-step direct conversion, because you can review and improve the
-content between steps.</p>
-<hr />
-<h2 id="understanding-your-results-1">9. Understanding Your Results</h2>
-<h3 id="severity-levels-1">Severity levels</h3>
-<table>
-<colgroup>
-<col style="width: 24%" />
-<col style="width: 48%" />
-<col style="width: 27%" />
-</colgroup>
-<thead>
-<tr>
-<th>Level</th>
-<th>What It Means</th>
-<th>Action</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>Critical</td>
-<td>Makes the document unreadable for low-vision users or completely
-blocks assistive technology</td>
-<td>Must fix. These are deal-breakers.</td>
-</tr>
-<tr>
-<td>High</td>
-<td>Significant readability or structure problems</td>
-<td>Should fix. Major quality issues.</td>
-</tr>
-<tr>
-<td>Medium</td>
-<td>Compliance gaps that affect quality but may not block reading</td>
-<td>Fix when possible. Good for polishing.</td>
-</tr>
-<tr>
-<td>Low</td>
-<td>Minor issues or best-practice recommendations</td>
-<td>Nice to fix. Not blocking compliance.</td>
-</tr>
-</tbody>
-</table>
-<h3 id="reading-the-report">Reading the report</h3>
-<p>Each finding in the audit report includes:</p>
-<ul>
-<li><strong>Rule ID</strong> – a short code like
-<code>ACB-FONT-FAMILY</code> or <code>EPUB-MISSING-ALT-TEXT</code>.
-Click the help links (in the web app) to learn more about each
-rule.</li>
-<li><strong>Severity</strong> – Critical, High, Medium, or Low.</li>
-<li><strong>Location</strong> – where in the document the issue was
-found (paragraph number, slide number, sheet name, heading text,
-etc.).</li>
-<li><strong>Description</strong> – what is wrong and why it
-matters.</li>
-<li><strong>Help links</strong> – links to the DAISY Knowledge Base,
-Microsoft support, or WCAG documentation for detailed remediation
-guidance.</li>
-</ul>
-<hr />
-<h2 id="common-issues-and-how-to-fix-them-1">10. Common Issues and How
-to Fix Them</h2>
-<h3 id="all-text-must-use-arial-font-acb-font-family-1">“All text must
-use Arial font” (ACB-FONT-FAMILY)</h3>
-<p><strong>Why:</strong> Arial is required because it is a clean
-sans-serif font with excellent legibility at large sizes.</p>
-<p><strong>Auto-fix:</strong> Yes – the fixer changes all fonts to Arial
-automatically.</p>
-<p><strong>Manual fix:</strong> In Word, select all text (Ctrl+A), then
-change the font to Arial.</p>
-<h3 id="body-text-must-be-18pt-minimum-acb-font-size-body-1">“Body text
-must be 18pt minimum” (ACB-FONT-SIZE-BODY)</h3>
-<p><strong>Why:</strong> 18pt is the absolute floor for any text,
-including footnotes and captions.</p>
-<p><strong>Auto-fix:</strong> Yes – the fixer increases all body text to
-18pt.</p>
-<p><strong>Manual fix:</strong> Select text smaller than 18pt and
-increase the font size.</p>
-<h3 id="italic-formatting-is-prohibited-acb-no-italic">“Italic
-formatting is prohibited” (ACB-NO-ITALIC)</h3>
-<p><strong>Why:</strong> Italic text is harder to read for people with
-low vision because slanted shapes reduce letter distinction.</p>
-<p><strong>Auto-fix:</strong> Yes – the fixer removes all italic
-formatting.</p>
-<p><strong>Manual fix:</strong> Select italic text, press Ctrl+I to
-remove italic. If emphasis is needed, use underline (Ctrl+U)
-instead.</p>
-<h3 id="images-must-have-alt-text-various-rules">“Images must have alt
-text” (Various rules)</h3>
-<p><strong>Why:</strong> Screen readers cannot describe images without
-alternative text. Users who cannot see the image rely entirely on the
-alt text.</p>
-<p><strong>Auto-fix:</strong> No – alt text requires human judgment
-about the image content.</p>
-<p><strong>Manual fix in Word:</strong> Right-click the image, Edit Alt
-Text. Describe what the image shows in 1-2 sentences. If the image is
-purely decorative, check “Mark as decorative.”</p>
-<p>Note: For legacy Word VML shapes, explicit <code>alt=""</code> is
-treated as decorative by the auditor.</p>
-<h3
-id="i-turned-heading-detection-off.-why-did-my-score-still-change-1">“I
-turned heading detection off. Why did my score still change?”</h3>
-<p>If <strong>Detect and convert faux headings</strong> is unchecked,
-fix results now suppress <code>ACB-FAUX-HEADING</code> in post-fix
-scoring. The results page also lists suppressed rules so you can verify
-exactly what was excluded.</p>
-<h3 id="why-did-my-document-get-longer-after-fix-1">“Why did my document
-get longer after fix?”</h3>
-<p>Page growth is expected when source body text is below 18pt. For
-example, increasing 16pt body text to 18pt can significantly increase
-line count in long newsletters. Fix Results now warns when this
-condition is detected so the pagination change is expected rather than
-surprising.</p>
-<h3 id="where-are-list-indentation-controls-on-the-fix-page">“Where are
-list indentation controls on the Fix page?”</h3>
-<p>The <strong>List Indentation</strong> fields are always visible. They
-are disabled while <strong>Flush all lists to the left margin</strong>
-is checked, and enabled when you uncheck it to use custom left/hanging
-indents.</p>
-<p><strong>Manual fix in ePub:</strong> Add an <code>alt</code>
-attribute to the <code>&lt;img&gt;</code> tag in the content
-document.</p>
-<h3
-id="heading-levels-must-not-skip-acb-heading-hierarchy-epub-heading-hierarchy-1">“Heading
-levels must not skip” (ACB-HEADING-HIERARCHY /
-EPUB-HEADING-HIERARCHY)</h3>
-<p><strong>Why:</strong> Screen reader users navigate by heading levels.
-Jumping from H1 to H3 breaks their mental model of the document
-structure.</p>
-<p><strong>Auto-fix:</strong> Not automatically – heading intent
-requires human judgment.</p>
-<p><strong>Manual fix:</strong> Review your heading hierarchy. Each H3
-must have an H2 parent, each H2 must have an H1 parent. Restructure or
-re-level headings as needed.</p>
-<h3 id="links-must-have-descriptive-text-various-rules">“Links must have
-descriptive text” (Various rules)</h3>
-<p><strong>Why:</strong> Vague links like “click here” or “read more” do
-not tell screen reader users where the link goes. Links should make
-sense read out of context.</p>
-<p><strong>Auto-fix:</strong> No – link text requires human
-judgment.</p>
-<p><strong>Manual fix:</strong> Replace vague text with descriptive
-text. For example, change “click here to download the report” to
-“download the annual report (PDF)”.</p>
-<h3
-id="epub-should-include-accessibility-metadata-epub-accessibility-metadata-1">“ePub
-should include accessibility metadata”
-(EPUB-ACCESSIBILITY-METADATA)</h3>
-<p><strong>Why:</strong> Accessibility metadata tells reading systems
-and library catalogs what accessibility features the publication
-offers.</p>
-<p><strong>Manual fix:</strong> Add schema.org metadata to the OPF
-package document: accessMode, accessibilityFeature,
-accessibilitySummary, and accessibilityHazard. See the <a
-href="https://kb.daisy.org/publishing/docs/metadata/schema.org/index.html">DAISY
-Knowledge Base on schema.org metadata</a>.</p>
-<hr />
-<h2 id="tips-by-document-format-1">11. Tips by Document Format</h2>
-<h3 id="word-.docx-1">Word (.docx)</h3>
-<ul>
-<li>Use Word’s built-in heading styles (Heading 1, Heading 2, etc.)
-instead of manually formatting text to look like a heading.</li>
-<li>Use real bulleted and numbered lists (Home, Bullets/Numbering), not
-manually typed dashes or numbers.</li>
-<li>Set the document title in File, Properties, Title.</li>
-<li>Set the document language in Review, Language.</li>
-<li>For emphasis, use underline – never italic, and avoid bold in body
-text.</li>
-<li>After using the fix tool, always re-audit to catch any remaining
-manual-fix items.</li>
-</ul>
-<h3 id="excel-.xlsx-1">Excel (.xlsx)</h3>
-<ul>
-<li>Give every sheet a meaningful name – “Sheet1” is not helpful to
-screen reader users.</li>
-<li>Use Format as Table so each column has a proper header row.</li>
-<li>Avoid merged cells – they confuse screen readers navigating the
-grid.</li>
-<li>Add alt text to any embedded images or charts.</li>
-<li>Do not rely on color alone to convey information (e.g., red cells
-for errors).</li>
-</ul>
-<h3 id="powerpoint-.pptx-1">PowerPoint (.pptx)</h3>
-<ul>
-<li>Every slide must have a unique title.</li>
-<li>Check the reading order in the Selection Pane (View, Selection
-Pane). Objects are read bottom-to-top, so the title should be at the
-bottom of the list.</li>
-<li>Add alt text to every image, chart, and SmartArt graphic.</li>
-<li>Use slide layouts with built-in placeholders instead of manually
-placed text boxes.</li>
-<li>Add speaker notes for slide content that is primarily visual.</li>
-</ul>
-<h3 id="markdown-.md-1">Markdown (.md)</h3>
-<ul>
-<li>Use ATX-style headings (<code># Heading 1</code>) not Setext-style
-(underlines).</li>
-<li>Never use italic (<code>*text*</code>) – use
-<code>&lt;u&gt;text&lt;/u&gt;</code> for emphasis instead.</li>
-<li>Write descriptive link text:
-<code>[download the annual report](url)</code> not
-<code>[click here](url)</code>.</li>
-<li>Add alt text to all images:
-<code>![Description of the image](image.png)</code>.</li>
-<li>Do not leave blank lines between list items.</li>
-<li>Avoid bare URLs – wrap them in link syntax.</li>
-</ul>
-<h3 id="pdf-.pdf-1">PDF (.pdf)</h3>
-<ul>
-<li>PDFs should be tagged (structured) for accessibility. Scanned
-documents without OCR will fail many checks.</li>
-<li>Set the document title and language in the PDF properties.</li>
-<li>Use bookmarks for navigation in long documents.</li>
-<li>The best approach for PDFs is to fix the source (usually Word) and
-re-export.</li>
-</ul>
-<h3 id="epub-.epub-1">ePub (.epub)</h3>
-<ul>
-<li>Include a navigation document (table of contents) – this is required
-by EPUB Accessibility 1.1.</li>
-<li>Add schema.org accessibility metadata to the OPF file.</li>
-<li>Ensure all images have alt text in the content documents.</li>
-<li>Use proper heading levels (h1-h6) without skipping.</li>
-<li>ePub audits include DAISY Ace, which runs 100+ axe-core
-accessibility checks beyond the basic structural rules.</li>
-<li>When your ePub includes schema.org accessibility metadata, the audit
-report shows a human-readable “Accessibility Metadata” section
-describing how the publication can be read (visual adjustments, read
-aloud, braille), conformance claims, navigation features, hazards, and
-more. This follows the W3C Accessibility Metadata Display Guide
-2.0.</li>
-<li>If your ePub contains MathML, the audit will detect it and provide
-specific accessibility guidance for mathematical content.</li>
-</ul>
-<hr />
-<h2 id="recommended-workflows-1">12. Recommended Workflows</h2>
-<h3 id="workflow-a-fix-an-existing-document">Workflow A: Fix an existing
-document</h3>
-<ol type="1">
-<li><strong>Audit first</strong> – upload to Audit to understand the
-scope of issues.</li>
-<li><strong>Auto-fix</strong> – upload to Fix to correct everything the
-tool can handle.</li>
-<li><strong>Manual fixes</strong> – open the fixed document and address
-remaining items from the fix report.</li>
-<li><strong>Re-audit</strong> – upload the manually-fixed document to
-Audit to confirm.</li>
-<li><strong>Publish</strong> – optionally Export to accessible HTML for
-web publishing.</li>
-</ol>
-<h3 id="workflow-b-start-a-new-document-from-scratch-1">Workflow B:
-Start a new document from scratch</h3>
-<ol type="1">
-<li><strong>Create a template</strong> – use Template to generate a
-pre-configured .dotx file.</li>
-<li><strong>Write in the template</strong> – use the built-in styles for
-all formatting.</li>
-<li><strong>Quick audit</strong> – when done, upload to Audit with Quick
-Audit mode to verify compliance.</li>
-</ol>
-<h3 id="workflow-c-publish-meeting-minutes-or-agendas-online-1">Workflow
-C: Publish meeting minutes or agendas online</h3>
-<ol type="1">
-<li>Write your content in Markdown or Word.</li>
-<li><strong>Audit</strong> to check compliance.</li>
-<li><strong>Fix</strong> if needed.</li>
-<li><strong>Convert</strong> to accessible HTML using the Convert page
-with “Accessible web page” selected.</li>
-<li>Upload the HTML file to your website.</li>
-</ol>
-<h3 id="workflow-d-create-accessible-epub-publications">Workflow D:
-Create accessible EPUB publications</h3>
-<ol type="1">
-<li>Start with a properly formatted Word document or Markdown file.</li>
-<li><strong>Audit</strong> the source document for ACB compliance.</li>
-<li><strong>Convert to EPUB</strong> using the Convert page – choose
-“EPUB 3 e-book (via Pandoc)” for a quick e-book, or a DAISY Pipeline
-conversion for production-quality EPUB with full accessibility
-metadata.</li>
-<li><strong>Audit the EPUB</strong> – upload the .epub to Audit for
-EPUB-specific accessibility checks (DAISY Ace runs automatically).</li>
-<li>Fix any EPUB-specific issues (metadata, alt text, navigation) and
-re-audit.</li>
-</ol>
-<h3 id="workflow-e-produce-large-print-pdf-for-distribution-1">Workflow
-E: Produce large print PDF for distribution</h3>
-<ol type="1">
-<li>Write your content in Markdown or Word.</li>
-<li><strong>Audit</strong> to check compliance.</li>
-<li><strong>Fix</strong> if needed (for Word documents).</li>
-<li><strong>Convert to PDF</strong> using the Convert page with
-“Accessible PDF” selected. Enable “Binding margin” if the document will
-be printed and bound.</li>
-<li>Distribute the PDF for printing. The output uses ACB BOP print
-formatting – Arial 18pt, 1.15 line spacing, 1-inch margins.</li>
-</ol>
-<hr />
-<h2 id="daisy-accessibility-tools-1">13. DAISY Accessibility Tools</h2>
-<p>GLOW integrates with open source tools from the <a
-href="https://daisy.org/">DAISY Consortium</a>, an international
-association serving people with print disabilities. Here is how each
-integration works:</p>
-<h3 id="daisy-ace-epub-accessibility-checker-1">DAISY Ace – EPUB
-Accessibility Checker</h3>
-<p><a href="https://daisy.github.io/ace/">Ace by DAISY</a> is bundled
-with the web application and runs 100+ automated accessibility checks on
-EPUB publications using the axe-core engine. Every ePub audit
-automatically includes:</p>
-<ul>
-<li>All axe-core HTML accessibility rules (contrast, ARIA, landmarks,
-tables, forms)</li>
-<li>EPUB-specific metadata validation (accessibility metadata, package
-structure)</li>
-<li>Content document structure checks (headings, images, links)</li>
-<li>Findings linked to the <a
-href="https://kb.daisy.org/publishing/">DAISY Knowledge Base</a> for
-remediation guidance</li>
-</ul>
-<h3 id="daisy-pipeline-document-conversion-1">DAISY Pipeline – Document
-Conversion</h3>
-<p><a href="https://daisy.github.io/pipeline/">DAISY Pipeline</a>
-performs format conversions optimized for accessible publishing. When
-installed, the Convert page gains additional options:</p>
-<ul>
-<li>Word (.docx) to EPUB 3</li>
-<li>HTML to EPUB 3</li>
-<li>HTML to DAISY 2.02 (digital talking book format)</li>
-<li>EPUB 2 to EPUB 3 upgrade</li>
-</ul>
-<h3 id="daisy-knowledge-base-1">DAISY Knowledge Base</h3>
-<p>The <a href="https://kb.daisy.org/publishing/">Accessible Publishing
-Knowledge Base</a> provides the help links you see throughout audit
-reports. Every ePub-related finding links to a specific Knowledge Base
-article with detailed remediation guidance.</p>
-<h3 id="mathml-and-mathematical-content-1">MathML and Mathematical
-Content</h3>
-<p>When ePub files contain MathML (mathematical markup), the audit
-detects it and provides guidance on making mathematical content
-accessible. The <a href="https://github.com/daisy/MathCAT">MathCAT
-project</a> (Math Capable Assistive Technology) by DAISY generates
-speech, braille, and navigation from MathML for screen readers. If your
-ePub uses MathML, ensure it is properly structured so tools like MathCAT
-and MathJax can process it.</p>
-<hr />
-<h2 id="keyboard-and-screen-reader-tips-1">14. Keyboard and Screen
-Reader Tips</h2>
-<p>This tool is designed to work fully without a mouse. Here are tips
-for keyboard and screen reader users:</p>
-<ul>
-<li><strong>Skip link:</strong> Press Tab on any page to reveal a “Skip
-to main content” link that jumps past the navigation.</li>
-<li><strong>Navigation:</strong> The main navigation is a list of links.
-Use Tab and Enter to navigate between pages.</li>
-<li><strong>Forms:</strong> All form fields have visible labels and
-description text. Errors are announced with the alert role.</li>
-<li><strong>Accordions:</strong> Help sections use details/summary
-elements. Press Enter or Space on a summary to expand or collapse.
-Screen readers announce the expanded/collapsed state.</li>
-<li><strong>File upload:</strong> After selecting a file, Tab to the
-submit button and press Enter. Upload progress is indicated by the page
-loading a new result.</li>
-<li><strong>Severity badges:</strong> In the audit report, severity
-levels are shown as colored badges. The text content is always present
-(not color-only), so screen readers announce “Critical”, “High”,
-etc.</li>
-<li><strong>Help links:</strong> External help links open in new tabs
-and are announced as such.</li>
-<li><strong>Back to top:</strong> Each section on the Guidelines and
-Guide pages has a “Back to table of contents” link for quick
-navigation.</li>
-</ul>
-<hr />
-<h2 id="frequently-asked-questions-1">15. Frequently Asked
-Questions</h2>
-<h3 id="is-my-document-stored-on-the-server-1">Is my document stored on
-the server?</h3>
-<p>Uploaded files are stored in an isolated temporary workspace long
-enough to complete audit/fix/download flows, including interactive
-heading review. Temporary files are automatically cleaned up and never
-retained as account data.</p>
-<p>By default:</p>
-<ul>
-<li>Active sessions can continue for extended review workflows.</li>
-<li>Stale upload workspaces are automatically removed after 24
-hours.</li>
-</ul>
-<h3 id="what-is-the-maximum-file-size-1">What is the maximum file
-size?</h3>
-<p>500 MB. If your document is larger, try compressing images within the
-document first (Word: File, Compress Pictures).</p>
-<h3 id="can-i-audit-multiple-documents-at-once-1">Can I audit multiple
-documents at once?</h3>
-<p>The web tool processes one document at a time. For batch processing,
-use the <a href="https://github.com/Community-Access/glow">desktop
-application</a> which supports folder-level audits.</p>
-<h3 id="why-does-the-fix-not-change-my-headings">Why does the fix not
-change my headings?</h3>
-<p>The fix tool can now detect “faux headings” – paragraphs that look
-like headings (bold, large font, short text) but use a Normal style
-instead of a real Heading style. Enable “Detect and convert faux
-headings” on the Fix page to use this feature. On the web, you review
-detected candidates in an interactive table before they are applied. On
-the CLI, use <code>--detect-headings</code>.</p>
-<p>If false positives are common (for example names, times, “Agenda”
-labels), use the heading detection accuracy control and switch to
-<strong>Conservative</strong>. If valid headings are being missed, use
-<strong>Thorough</strong>.</p>
-<p>For heading hierarchy corrections (changing an H3 to an H2, for
-example), the fix tool corrects heading formatting (font, size, bold)
-but does not change heading levels. Review your heading structure
-manually using the report’s guidance.</p>
-<h3 id="can-i-limit-heading-review-to-only-certain-levels">Can I limit
-heading review to only certain levels?</h3>
-<p>Yes. Use the <strong>Allowed heading levels</strong> checkboxes in
-the Fix form, or set defaults in Settings.</p>
-<p>When configured, the heading review page only shows those levels in
-each candidate dropdown, and confirm/apply honors the same subset.</p>
-<p>Template sample content can also use the same subset so your authored
-examples and fix workflow stay consistent.</p>
-<h3 id="why-did-decorative-images-get-flagged-as-missing-alt-text">Why
-did decorative images get flagged as missing alt text?</h3>
-<p>Use Word’s <strong>Mark as decorative</strong> option for
-non-informational visuals. The auditor now correctly treats legacy VML
-shapes with <code>alt=""</code> as decorative. Images without decorative
-intent or meaningful alt text are still reported.</p>
-<h3 id="what-is-the-difference-between-acb-and-msac-rules-1">What is the
-difference between ACB and MSAC rules?</h3>
-<p><strong>ACB Large Print</strong> rules come from the American Council
-of the Blind’s Board of Publications. They cover visual formatting:
-font, size, spacing, emphasis, alignment, and margins.</p>
-<p><strong>MS Accessibility Checker (MSAC)</strong> rules are aligned
-with the Microsoft Office Accessibility Checker and WCAG 2.1. They cover
-structural accessibility: alt text, table headers, reading order,
-hyperlink text, document properties.</p>
-<p>Both categories work together for comprehensive compliance. Run with
-both enabled for best results.</p>
-<h3 id="what-about-daisy-pipeline-conversions-1">What about DAISY
-Pipeline conversions?</h3>
-<p>DAISY Ace is bundled with the web application and always runs during
-ePub audits. DAISY Pipeline (for advanced format conversions like Word
-to EPUB, HTML to DAISY 2.02) requires Java and is an optional server
-component. Pipeline conversions appear automatically when installed by
-the server administrator. For the desktop application, install Node.js
-and Ace (<code>npm install -g @daisy/ace</code>) for full ePub audit
-support.</p>
-<h3
-id="can-i-use-this-tool-for-documents-in-languages-other-than-english">Can
-I use this tool for documents in languages other than English?</h3>
-<p>Yes. The ACB formatting rules (font, size, spacing) apply regardless
-of language. The tool audits document structure and formatting, not
-content. Set the document language property (Rule: ACB-DOC-LANGUAGE) to
-the correct language code for proper screen reader pronunciation.</p>
-<h3 id="is-there-a-desktop-version-1">Is there a desktop version?</h3>
-<p>Yes. The <a href="https://github.com/Community-Access/glow">GLOW</a>
-includes a desktop application with a graphical wizard interface,
-command-line tools, and batch processing support. It runs on Windows
-without requiring an internet connection.</p>
-<h3 id="where-can-i-read-the-acb-large-print-guidelines-1">Where can I
-read the ACB Large Print Guidelines?</h3>
-<p>The full guidelines are available at <a
-href="https://acb.org/large-print-guidelines">acb.org/large-print-guidelines</a>
-(revised May 6, 2025). A reference copy is included in this repository
-at <code>docs/ACB Large Print Guidelines, revised 5-6-25.docx</code>.
-The web application includes a <a
-href="https://glow.bits-acb.org/guidelines">Guidelines page</a> with the
-complete rule reference and related audit rule mappings.</p>
-<p>APH also publishes research-based large print guidance at <a
-href="https://www.aph.org/resources/large-print-guidelines/">APH:
-Guidelines for the Development of Documents in Large Print</a>,
-including APH-hosted DOCX and PDF versions.</p>
-<hr />
-<h2 id="admin-access-administrative-use-only">16. Admin Access
-(Administrative Use Only)</h2>
-<p>GLOW includes an admin-only sign-in and approval workflow for
-operational dashboards.</p>
-<ul>
-<li><strong>No general user accounts in this release.</strong> Admin
-authentication is restricted to approved administrative accounts
-only.</li>
-<li><strong>Email configuration required.</strong> Admin sign-in
-features are enabled only when email delivery is configured.</li>
-<li><strong>Sign-in options:</strong> Email magic link, Google, Apple,
-GitHub, Microsoft, Auth0, and WordPress (providers appear only when
-configured).</li>
-<li><strong>Approval required:</strong> A user may request admin access,
-but an existing approved admin must approve before sign-in
-succeeds.</li>
-<li><strong>Admin dashboard:</strong> Approved admins can view the audio
-conversion queue, cancel queued jobs, and re-queue failed jobs.</li>
-<li><strong>AI settings:</strong> Configure and monitor cloud AI budget
-controls and API key status.</li>
-<li><strong>Feature flags:</strong> Enable or disable specific tool
-features without redeploying.</li>
-<li><strong>Access request review:</strong> Approve or deny pending
-admin access requests.</li>
-<li><strong>Tool usage analytics
-(<code>/admin/analytics</code>):</strong> View cumulative visitor count,
-total tool uses, and per-tool breakdown with share percentages and
-last-used timestamps. Data persists across server restarts in
-SQLite.</li>
-</ul>
-<hr />
-<h2 id="getting-help-1">17. Getting Help</h2>
-<ul>
-<li><strong>Full ACB Large Print Guidelines Reference</strong> –
-available on the web app Guidelines page or at <a
-href="https://acb.org/large-print-guidelines">acb.org/large-print-guidelines</a></li>
-<li><strong>APH Large Print Guidelines (official source)</strong> – <a
-href="https://www.aph.org/resources/large-print-guidelines/">aph.org/resources/large-print-guidelines</a></li>
-<li><strong>Project overview and release highlights</strong> – <a
-href="/about/">About GLOW</a></li>
-<li><strong>Web app operations and deployment notes</strong> – <a
 href="/deployment/">Deployment Guide</a></li>
-<li><strong>Web app product requirements and implementation log</strong>
-– <a href="/prd/">Product Requirements Document</a></li>
-<li><strong>Submit Feedback</strong> – use the Feedback page in the web
-app to report bugs, request features, or share your experience</li>
-<li><strong>About This Project</strong> – mission, organizations,
-standards, and open source dependencies on the web app About page</li>
-<li><strong>GitHub Issues</strong> – <a
-href="https://github.com/Community-Access/glow/issues">report bugs or
-request features</a> on the open source repository</li>
-<li><strong>DAISY Knowledge Base</strong> – <a
-href="https://kb.daisy.org/publishing/">remediation guidance</a> for
-ePub accessibility issues</li>
-<li><strong>Microsoft Accessibility Checker Guide</strong> – <a
-href="https://support.microsoft.com/en-us/office/improve-accessibility-with-the-accessibility-checker-a16f6de0-2f39-4a2b-8bd8-5ad801426c7f">Microsoft’s
-guide</a> to the Office accessibility checker</li>
+<li><strong>Product requirements and implementation log</strong> – <a
+href="/prd/">Product Requirements Document</a></li>
 </ul>
-<p><strong>Implementation note:</strong> APH alignment is fully
-integrated for the Release 1.2.0 submission workflow. Enforcement
-includes ACB + WCAG + Microsoft Accessibility Checker + format-specific
-rules with APH profile mapping finalized in this release.</p>
 </body>
 </html>

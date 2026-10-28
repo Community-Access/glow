@@ -108,7 +108,7 @@ For numbers in prose, spell out one through nine, use numerals for 10 and above,
 
 </details>
 
-See also: [User Guide FAQ section](/guide/#18-frequently-asked-questions).
+See also: [User Guide FAQ section](/guide/#20-frequently-asked-questions).
 
 ## Convert FAQ
 
