@@ -1,0 +1,3644 @@
+<h1 id="ahg-2026-accessibility-agents-instructions-and-test-plan">AHG
+2026 Accessibility Agents: instructions and test plan</h1>
+<p>This is the single document for getting the Accessing Higher Ground
+2026 workshop from “built” to “tested and ready”. Part 1 explains the
+course and how to run it. Part 2 is the complete test plan. Part 3 is
+the walkthrough: every test in Part 2, in the order to run them, from an
+empty desk to sign-off. The workshop is ready when every test case in
+Part 2 is marked Pass and the sign-off in section 2.15 is complete.</p>
+<p>Session: Accessibility Agents: Building Human-Centered AI Workflows
+for Trusted Accessibility Automation at Scale. Monday 16 November 2026,
+10:30 AM to 4:30 PM Mountain Time, Matchless, Hilton Denver City
+Center.</p>
+<h2 id="quick-links-every-document-site-and-repository">Quick links:
+every document, site and repository</h2>
+<p>Everything for the workshop, in one place. Paths are relative to the
+root of the GLOW repository, <code>S:\code\glow</code> on Jeff’s
+machine, on the <code>main</code> branch.</p>
+<h3 id="live-sites">Live sites</h3>
+<p>These are the addresses participants, the facilitator and testers
+use. The one to give anyone is <code>letitglow.app/ahg</code>.</p>
+<table>
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
+<thead>
+<tr>
+<th>What</th>
+<th>Address</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>The landing page: everything for the conference</td>
+<td><code>https://letitglow.app/ahg</code></td>
+</tr>
+<tr>
+<td>Choosing a path: the three paths compared, and each assistant’s
+setup</td>
+<td><code>https://letitglow.app/ahg/paths</code></td>
+</tr>
+<tr>
+<td>The browser path: one text per block, with Copy buttons</td>
+<td><code>https://letitglow.app/ahg/assistant</code></td>
+</tr>
+<tr>
+<td>Share page: opens the share form with an agent filled in</td>
+<td><code>https://letitglow.app/ahg/share</code></td>
+</tr>
+<tr>
+<td>Share page, starting on “practice agent”</td>
+<td><code>https://letitglow.app/ahg/share?practice=1</code></td>
+</tr>
+<tr>
+<td>Share page against a test copy, for rehearsals</td>
+<td><code>https://letitglow.app/ahg/share?repo=&lt;account&gt;/&lt;repository&gt;</code></td>
+</tr>
+<tr>
+<td>The agent kit, every file readable online, each with a plain-text
+address</td>
+<td><code>https://letitglow.app/ahg/kit</code></td>
+</tr>
+<tr>
+<td>One kit file online, and as plain text</td>
+<td><code>https://letitglow.app/ahg/kit/&lt;path&gt;</code> and
+<code>https://letitglow.app/ahg/kit/raw/&lt;path&gt;</code></td>
+</tr>
+<tr>
+<td>The agent kit, as a zip</td>
+<td><code>https://letitglow.app/ahg/kit.zip</code></td>
+</tr>
+<tr>
+<td>The sample course online: web page, documents, checker reports</td>
+<td><code>https://letitglow.app/ahg/site</code></td>
+</tr>
+<tr>
+<td>The AHG 2026 VS Code profile, for Profiles: Import Profile</td>
+<td><code>https://letitglow.app/workshop/ahg-2026/ahg-2026.code-profile</code></td>
+</tr>
+<tr>
+<td>Step card downloads</td>
+<td><code>https://letitglow.app/workshop/ahg-2026/step-cards/&lt;n&gt;-&lt;name&gt;.docx</code></td>
+</tr>
+<tr>
+<td>The slides, no consent page</td>
+<td><code>https://letitglow.app/ahg/slides</code></td>
+</tr>
+<tr>
+<td>The deck for the room, with its join address</td>
+<td><code>https://letitglow.app/workshop/session/ahg-2026/deck</code></td>
+</tr>
+<tr>
+<td>Commitment for the wall, participant</td>
+<td><code>https://letitglow.app/w/ahg-2026/11</code></td>
+</tr>
+<tr>
+<td>The commitment wall, to project</td>
+<td><code>https://letitglow.app/workshop/session/ahg-2026/wall</code></td>
+</tr>
+<tr>
+<td>Facilitator dashboard</td>
+<td><code>https://letitglow.app/workshop/session/ahg-2026/facilitator</code></td>
+</tr>
+<tr>
+<td>The collection of shared agents</td>
+<td><code>https://github.com/Community-Access/ahg-2026/blob/main/agents/README.md</code></td>
+</tr>
+<tr>
+<td>Anyone who needs a hand with sharing</td>
+<td><code>https://github.com/Community-Access/ahg-2026/issues?q=label:needs-a-hand</code></td>
+</tr>
+<tr>
+<td>GLOW health</td>
+<td><code>https://letitglow.app/health</code></td>
+</tr>
+<tr>
+<td>Help desk, for support mail</td>
+<td><code>https://helpdesk.community-access.org</code></td>
+</tr>
+<tr>
+<td>Support address given to participants</td>
+<td><code>support@community-access.org</code></td>
+</tr>
+</tbody>
+</table>
+<p>The landing page also answers to <code>/AHG</code>,
+<code>/ahg2026</code>, <code>/ahg-2026</code>, to
+<code>www.letitglow.app/ahg</code>, and to the old
+<code>letitglow.app/workshop/ahg-2026</code>. It opens without GLOW’s
+consent form, as do the kit, profile, share page, sample course, step
+cards and slides; the GLOW tools themselves still ask. These conference
+pages use their own plain frame, with none of GLOW’s navigation, AI
+meter or footer links: just the page, a link home to <code>/ahg</code>,
+the privacy policy and a “Hosted by GLOW” line.</p>
+<p>The addresses with <code>ahg-2026</code> in a session path work once
+the conference code is configured on the server, step 2 of section
+1.5.</p>
+<h3 id="the-conference">The conference</h3>
+<p>These are the conference’s own pages and resources.</p>
+<table>
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
+<thead>
+<tr>
+<th>What</th>
+<th>Where</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>The published session, number 42876: title, abstract, time,
+room</td>
+<td><code>https://accessinghigherground.org/accessibility-agents-building-human-centered-ai-workflows-for-trusted-accessibility-automation-at-scale/</code></td>
+</tr>
+<tr>
+<td>Accepted pre-conference sessions</td>
+<td><code>https://accessinghigherground.org/accepted-precon-sessions-2026-wtime/</code></td>
+</tr>
+<tr>
+<td>Speaker orientation folder: best practices slides, orientation
+notes, outline, Cvent instructions</td>
+<td><code>https://drive.google.com/drive/folders/1-t0S9Uc0vLgCInyvosSqQR89CXLvLczM</code></td>
+</tr>
+<tr>
+<td>Cvent Speaker Resource Center: profile, session details, material
+uploads</td>
+<td>The personal link in the invitation email from AHEAD; it must not be
+forwarded</td>
+</tr>
+</tbody>
+</table>
+<h3 id="repositories-and-pull-requests">Repositories and pull
+requests</h3>
+<p>The code, the collection, and the history of how the workshop was
+built.</p>
+<table>
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
+<thead>
+<tr>
+<th>What</th>
+<th>Where</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>The workshop repository: the share form, the collection, the
+kit</td>
+<td><code>https://github.com/Community-Access/ahg-2026</code></td>
+</tr>
+<tr>
+<td>GLOW, where everything is written and built</td>
+<td><code>https://github.com/Community-Access/glow</code></td>
+</tr>
+<tr>
+<td>Accessibility Agents: the source of the specialists, and where the
+collection goes at the end of the day, in
+<code>community/ahg-2026/</code></td>
+<td><code>https://github.com/Community-Access/accessibility-agents</code></td>
+</tr>
+<tr>
+<td>PR #116, the workshop</td>
+<td><code>https://github.com/Community-Access/glow/pull/116</code></td>
+</tr>
+<tr>
+<td>PR #117, pages reflow at 320px</td>
+<td><code>https://github.com/Community-Access/glow/pull/117</code></td>
+</tr>
+<tr>
+<td>PR #118, test report after the merge</td>
+<td><code>https://github.com/Community-Access/glow/pull/118</code></td>
+</tr>
+<tr>
+<td>Branch <code>wip/postmark-helpdesk</code>, the unmerged mail and
+help desk work</td>
+<td><code>https://github.com/Community-Access/glow/tree/wip/postmark-helpdesk</code></td>
+</tr>
+</tbody>
+</table>
+<h3 id="documents-for-the-facilitator">Documents for the
+facilitator</h3>
+<p>Everything Jeff reads or prints before and on the day.</p>
+<table>
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
+<thead>
+<tr>
+<th>Document</th>
+<th>What it is</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>ahg.md</code></td>
+<td>This file: instructions and the full test plan</td>
+</tr>
+<tr>
+<td><code>ahg-test-report.md</code></td>
+<td>Results of the test pass, defects and fixes, production check</td>
+</tr>
+<tr>
+<td><code>docs/ahg-2026/README.md</code></td>
+<td>Index of the workshop folder</td>
+</tr>
+<tr>
+<td><code>docs/ahg-2026/plan.md</code></td>
+<td>The plan: every program promise and the block that keeps it</td>
+</tr>
+<tr>
+<td><code>docs/ahg-2026/run-of-show.md</code></td>
+<td>The day by the clock, pacing, fallback ladder, pre-flight</td>
+</tr>
+<tr>
+<td><code>docs/ahg-2026/facilitator-card.md</code></td>
+<td>The pocket card, with blanks to fill in</td>
+</tr>
+<tr>
+<td><code>docs/ahg-2026/answer-key.md</code></td>
+<td>Every barrier planted in the sample course</td>
+</tr>
+<tr>
+<td><code>docs/ahg-2026/ahg-speaker-guidance.md</code></td>
+<td>Every AHG speaker recommendation and where it is met</td>
+</tr>
+<tr>
+<td><code>docs/ahg-2026/pre-event-message.md</code></td>
+<td>The setup message, sent three times</td>
+</tr>
+<tr>
+<td><code>docs/ahg-2026/slides.html</code>, <code>.pptx</code>,
+<code>.docx</code>, <code>.md</code></td>
+<td>The deck in four formats, generated</td>
+</tr>
+<tr>
+<td><code>docs/ahg-2026/workshop-frontfacing-guide.md</code></td>
+<td>The session description participants read in GLOW</td>
+</tr>
+<tr>
+<td><code>docs/ahg-2026/repo/</code></td>
+<td>Everything in the workshop repository: share form, automation,
+README, end-of-day script</td>
+</tr>
+<tr>
+<td><code>docs/ahg-2026/for-accessibility-agents/</code></td>
+<td>The <code>community/ahg-2026</code> folder, ready to copy into
+Accessibility Agents</td>
+</tr>
+</tbody>
+</table>
+<h3 id="the-participant-kit">The participant kit</h3>
+<p>All in <code>docs/ahg-2026/kit/</code>, and inside the downloadable
+zip.</p>
+<table>
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
+<thead>
+<tr>
+<th>Part</th>
+<th>What it is</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>kit/README.md</code></td>
+<td>The welcome page VS Code opens first</td>
+</tr>
+<tr>
+<td><code>kit/step-cards/0-before-the-day.md</code> to
+<code>7-take-it-home.md</code></td>
+<td>One card per block and one for setup, each also as Word</td>
+</tr>
+<tr>
+<td><code>kit/examples/maria-alternate-format-planner.md</code></td>
+<td>Worked example: alternate formats</td>
+</tr>
+<tr>
+<td><code>kit/examples/jordan-faculty-coach.md</code></td>
+<td>Worked example: faculty coaching</td>
+</tr>
+<tr>
+<td><code>kit/examples/sam-remediation-log-keeper.md</code></td>
+<td>Worked example: Title II compliance log</td>
+</tr>
+<tr>
+<td><code>kit/examples/agents/</code></td>
+<td>Six ready-made fallback agents</td>
+</tr>
+<tr>
+<td><code>kit/office-team/</code></td>
+<td>The eight specialists of the agent team</td>
+</tr>
+<tr>
+<td><code>kit/.github/agents/office-coordinator.agent.md</code></td>
+<td>The coordinator that runs the team</td>
+</tr>
+<tr>
+<td><code>kit/.github/skills/</code></td>
+<td>The six Copilot commands, one per block, as agent skills</td>
+</tr>
+<tr>
+<td><code>kit/any-assistant/</code></td>
+<td>The six browser path texts, generated</td>
+</tr>
+<tr>
+<td><code>kit/.github/copilot-instructions.md</code></td>
+<td>The rules Copilot follows in the kit</td>
+</tr>
+<tr>
+<td><code>kit/my-agent/SKILL.md</code></td>
+<td>The template each participant fills in</td>
+</tr>
+<tr>
+<td><code>kit/sample-course/</code></td>
+<td>PSY 101, and its checker evidence in <code>evidence/</code></td>
+</tr>
+<tr>
+<td><code>kit/share-my-agent.html</code></td>
+<td>The offline share page</td>
+</tr>
+<tr>
+<td><code>kit/ahg-2026.code-profile</code></td>
+<td>The VS Code profile</td>
+</tr>
+</tbody>
+</table>
+<h3 id="scripts">Scripts</h3>
+<p>Run from the repository root.</p>
+<table>
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
+<thead>
+<tr>
+<th>Script</th>
+<th>What it does</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>scripts/build_ahg_sample_course.py</code></td>
+<td>Rebuilds the sample course</td>
+</tr>
+<tr>
+<td><code>scripts/build_ahg_kit.py</code></td>
+<td>Rebuilds the kit’s agents, evidence, step card Word files and
+zip</td>
+</tr>
+<tr>
+<td><code>scripts/sync_ahg_repo.py &lt;ahg-2026 checkout&gt;</code></td>
+<td>Publishes the kit and the repository files to
+Community-Access/ahg-2026</td>
+</tr>
+<tr>
+<td><code>scripts/promote_to_accessibility_agents.py</code>, in the
+ahg-2026 repository</td>
+<td>The end-of-day step: every agent into Accessibility Agents, every
+author credited</td>
+</tr>
+<tr>
+<td><code>flask --app acb_large_print_web.app:create_app workshop-deck --code ahg-2026</code></td>
+<td>Regenerates the deck</td>
+</tr>
+<tr>
+<td><code>scripts/ahg_browser_checks.py --base &lt;address&gt;</code></td>
+<td>The 35 browser checks</td>
+</tr>
+<tr>
+<td><code>scripts/check_ahg_sample_course.py</code></td>
+<td>Checks all 42 planted barriers are present</td>
+</tr>
+<tr>
+<td><code>scripts/audit_ahg_docs.py</code></td>
+<td>GLOW’s own audit of every document</td>
+</tr>
+<tr>
+<td><code>scripts/check_material_conformance.py</code></td>
+<td>Checks materials against the program’s promises</td>
+</tr>
+</tbody>
+</table>
+<h3 id="source-code">Source code</h3>
+<p>For changing the workshop itself.</p>
+<table>
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
+<thead>
+<tr>
+<th>File</th>
+<th>What it holds</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>web/src/acb_large_print_web/workshop_agenda.py</code></td>
+<td>The clock, <code>AHG_DAY</code></td>
+</tr>
+<tr>
+<td><code>web/src/acb_large_print_web/workshop_deck.py</code></td>
+<td>Every slide and speaker note</td>
+</tr>
+<tr>
+<td><code>web/src/acb_large_print_web/routes/workshop.py</code></td>
+<td>The setup, kit, profile, share and step card pages, at the end of
+the file</td>
+</tr>
+<tr>
+<td><code>web/src/acb_large_print_web/templates/workshop/ahg_home.html</code></td>
+<td>The landing page at /ahg</td>
+</tr>
+<tr>
+<td><code>web/src/acb_large_print_web/routes/shortlinks.py</code></td>
+<td>The /ahg address and its variations</td>
+</tr>
+<tr>
+<td><code>docs/ahg-2026/repo/.github/scripts/accept_agent.py</code></td>
+<td>The automation that adds each shared agent</td>
+</tr>
+<tr>
+<td><code>web/tests/test_ahg_repo_intake.py</code></td>
+<td>Tests for that automation</td>
+</tr>
+<tr>
+<td><code>web/src/acb_large_print_web/templates/workshop/ahg_share.html</code></td>
+<td>The share page</td>
+</tr>
+<tr>
+<td><code>web/tests/test_workshop_ahg_kit.py</code></td>
+<td>Tests for the kit and its pages</td>
+</tr>
+</tbody>
+</table>
+<h3 id="the-server">The server</h3>
+<p>Production runs on <code>lp.csedesigns.com</code>, as
+<code>jeffbis</code>.</p>
+<table>
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
+<thead>
+<tr>
+<th>What</th>
+<th>Where</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>GLOW checkout</td>
+<td><code>~/app</code>, deployed from <code>main</code> by GitHub
+Actions on merge</td>
+</tr>
+<tr>
+<td>Caddy configuration</td>
+<td><code>~/app/web/caddy/Caddyfile</code></td>
+</tr>
+<tr>
+<td>Conference codes and secrets</td>
+<td><code>~/app/web/.env</code>
+(<code>WORKSHOP_CONFERENCE_CODES_JSON</code>)</td>
+</tr>
+</tbody>
+</table>
+<h2 id="part-1-instructions">Part 1: Instructions</h2>
+<h3 id="what-the-course-is">1.1 What the course is</h3>
+<p>A one-day, hands-on workshop for higher education accessibility staff
+who are not developers. Each participant designs an accessibility agent
+in plain English, puts it to work on a sample course, grounds it in
+checker evidence so it cites WCAG 2.2, shares it to the open-source AHG
+2026 collection in their own name (which goes into Accessibility Agents
+at the end of the day), adds it to an agent team that works through the
+whole course, and leaves with a 30-day plan.</p>
+<p>There are three paths into the same day (<code>plan.md</code>, D18),
+and this test plan runs every block on each:</p>
+<table>
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+</colgroup>
+<thead>
+<tr>
+<th>Path</th>
+<th>The participant uses</th>
+<th>Each block starts with</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>The browser path</td>
+<td>Any browser and an AI assistant, signed in; ChatGPT is the tested
+one</td>
+<td>Copying one text from <code>/ahg/assistant</code> and pasting it as
+one message</td>
+</tr>
+<tr>
+<td>VS Code on a computer</td>
+<td>VS Code 1.143 or later, the AHG 2026 profile, the kit, Copilot
+Free</td>
+<td>A command such as <code>/ready-check</code> in Copilot Chat</td>
+</tr>
+<tr>
+<td>VS Code for the Web</td>
+<td>vscode.dev in Chrome or Edge, the kit opened from the laptop,
+Copilot Free</td>
+<td>The same commands</td>
+</tr>
+</tbody>
+</table>
+<p>The full design, with every promise in the program mapped to the
+block that keeps it, is <code>docs/ahg-2026/plan.md</code>.</p>
+<h3 id="where-everything-is">1.2 Where everything is</h3>
+<p>Everything for the course is in <code>docs/ahg-2026/</code>. The
+table lists what each part is and who uses it.</p>
+<table>
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+</colgroup>
+<thead>
+<tr>
+<th>Path</th>
+<th>What it is</th>
+<th>Used by</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>docs/ahg-2026/README.md</code></td>
+<td>Index of the folder</td>
+<td>Everyone</td>
+</tr>
+<tr>
+<td><code>docs/ahg-2026/plan.md</code></td>
+<td>The plan and the promise map</td>
+<td>Facilitator</td>
+</tr>
+<tr>
+<td><code>docs/ahg-2026/run-of-show.md</code></td>
+<td>The day by the clock, pacing, fallbacks, pre-flight</td>
+<td>Facilitator, helpers</td>
+</tr>
+<tr>
+<td><code>docs/ahg-2026/facilitator-card.md</code></td>
+<td>The pocket card</td>
+<td>Facilitator</td>
+</tr>
+<tr>
+<td><code>docs/ahg-2026/answer-key.md</code></td>
+<td>Every barrier planted in the sample course</td>
+<td>Facilitator, testers</td>
+</tr>
+<tr>
+<td><code>docs/ahg-2026/pre-event-message.md</code></td>
+<td>The setup message for participants</td>
+<td>Facilitator</td>
+</tr>
+<tr>
+<td><code>docs/ahg-2026/ahg-speaker-guidance.md</code></td>
+<td>The AHG speaker recommendations and where they are met</td>
+<td>Facilitator</td>
+</tr>
+<tr>
+<td><code>docs/ahg-2026/slides.*</code></td>
+<td>The deck: HTML, PowerPoint, Word, Markdown</td>
+<td>Facilitator</td>
+</tr>
+<tr>
+<td><code>docs/ahg-2026/kit/</code></td>
+<td>The agent kit every participant opens in VS Code</td>
+<td>Participants</td>
+</tr>
+<tr>
+<td><code>docs/ahg-2026/for-accessibility-agents/</code></td>
+<td>The landing folder for capstone pull requests, to copy into that
+repository</td>
+<td>Facilitator</td>
+</tr>
+<tr>
+<td><code>web/src/acb_large_print_web/workshop_deck.py</code></td>
+<td>The source of the deck</td>
+<td>Maintainer</td>
+</tr>
+<tr>
+<td><code>web/src/acb_large_print_web/workshop_agenda.py</code></td>
+<td>The clock (<code>AHG_DAY</code>)</td>
+<td>Maintainer</td>
+</tr>
+<tr>
+<td><code>scripts/build_ahg_sample_course.py</code></td>
+<td>Rebuilds the sample course</td>
+<td>Maintainer</td>
+</tr>
+<tr>
+<td><code>scripts/build_ahg_kit.py</code></td>
+<td>Rebuilds the kit’s generated parts and the zip</td>
+<td>Maintainer</td>
+</tr>
+<tr>
+<td><code>scripts/audit_ahg_docs.py</code></td>
+<td>Runs GLOW’s audits over every document</td>
+<td>Maintainer, testers</td>
+</tr>
+<tr>
+<td><code>scripts/check_material_conformance.py</code></td>
+<td>Checks materials against the program’s promises</td>
+<td>Maintainer, testers</td>
+</tr>
+<tr>
+<td><code>scripts/sync_ahg_repo.py</code></td>
+<td>Publishes the kit and repository files to
+Community-Access/ahg-2026</td>
+<td>Maintainer</td>
+</tr>
+<tr>
+<td><code>docs/ahg-2026/repo/</code></td>
+<td>The workshop repository’s own files</td>
+<td>Maintainer</td>
+</tr>
+</tbody>
+</table>
+<h3 id="the-agent-kit">1.3 The agent kit</h3>
+<p>Participants download the kit as a zip from the setup page and open
+the folder in VS Code. The table lists its parts.</p>
+<table>
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
+<thead>
+<tr>
+<th>Part</th>
+<th>What it does</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>README.md</code></td>
+<td>Welcome page; opens first in VS Code</td>
+</tr>
+<tr>
+<td><code>.github/copilot-instructions.md</code></td>
+<td>Workshop rules for Copilot: plain language, encouragement, evidence
+only, cite WCAG 2.2, never “compliant”, nothing private</td>
+</tr>
+<tr>
+<td><code>.github/skills/&lt;command&gt;/SKILL.md</code></td>
+<td>One Copilot command per block, as an agent skill. Prompt files run
+only in Local chat sessions since VS Code 1.143; skills run in the
+default ones too</td>
+</tr>
+<tr>
+<td><code>any-assistant/*.txt</code></td>
+<td>The browser path: one text per block, carrying the block’s
+instructions and every kit file it needs. Generated by
+<code>scripts/build_ahg_kit.py</code></td>
+</tr>
+<tr>
+<td><code>.github/agents/office-coordinator.agent.md</code></td>
+<td>The coordinator that runs the agent team</td>
+</tr>
+<tr>
+<td><code>office-team/</code></td>
+<td>Eight specialists: Word, PowerPoint, Excel, PDF, web pages, captions
+and media, plain language, standards reviewer</td>
+</tr>
+<tr>
+<td><code>my-agent/SKILL.md</code></td>
+<td>The participant’s own agent</td>
+</tr>
+<tr>
+<td><code>examples/</code></td>
+<td>Maria, Jordan and Sam’s worked examples, and six ready-made agents
+in <code>examples/agents/</code></td>
+</tr>
+<tr>
+<td><code>sample-course/</code></td>
+<td>PSY 101, seven files with planted barriers, and
+<code>evidence/</code> with each file’s checker report</td>
+</tr>
+<tr>
+<td><code>step-cards/</code></td>
+<td>Setup plus one card per block, Markdown and large print Word</td>
+</tr>
+<tr>
+<td><code>share-my-agent.html</code></td>
+<td>Offline copy of the share page</td>
+</tr>
+<tr>
+<td><code>ahg-2026.code-profile</code></td>
+<td>The VS Code profile</td>
+</tr>
+</tbody>
+</table>
+<h3 id="the-day">1.4 The day</h3>
+<p>The day runs 10:30 to 4:30 in seven blocks. The command is typed into
+Copilot Chat on the two VS Code paths; on the browser path the same
+block is one text on <code>/ahg/assistant</code>.</p>
+<table>
+<colgroup>
+<col style="width: 25%" />
+<col style="width: 25%" />
+<col style="width: 25%" />
+<col style="width: 25%" />
+</colgroup>
+<thead>
+<tr>
+<th>Time</th>
+<th>Block</th>
+<th>Command</th>
+<th>Participant has at the end</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>10:00</td>
+<td>Setup table outside the room</td>
+<td><code>/ready-check</code></td>
+<td>A ready laptop</td>
+</tr>
+<tr>
+<td>10:30</td>
+<td>1. Why we are here</td>
+<td><code>/ready-check</code></td>
+<td>The journey, and the finished result in view</td>
+</tr>
+<tr>
+<td>10:50</td>
+<td>2. Design your agent</td>
+<td><code>/design-my-agent</code></td>
+<td><code>my-agent/SKILL.md</code> with their name on it</td>
+</tr>
+<tr>
+<td>11:50</td>
+<td>3. Your agent at work</td>
+<td><code>/try-my-agent</code></td>
+<td>A first answer on a course document</td>
+</tr>
+<tr>
+<td>12:15</td>
+<td>Lunch</td>
+<td>none</td>
+<td></td>
+</tr>
+<tr>
+<td>1:15</td>
+<td>4. Ground it</td>
+<td><code>/ground-my-agent</code></td>
+<td>Cited answers from evidence; a before and after</td>
+</tr>
+<tr>
+<td>2:10</td>
+<td>Break</td>
+<td>none</td>
+<td></td>
+</tr>
+<tr>
+<td>2:20</td>
+<td>5. Share it</td>
+<td><code>letitglow.app/ahg/share</code></td>
+<td>Their agent in the collection, committed in their name</td>
+</tr>
+<tr>
+<td>3:00</td>
+<td>6. Build the office</td>
+<td><code>/run-the-office</code></td>
+<td>A team report with their agent’s section</td>
+</tr>
+<tr>
+<td>3:45</td>
+<td>7. Take it home</td>
+<td><code>/my-30-day-plan</code></td>
+<td><code>my-30-day-plan.md</code> and a commitment on the wall</td>
+</tr>
+<tr>
+<td>4:15</td>
+<td>Commitments</td>
+<td>GLOW wall</td>
+<td></td>
+</tr>
+<tr>
+<td>4:25</td>
+<td>Session evaluation</td>
+<td>proctor</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h3 id="before-the-day-configuration">1.5 Before the day:
+configuration</h3>
+<p>PR #116 was merged and deployed on 10 October 2026, and the workshop
+repository Community-Access/ahg-2026 exists, owned by Community Access
+with Jeff as admin. Do these before the first setup message goes
+out.</p>
+<ol type="1">
+<li><p>Accept the admin invitation to Community-Access/ahg-2026 on the
+jeffreybishop account (GitHub emails it).</p></li>
+<li><p>Add the AHG session to GLOW’s conference codes, in
+<code>WORKSHOP_CONFERENCE_CODES_JSON</code> in
+<code>~/app/web/.env</code> or in
+<code>instance/workshop_conference_codes.json</code>:</p>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode json"><code class="sourceCode json"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="ot">[</span><span class="fu">{</span><span class="dt">&quot;access_code&quot;</span><span class="fu">:</span> <span class="st">&quot;AHG2026&quot;</span><span class="fu">,</span> <span class="dt">&quot;session_code&quot;</span><span class="fu">:</span> <span class="st">&quot;ahg-2026&quot;</span><span class="fu">,</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;session_title&quot;</span><span class="fu">:</span> <span class="st">&quot;Accessibility Agents: Building Human-Centered AI Workflows for Trusted Accessibility Automation at Scale&quot;</span><span class="fu">,</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;event_name&quot;</span><span class="fu">:</span> <span class="st">&quot;Accessing Higher Ground 2026&quot;</span><span class="fu">,</span> <span class="dt">&quot;active&quot;</span><span class="fu">:</span> <span class="kw">true</span><span class="fu">,</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;facilitator_key&quot;</span><span class="fu">:</span> <span class="st">&quot;choose-a-long-random-key&quot;</span><span class="fu">}</span><span class="ot">]</span></span></code></pre></div>
+<p>Choose your own facilitator key, and keep it off every
+slide.</p></li>
+<li><p>The share form’s workshop code is the <code>WORKSHOP_CODE</code>
+variable in the ahg-2026 repository’s settings, under Secrets and
+variables, then Actions. It is <code>AHG2026</code> now; if you change
+it, change the table cards and the setup message to match.</p></li>
+<li><p>Clear the test issues and the test agents from the ahg-2026
+repository before the setup message goes out (test cases Repo-01 to
+Repo-07 leave some behind).</p></li>
+<li><p>Open <code>https://letitglow.app/ahg</code> and confirm the page,
+kit, profile and share page all work (tests Setup-01, Setup-14,
+Assist-01 and SetupD-03).</p></li>
+<li><p>Send the setup message in <code>pre-event-message.md</code> by 20
+October, again on 6 November, and two days before. It asks everyone to
+share a practice agent; watch <code>practice/</code> in the ahg-2026
+repository fill up, and write to anyone missing by 9 November.</p></li>
+<li><p>Upload <code>slides.pptx</code>, <code>slides.docx</code> and the
+step cards to the Cvent Speaker Resource Center under My Tasks.</p></li>
+<li><p>Before the end-of-day step, copy
+<code>docs/ahg-2026/for-accessibility-agents/community/ahg-2026/README.md</code>
+into the Accessibility Agents repository at the same path, after
+confirming its <code>scripts/validate-skills.mjs</code>, context budget
+check and <code>scripts/install.mjs</code> skip
+<code>community/</code>.</p></li>
+</ol>
+<h3 id="rebuilding-after-a-change">1.6 Rebuilding after a change</h3>
+<p>Run these from the repository root after changing the course, the kit
+or the deck, then re-run the automated checks in section 2.4. Finish
+with the sync to the workshop repository, so participants who download
+it get the same kit.</p>
+<pre class="text"><code>python scripts/build_ahg_sample_course.py
+python scripts/build_ahg_kit.py --axe-js web/node_modules/axe-core/axe.min.js
+flask --app acb_large_print_web.app:create_app workshop-deck --code ahg-2026
+python scripts/sync_ahg_repo.py ../ahg-2026</code></pre>
+<p>The kit build needs Python with python-docx, python-pptx, openpyxl,
+Pillow, PyMuPDF and Playwright, and Chrome installed for the axe step.
+Never edit <code>slides.*</code>, the step card Word files, the evidence
+files or <code>share-my-agent.html</code> by hand; they are
+generated.</p>
+<h3 id="running-glow-locally-for-testing-before-the-merge">1.7 Running
+GLOW locally for testing before the merge</h3>
+<p>Testers can run every GLOW page from the branch on their own machine
+before anything is deployed. In PowerShell, from <code>web/</code> in a
+checkout of the <code>feat/ahg-three-paths</code> branch:</p>
+<pre class="text"><code>$env:PYTHONPATH = &quot;src;..\desktop\src&quot;
+$env:WORKSHOP_CONFERENCE_CODES_JSON = &#39;[{&quot;access_code&quot;:&quot;AHGTEST&quot;,&quot;session_code&quot;:&quot;ahg-2026&quot;,&quot;session_title&quot;:&quot;Accessibility Agents&quot;,&quot;event_name&quot;:&quot;AHG 2026 rehearsal&quot;,&quot;active&quot;:true,&quot;facilitator_key&quot;:&quot;rehearsal-key&quot;}]&#39;
+python -m flask --app acb_large_print_web.app:create_app run --port 5000</code></pre>
+<p>Then use <code>http://127.0.0.1:5000</code> wherever this plan says
+<code>https://letitglow.app</code>. The first visit shows GLOW’s consent
+page; accept it.</p>
+<h3 id="running-the-day">1.8 Running the day</h3>
+<p>Follow <code>run-of-show.md</code>. In short:</p>
+<ol type="1">
+<li>From 10:00, helpers run the setup table outside the room:
+<code>/ready-check</code> in VS Code, or the block 1 text on the browser
+path. Anyone whose VS Code will not cooperate moves to the browser path
+there and then.</li>
+<li>Every block: show the finished result, demo it on the projector in
+VS Code, then participants run the block on their own path with its step
+card.</li>
+<li>Anyone stuck uses a ready-made agent from
+<code>examples/agents/</code> and keeps going. Say often that this
+counts.</li>
+<li>In block 5, project the collection and refresh it as agents arrive;
+read each name aloud. Helpers watch the issues labelled
+needs-a-hand.</li>
+<li>In block 6, everyone runs their own team; the projector run with
+every shared agent comes last, from a <code>room/</code> folder in your
+kit.</li>
+<li>4:25 is the session evaluation. Stop talking.</li>
+<li>After the session, send the collection into Accessibility Agents
+with <code>scripts/promote_to_accessibility_agents.py</code>, as
+<code>run-of-show.md</code> section 6a describes.</li>
+</ol>
+<h2 id="part-2-test-plan">Part 2: Test plan</h2>
+<h3 id="goal-and-definition-of-done">2.1 Goal and definition of
+done</h3>
+<p>The goal is to prove, before 16 November, that a beginner with a
+laptop can complete every block by keyboard and screen reader as well as
+by mouse, that every fallback works, and that every material is
+accessible.</p>
+<p>Testing is complete when all of these are true:</p>
+<ol type="1">
+<li>Every test case in sections 2.4 to 2.13 is marked Pass, or marked
+Not applicable with a reason.</li>
+<li>Every defect found is fixed and its test re-run to Pass, or accepted
+in writing in the defect log with a workaround on the day.</li>
+<li>The screen reader matrix in section 2.3 is complete for every row
+marked required.</li>
+<li>The timed dry run in section 2.13 is done and its real minutes are
+written into <code>run-of-show.md</code>.</li>
+<li>The sign-off in section 2.15 is complete.</li>
+</ol>
+<p>To run the plan, follow Part 3 from start to finish: it puts every
+case below in order, with the exact answers to type. Record results in
+the Result column, or the path column: Pass, Fail (with a defect
+number), or Not applicable (with a reason). Keep this file as the
+record; commit it with results filled in.</p>
+<h3 id="people-and-accounts">2.2 People and accounts</h3>
+<p>The test plan needs the following people and accounts.</p>
+<table>
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+</colgroup>
+<thead>
+<tr>
+<th>Role</th>
+<th>Who</th>
+<th>Needs</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Facilitator tester</td>
+<td>Jeff</td>
+<td>Admin on Community-Access/ahg-2026 and merge rights on Accessibility
+Agents; facilitator key; a free ChatGPT account made for the test</td>
+</tr>
+<tr>
+<td>Beginner tester</td>
+<td>Someone who has never opened VS Code</td>
+<td>A brand-new GitHub account made for the test</td>
+</tr>
+<tr>
+<td>Screen reader tester, Windows</td>
+<td>An experienced NVDA and JAWS user</td>
+<td>A Windows laptop, a new GitHub account</td>
+</tr>
+<tr>
+<td>Screen reader tester, Mac</td>
+<td>An experienced VoiceOver user</td>
+<td>A Mac, a new GitHub account</td>
+</tr>
+<tr>
+<td>Helper</td>
+<td>Anyone</td>
+<td>Reads the run of show and the fallback ladder</td>
+</tr>
+</tbody>
+</table>
+<p>Every tester account must have Copilot Free. Use new accounts: an
+account that already has Copilot Pro hides the free-tier limits this
+plan has to measure. For the same reason, the ChatGPT column uses a free
+ChatGPT account made for the test, never a Plus account. Copilot moved
+to GitHub AI Credits on 1 June 2026 and publishes no chat count for
+Free, so Office-08 measures the share of the allowance a day uses.</p>
+<p>Testers share into the real workshop repository with “My practice
+agent”, which lands in <code>practice/</code> and never reaches
+Accessibility Agents. Clear test agents and issues afterwards (section
+1.5, step 4).</p>
+<h3 id="test-environments-and-paths">2.3 Test environments and
+paths</h3>
+<p>Each required environment row must be run at least once, start to
+finish, from setup to the team report.</p>
+<p>Jeff tests on Windows only. The Mac rows, Env-4 and Env-5, need a
+separate tester with a Mac; until one is found they stay open, and
+sign-off lists them as the one remaining gap rather than marking them
+Not applicable.</p>
+<table>
+<colgroup>
+<col style="width: 20%" />
+<col style="width: 20%" />
+<col style="width: 20%" />
+<col style="width: 20%" />
+<col style="width: 20%" />
+</colgroup>
+<thead>
+<tr>
+<th>ID</th>
+<th>Operating system</th>
+<th>Browser</th>
+<th>Assistive technology</th>
+<th>Required</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Env-1</td>
+<td>Windows 11</td>
+<td>Chrome</td>
+<td>None, mouse and keyboard</td>
+<td>Yes</td>
+</tr>
+<tr>
+<td>Env-2</td>
+<td>Windows 11</td>
+<td>Chrome</td>
+<td>NVDA, current release</td>
+<td>Yes</td>
+</tr>
+<tr>
+<td>Env-3</td>
+<td>Windows 11</td>
+<td>Edge</td>
+<td>JAWS 2026</td>
+<td>Yes</td>
+</tr>
+<tr>
+<td>Env-4</td>
+<td>macOS, current release</td>
+<td>Safari for the browser path, Chrome for VS Code for the Web</td>
+<td>VoiceOver</td>
+<td>Yes</td>
+</tr>
+<tr>
+<td>Env-5</td>
+<td>macOS, current release</td>
+<td>Chrome</td>
+<td>None, keyboard only</td>
+<td>Yes</td>
+</tr>
+<tr>
+<td>Env-6</td>
+<td>Windows 11, work laptop without administrator rights</td>
+<td>Edge</td>
+<td>None</td>
+<td>Yes</td>
+</tr>
+<tr>
+<td>Env-7</td>
+<td>Any</td>
+<td>Any</td>
+<td>Screen magnification at 200 percent and 400 percent zoom</td>
+<td>Yes</td>
+</tr>
+<tr>
+<td>Env-8</td>
+<td>Any</td>
+<td>Any</td>
+<td>Windows high contrast mode or a forced dark theme</td>
+<td>No</td>
+</tr>
+</tbody>
+</table>
+<h4 id="a-the-three-paths">2.3a The three paths</h4>
+<p>Every participant takes one of three paths
+(<code>docs/ahg-2026/plan.md</code>, D18). Every block case in sections
+2.7 to 2.12 has a result column for each path, and every one must be
+run. A case that cannot apply to a path says so in that column, with the
+reason.</p>
+<table>
+<colgroup>
+<col style="width: 25%" />
+<col style="width: 25%" />
+<col style="width: 25%" />
+<col style="width: 25%" />
+</colgroup>
+<thead>
+<tr>
+<th>Path</th>
+<th>Column</th>
+<th>What the tester uses</th>
+<th>Required</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>The browser path</td>
+<td>ChatGPT</td>
+<td>chatgpt.com, signed in to a free account made for the test, with the
+texts from <code>/ahg/assistant</code></td>
+<td>Yes</td>
+</tr>
+<tr>
+<td>VS Code on a computer</td>
+<td>Desktop</td>
+<td>VS Code 1.143 or later, the AHG 2026 profile, the kit folder,
+Copilot Free</td>
+<td>Yes</td>
+</tr>
+<tr>
+<td>VS Code for the Web</td>
+<td>Web</td>
+<td>vscode.dev in Chrome or Edge, the kit folder opened from the laptop,
+Copilot Free</td>
+<td>Yes</td>
+</tr>
+</tbody>
+</table>
+<p>Each required path must be run start to finish at least once with no
+assistive technology (Env-1) and once with NVDA (Env-2). JAWS (Env-3)
+and VoiceOver (Env-4) run at least the browser path and one VS Code
+path.</p>
+<h4 id="b-other-assistants-on-the-browser-path">2.3b Other assistants on
+the browser path</h4>
+<p>The browser path names other assistants. They are not required for
+sign-off, but run block 1, block 2 and block 6 in each before the setup
+message calls it tested with that assistant.</p>
+<table style="width:99%;">
+<colgroup>
+<col style="width: 16%" />
+<col style="width: 16%" />
+<col style="width: 16%" />
+<col style="width: 16%" />
+<col style="width: 16%" />
+<col style="width: 16%" />
+</colgroup>
+<thead>
+<tr>
+<th>ID</th>
+<th>Assistant</th>
+<th>Block 1</th>
+<th>Block 2</th>
+<th>Block 6</th>
+<th>Result</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Alt-01</td>
+<td>GitHub Copilot on github.com, Copilot Free</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>Alt-02</td>
+<td>Claude, free plan</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>Alt-03</td>
+<td>Gemini, free</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>Alt-04</td>
+<td>Microsoft 365 Copilot Chat, work account</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>Alt-05</td>
+<td>ChatGPT, signed out</td>
+<td>Pass, Claude, 27 Oct</td>
+<td>Stops: after the first answer a “Log in or sign up” wall blocks the
+next message</td>
+<td>Not reached</td>
+<td>Signed out is not supported; every surface says to sign in
+(D-007)</td>
+</tr>
+</tbody>
+</table>
+<h3 id="automated-checks">2.4 Automated checks</h3>
+<p>Run these first, from the repository root on the branch. All must
+pass before manual testing starts, and again after any fix.</p>
+<table>
+<colgroup>
+<col style="width: 25%" />
+<col style="width: 25%" />
+<col style="width: 25%" />
+<col style="width: 25%" />
+</colgroup>
+<thead>
+<tr>
+<th>ID</th>
+<th>Command</th>
+<th>Expected</th>
+<th>Result</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Auto-01</td>
+<td><code>python -m pytest web/tests -q</code> with
+<code>PYTHONPATH=web/src;desktop/src</code></td>
+<td>All pass</td>
+<td></td>
+</tr>
+<tr>
+<td>Auto-02</td>
+<td><code>python -m pytest web/tests/test_workshop_ahg_kit.py web/tests/test_workshop_deck.py web/tests/test_workshop_deck_formats.py web/tests/test_workshop_agenda.py -q</code></td>
+<td>All pass</td>
+<td></td>
+</tr>
+<tr>
+<td>Auto-03</td>
+<td><code>python -m pytest desktop/tests/test_md_auditor_false_positives.py desktop/tests/test_md_auditor_feature_parity.py -q</code>
+with <code>PYTHONPATH=desktop/src</code></td>
+<td>All pass</td>
+<td></td>
+</tr>
+<tr>
+<td>Auto-04</td>
+<td><code>python scripts/check_material_conformance.py</code></td>
+<td>“Every material conforms”</td>
+<td></td>
+</tr>
+<tr>
+<td>Auto-08</td>
+<td><code>python scripts/check_ahg_sample_course.py</code></td>
+<td>42 of 42 pass</td>
+<td></td>
+</tr>
+<tr>
+<td>Auto-05</td>
+<td><code>python scripts/audit_ahg_docs.py</code></td>
+<td>“0 not passing”</td>
+<td></td>
+</tr>
+<tr>
+<td>Auto-06</td>
+<td>The axe sweep in <code>web/e2e</code>, run as described in
+<code>web/e2e/README.md</code>, plus <code>/ahg/assistant</code> and
+<code>/ahg/paths</code></td>
+<td>No violations</td>
+<td></td>
+</tr>
+<tr>
+<td>Auto-07</td>
+<td>GitHub Actions on the pull request</td>
+<td>All required checks green</td>
+<td></td>
+</tr>
+<tr>
+<td>Auto-09</td>
+<td><code>python scripts/build_ahg_kit.py --no-axe</code>, then
+<code>git status</code></td>
+<td>The six <code>any-assistant/*.txt</code> texts and the step card
+Word files rebuild with no other change</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h3 id="setup-on-each-path">2.5 Setup, on each path</h3>
+<p>These cover everything a participant does before the day. The GLOW
+pages come first, then each path’s own setup.</p>
+<h4 id="a-the-glow-pages">2.5a The GLOW pages</h4>
+<p>These check the conference pages every path uses: the landing page,
+the paths page, the browser path page, the kit and the share page.</p>
+<table>
+<colgroup>
+<col style="width: 25%" />
+<col style="width: 25%" />
+<col style="width: 25%" />
+<col style="width: 25%" />
+</colgroup>
+<thead>
+<tr>
+<th>ID</th>
+<th>Steps</th>
+<th>Expected</th>
+<th>Result</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Setup-01</td>
+<td>Open <code>/ahg</code></td>
+<td>Heading “Accessibility Agents at AHG 2026”; “Get ready: choose a
+path” with the three paths and a link to each; the day’s schedule; links
+to the kit, the profile, the share page, the slides and eight step
+cards; the two rules</td>
+<td></td>
+</tr>
+<tr>
+<td>Setup-11</td>
+<td>Read <code>/ahg</code>, <code>/ahg/paths</code> and
+<code>/ahg/assistant</code> with a screen reader</td>
+<td>One H1 each, H2s for each part, numbered lists announced, every link
+name says where it goes, the paths table read with its caption and row
+and column headers</td>
+<td></td>
+</tr>
+<tr>
+<td>Setup-12</td>
+<td>Download <code>kit.zip</code> and the profile with no GLOW consent
+cookie (private window, direct links)</td>
+<td>Both download without the consent page</td>
+<td></td>
+</tr>
+<tr>
+<td>Setup-13</td>
+<td>Open <code>/ahg</code>, <code>/ahg/paths</code>,
+<code>/ahg/assistant</code> and the share page in a private window</td>
+<td>Every one opens straight away, with no consent page</td>
+<td></td>
+</tr>
+<tr>
+<td>Setup-14</td>
+<td>Open <code>letitglow.app/AHG</code>, <code>/ahg2026</code>,
+<code>/ahg-2026</code>, <code>/ahg/</code>,
+<code>www.letitglow.app/ahg</code> and
+<code>letitglow.app/workshop/ahg-2026</code></td>
+<td>Every one arrives at <code>letitglow.app/ahg</code></td>
+<td></td>
+</tr>
+<tr>
+<td>Setup-16</td>
+<td>Open <code>/ahg/kit</code>, then a step card, an agent and a command
+from it</td>
+<td>Each reads as a page with its headings; each has “Copy this file’s
+text” and a plain-text link; the step cards offer their Word file</td>
+<td></td>
+</tr>
+<tr>
+<td>Setup-17</td>
+<td>Open <code>/ahg/site</code>, then the course announcement; run
+Accessibility Insights FastPass on it</td>
+<td>The announcement shows its planted barriers, and FastPass finds what
+its checker report lists</td>
+<td></td>
+</tr>
+<tr>
+<td>Setup-18</td>
+<td>Tab once on <code>/ahg</code>, <code>/ahg/paths</code>,
+<code>/ahg/assistant</code>, <code>/ahg/kit</code>,
+<code>/ahg/site</code> and the share page, then press Enter</td>
+<td>The first stop is Skip to main content, and Enter moves to the page
+content</td>
+<td></td>
+</tr>
+<tr>
+<td>Assist-01</td>
+<td>Open <code>/ahg/assistant</code></td>
+<td>Sections for blocks 1 to 7, with block 5 pointing to the share page;
+each other block has a “Copy the text for Block N: …” button, a “Read
+the text first” disclosure and a plain-text link</td>
+<td></td>
+</tr>
+<tr>
+<td>Assist-02</td>
+<td>Press each Copy button, then paste into Notepad</td>
+<td>The whole text arrives, starting “AHG 2026 Accessibility Agents
+workshop. Block”; the message under the button says it is copied and how
+to paste</td>
+<td></td>
+</tr>
+<tr>
+<td>Assist-03</td>
+<td>Press the same Copy button twice with NVDA running</td>
+<td>Both presses are announced; the second begins “Done again”</td>
+<td></td>
+</tr>
+<tr>
+<td>Assist-04</td>
+<td>Block the clipboard (Chrome site settings, Clipboard, Block) and
+press a Copy button</td>
+<td>The disclosure opens, the text is selected, focus is in it, and the
+message says to press Control+C, read on focus</td>
+<td></td>
+</tr>
+<tr>
+<td>Assist-05</td>
+<td>Turn off JavaScript and open <code>/ahg/assistant</code></td>
+<td>No Copy buttons show; each text is still readable in its disclosure
+and at its plain-text address</td>
+<td></td>
+</tr>
+<tr>
+<td>Assist-06</td>
+<td>Open <code>/ahg/paths</code></td>
+<td>The comparison table, then sections for the browser path (with
+ChatGPT, Copilot on github.com, Claude, Gemini and Microsoft 365 Copilot
+Chat), VS Code on a computer and VS Code for the Web, then switching
+paths and the two rules</td>
+<td></td>
+</tr>
+<tr>
+<td>Assist-07</td>
+<td>Check every instruction on <code>/ahg/paths</code> against the real
+screens, on the day of testing: the ChatGPT Data controls toggle, the VS
+Code Profiles menu, the Restricted Mode banner, vscode.dev Open Folder
+and its permission prompts</td>
+<td>Every label matches what is on screen; fix the page for any that
+does not</td>
+<td></td>
+</tr>
+<tr>
+<td>Share-12</td>
+<td>On the share page, choose “My practice agent” and press “Fill in the
+practice template”</td>
+<td>The template fills “Your agent, as text”; “My practice agent” is
+chosen; the message says both</td>
+<td></td>
+</tr>
+<tr>
+<td>Share-13</td>
+<td>Type something into the text box, then press “Fill in the practice
+template”</td>
+<td>A confirmation asks before replacing it; Cancel keeps the text</td>
+<td></td>
+</tr>
+<tr>
+<td>Share-14</td>
+<td>Paste an agent and press “Download as <code>SKILL.md</code>”</td>
+<td>A file named <code>SKILL.md</code> is saved with the pasted text;
+the message says the browser is saving it</td>
+<td></td>
+</tr>
+<tr>
+<td>Share-15</td>
+<td>Press “Download as <code>SKILL.md</code>” with the box empty</td>
+<td>The error is read when focus moves to the box; it clears when you
+type</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h4 id="b-the-browser-path-setup-with-chatgpt">2.5b The browser path
+setup, with ChatGPT</h4>
+<p>These follow step card 0, “Everyone” and “In a browser”, with a new
+ChatGPT account.</p>
+<table>
+<colgroup>
+<col style="width: 25%" />
+<col style="width: 25%" />
+<col style="width: 25%" />
+<col style="width: 25%" />
+</colgroup>
+<thead>
+<tr>
+<th>ID</th>
+<th>Steps</th>
+<th>Expected</th>
+<th>Result</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>SetupB-01</td>
+<td>Make a new GitHub account (step card 0, Everyone)</td>
+<td>Account made</td>
+<td></td>
+</tr>
+<tr>
+<td>SetupB-02</td>
+<td>At chatgpt.com choose Sign up for free and make a test account</td>
+<td>Signed in; the composer is labelled “Chat with ChatGPT”</td>
+<td></td>
+</tr>
+<tr>
+<td>SetupB-03</td>
+<td>Turn off training: profile menu, Settings, Data controls, “Improve
+the model for everyone”</td>
+<td>The toggle exists with that name, and turns off</td>
+<td></td>
+</tr>
+<tr>
+<td>SetupB-04</td>
+<td>From <code>/ahg/assistant</code>, copy block 1, switch tabs with
+Control+Tab, paste, press Enter</td>
+<td>All three checks Ready; the template comes back in a code block with
+a Copy button; ends “You are ready for 16 November.” and the practice
+agent line</td>
+<td>Signed out: Pass, Claude, 27 Oct, all three checks Ready and both
+closing lines exact. Signed in:</td>
+</tr>
+<tr>
+<td>SetupB-05</td>
+<td>Share the practice agent from step card 0, using “Fill in the
+practice template”</td>
+<td>Within about a minute the issue gets a reply beginning “Well
+done”</td>
+<td></td>
+</tr>
+<tr>
+<td>SetupB-06</td>
+<td>Do SetupB-02 to SetupB-05 with NVDA</td>
+<td>The ChatGPT composer, Send button and each reply are reachable; the
+code block’s Copy button is named</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h4 id="c-vs-code-on-a-computer">2.5c VS Code on a computer</h4>
+<p>These follow step card 0, “In VS Code on your computer”, with a new
+GitHub account.</p>
+<table>
+<colgroup>
+<col style="width: 25%" />
+<col style="width: 25%" />
+<col style="width: 25%" />
+<col style="width: 25%" />
+</colgroup>
+<thead>
+<tr>
+<th>ID</th>
+<th>Steps</th>
+<th>Expected</th>
+<th>Result</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>SetupD-01</td>
+<td>Install VS Code on Env-6 without administrator rights</td>
+<td>Installs and opens; Help, About shows 1.143 or later</td>
+<td></td>
+</tr>
+<tr>
+<td>SetupD-02</td>
+<td>Accounts menu, sign in with GitHub, with a brand-new account</td>
+<td>Signed in; Copilot Free active with no other step</td>
+<td></td>
+</tr>
+<tr>
+<td>SetupD-03</td>
+<td>File, Preferences, Profiles; New Profile menu, Import Profile; paste
+the profile address; Create</td>
+<td>The “AHG 2026 Accessibility Agents” profile is made and active; the
+axe Accessibility Linter installed; editor text 18pt</td>
+<td></td>
+</tr>
+<tr>
+<td>SetupD-04</td>
+<td>Repeat SetupD-03 with the downloaded <code>.code-profile</code>
+file</td>
+<td>Same result</td>
+<td></td>
+</tr>
+<tr>
+<td>SetupD-05</td>
+<td>Unzip the kit and open the folder (File, Open Folder)</td>
+<td>If Restricted Mode shows, Manage, then Trust works;
+<code>README.md</code> opens as the welcome page</td>
+<td></td>
+</tr>
+<tr>
+<td>SetupD-06</td>
+<td>Open the kit in a VS Code without the profile</td>
+<td>VS Code offers the kit’s recommended extensions</td>
+<td></td>
+</tr>
+<tr>
+<td>SetupD-07</td>
+<td>Open Copilot Chat with Control+Alt+I and type <code>/</code></td>
+<td>The six commands appear in the list with their descriptions, as
+skills, in the default (Copilot) session</td>
+<td></td>
+</tr>
+<tr>
+<td>SetupD-08</td>
+<td>Type <code>/ready-check</code></td>
+<td>Five checks Ready; ends “You are ready for 16 November.”</td>
+<td></td>
+</tr>
+<tr>
+<td>SetupD-09</td>
+<td>Rename <code>office-team</code> and run <code>/ready-check</code>
+again, then rename it back</td>
+<td>That step is “Needs a hand”, with one suggestion and the support
+address</td>
+<td></td>
+</tr>
+<tr>
+<td>SetupD-10</td>
+<td>Start a new chat, set Session Target to Local, and type
+<code>/ready-check</code></td>
+<td>Also runs; record it, as the fallback if skills misbehave</td>
+<td></td>
+</tr>
+<tr>
+<td>SetupD-11</td>
+<td>Share the practice agent, choosing
+<code>my-agent/SKILL.md</code></td>
+<td>Reply “Well done” within about a minute</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h4 id="d-vs-code-for-the-web">2.5d VS Code for the Web</h4>
+<p>These follow step card 0, “In VS Code for the Web”, in Chrome and
+then Edge.</p>
+<table>
+<colgroup>
+<col style="width: 25%" />
+<col style="width: 25%" />
+<col style="width: 25%" />
+<col style="width: 25%" />
+</colgroup>
+<thead>
+<tr>
+<th>ID</th>
+<th>Steps</th>
+<th>Expected</th>
+<th>Result</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>SetupW-01</td>
+<td>Open vscode.dev in Chrome</td>
+<td>The Welcome page; the Chat view opens with Control+Alt+I and its
+input is announced as “Chat Input (Agent)”</td>
+<td>Pass, Claude, 27 Oct: Chat view present, “Build with Agent”, input
+“Chat Input (Agent), edit files in your workspace”, Copilot status in
+the status bar</td>
+</tr>
+<tr>
+<td>SetupW-02</td>
+<td>Repeat SetupW-01 in Edge, and in Safari and Firefox</td>
+<td>Edge works; Safari and Firefox cannot open a folder, as
+<code>/ahg/paths</code> says</td>
+<td></td>
+</tr>
+<tr>
+<td>SetupW-03</td>
+<td>Open Folder, pick the unzipped kit; allow the browser’s prompts</td>
+<td>Record the exact wording of each prompt in <code>/ahg/paths</code>
+and step card 0; the Explorer shows the kit</td>
+<td></td>
+</tr>
+<tr>
+<td>SetupW-04</td>
+<td>Accounts menu, sign in with GitHub</td>
+<td>Signed in; Copilot Free active</td>
+<td></td>
+</tr>
+<tr>
+<td>SetupW-05</td>
+<td>Type <code>/</code> in the Chat view</td>
+<td>The six commands appear</td>
+<td></td>
+</tr>
+<tr>
+<td>SetupW-06</td>
+<td>Type <code>/ready-check</code></td>
+<td>Five checks Ready; ends “You are ready for 16 November.”</td>
+<td></td>
+</tr>
+<tr>
+<td>SetupW-07</td>
+<td>Close the tab, reopen vscode.dev, open the kit from Open Recent</td>
+<td>The kit opens again, possibly after one more permission prompt</td>
+<td></td>
+</tr>
+<tr>
+<td>SetupW-08</td>
+<td>Press Control+N in the Chat view</td>
+<td>The browser opens a new window, as <code>/ahg/paths</code> warns;
+the New Chat button starts a new chat</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h3 id="block-1-why-we-are-here-and-the-deck">2.6 Block 1: Why we are
+here, and the deck</h3>
+<p>These cover the opening and every format of the deck.</p>
+<table>
+<colgroup>
+<col style="width: 25%" />
+<col style="width: 25%" />
+<col style="width: 25%" />
+<col style="width: 25%" />
+</colgroup>
+<thead>
+<tr>
+<th>ID</th>
+<th>Steps</th>
+<th>Expected</th>
+<th>Result</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Deck-01</td>
+<td>Open <code>/workshop/session/ahg-2026/deck</code></td>
+<td>26 slides; first title “Accessibility Agents”; subtitle is the
+program title word for word</td>
+<td></td>
+</tr>
+<tr>
+<td>Deck-02</td>
+<td>Move through the deck with arrow keys, Page Up and Page Down, Home
+and End</td>
+<td>Each change moves focus to the slide heading and is announced
+politely</td>
+<td></td>
+</tr>
+<tr>
+<td>Deck-03</td>
+<td>Turn speaker notes on and off with the <code>n</code> key and the
+button</td>
+<td>Notes show and hide; state is announced</td>
+<td></td>
+</tr>
+<tr>
+<td>Deck-04</td>
+<td>Use “Read as one page”</td>
+<td>The deck becomes one document with one heading per slide</td>
+<td></td>
+</tr>
+<tr>
+<td>Deck-05</td>
+<td>Print or print to PDF</td>
+<td>One slide per page, notes included, body text 18pt</td>
+<td></td>
+</tr>
+<tr>
+<td>Deck-06</td>
+<td>Download the deck as one file with <code>?download=1</code>, open it
+offline</td>
+<td>Works with no network</td>
+<td></td>
+</tr>
+<tr>
+<td>Deck-07</td>
+<td>Open <code>slides.pptx</code> in PowerPoint; run Review, Check
+Accessibility</td>
+<td>No errors; every slide has a title; reading order matches the
+screen</td>
+<td></td>
+</tr>
+<tr>
+<td>Deck-08</td>
+<td>Read <code>slides.pptx</code> with NVDA or JAWS in PowerPoint</td>
+<td>Titles, body and tables read in order; speaker notes in the notes
+pane</td>
+<td></td>
+</tr>
+<tr>
+<td>Deck-09</td>
+<td>Open <code>slides.docx</code> in Word; run Check Accessibility</td>
+<td>No errors; one heading per slide</td>
+<td></td>
+</tr>
+<tr>
+<td>Deck-10</td>
+<td>Compare the clock times in the deck with section 1.4</td>
+<td>Every time matches</td>
+<td></td>
+</tr>
+<tr>
+<td>Deck-11</td>
+<td>Read slides 1, 2, 5 and 6 aloud with their speaker notes</td>
+<td>Key point first, the Title II problem, the three paths, the AI
+context and the privacy rule are all there</td>
+<td></td>
+</tr>
+<tr>
+<td>Deck-12</td>
+<td>Read slides 11, 12, 15, 19, 21 and 24</td>
+<td>Each gives the VS Code command and the browser path step</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h3 id="block-2-design-your-agent">2.7 Block 2: Design your agent</h3>
+<p>The ChatGPT column pastes the block 2 text from
+<code>/ahg/assistant</code> into the conversation from SetupB-04. The
+two VS Code columns type <code>/design-my-agent</code>.</p>
+<table style="width:99%;">
+<colgroup>
+<col style="width: 16%" />
+<col style="width: 16%" />
+<col style="width: 16%" />
+<col style="width: 16%" />
+<col style="width: 16%" />
+<col style="width: 16%" />
+</colgroup>
+<thead>
+<tr>
+<th>ID</th>
+<th>Steps</th>
+<th>Expected</th>
+<th>ChatGPT</th>
+<th>Desktop</th>
+<th>Web</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Design-01</td>
+<td>Start the block; pick “documents and alternate formats”; give a real
+problem</td>
+<td>It asks for the card and the problem, reminds you nothing private,
+names the two matching ready-made agents and offers to start from
+one</td>
+<td>First turn, signed out: Pass, Claude, 27 Oct. It asked for the card
+and problem with the privacy reminder, and named both agents per
+card</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>Design-02</td>
+<td>Answer the five questions, borrowing from the example when
+unsure</td>
+<td>One question at a time; it waits for each answer</td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>Design-03</td>
+<td>Give a name and institution; let it write the agent</td>
+<td>ChatGPT: the whole agent in one code block with a Copy button. VS
+Code: <code>my-agent/SKILL.md</code> written. Either way: six headings
+and the Never section exactly; <code>name</code> lowercase with hyphens;
+<code>author</code> quoted; WCAG 2.2 links kept</td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>Design-04</td>
+<td>Read the summary</td>
+<td>Five lines or fewer; one specific thing the agent does well; ends
+“Your agent exists.” ChatGPT also says how to keep it with “Download as
+<code>SKILL.md</code>”</td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>Design-05</td>
+<td>ChatGPT: copy the code block, paste into the share page, “Download
+as <code>SKILL.md</code>”</td>
+<td>The downloaded file starts with three dashes and <code>name:</code>
+and passes the share page’s name check</td>
+<td></td>
+<td>n/a: the file is in the kit</td>
+<td>n/a: the file is in the kit</td>
+</tr>
+<tr>
+<td>Design-06</td>
+<td>Repeat Design-01 to 04 for the other two role cards</td>
+<td>Same, with the matching examples</td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>Design-07</td>
+<td>When asked for the problem, include a made-up student name and
+accommodation</td>
+<td>It declines to use it and reminds the tester to keep it private</td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>Design-08</td>
+<td>Fallback: from <code>/ahg/kit</code>, copy the faculty coach and use
+it as the agent, changing the author</td>
+<td>ChatGPT: accepted as the agent. VS Code: pasted over
+<code>my-agent/SKILL.md</code>; the ready check still passes</td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>Design-09</td>
+<td>Do the whole block with NVDA only</td>
+<td>Every question and answer is readable; in VS Code, Alt+F2 reads the
+full response; in ChatGPT, the code block’s Copy button is reachable and
+named</td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>Design-10</td>
+<td>Time the block for the beginner tester</td>
+<td>Under 60 minutes including reading the example</td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h3 id="block-3-your-agent-at-work">2.8 Block 3: Your agent at work</h3>
+<p>These check the agent’s first answer, before it has any evidence, on
+each path.</p>
+<table style="width:99%;">
+<colgroup>
+<col style="width: 16%" />
+<col style="width: 16%" />
+<col style="width: 16%" />
+<col style="width: 16%" />
+<col style="width: 16%" />
+<col style="width: 16%" />
+</colgroup>
+<thead>
+<tr>
+<th>ID</th>
+<th>Steps</th>
+<th>Expected</th>
+<th>ChatGPT</th>
+<th>Desktop</th>
+<th>Web</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Try-01</td>
+<td>Start the block (block 3 text, or <code>/try-my-agent</code>);
+accept the suggested file</td>
+<td>It uses the agent from block 2, naming it; the suggestion fits the
+agent’s task</td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>Try-02</td>
+<td>Read the answer</td>
+<td>Answers as the agent, with no checker evidence</td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>Try-03</td>
+<td>Read the note after the answer</td>
+<td>One thing done well; one place it guessed; ends with the after-lunch
+line</td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>Try-04</td>
+<td>Run it with each of the six ready-made agents</td>
+<td>Each produces an answer in its own output format</td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>Try-05</td>
+<td>ChatGPT only: start a new conversation, then paste the block 3
+text</td>
+<td>It asks you to paste your agent and waits; pasting the downloaded
+<code>SKILL.md</code> carries on</td>
+<td></td>
+<td>n/a</td>
+<td>n/a</td>
+</tr>
+</tbody>
+</table>
+<h3 id="block-4-ground-it">2.9 Block 4: Ground it</h3>
+<p>These prove that evidence changes the answers, for every kind of
+file, on each path.</p>
+<table style="width:99%;">
+<colgroup>
+<col style="width: 16%" />
+<col style="width: 16%" />
+<col style="width: 16%" />
+<col style="width: 16%" />
+<col style="width: 16%" />
+<col style="width: 16%" />
+</colgroup>
+<thead>
+<tr>
+<th>ID</th>
+<th>Steps</th>
+<th>Expected</th>
+<th>ChatGPT</th>
+<th>Desktop</th>
+<th>Web</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Ground-01</td>
+<td>Start the block with the syllabus</td>
+<td>Uses <code>psy101-syllabus</code> evidence; cites at least one WCAG
+2.2 criterion with a link; lists what a person must still check</td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>Ground-02</td>
+<td>Same with the lecture</td>
+<td>Mentions untitled slides and reading order; flags “image.png” alt
+text only as something a person must check</td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>Ground-03</td>
+<td>Same with the gradebook</td>
+<td>Mentions merged cells and color-only status</td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>Ground-04</td>
+<td>Same with the scanned reading</td>
+<td>Says the pages are pictures of text; cites 1.4.5</td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>Ground-05</td>
+<td>Same with the lab handout</td>
+<td>Mentions untagged PDF; says the color-dependent exercise needs an
+alternative, not an edit</td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>Ground-06</td>
+<td>Same with the announcement page</td>
+<td>Uses the axe evidence: contrast, missing alt, language, heading
+order</td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>Ground-07</td>
+<td>Same with the captions</td>
+<td>Uses the captions evidence and the known names; corrects “herman ebb
+in house”</td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>Ground-08</td>
+<td>Compare Ground-01 with Try-02 for the same file</td>
+<td>Fewer guesses and more citations</td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>Ground-09</td>
+<td>Paste Word’s Check Accessibility results for the syllabus</td>
+<td>The agent works from Word’s results the same way</td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>Ground-10</td>
+<td>Check every answer from Ground-01 to 07</td>
+<td>None says “compliant” or “accessible” as a verdict; none invents a
+finding not in the evidence</td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>Ground-11</td>
+<td>Spot check every evidence file against
+<code>answer-key.md</code></td>
+<td>Every GLOW rule in the evidence appears in the key</td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h3 id="block-5-share-it-and-the-workshop-repository">2.10 Block 5:
+Share it, and the workshop repository</h3>
+<p>Run these with “My practice agent” unless the case says otherwise, so
+test agents land in <code>practice/</code>; clear them afterwards.
+Sharing is the same page on every path; the columns record where the
+agent came from.</p>
+<table style="width:99%;">
+<colgroup>
+<col style="width: 16%" />
+<col style="width: 16%" />
+<col style="width: 16%" />
+<col style="width: 16%" />
+<col style="width: 16%" />
+<col style="width: 16%" />
+</colgroup>
+<thead>
+<tr>
+<th>ID</th>
+<th>Steps</th>
+<th>Expected</th>
+<th>ChatGPT</th>
+<th>Desktop</th>
+<th>Web</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Share-01</td>
+<td>Open <code>/ahg/share</code>; give it the agent (ChatGPT: the
+downloaded <code>SKILL.md</code> or a paste; VS Code:
+<code>my-agent/SKILL.md</code>)</td>
+<td>The text box fills; the name fills; a status message is
+announced</td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>Share-02</td>
+<td>Press “Open the share form on GitHub”</td>
+<td>A new tab opens the Share my agent form in
+Community-Access/ahg-2026, filled in</td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>Share-03</td>
+<td>Tick the privacy box and press Submit new issue</td>
+<td>Within about a minute, a reply: “Your agent is in” with a link, or
+“Well done” for a practice agent</td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>Share-04</td>
+<td>Repeat Share-01 to 03 with a brand-new GitHub account</td>
+<td>Same; the commit shows on that account’s profile</td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>Share-10</td>
+<td>Do Share-01 to 03 with NVDA and JAWS</td>
+<td>Every control on the share page and GitHub’s form is reachable and
+named; the reply is found by heading or by refreshing</td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p>These do not depend on the path.</p>
+<table>
+<colgroup>
+<col style="width: 25%" />
+<col style="width: 25%" />
+<col style="width: 25%" />
+<col style="width: 25%" />
+</colgroup>
+<thead>
+<tr>
+<th>ID</th>
+<th>Steps</th>
+<th>Expected</th>
+<th>Result</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Share-05</td>
+<td>Submit with the text box empty</td>
+<td>“Your agent is empty” is read on focus; focus moves to the text
+box</td>
+<td></td>
+</tr>
+<tr>
+<td>Share-06</td>
+<td>Submit a real agent with the name still “my-agent-name”</td>
+<td>Message asks for a name of its own; focus moves to the name
+field</td>
+<td></td>
+</tr>
+<tr>
+<td>Share-07</td>
+<td>Paste an agent longer than about 7,000 characters</td>
+<td>Message explains how to paste it into the form directly</td>
+<td></td>
+</tr>
+<tr>
+<td>Share-08</td>
+<td>Use the offline <code>share-my-agent.html</code> from the kit</td>
+<td>Same as Share-01, 02, 12 and 14</td>
+<td></td>
+</tr>
+<tr>
+<td>Share-09</td>
+<td>Open <code>/ahg/share?practice=1</code></td>
+<td>“My practice agent” is chosen</td>
+<td></td>
+</tr>
+<tr>
+<td>Share-11</td>
+<td>Ten people share within two minutes</td>
+<td>Every one gets a reply within five minutes; no commit is lost</td>
+<td></td>
+</tr>
+<tr>
+<td>Repo-01</td>
+<td>A practice agent through the form</td>
+<td>Committed to <code>practice/&lt;account&gt;/SKILL.md</code> with the
+sharer as author; reply “Well done”; issue closed</td>
+<td></td>
+</tr>
+<tr>
+<td>Repo-02</td>
+<td>A real agent, with the code in lower case</td>
+<td>Committed to
+<code>agents/&lt;account&gt;/&lt;name&gt;/SKILL.md</code>; gallery
+updated; reply “Your agent is in”</td>
+<td></td>
+</tr>
+<tr>
+<td>Repo-03</td>
+<td>A wrong code, the template’s name and author</td>
+<td>Reply “Nearly there” listing all three; issue stays open, label
+needs-a-hand</td>
+<td></td>
+</tr>
+<tr>
+<td>Repo-04</td>
+<td>Fix Repo-03 by editing the issue</td>
+<td>Checked again on save; agent goes in</td>
+<td></td>
+</tr>
+<tr>
+<td>Repo-05</td>
+<td>An agent containing an email address or a nine-digit number</td>
+<td>Reply names what looks private; nothing committed</td>
+<td></td>
+</tr>
+<tr>
+<td>Repo-06</td>
+<td>An author with an unquoted colon</td>
+<td>Reply explains double quotes; nothing committed</td>
+<td></td>
+</tr>
+<tr>
+<td>Repo-07</td>
+<td>Run <code>scripts/promote_to_accessibility_agents.py</code> against
+a scratch checkout of Accessibility Agents</td>
+<td>Every agent copied to <code>community/ahg-2026/</code>; a
+Co-authored-by line per author</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h3 id="block-6-build-the-office">2.11 Block 6: Build the office</h3>
+<p>The ChatGPT column pastes the block 6 text, about 31 KB, in the same
+conversation. This is the case most likely to hit a free plan’s limits;
+record exactly what happens.</p>
+<table style="width:99%;">
+<colgroup>
+<col style="width: 16%" />
+<col style="width: 16%" />
+<col style="width: 16%" />
+<col style="width: 16%" />
+<col style="width: 16%" />
+<col style="width: 16%" />
+</colgroup>
+<thead>
+<tr>
+<th>ID</th>
+<th>Steps</th>
+<th>Expected</th>
+<th>ChatGPT</th>
+<th>Desktop</th>
+<th>Web</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Office-01</td>
+<td>Start the block (block 6 text, or <code>/run-the-office</code>)</td>
+<td>ChatGPT accepts the whole text as one message; it explains in two
+lines what is about to happen</td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>Office-02</td>
+<td>Let it run</td>
+<td>One file at a time, one line per file naming the specialists</td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>Office-03</td>
+<td>Read the team report</td>
+<td>Three lines for a director first; one section per course file; the
+tester’s agent and name where its task fits; WCAG 2.2 criteria with
+links; “what no checker can see”; status “proposed”</td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>Office-04</td>
+<td>Read the end of the report</td>
+<td>A “Before this goes anywhere” checklist, then one sentence saying
+what the tester’s agent added</td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>Office-05</td>
+<td>Run with no agent (ChatGPT: a new conversation; VS Code: the
+template left in <code>my-agent/SKILL.md</code>)</td>
+<td>It says so kindly and offers the ready-made agents</td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>Office-06</td>
+<td>If the run stops before the last file, type “continue”</td>
+<td>It continues from where it stopped</td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>Office-07</td>
+<td>Facilitator, Desktop only: copy every shared agent into
+<code>room/</code> in the kit, then <code>/run-the-office</code></td>
+<td>Every room agent is on the team, named with its author</td>
+<td>n/a</td>
+<td></td>
+<td>n/a</td>
+</tr>
+<tr>
+<td>Office-08</td>
+<td>Record the AI usage for one full participant day</td>
+<td>ChatGPT: any limit messages, and when. Copilot: the share of the
+monthly allowance used, from github.com Copilot settings</td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h3 id="block-7-take-it-home-and-the-commitment-wall">2.12 Block 7: Take
+it home, and the commitment wall</h3>
+<p>These check the 30-day plan on each path.</p>
+<table style="width:99%;">
+<colgroup>
+<col style="width: 16%" />
+<col style="width: 16%" />
+<col style="width: 16%" />
+<col style="width: 16%" />
+<col style="width: 16%" />
+<col style="width: 16%" />
+</colgroup>
+<thead>
+<tr>
+<th>ID</th>
+<th>Steps</th>
+<th>Expected</th>
+<th>ChatGPT</th>
+<th>Desktop</th>
+<th>Web</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Plan-01</td>
+<td>Start the block; answer six questions</td>
+<td>One question at a time. ChatGPT: the plan in one code block as a
+table. VS Code: <code>my-30-day-plan.md</code> saved</td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>Plan-02</td>
+<td>Read the last line</td>
+<td>One reason the plan is realistic; ends “Go make one more
+champion.”</td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p>The commitment wall is the same on every path.</p>
+<table>
+<colgroup>
+<col style="width: 25%" />
+<col style="width: 25%" />
+<col style="width: 25%" />
+<col style="width: 25%" />
+</colgroup>
+<thead>
+<tr>
+<th>ID</th>
+<th>Steps</th>
+<th>Expected</th>
+<th>Result</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Wall-01</td>
+<td>Open <code>letitglow.app/w/ahg-2026/11</code>, join with the access
+code, add a commitment</td>
+<td>Saved</td>
+<td></td>
+</tr>
+<tr>
+<td>Wall-02</td>
+<td>Open <code>/workshop/session/ahg-2026/wall</code>, entering the
+facilitator key if asked</td>
+<td>The commitment appears with no name</td>
+<td></td>
+</tr>
+<tr>
+<td>Wall-03</td>
+<td>Read the wall with a screen reader</td>
+<td>Every commitment is reachable as list or text</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h3 id="materials-accessibility-and-fallbacks">2.13 Materials,
+accessibility and fallbacks</h3>
+<p>These cover the content, the sample course, and what happens when
+things go wrong, on every path.</p>
+<table>
+<colgroup>
+<col style="width: 25%" />
+<col style="width: 25%" />
+<col style="width: 25%" />
+<col style="width: 25%" />
+</colgroup>
+<thead>
+<tr>
+<th>ID</th>
+<th>Steps</th>
+<th>Expected</th>
+<th>Result</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Mat-01</td>
+<td>Open each of the seven sample course files</td>
+<td>Each opens in its own application</td>
+<td></td>
+</tr>
+<tr>
+<td>Mat-02</td>
+<td>Check each planted barrier in <code>answer-key.md</code> against the
+files</td>
+<td>Every barrier present exactly as described</td>
+<td></td>
+</tr>
+<tr>
+<td>Mat-03</td>
+<td>Read the three worked examples aloud</td>
+<td>Facts, times and names match the deck</td>
+<td></td>
+</tr>
+<tr>
+<td>Mat-04</td>
+<td>Open each step card Word file in Word; Check Accessibility</td>
+<td>No errors; headings real; each path’s numbered list starts at 1</td>
+<td></td>
+</tr>
+<tr>
+<td>Mat-05</td>
+<td>Compare each step card’s steps with what testers actually did, on
+each path</td>
+<td>Every key, label and expected result matches the real screens</td>
+<td></td>
+</tr>
+<tr>
+<td>Mat-06</td>
+<td>Read <code>pre-event-message.md</code> as a participant</td>
+<td>The three paths, the support address, Mountain Time, the privacy
+rule</td>
+<td></td>
+</tr>
+<tr>
+<td>Mat-07</td>
+<td>Replace the written before and after answers in the worked examples
+with real output captured in Ground-08</td>
+<td>Examples show real output, still labelled</td>
+<td></td>
+</tr>
+<tr>
+<td>A11y-01</td>
+<td>Use every GLOW page in this plan by keyboard only</td>
+<td>Every control reachable, visible focus, logical order</td>
+<td></td>
+</tr>
+<tr>
+<td>A11y-02</td>
+<td>Zoom <code>/ahg</code>, <code>/ahg/paths</code>,
+<code>/ahg/assistant</code>, the share page and the deck to 200 and 400
+percent</td>
+<td>No loss of content or function; no horizontal page scrolling at 400
+percent; the paths table scrolls inside its own region</td>
+<td></td>
+</tr>
+<tr>
+<td>A11y-03</td>
+<td>Turn on reduced motion</td>
+<td>Nothing animates</td>
+<td></td>
+</tr>
+<tr>
+<td>A11y-04</td>
+<td>Use the kit at 18pt with VS Code zoomed in twice, on a computer and
+at vscode.dev</td>
+<td>Chat and editor remain usable</td>
+<td></td>
+</tr>
+<tr>
+<td>Fall-01</td>
+<td>Turn off wifi after setup</td>
+<td>The kit, sample course, evidence, step cards and examples still
+open; only the AI and GitHub fail</td>
+<td></td>
+</tr>
+<tr>
+<td>Fall-02</td>
+<td>Use up the Copilot allowance, or sign in with an account that
+has</td>
+<td>The step card’s switch to the browser path completes the block from
+the same point</td>
+<td></td>
+</tr>
+<tr>
+<td>Fall-03</td>
+<td>Profile import refused on Env-6</td>
+<td>SetupD-06 route works, or the browser path</td>
+<td></td>
+</tr>
+<tr>
+<td>Fall-04</td>
+<td>GitHub unreachable during block 5</td>
+<td>The agent file can be saved for a later share: from the kit, or by
+“Download as <code>SKILL.md</code>”</td>
+<td></td>
+</tr>
+<tr>
+<td>Fall-05</td>
+<td>Projector off</td>
+<td>The facilitator can run the block from the pocket card and step
+cards alone</td>
+<td></td>
+</tr>
+<tr>
+<td>Fall-06</td>
+<td>Mid-block, move a participant from VS Code to the browser path, as
+<code>/ahg/paths</code> “Switching paths” says</td>
+<td>They carry on from the same block with the same agent</td>
+<td></td>
+</tr>
+<tr>
+<td>Load-01</td>
+<td>40 downloads of <code>kit.zip</code> from one network within a
+minute</td>
+<td>All succeed</td>
+<td></td>
+</tr>
+<tr>
+<td>Dry-01</td>
+<td>Timed dry run of the whole day with the beginner tester, once on the
+browser path and once in VS Code</td>
+<td>Real minutes per block written into <code>run-of-show.md</code>
+section 2</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h3 id="defect-log">2.14 Defect log</h3>
+<p>Number every defect. A defect is closed when its fix is merged and
+the test that found it passes again.</p>
+<table>
+<colgroup>
+<col style="width: 20%" />
+<col style="width: 20%" />
+<col style="width: 20%" />
+<col style="width: 20%" />
+<col style="width: 20%" />
+</colgroup>
+<thead>
+<tr>
+<th>Defect</th>
+<th>Test</th>
+<th>What happened</th>
+<th>Fix</th>
+<th>Re-test result</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>D-001</td>
+<td>Auto-07</td>
+<td>Six ready-made agents had author lines like “Example: Maria
+Alvarez”: invalid YAML. Vale stopped on it; VS Code would have misread
+the headers</td>
+<td>Header text quoted by the kit build; template and /design-my-agent
+keep quotes; a test parses every front matter block
+(<code>1d4f1fd</code>)</td>
+<td>Pass, 10 Oct</td>
+</tr>
+<tr>
+<td>D-002</td>
+<td>A11y-02</td>
+<td>On every GLOW page, at 320px wide, page content was 0px wide: the AI
+meter sat outside the sidebar and became a column. Live on
+letitglow.app</td>
+<td>Meter moved inside the sidebar; PR #117 for production, same commits
+on this branch</td>
+<td>Pass, 10 Oct</td>
+</tr>
+<tr>
+<td>D-003</td>
+<td>A11y-02</td>
+<td>Home, privacy, audit and convert pages overflowed sideways at
+320px</td>
+<td>Wrapping and width rules for main content and form controls (PR
+#117)</td>
+<td>Pass, 10 Oct</td>
+</tr>
+<tr>
+<td>D-004</td>
+<td>A11y-02, Deck axe</td>
+<td>Setup page’s profile address and the deck’s slide picker overflowed
+at 320px; deck controls outside any landmark; count said “of 30”</td>
+<td>Fixed in <code>41f1fd7</code></td>
+<td>Pass, 10 Oct</td>
+</tr>
+<tr>
+<td>D-005</td>
+<td>Setup-04</td>
+<td>Prompt files used the older <code>mode:</code> header; VS Code 1.141
+reads <code>agent:</code></td>
+<td>All six commands now use <code>agent: agent</code></td>
+<td>Superseded by D-006</td>
+</tr>
+<tr>
+<td>D-006</td>
+<td>Research, 27 Oct</td>
+<td>VS Code 1.143 runs prompt files only in Local chat sessions; new
+chats default to the Copilot session, where <code>/ready-check</code>
+would not exist</td>
+<td>The six commands moved to agent skills in
+<code>.github/skills/</code> (D19); tests hold the layout</td>
+<td>Confirm in SetupD-07, SetupD-10 and SetupW-05</td>
+</tr>
+<tr>
+<td>D-007</td>
+<td>Alt-05, 27 Oct</td>
+<td>ChatGPT signed out answered block 1 and the first turn of block 2,
+then a “Log in or sign up” wall stopped every further message</td>
+<td>Every browser path surface says to sign in:
+<code>/ahg/assistant</code>, <code>/ahg/paths</code>, step cards 0 and
+1, the setup message</td>
+<td>Confirm in SetupB-04 signed in</td>
+</tr>
+<tr>
+<td>D-008</td>
+<td>Build, 27 Oct</td>
+<td>Step card Word files continued numbering across lists, so a card’s
+second list started at 6</td>
+<td>Each numbered list gets its own numbering that starts at 1</td>
+<td>Pass by inspection of <code>0-before-the-day.docx</code>; confirm in
+Mat-04</td>
+</tr>
+<tr>
+<td>D-009</td>
+<td>Build, 27 Oct</td>
+<td>Wrapped bullet lines in step cards became separate paragraphs in
+Word</td>
+<td>Continuation lines indented two spaces join their bullet</td>
+<td>Pass by inspection; confirm in Mat-04</td>
+</tr>
+</tbody>
+</table>
+<h3 id="a-results-so-far">2.14a Results so far</h3>
+<p>The pages, kit, step cards and deck changed on 27 October to add the
+three paths, so every result was cleared for a fresh run. The 10 October
+record of the earlier single-path design is kept in
+<code>ahg-test-report.md</code>.</p>
+<p>Run so far on 27 October, by Claude on Windows:</p>
+<ul>
+<li>SetupW-01: VS Code for the Web has the Chat view, opened with
+Control+Alt+I, with “Build with Agent”, agent mode, and the input
+announced as “Chat Input (Agent), edit files in your workspace”. So the
+third path is real; its sign-in and kit steps still need a person.</li>
+<li>SetupB-04 and Design-01, signed out: ChatGPT ran block 1 exactly and
+began block 2 correctly, then stopped behind a sign-in wall
+(D-007).</li>
+</ul>
+<p>What remains, in order:</p>
+<ol type="1">
+<li>The automated checks, section 2.4.</li>
+<li>SetupB-02 to SetupB-06, then sections 2.7 to 2.12 in the ChatGPT
+column, signed in to a free test account.</li>
+<li>SetupD-01 to SetupD-11, then sections 2.7 to 2.12 in the Desktop
+column.</li>
+<li>SetupW-02 to SetupW-08, then sections 2.7 to 2.12 in the Web
+column.</li>
+<li>The screen reader runs in section 2.3a: each path with NVDA, and
+JAWS on the browser path and one VS Code path.</li>
+<li>Section 2.3b for each other assistant, before calling it
+tested.</li>
+<li>Share, Repo, Wall, Mat, A11y and Fall cases, and Dry-01 on two
+paths.</li>
+</ol>
+<h3 id="sign-off">2.15 Sign-off</h3>
+<p>The workshop is ready when every line below is signed and dated.</p>
+<table>
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+</colgroup>
+<thead>
+<tr>
+<th>Item</th>
+<th>Signed by</th>
+<th>Date</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Automated checks, section 2.4, all pass</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>Setup, section 2.5, all pass on every required environment</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>Blocks 1 to 7, sections 2.6 to 2.12, all pass in the ChatGPT
+column</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>Blocks 1 to 7, sections 2.6 to 2.12, all pass in the Desktop
+column</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>Blocks 1 to 7, sections 2.6 to 2.12, all pass in the Web column</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>Screen reader matrix, section 2.3, complete</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>Materials, accessibility and fallbacks, section 2.13, all pass</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>Defect log closed or every open defect accepted with a
+workaround</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>Dry run done and run of show updated</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>Workshop repository cleared of test agents, and the Accessibility
+Agents folder in place for the end-of-day step</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>Setup message sent with working links</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>Facilitator ready to run the day</td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h2 id="part-3-the-walkthrough-start-to-finish">Part 3: The walkthrough,
+start to finish</h2>
+<p>Part 2 lists every test case. This part is the order to run them in:
+one script, from an empty desk to the signed-off workshop, in sittings
+you can stop between. Every step says what to do, what you should see,
+and which test case IDs to mark in Part 2. When a step says “Mark”,
+write Pass, or Fail with a defect number from section 2.14, in that
+case’s Result column or path column.</p>
+<p>Where a step gives text in a box, type or paste exactly that. Every
+answer you need to give an assistant is written here, so you never have
+to make one up, and two runs on different paths can be compared.</p>
+<h3 id="the-sittings-and-how-long-they-take">3.1 The sittings, and how
+long they take</h3>
+<p>Each row is one sitting. Do them in this order; each one needs the
+ones before it.</p>
+<table>
+<colgroup>
+<col style="width: 25%" />
+<col style="width: 25%" />
+<col style="width: 25%" />
+<col style="width: 25%" />
+</colgroup>
+<thead>
+<tr>
+<th>Sitting</th>
+<th>What it covers</th>
+<th>Where</th>
+<th>About</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>A</td>
+<td>Accounts, notebook, and where to test</td>
+<td>Anywhere</td>
+<td>45 minutes</td>
+</tr>
+<tr>
+<td>B</td>
+<td>Automated checks</td>
+<td>The repository, on the branch</td>
+<td>20 minutes</td>
+</tr>
+<tr>
+<td>C</td>
+<td>The GLOW pages, by keyboard and mouse</td>
+<td>GLOW running locally from the branch</td>
+<td>60 minutes</td>
+</tr>
+<tr>
+<td>D</td>
+<td>Merge, deploy, and the production check</td>
+<td>GitHub and letitglow.app</td>
+<td>30 minutes</td>
+</tr>
+<tr>
+<td>E</td>
+<td>The browser path, the whole day, in ChatGPT</td>
+<td>letitglow.app and chatgpt.com</td>
+<td>3 hours</td>
+</tr>
+<tr>
+<td>F</td>
+<td>VS Code on a computer, the whole day</td>
+<td>VS Code on Windows</td>
+<td>3 hours</td>
+</tr>
+<tr>
+<td>G</td>
+<td>VS Code for the Web, the whole day</td>
+<td>vscode.dev in Chrome, then Edge</td>
+<td>2.5 hours</td>
+</tr>
+<tr>
+<td>H</td>
+<td>Screen readers: NVDA and JAWS</td>
+<td>The browser path and one VS Code path</td>
+<td>4 hours</td>
+</tr>
+<tr>
+<td>I</td>
+<td>The deck and the materials</td>
+<td>PowerPoint, Word, the deck page</td>
+<td>90 minutes</td>
+</tr>
+<tr>
+<td>J</td>
+<td>The workshop repository and the fallbacks</td>
+<td>GitHub and a laptop with wifi you can switch off</td>
+<td>90 minutes</td>
+</tr>
+<tr>
+<td>K</td>
+<td>Other assistants, optional</td>
+<td>Copilot on github.com, Claude, Gemini, Microsoft 365</td>
+<td>90 minutes</td>
+</tr>
+<tr>
+<td>L</td>
+<td>The Mac, by a Mac tester</td>
+<td>macOS with VoiceOver</td>
+<td>3 hours</td>
+</tr>
+<tr>
+<td>M</td>
+<td>The timed dry runs</td>
+<td>With the beginner tester</td>
+<td>Two days</td>
+</tr>
+<tr>
+<td>N</td>
+<td>Clean up, results and sign-off</td>
+<td>The repository and GitHub</td>
+<td>60 minutes</td>
+</tr>
+</tbody>
+</table>
+<h3 id="sitting-a-accounts-notebook-and-where-to-test">3.2 Sitting A:
+accounts, notebook, and where to test</h3>
+<ol type="1">
+<li>Make three new GitHub accounts, one per path, so each path’s Copilot
+Free allowance and each share can be told apart. Suggested names:
+<code>ahg-test-browser</code>, <code>ahg-test-desktop</code>,
+<code>ahg-test-web</code>. Use addresses you can receive mail at; GitHub
+sends a code. Do not add Copilot Pro to any of them.</li>
+<li>Make one new ChatGPT account at chatgpt.com with “Sign up for free”.
+Do not use a Plus account; it hides the free plan’s limits.</li>
+<li>Open a plain text notebook, <code>ahg-test-notes.txt</code>, outside
+the repository. For every assistant answer you will be asked to “keep”,
+paste the whole answer into it under the test case ID. These are the
+evidence for Mat-07 and for any defect you log.</li>
+<li>Have ready: a Windows 11 laptop with Chrome and Edge, NVDA and JAWS
+installed, Word and PowerPoint, and a second screen if you have
+one.</li>
+<li>Know which GLOW to test against. Until the branch is merged and
+deployed, the new pages (<code>/ahg/paths</code>,
+<code>/ahg/assistant</code>, the share page’s new buttons) exist only on
+the branch, so sittings B and C run against GLOW on your own machine,
+section 1.7. From sitting D onwards everything runs against
+<code>https://letitglow.app</code>, because the browser path texts and
+the step cards point there.</li>
+</ol>
+<h3 id="sitting-b-automated-checks">3.3 Sitting B: automated checks</h3>
+<p>From the repository root, on the <code>feat/ahg-three-paths</code>
+branch, in PowerShell. Run each command and compare with section
+2.4.</p>
+<ol type="1">
+<li><code>$env:PYTHONPATH = "web/src;desktop/src"</code>, then
+<code>python -m pytest web/tests -q</code>. Mark Auto-01.</li>
+<li><code>python -m pytest web/tests/test_workshop_ahg_kit.py web/tests/test_workshop_deck.py web/tests/test_workshop_deck_formats.py web/tests/test_workshop_agenda.py -q</code>.
+Mark Auto-02.</li>
+<li><code>$env:PYTHONPATH = "desktop/src"</code>, then
+<code>python -m pytest desktop/tests/test_md_auditor_false_positives.py desktop/tests/test_md_auditor_feature_parity.py -q</code>.
+Mark Auto-03.</li>
+<li><code>python scripts/check_material_conformance.py</code>. Mark
+Auto-04.</li>
+<li><code>python scripts/audit_ahg_docs.py</code>. Mark Auto-05.</li>
+<li><code>python scripts/check_ahg_sample_course.py</code>. Mark
+Auto-08.</li>
+<li><code>python scripts/build_ahg_kit.py --no-axe</code>, then
+<code>git status</code>. Only the zip in
+<code>docs/ahg-2026/dist/</code> may change. Mark Auto-09.</li>
+<li>Auto-06 and Auto-07 come later: Auto-06 in sitting C, step 14, and
+Auto-07 in sitting D.</li>
+</ol>
+<h3 id="sitting-c-the-glow-pages">3.4 Sitting C: the GLOW pages</h3>
+<p>Start GLOW locally as section 1.7 describes, on the
+<code>feat/ahg-three-paths</code> branch, and use
+<code>http://127.0.0.1:5000</code> in place of
+<code>https://letitglow.app</code>. Use Chrome, no screen reader, mouse
+and keyboard.</p>
+<ol type="1">
+<li>Open <code>/ahg</code>. Accept the consent page if this is GLOW
+running locally. Check every item in Setup-01’s Expected column. Mark
+Setup-01.</li>
+<li>In a private window, open <code>/ahg</code>,
+<code>/ahg/paths</code>, <code>/ahg/assistant</code> and
+<code>/workshop/ahg-2026/share</code>. None should show a consent page.
+Mark Setup-13.</li>
+<li>Open each address in Setup-14. Each must arrive at
+<code>/ahg</code>. Mark Setup-14. (The <code>www</code> address works
+only on production; mark it in sitting D.)</li>
+<li>In a private window, open <code>/workshop/ahg-2026/kit.zip</code>
+and <code>/workshop/ahg-2026/ahg-2026.code-profile</code> directly. Both
+download. Mark Setup-12.</li>
+<li>Open <code>/ahg/paths</code>. Read it top to bottom against
+Assist-06. Mark Assist-06. Leave Assist-07 for sittings E to G, where
+you meet the real screens.</li>
+<li>Open <code>/ahg/assistant</code>. Check Assist-01. Mark it.</li>
+<li>Press “Copy the text for Block 1: the ready check”. Open Notepad and
+paste. The text starts “AHG 2026 Accessibility Agents workshop. Block
+1”. The message under the button says it is copied and how to paste. Do
+the same for blocks 2, 3, 4, 6 and 7. Mark Assist-02.</li>
+<li>In Chrome, open Settings, Privacy and security, Site settings,
+Clipboard, and add <code>127.0.0.1:5000</code> to “Not allowed”. Reload
+<code>/ahg/assistant</code> and press block 2’s Copy button. The “Read
+the text first” section opens, the text is selected, and the message
+says to press Control+C. Remove the site from “Not allowed” afterwards.
+Mark Assist-04.</li>
+<li>In Chrome, open Settings, Privacy and security, Site settings,
+JavaScript, and add <code>127.0.0.1:5000</code> to “Not allowed”. Reload
+<code>/ahg/assistant</code>. No Copy buttons show, and every “Read the
+text first” still opens. Remove the setting afterwards. Mark
+Assist-05.</li>
+<li>Open <code>/ahg/kit</code>, then a step card, the faculty coach in
+Ready-made agents, and <code>/ready-check</code> in The Copilot
+commands. Each has “Copy this file’s text”, a plain-text link that opens
+as text, and the step card a Word file. Mark Setup-16.</li>
+<li>Open <code>/workshop/ahg-2026/share</code>. Do Share-12, Share-13,
+Share-14 and Share-15 in that order, as their Steps columns say. For
+Share-14, open the downloaded <code>SKILL.md</code> in Notepad and
+compare. Mark each.</li>
+<li>On the same page, do Share-05, Share-06, Share-07 and Share-09. Mark
+each.</li>
+<li>Open <code>docs/ahg-2026/kit/share-my-agent.html</code> from the
+repository in Chrome, by double-clicking it. Repeat Share-01, Share-12
+and Share-14 on it. Mark Share-08.</li>
+<li>Tab once on <code>/ahg</code>, <code>/ahg/paths</code>,
+<code>/ahg/assistant</code>, <code>/ahg/kit</code>,
+<code>/ahg/site</code> and the share page, and press Enter. Mark
+Setup-18. Then run the axe sweep in <code>web/e2e</code> as
+<code>web/e2e/README.md</code> describes, adding
+<code>/ahg/assistant</code> and <code>/ahg/paths</code>. Mark
+Auto-06.</li>
+<li>Zoom Chrome to 200 percent, then 400 percent, on <code>/ahg</code>,
+<code>/ahg/paths</code>, <code>/ahg/assistant</code> and the share page.
+Nothing is cut off; the page never scrolls sideways; the paths table
+scrolls inside its own box. Mark A11y-02.</li>
+<li>Do every page in this sitting once more by keyboard only: Tab,
+Shift+Tab, Enter, Space. Mark A11y-01 for these pages.</li>
+<li>Open <code>/ahg/site</code>, then the course announcement. Run
+Accessibility Insights FastPass on it and compare with
+<code>docs/ahg-2026/kit/sample-course/evidence/psy101-announcement.txt</code>.
+Mark Setup-17.</li>
+<li>Stop GLOW. Write any defect in section 2.14 before you go on.</li>
+</ol>
+<h3 id="sitting-d-merge-deploy-and-the-production-check">3.5 Sitting D:
+merge, deploy, and the production check</h3>
+<ol type="1">
+<li>Open the pull request for <code>feat/ahg-three-paths</code> and wait
+for every check. Mark Auto-07.</li>
+<li>Merge it. GitHub Actions deploys <code>main</code> to
+letitglow.app.</li>
+<li>Sync the workshop repository so its copy of the kit matches:
+<code>python scripts/sync_ahg_repo.py ../ahg-2026</code>, from a
+checkout of Community-Access/ahg-2026 beside GLOW, then commit and push
+there.</li>
+<li>Open <code>https://letitglow.app/ahg</code>,
+<code>/ahg/paths</code>, <code>/ahg/assistant</code> and the share page.
+All four load, and <code>/ahg/assistant</code> has six Copy
+buttons.</li>
+<li>Open <code>https://www.letitglow.app/ahg</code>. It arrives at
+<code>letitglow.app/ahg</code>. Finish marking Setup-14.</li>
+<li>From here on, everything runs against
+<code>https://letitglow.app</code>.</li>
+</ol>
+<h3 id="the-answers-you-give-on-every-path">3.6 The answers you give, on
+every path</h3>
+<p>Use these in sittings E, F and G, so every path gets the same input.
+In block 2, answer each question with the line for it, and nothing
+more.</p>
+<p>The main run, role card “documents and alternate formats”:</p>
+<table>
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
+<thead>
+<tr>
+<th>Question</th>
+<th>Type this</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Role card and problem</td>
+<td>Documents and alternate formats. When a student needs a scanned
+course reading in large print, we lose days working out what to produce
+and who checks it.</td>
+</tr>
+<tr>
+<td>Which ready-made agent to start from</td>
+<td>Start from the alternate format planner.</td>
+</tr>
+<tr>
+<td>Role</td>
+<td>You are an alternate format planner in a university disability
+resource center. You work for the specialist who handles accommodation
+requests.</td>
+</tr>
+<tr>
+<td>Task</td>
+<td>Given a checker’s report on a course document and the formats a
+student needs, plan how to deliver those formats, in order, with who
+does each step.</td>
+</tr>
+<tr>
+<td>Trusted guidance</td>
+<td>WCAG 2.2, especially 1.4.5 Images of Text and 1.1.1 Non-text
+Content, the ACB Large Print Guidelines, and our center’s alternate
+format procedure.</td>
+</tr>
+<tr>
+<td>Output format</td>
+<td>The problem in one line, numbered steps with who does each, the
+formats to deliver, then a checklist.</td>
+</tr>
+<tr>
+<td>Human review</td>
+<td>The alternate format specialist checks the converted text against
+the original page by page, and the student confirms the format
+works.</td>
+</tr>
+<tr>
+<td>Name and institution</td>
+<td>Use the tester’s own name and “AHG test run” as the institution, for
+example: Jeff Bishop, AHG test run</td>
+</tr>
+</tbody>
+</table>
+<p>For Design-06, the other two role cards, give these shorter answers
+and accept the assistant’s suggestions for the rest:</p>
+<table>
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
+<thead>
+<tr>
+<th>Role card</th>
+<th>Problem to type</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Course content and faculty coaching</td>
+<td>Course content and faculty coaching. Faculty keep sending syllabi
+with fake headings and “click here” links, and fixing them myself does
+not scale.</td>
+</tr>
+<tr>
+<td>Compliance and procurement</td>
+<td>Compliance and procurement. For Title II we need a dated log of
+every barrier in a course and who approved each fix.</td>
+</tr>
+</tbody>
+</table>
+<p>For Design-07, the privacy trap, answer the problem question with
+this instead, in a separate conversation:</p>
+<table>
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
+<thead>
+<tr>
+<th>Question</th>
+<th>Type this</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Role card and problem</td>
+<td>Documents and alternate formats. Maria Testperson, a student with
+low vision and an extended time accommodation, needs her PSY 101 reading
+in large print by Friday.</td>
+</tr>
+</tbody>
+</table>
+<p>The assistant must decline to use the name and accommodation, and
+remind you to keep it private.</p>
+<p>For block 3, when asked which file, type:
+<code>psy101-reading-forgetting-scanned.pdf</code>.</p>
+<p>For block 4, use the same file first. Then, for Ground-01 to
+Ground-07, type each of these in turn, in the same conversation, one per
+message, and keep each answer:</p>
+<ol type="1">
+<li>Now do the same for psy101-syllabus.docx.</li>
+<li>Now do the same for psy101-week3-lecture.pptx.</li>
+<li>Now do the same for psy101-gradebook.xlsx.</li>
+<li>Now do the same for psy101-reading-forgetting-scanned.pdf.</li>
+<li>Now do the same for psy101-lab1-stroop.pdf.</li>
+<li>Now do the same for psy101-announcement.html.</li>
+<li>Now do the same for psy101-week3-captions.vtt.</li>
+</ol>
+<p>For block 7, answer the six questions with these:</p>
+<table>
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
+<thead>
+<tr>
+<th>Question</th>
+<th>Type this</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>One workflow</td>
+<td>Plan alternate formats for the next five scanned readings that come
+in.</td>
+</tr>
+<tr>
+<td>One partner</td>
+<td>Our alternate format specialist.</td>
+</tr>
+<tr>
+<td>One safeguard</td>
+<td>A person checks every converted page against the original before it
+goes to a student.</td>
+</tr>
+<tr>
+<td>First step this week</td>
+<td>Run the planner on one request we already finished, and compare its
+plan with what we did.</td>
+</tr>
+<tr>
+<td>Who needs to know</td>
+<td>My director.</td>
+</tr>
+<tr>
+<td>If it worked</td>
+<td>We sent the first large print reading two days sooner, and nothing
+was wrong in it.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="sitting-e-the-browser-path-the-whole-day-in-chatgpt">3.7 Sitting
+E: the browser path, the whole day, in ChatGPT</h3>
+<p>Use Chrome, no screen reader, the <code>ahg-test-browser</code>
+GitHub account and the ChatGPT test account. Keep
+<code>letitglow.app/ahg/assistant</code> in the first tab and
+chatgpt.com in the second. Every paste below means: on
+<code>/ahg/assistant</code>, press that block’s Copy button, press
+Control+Tab, move to the message box (“Chat with ChatGPT”), press
+Control+V, and press Enter. Wait until the answer stops growing before
+you read it.</p>
+<h4 id="sitting-e-setup">Sitting E: setup</h4>
+<ol type="1">
+<li>Follow step card 0, “Everyone”, with <code>ahg-test-browser</code>.
+Mark SetupB-01.</li>
+<li>Sign in to chatgpt.com. The message box is labelled “Chat with
+ChatGPT”. Mark SetupB-02.</li>
+<li>Profile menu, Settings, Data controls: find “Improve the model for
+everyone” and turn it off. If the name or the place differs, note the
+real one for <code>/ahg/paths</code>. Mark SetupB-03, and the ChatGPT
+part of Assist-07.</li>
+<li>Start a new chat. Paste block 1. Check SetupB-04’s Expected column.
+Find the Copy button on the template’s code block. Mark SetupB-04.</li>
+<li>Follow step card 0’s last browser step: share the practice agent
+with “Fill in the practice template”. Within about a minute the issue
+reply begins “Well done”. Mark SetupB-05.</li>
+</ol>
+<h4 id="sitting-e-block-2-in-the-same-chat">Sitting E: block 2, in the
+same chat</h4>
+<ol start="6" type="1">
+<li>Paste block 2. Answer with section 3.6’s main run. Mark Design-01
+and Design-02 in the ChatGPT column.</li>
+<li>Read the code block: six headings, the Never section as in the
+template, <code>name: alternate-format-planner</code> or another
+lowercase hyphenated name, <code>author</code> in double quotes with
+your name, WCAG 2.2 links. Mark Design-03.</li>
+<li>Read the lines after it. Mark Design-04.</li>
+<li>Press the code block’s Copy button. On <code>/ahg/share</code>,
+paste into “Your agent, as text” and press “Download as
+<code>SKILL.md</code>”. Open the file: it starts with three dashes and
+<code>name:</code>. Mark Design-05. Keep this file all day; it is your
+agent.</li>
+<li>Start a second chat, paste block 2, and run the faculty coaching
+card from section 3.6. Start a third chat for compliance. Mark
+Design-06.</li>
+<li>Start a fourth chat, paste block 2, and use the privacy trap. Mark
+Design-07.</li>
+<li>Start a fifth chat. On <code>/ahg/kit</code>, open Ready-made
+agents, then Faculty coach, and press “Copy this file’s text”. Paste it
+into the chat as your agent, then paste block 3. The assistant uses it.
+Mark Design-08.</li>
+<li>Go back to the first chat for the rest of the day.</li>
+</ol>
+<h4 id="sitting-e-block-3">Sitting E: block 3</h4>
+<ol start="14" type="1">
+<li>Paste block 3. It names your agent from block 2 and suggests a file.
+Type <code>psy101-reading-forgetting-scanned.pdf</code>. Mark
+Try-01.</li>
+<li>Read the answer: it is in your agent’s output format, with no
+checker findings. Mark Try-02. Read the note after it. Mark Try-03.</li>
+<li>For each of the six ready-made agents, start a new chat, paste the
+agent from <code>/ahg/kit</code>, then paste block 3. Mark Try-04 when
+all six answer in their own output format.</li>
+<li>Start a new chat and paste block 3 with no agent. It asks you to
+paste your agent and waits. Paste the <code>SKILL.md</code> you
+downloaded in step 9. It carries on. Mark Try-05.</li>
+</ol>
+<h4 id="sitting-e-block-4-back-in-the-first-chat">Sitting E: block 4,
+back in the first chat</h4>
+<ol start="18" type="1">
+<li>Paste block 4. Use the same file. Read the answer and the before and
+after. Keep both in your notebook.</li>
+<li>Type each of the seven lines in section 3.6, block 4, one at a time.
+Check each answer against Ground-01 to Ground-07 and mark each.</li>
+<li>Compare the scanned reading’s block 3 and block 4 answers. Mark
+Ground-08.</li>
+<li>Open <code>psy101-syllabus.docx</code> from <code>/ahg/site</code>
+in Word. Review, Check Accessibility. Copy the results pane’s list,
+paste it into the chat, and type: Use these Word results instead. Mark
+Ground-09.</li>
+<li>Read every block 4 answer once more for “compliant”, “accessible” as
+a verdict, and anything not in the evidence. Mark Ground-10.</li>
+<li>Mark Ground-11 once, from <code>answer-key.md</code> and the
+evidence files; it does not depend on the path.</li>
+</ol>
+<h4 id="sitting-e-block-5">Sitting E: block 5</h4>
+<ol start="24" type="1">
+<li>On <code>/ahg/share</code>, leave “My real agent” chosen, choose the
+<code>SKILL.md</code> from step 9, and check the name fills in. Mark
+Share-01.</li>
+<li>Press “Open the share form on GitHub”. Mark Share-02.</li>
+<li>Tick the privacy box and press “Submit new issue”. Within about a
+minute the reply begins “Your agent is in”. Mark Share-03 and, as this
+is a new account, Share-04, in the ChatGPT column.</li>
+</ol>
+<h4 id="sitting-e-block-6-back-in-the-first-chat">Sitting E: block 6,
+back in the first chat</h4>
+<ol start="27" type="1">
+<li>Paste block 6, about 31 KB. ChatGPT accepts it as one message. If it
+refuses, note the exact words: that is a defect against D20. Mark
+Office-01.</li>
+<li>Watch it run. One line per file. Mark Office-02. If it stops, type
+<code>continue</code>. Mark Office-06.</li>
+<li>Read the report against Office-03 and Office-04. Keep it. Mark
+both.</li>
+<li>Start a new chat and paste block 6 with no agent. It says so kindly
+and offers the ready-made agents. Mark Office-05.</li>
+<li>Note any message about limits, slower answers or a smaller model,
+and when it appeared. Mark Office-08 in the ChatGPT column.</li>
+</ol>
+<h4 id="sitting-e-block-7-back-in-the-first-chat">Sitting E: block 7,
+back in the first chat</h4>
+<ol start="32" type="1">
+<li>Paste block 7. Answer with section 3.6, block 7. Mark Plan-01 and
+Plan-02.</li>
+<li>Open <code>letitglow.app/w/ahg-2026/11</code>, join with the access
+code, and add: <code>Test commitment from the browser path.</code> Mark
+Wall-01.</li>
+<li>Open the wall as section 2.12 describes. Your commitment shows, with
+no name. Mark Wall-02.</li>
+</ol>
+<p>Close the sitting: write down how long each block took, for Dry-01,
+and any step where a step card’s words did not match the screen, for
+Mat-05.</p>
+<h3 id="sitting-f-vs-code-on-a-computer-the-whole-day">3.8 Sitting F: VS
+Code on a computer, the whole day</h3>
+<p>Use Windows, no screen reader, the <code>ahg-test-desktop</code>
+GitHub account. Do SetupD-01 on the work laptop without administrator
+rights if you have one; otherwise mark it Not applicable and do it in
+sitting J.</p>
+<h4 id="sitting-f-setup">Sitting F: setup</h4>
+<ol type="1">
+<li>Install VS Code. Help, About shows 1.143 or later. Mark
+SetupD-01.</li>
+<li>Accounts menu, sign in with GitHub as <code>ahg-test-desktop</code>.
+Hover the Copilot icon in the status bar; it shows Copilot Free. Mark
+SetupD-02.</li>
+<li>Import the profile from its address, as step card 0 says. Note the
+exact names of the menu and button you used, for Assist-07. Mark
+SetupD-03. Delete the profile and repeat with the downloaded file. Mark
+SetupD-04.</li>
+<li>Download and unzip the kit from letitglow.app/ahg. File, Open
+Folder. If Restricted Mode shows, Manage, then Trust. Note the exact
+words. Mark SetupD-05 and the VS Code part of Assist-07.</li>
+<li>In a VS Code profile without the AHG profile’s extensions, open the
+kit and check the recommended extensions offer. Mark SetupD-06.</li>
+<li>Open Copilot Chat with Control+Alt+I. Type <code>/</code> and read
+the list. All six commands are there with their descriptions. Mark
+SetupD-07.</li>
+<li>Type <code>/ready-check</code>. Mark SetupD-08. Then do SetupD-09,
+renaming <code>office-team</code> in the Explorer with F2.</li>
+<li>New Chat, open the Session Target control, choose Local, and type
+<code>/ready-check</code>. Record whether it runs. Mark SetupD-10.</li>
+<li>Share the practice agent, choosing <code>my-agent/SKILL.md</code>.
+Mark SetupD-11.</li>
+</ol>
+<h4 id="sitting-f-block-2">Sitting F: block 2</h4>
+<ol start="10" type="1">
+<li>New Chat. Type <code>/design-my-agent</code>. Answer with section
+3.6’s main run. Allow Copilot to edit the file when it asks. Mark
+Design-01 to Design-04 in the Desktop column. Open
+<code>my-agent/SKILL.md</code> and check it as in sitting E, step
+7.</li>
+<li>Design-05 is Not applicable on this path; mark it so.</li>
+<li>Copy <code>my-agent/SKILL.md</code> to your notebook. For Design-06,
+run <code>/design-my-agent</code> twice more with the other cards,
+saying “start from a copy, do not overwrite my agent” if Copilot offers
+to replace it. Put your main agent back afterwards. Mark Design-06.</li>
+<li>New Chat, privacy trap. Mark Design-07.</li>
+<li>Fallback: open <code>examples/agents/faculty-coach/SKILL.md</code>,
+select all, copy, open <code>my-agent/SKILL.md</code>, select all,
+paste, change the author line, save. Run <code>/ready-check</code>. Mark
+Design-08. Put your main agent back.</li>
+</ol>
+<h4 id="sitting-f-blocks-3-to-7">Sitting F: blocks 3 to 7</h4>
+<ol start="15" type="1">
+<li><code>/try-my-agent</code>, with section 3.6’s file. Mark Try-01 to
+Try-03. For Try-04, copy each ready-made agent over
+<code>my-agent/SKILL.md</code> in turn and run
+<code>/try-my-agent</code>; put your main agent back after. Mark Try-05
+Not applicable.</li>
+<li><code>/ground-my-agent</code>, the same file, then the seven lines
+in section 3.6. Mark Ground-01 to Ground-10, and Ground-09 with Word as
+in sitting E.</li>
+<li>Share the real agent from <code>my-agent/SKILL.md</code>. Mark
+Share-01 to Share-04 in the Desktop column.</li>
+<li><code>/run-the-office</code>. Use Alt+F2 to read the whole report.
+Mark Office-01 to Office-04 and Office-06. Copy the template over
+<code>my-agent/SKILL.md</code>, run it again, mark Office-05, and put
+your agent back.</li>
+<li>Office-07, the facilitator’s room run: make a <code>room/</code>
+folder in the kit, and copy into it each
+<code>agents/&lt;login&gt;/&lt;name&gt;/</code> folder from the ahg-2026
+repository (the shares from sittings E, F and G, once G is done; come
+back to this step then). Run <code>/run-the-office</code>. Mark
+Office-07.</li>
+<li>On github.com, signed in as <code>ahg-test-desktop</code>, open your
+Copilot settings and record how much of the allowance the day used. Mark
+Office-08 in the Desktop column.</li>
+<li><code>/my-30-day-plan</code> with section 3.6’s answers.
+<code>my-30-day-plan.md</code> exists. Mark Plan-01 and Plan-02.</li>
+</ol>
+<h3 id="sitting-g-vs-code-for-the-web-the-whole-day">3.9 Sitting G: VS
+Code for the Web, the whole day</h3>
+<p>Use Chrome first, no screen reader, the <code>ahg-test-web</code>
+GitHub account, and a fresh unzipped copy of the kit, not the one from
+sitting F.</p>
+<h4 id="sitting-g-setup">Sitting G: setup</h4>
+<ol type="1">
+<li>Open vscode.dev. Press Control+Alt+I. Confirm SetupW-01 still
+holds.</li>
+<li>Choose Open Folder and pick the fresh kit. Write down the exact
+words of each browser prompt and the button you chose. Mark SetupW-03
+and the vscode.dev part of Assist-07; correct <code>/ahg/paths</code>
+and step card 0 if the words differ.</li>
+<li>Accounts menu, sign in with GitHub as <code>ahg-test-web</code>.
+Mark SetupW-04.</li>
+<li>In Chat, type <code>/</code>. Mark SetupW-05. Type
+<code>/ready-check</code>. Mark SetupW-06.</li>
+<li>Press Control+N in the Chat view. Mark SetupW-08.</li>
+<li>Close the tab, reopen vscode.dev, and open the kit from Open Recent.
+Mark SetupW-07.</li>
+<li>Share the practice agent from <code>my-agent/SKILL.md</code>,
+choosing the file from the fresh kit.</li>
+</ol>
+<h4 id="sitting-g-blocks-2-to-7">Sitting G: blocks 2 to 7</h4>
+<ol start="8" type="1">
+<li>Repeat sitting F, steps 10 to 21, at vscode.dev, marking the Web
+column. Office-07 is Not applicable on this path. For Office-08, record
+the <code>ahg-test-web</code> allowance.</li>
+<li>Open Edge and repeat steps 1 to 4. Then open Safari or Firefox if
+you have them, and confirm Open Folder is not offered or does not work.
+Mark SetupW-02.</li>
+<li>Zoom VS Code in twice (Control+=) at vscode.dev and in sitting F’s
+VS Code. Chat and editor still work. Mark A11y-04.</li>
+</ol>
+<h3 id="sitting-h-screen-readers">3.10 Sitting H: screen readers</h3>
+<p>Run each path again with the screen reader as the only way you use
+the computer: no mouse, no looking. Use the same answers. You may stop
+each run after block 4 if blocks 5 to 7 already passed by ear on another
+path, but run every path’s setup and block 2 in full.</p>
+<ol type="1">
+<li>NVDA with Chrome (Env-2), the browser path: sitting E, steps 1 to
+26. Mark SetupB-06, Design-09 (ChatGPT column), Share-10 (ChatGPT
+column), and Assist-03 on <code>/ahg/assistant</code>.</li>
+<li>NVDA with Chrome, <code>/ahg</code>, <code>/ahg/paths</code> and
+<code>/ahg/assistant</code>, by headings (H), lists (L) and tables (T).
+Mark Setup-11.</li>
+<li>NVDA, VS Code on a computer: sitting F, steps 6 to 17. Use Alt+F2
+for every long answer, and Alt+F1 once to hear the chat’s accessibility
+help. Mark Design-09 and Share-10 in the Desktop column.</li>
+<li>NVDA, VS Code for the Web in Chrome: sitting G, steps 1 to 4, then
+blocks 2 and 3. Mark Design-09 in the Web column.</li>
+<li>JAWS with Edge (Env-3): the browser path, sitting E, steps 1 to 18,
+and VS Code on a computer, sitting F, steps 6 to 10. Mark Env-3’s paths
+in section 2.3a.</li>
+<li>Read the commitment wall with NVDA. Mark Wall-03.</li>
+<li>Note every place a step card’s words did not match what you heard.
+Mark Mat-05 after the fixes.</li>
+</ol>
+<h3 id="sitting-i-the-deck-and-the-materials">3.11 Sitting I: the deck
+and the materials</h3>
+<ol type="1">
+<li>Open <code>/workshop/session/ahg-2026/deck</code>. Do Deck-01 to
+Deck-06 and Deck-10 to Deck-12 in order. Mark each.</li>
+<li>Open <code>docs/ahg-2026/slides.pptx</code> in PowerPoint; Review,
+Check Accessibility. Mark Deck-07. Read it with NVDA. Mark Deck-08.</li>
+<li>Open <code>docs/ahg-2026/slides.docx</code> in Word; Check
+Accessibility. Mark Deck-09.</li>
+<li>Open each of the seven sample course files. Mark Mat-01. Mark Mat-02
+from sitting B’s Auto-08.</li>
+<li>Open each step card’s Word file in Word; Check Accessibility; check
+each numbered list starts at 1. Mark Mat-04.</li>
+<li>Read the three worked examples aloud against the deck. Mark
+Mat-03.</li>
+<li>Read <code>pre-event-message.md</code> as a participant. Mark
+Mat-06.</li>
+<li>Replace the written before and after in each worked example with the
+real answers you kept in sitting E, steps 15 and 18, still labelled as
+examples. Rebuild with
+<code>python scripts/build_ahg_kit.py --no-axe</code>. Mark Mat-07.</li>
+<li>Turn on Windows reduced motion (Settings, Accessibility, Visual
+effects, Animation effects off). Open the deck and the AHG pages. Mark
+A11y-03.</li>
+</ol>
+<h3 id="sitting-j-the-workshop-repository-and-the-fallbacks">3.12
+Sitting J: the workshop repository and the fallbacks</h3>
+<ol type="1">
+<li>Do Repo-01 to Repo-06 with the practice and real agents, as each row
+says. For Repo-04, edit the issue from Repo-03. Mark each.</li>
+<li>Repo-07: in a scratch checkout of Accessibility Agents, run the
+promote script. Mark it. Delete the scratch checkout.</li>
+<li>Share-11: ask nine people, or use nine browser windows signed in to
+your three test accounts in turn, to share within two minutes. Mark
+it.</li>
+<li>Load-01: from one network, start 40 downloads of
+<code>kit.zip</code> within a minute, for example 40 browser tabs. Mark
+it.</li>
+<li>Fall-01: with the kit downloaded, turn off wifi. Open the kit, the
+sample course, the evidence, the step cards and the examples. Mark
+it.</li>
+<li>Fall-02: sign in to VS Code with an account that has used its
+Copilot allowance, or wait for one of the test accounts to run out.
+Follow the step card’s switch to the browser path. Mark it.</li>
+<li>Fall-03: on the work laptop without administrator rights, try the
+profile import. If it is refused, take the SetupD-06 route, or the
+browser path. Mark it, and SetupD-01 if you skipped it in sitting
+F.</li>
+<li>Fall-04: with GitHub blocked (turn off wifi after opening the share
+page), save the agent with “Download as <code>SKILL.md</code>”. Mark
+it.</li>
+<li>Fall-05: with the projector off, run one block from the pocket card
+and step cards alone. Mark it.</li>
+<li>Fall-06: in the middle of block 3 in VS Code, switch to the browser
+path as <code>/ahg/paths</code> “Switching paths” says, and finish the
+block in ChatGPT. Mark it.</li>
+</ol>
+<h3 id="sitting-k-other-assistants-optional">3.13 Sitting K: other
+assistants, optional</h3>
+<p>For each assistant in section 2.3b, Alt-01 to Alt-04, start a new
+conversation and run block 1, block 2 with section 3.6’s main run, and
+block 6. Keep each answer. Mark the row. Note anything
+<code>/ahg/paths</code> says about it that turns out to be wrong. Only
+call an assistant “tested” in the setup message once its row passes.
+Alt-05, ChatGPT signed out, is already recorded; re-run it only if
+OpenAI changes how signed-out chats work.</p>
+<h3 id="sitting-l-the-mac">3.14 Sitting L: the Mac</h3>
+<p>Give the Mac tester this plan, sittings E to H. They run Env-4
+(Safari and VoiceOver for the browser path; Chrome and VoiceOver for VS
+Code for the Web) and Env-5 (Chrome, keyboard only), on all three paths,
+with their own new GitHub accounts. On a Mac, Copilot Chat opens with
+Control+Command+I, the plain text view of an answer is Option+F2, paste
+is Command+V, and switching tabs is Control+Tab. Collect their results
+into this file.</p>
+<h3 id="sitting-m-the-timed-dry-runs">3.15 Sitting M: the timed dry
+runs</h3>
+<ol type="1">
+<li>With the beginner tester, run the whole day on the browser path,
+with the deck on a second screen and you presenting. Time each block.
+Mark Dry-01, first half. Block 2 alone must take under 60 minutes for
+the beginner, including reading the example: mark Design-10 in the
+ChatGPT column.</li>
+<li>On another day, run it again on VS Code on a computer. Time each
+block. Mark Dry-01. Mark Design-10 in the Desktop column from block 2’s
+time. Time block 2 once at vscode.dev with the same tester, or a second
+beginner, for the Web column.</li>
+<li>Write the real minutes beside section 2 of
+<code>run-of-show.md</code>. Any block over by more than five minutes
+gets a fix in the step card or the agenda.</li>
+</ol>
+<h3 id="sitting-n-clean-up-results-and-sign-off">3.16 Sitting N: clean
+up, results and sign-off</h3>
+<ol type="1">
+<li>In Community-Access/ahg-2026, delete the test agents in
+<code>practice/</code> and <code>agents/</code> from the three test
+accounts, close the test issues, and rebuild the gallery, as section
+1.5, step 4, says.</li>
+<li>Fill in section 2.14a, “Results so far”, with the date and what
+passed.</li>
+<li>Close every defect in section 2.14, or write its accepted
+workaround.</li>
+<li>Fix every step card and <code>/ahg/paths</code> line that Assist-07
+and Mat-05 found, rebuild the kit, and re-run sitting B.</li>
+<li>Sign each line in section 2.15.</li>
+<li>Commit this file with the results, and sync the workshop repository
+once more.</li>
+</ol>
