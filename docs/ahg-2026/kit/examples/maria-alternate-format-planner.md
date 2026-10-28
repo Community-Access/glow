@@ -28,7 +28,7 @@ cleanly, searched, or read aloud.
 Maria does not need a lecture on WCAG. She needs a plan she can act on before
 Friday, and a way to stop rebuilding the same plan by hand for every request.
 
-## 2. Her five answers
+## 2. Her six answers
 
 Each row is one question, and the answer.
 
@@ -38,11 +38,12 @@ Each row is one question, and the answer.
 | Task: the one job | Given a checker's report on a course document and the formats a student needs, produce a plan to deliver those formats: what to produce, from which source, in what order, and what a person must check |
 | Trusted guidance | WCAG 2.2, especially 1.4.5 Images of Text and 1.1.1 Non-text Content; the ACB large print guidelines; our center's alternate format procedure |
 | Output format | A short plan: the problem in one line, then numbered steps with who does each, then the formats to deliver, then a "before you send this" checklist |
+| Example: one short, good answer | For the scanned week 2 reading in large print: the problem in one line (pictures of text, 1.4.5), then get the publisher's text, or recognize and correct it page by page, then 18 point large print, then the checklist |
 | Human review | The alternate format specialist checks the converted text against the original page by page, and the student confirms the format works for them |
 
 ## 3. Her agent
 
-GLOW turns the five answers into this file. Maria never typed the headings,
+GLOW turns the six answers into this file. Maria never typed the headings,
 the frontmatter or the never-do list; they come from the template.
 
 ```markdown
@@ -170,19 +171,9 @@ What changed: the agent stopped guessing, because it had evidence. It cited
 the right criterion, knew what it could not see, and handed the decisions to
 a person.
 
-## 5. Her agent in the collection
+## 5. Her agent in the team
 
-At 2:20 Maria opens the share page, chooses her file and presses the button.
-GitHub's share form opens already filled in; she ticks the privacy box and
-presses Submit new issue. A minute later the reply says "Your agent is in",
-and her agent is in the AHG 2026 collection as
-`agents/<her GitHub account>/alternate-format-planner/SKILL.md`, committed in
-her name. At the end of the day it goes into the Accessibility Agents
-project, with her credited.
-
-## 6. Her agent in the team
-
-At 3:00 the office team works the whole PSY 101 course. The coordinator sends
+At 2:15 the office team works the whole PSY 101 course. The coordinator sends
 the scanned reading to Maria's agent, because that is the job it describes.
 Her section of the team report:
 
@@ -193,6 +184,15 @@ Her section of the team report:
 > check; large print and audio from the clean text; post for all students.
 > Reviewer: alternate format specialist. Status: waiting for review.
 
+## 6. Her agent in the collection
+
+At 3:05 Maria opens the share page, chooses her newest file, version 4, and presses the button.
+GitHub's share form opens already filled in; she ticks the privacy box and
+presses Submit new issue. A minute later the reply says "Your agent is in",
+and her agent is in the AHG 2026 collection as
+`agents/<her GitHub account>/alternate-format-planner/SKILL.md`, committed in
+her name. At the end of the day it goes into the Accessibility Agents
+project, with her credited.
 ## 7. Her 30-day plan
 
 Each row is one part of the plan, and the answer.

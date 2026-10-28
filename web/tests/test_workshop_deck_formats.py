@@ -59,7 +59,7 @@ def client(app: Flask):
 
 def test_every_format_renders_the_same_slides(ctx: deck.DeckContext):
     slides = deck.build_slides(ctx)
-    assert len(slides) == 26
+    assert len(slides) == 27
 
     markdown = deck.build_deck_markdown(ctx)
     for slide in slides:

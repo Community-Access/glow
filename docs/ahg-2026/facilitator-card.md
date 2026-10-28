@@ -50,14 +50,14 @@ letitglow.app/ahg/assistant.
 | Time | Block | Command |
 |---|---|---|
 | 10:30 | 1. Why we are here (20) | /ready-check |
-| 10:50 | 2. Design your agent (60) | /design-my-agent |
-| 11:50 | 3. Your agent at work (25) | /try-my-agent |
+| 10:50 | 2. Design your agent (50): version 1 | /design-my-agent |
+| 11:40 | 3. Your agent at work (35), then version 2 | /try-my-agent, /review-my-agent |
 | 12:15 | Lunch | none |
-| 1:15 | 4. Ground it (55) | /ground-my-agent |
-| 2:10 | Break (10) | none |
-| 2:20 | 5. Share it (40), read names as agents arrive | share page |
-| 3:00 | 6. Build the office (45), projector run last | /run-the-office |
-| 3:45 | 7. Take it home (30) | /my-30-day-plan |
+| 1:15 | 4. Ground it (50), then version 3 | /ground-my-agent, /review-my-agent |
+| 2:05 | Break (10) | none |
+| 2:15 | 5. Build the office (50), then version 4; Accessibility Agents on the projector last | /run-the-office, /review-my-agent |
+| 3:05 | 6. Share it (35), read names as agents arrive; everyone's agents on the projector last | share page |
+| 3:40 | 7. Take it home (35) | /my-30-day-plan |
 | 4:15 | Commitments (10) | the wall |
 | 4:25 | Session evaluation (5) | proctor |
 

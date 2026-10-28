@@ -15,7 +15,7 @@ Building Human-Centered AI Workflows for Trusted Accessibility Automation at Sca
 - Presenter: Jeff Bishop - BITS, an affiliate of the American Council of the Blind
 - Join: letitglow.app/w/ahg-2026
 
-Speaker notes are included under each slide. 26 slides.
+Speaker notes are included under each slide. 27 slides.
 
 ---
 
@@ -88,11 +88,11 @@ You will build one of the agents that writes a section like this.
 The map for today
 
 1. The problem: a course full of barriers, and a team too small.
-2. Your agent: five plain-English answers.
-3. Your agent at work: your AI uses it on one course document.
+2. Your agent: six plain-English answers.
+3. Your agent at work: your AI uses it on one course document, and you revise it.
 4. Your agent, grounded: real evidence in, cited answers out.
-5. Your agent, shared: in an open-source collection, with your name on it.
-6. Your agent in the team: the whole course, at once.
+5. Your agent in the team: the whole course, at once.
+6. Your agent, shared: your best version, in an open-source collection, with your name on it.
 7. Your campus: a 30-day plan.
 
 ### Speaker notes, slide 4
@@ -107,7 +107,7 @@ The map for today
 
 Housekeeping
 
-- 10:30 to 4:30 Mountain Time. Lunch at 12:15. A break at 2:10.
+- 10:30 to 4:30 Mountain Time. Lunch at 12:15. A break at 2:05.
 - Everything is at letitglow.app/ahg. Not set up yet? A helper is coming to you.
 - Three paths, one day: VS Code on your laptop, VS Code at vscode.dev, or any AI assistant in your browser.
 - Seven blocks. Every one starts by showing you the finished result.
@@ -153,9 +153,10 @@ No code, really
 - Task: The one job it does.
 - Trusted guidance: The standards and policies it must cite: WCAG 2.2, your own procedures.
 - Output format: What comes back, in a shape a busy person can use.
+- Example: One short, good answer, so it sees the shape you want.
 - Human review: Who checks it before anything goes out.
 
-An agent is those five answers, written in plain English. Writing one is writing, not coding.
+An agent is those six answers, written in plain English. Writing one is writing, not coding.
 
 ### Speaker notes, slide 7
 
@@ -193,7 +194,7 @@ The agent team you will join this afternoon. A coordinator routes each file to t
 
 ## 9. Design your agent
 
-Block 2 of 7 - 10:50-11:50 - 60 minutes
+Block 2 of 7 - 10:50-11:40 - 50 minutes
 
 By the end of this block: your own agent, in a file, with your name on it.
 
@@ -205,13 +206,13 @@ Pick one card. Bring one real problem from your job, with nothing private in it.
 
 ### Speaker notes, slide 9
 
-> Say where we are on the journey: step 2 of 7, "Your agent: five plain-English answers." Then show what they will have at the end of this block before anyone starts.
+> Say where we are on the journey: step 2 of 7, "Your agent: six plain-English answers." Then show what they will have at the end of this block before anyone starts.
 >
 > Every card has two ready-made agents in examples/agents. Nobody starts from a blank page; everybody starts from something that already works and makes it theirs.
 
 ---
 
-## 10. Maria's five answers
+## 10. Maria's six answers
 
 Watch me first
 
@@ -223,6 +224,7 @@ Maria, from the Disability Resource Center, designing her alternate format plann
 | Task | Plan the formats a student needs from a checker's report |
 | Trusted guidance | WCAG 2.2 1.4.5 and 1.1.1, ACB large print, our procedure |
 | Output format | Numbered steps with who does each, then a checklist |
+| Example | The scanned reading: get the text, then 18 point large print |
 | Human review | The specialist checks page by page; the student confirms |
 
 ### Speaker notes, slide 10
@@ -258,19 +260,20 @@ Stuck? Start from a ready-made agent in examples/agents. That counts. You are st
 
 ## 12. Your agent at work
 
-Block 3 of 7 - 11:50-12:15 - 25 minutes
+Block 3 of 7 - 11:40-12:15 - 35 minutes
 
-By the end of this block: your agent's first answer on a real course document.
+By the end of this block: your agent's first answer on a real course document, and version 2.
 
 1. In VS Code, type /try-my-agent. In a browser, paste the block 3 text.
 2. Pick a file from the PSY 101 sample course.
 3. Read what your agent says.
+4. Then /review-my-agent, or the review text: one change, version 2.
 
 It will guess a little. That is not a mistake. It is the setup for this afternoon.
 
 ### Speaker notes, slide 12
 
-> Say where we are on the journey: step 3 of 7, "Your agent at work: your AI uses it on one course document." Then show what they will have at the end of this block before anyone starts.
+> Say where we are on the journey: step 3 of 7, "Your agent at work: your AI uses it on one course document, and you revise it." Then show what they will have at the end of this block before anyone starts.
 >
 > PSY 101 is fictional: a course about memory and procrastination that keeps forgetting things and running late. The barriers in it are planted on purpose; the answer key is in the facilitator folder.
 
@@ -312,7 +315,7 @@ After lunch it stops guessing.
 
 ## 15. Ground it
 
-Block 4 of 7 - 1:15-2:10 - 55 minutes
+Block 4 of 7 - 1:15-2:05 - 50 minutes
 
 By the end of this block: the same agent, giving cited answers from real evidence. A before and an after.
 
@@ -320,6 +323,7 @@ By the end of this block: the same agent, giving cited answers from real evidenc
 2. Use the same file as this morning.
 3. Your agent reads that file's checker report: GLOW for documents, axe for the web page.
 4. Compare the two answers.
+5. Then /review-my-agent again: version 3.
 
 ### Speaker notes, slide 15
 
@@ -371,11 +375,11 @@ And some barriers no checker sees:
 
 ---
 
-## 18. Back at 2:20
+## 18. Back at 2:15
 
 Break - 10 minutes
 
-Next, your agent goes public. Nicely.
+Next, your agent joins a team. Then it goes public.
 
 ### Speaker notes, slide 18
 
@@ -383,67 +387,29 @@ Next, your agent goes public. Nicely.
 
 ---
 
-## 19. Share it
+## 19. Build the office
 
-Block 5 of 7 - 2:20-3:00 - 40 minutes
-
-By the end of this block: your agent in the open-source AHG 2026 collection, committed in your name.
-
-1. Open letitglow.app/ahg/share, and choose your SKILL.md, or paste your agent in.
-2. Press Open the share form on GitHub. The form opens, already filled in.
-3. Tick the privacy box, and press Submit new issue.
-4. Within a minute, the reply: Your agent is in.
-
-You did this once already, with your practice agent. Same again.
-
-### Speaker notes, slide 19
-
-> Say where we are on the journey: step 5 of 7, "Your agent, shared: in an open-source collection, with your name on it." Then show what they will have at the end of this block before anyone starts.
->
-> Everyone shared a practice agent before the day, so this is the second time, not the first. Say so; it changes the room.
->
-> Helpers watch the issues labelled needs-a-hand and go to those people first. A Nearly there reply always says exactly what to fix.
-
----
-
-## 20. In the collection, with your name on it
-
-Open source, live
-
-As your agents arrive, the collection grows, here, on the screen.
-
-Tonight every one of them goes into the Accessibility Agents project, with every author credited, for anyone in higher education to use and improve.
-
-### Speaker notes, slide 20
-
-> Project agents/README.md in github.com/Community-Access/ahg-2026 and refresh it as agents arrive. Read each name and agent title out loud. Applause is allowed and encouraged.
->
-> Each agent is committed in its author's name, so it shows on their own GitHub profile. Started from a ready-made agent? It still counts. Say so: what matters is that it is yours now.
-
----
-
-## 21. Build the office
-
-Block 6 of 7 - 3:00-3:45 - 45 minutes
+Block 5 of 7 - 2:15-3:05 - 50 minutes
 
 By the end of this block: your agent working inside a team, across the whole course, and one team report.
 
-1. In VS Code, type /run-the-office. In a browser, paste the block 6 text.
+1. In VS Code, type /run-the-office. In a browser, paste the block 5 text.
 2. The coordinator sends each course file to its specialists, and yours where it fits.
 3. The standards reviewer checks everyone's work.
 4. You get the team report, with your agent's section in it.
+5. Then /review-my-agent, or the review text: version 4, your best.
 
-### Speaker notes, slide 21
+### Speaker notes, slide 19
 
-> Say where we are on the journey: step 6 of 7, "Your agent in the team: the whole course, at once." Then show what they will have at the end of this block before anyone starts.
+> Say where we are on the journey: step 5 of 7, "Your agent in the team: the whole course, at once." Then show what they will have at the end of this block before anyone starts.
 >
 > This is building an agent team: they added a specialist, and their coordinator is running it. Copilot announces each file as it finishes, so screen reader users hear progress, not silence.
 >
-> On the browser path the same coordinator and specialists travel inside the block 6 text, so ChatGPT or any assistant runs the same team. If an assistant stops part way, type continue.
+> On the browser path the same coordinator and specialists travel inside the block 5 text, so ChatGPT or any assistant runs the same team. If an assistant stops part way, type continue.
 
 ---
 
-## 22. One course, one report
+## 20. One course, one report
 
 What scale looks like
 
@@ -454,13 +420,72 @@ What scale looks like
 
 That is quality, accountability and transparency, at scale. It is also a Tuesday.
 
-### Speaker notes, slide 22
+### Speaker notes, slide 20
 
 > Ask: what would it take to run this across ten courses? Let them answer. The honest answer is a person's review time, which is exactly where it should go.
 
 ---
 
-## 23. Everyone's agents, together
+## 21. The full Accessibility Agents team
+
+The real thing
+
+The office you just ran is a small version of a real open-source project: Accessibility Agents.
+
+- Six entry points, and 107 specialist, helper and reference skills behind them.
+- The same course, on the screen: web, Word, PowerPoint, Excel and PDF.
+- It is already in your kit, in .github/skills. Ask for document-accessibility-wizard by name.
+
+### Speaker notes, slide 21
+
+> Fifteen minutes, on the projector, in VS Code with the kit open. Start a new chat and ask: use document-accessibility-wizard to review the PSY 101 course, using the files in sample-course/evidence.
+>
+> Point out that the skills that need scanners say so and ask for checker results, as accessibility-agents-in-the-kit.md explains. Never let it claim a scan it did not run.
+>
+> Close with: your agent goes into this project tonight, credited to you. That is the next block.
+
+---
+
+## 22. Share it
+
+Block 6 of 7 - 3:05-3:40 - 35 minutes
+
+By the end of this block: your best version in the open-source AHG 2026 collection, committed in your name.
+
+1. Open letitglow.app/ahg/share, and choose your newest SKILL.md, version 4, or paste it in.
+2. Press Open the share form on GitHub. The form opens, already filled in.
+3. Tick the privacy box, and press Submit new issue.
+4. Within a minute, the reply: Your agent is in.
+
+You did this once already, with your practice agent. Same again.
+
+### Speaker notes, slide 22
+
+> Say where we are on the journey: step 6 of 7, "Your agent, shared: your best version, in an open-source collection, with your name on it." Then show what they will have at the end of this block before anyone starts.
+>
+> Everyone shared a practice agent before the day, so this is the second time, not the first. Say so; it changes the room.
+>
+> Helpers watch the issues labelled needs-a-hand and go to those people first. A Nearly there reply always says exactly what to fix.
+
+---
+
+## 23. In the collection, with your name on it
+
+Open source, live
+
+As your agents arrive, the collection grows, here, on the screen.
+
+Tonight every one of them goes into the Accessibility Agents project, with every author credited, for anyone in higher education to use and improve.
+
+### Speaker notes, slide 23
+
+> Project agents/README.md in github.com/Community-Access/ahg-2026 and refresh it as agents arrive. Read each name and agent title out loud. Applause is allowed and encouraged.
+>
+> Each agent is committed in its author's name, so it shows on their own GitHub profile. Started from a ready-made agent? It still counts. Say so: what matters is that it is yours now.
+
+---
+
+## 24. Everyone's agents, together
 
 Agents in action
 
@@ -468,17 +493,17 @@ One more run, on the screen: the office team with every agent this room shared.
 
 Listen for yours.
 
-### Speaker notes, slide 23
+### Speaker notes, slide 24
 
-> Copy every agents/<login>/<name>/ folder from the ahg-2026 repository into a room/ folder in your kit, then run /run-the-office on the projector. Read out each agent's name as the coordinator calls it.
+> Last thing in this block. Copy every agents/<login>/<name>/ folder from the ahg-2026 repository into a room/ folder in your kit, then run /run-the-office on the projector. Read out each agent's name as the coordinator calls it.
 >
 > If the run is slow, narrate it. If it stumbles, say what happened and why; a real failure explained well teaches more than a perfect demo.
 
 ---
 
-## 24. Take it home
+## 25. Take it home
 
-Block 7 of 7 - 3:45-4:15 - 30 minutes
+Block 7 of 7 - 3:40-4:15 - 35 minutes
 
 By the end of this block: a 30-day plan for your own campus.
 
@@ -494,7 +519,7 @@ What you can do on Monday, with tools you already have:
 | Human review, in writing | Your own office's process |
 | Agent teams | One specialist at a time, or the Accessibility Agents project |
 
-### Speaker notes, slide 24
+### Speaker notes, slide 25
 
 > Say where we are on the journey: step 7 of 7, "Your campus: a 30-day plan." Then show what they will have at the end of this block before anyone starts.
 >
@@ -502,13 +527,13 @@ What you can do on Monday, with tools you already have:
 
 ---
 
-## 25. The commitment wall
+## 26. The commitment wall
 
 4:15
 
 Every commitment in this room, on one screen, with no names on it.
 
-### Speaker notes, slide 25
+### Speaker notes, slide 26
 
 > Project the wall from GLOW. Read three aloud. Do not comment on them, do not rank them.
 >
@@ -516,7 +541,7 @@ Every commitment in this room, on one screen, with no names on it.
 
 ---
 
-## 26. Go make one more champion
+## 27. Go make one more champion
 
 4:25 - Thank you
 
@@ -528,7 +553,7 @@ Help any time, before or after today: support@community-access.org.
 
 GLOW is a community project of BITS, an affiliate of the American Council of the Blind.
 
-### Speaker notes, slide 26
+### Speaker notes, slide 27
 
 > Say it, thank them, and hand over to the proctor for the evaluation. Then stop talking while people fill it in.
 >

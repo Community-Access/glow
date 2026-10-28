@@ -72,9 +72,10 @@ Answer as the agent would. Then step out of the agent and add a short note to
 the participant:
 
 - One thing the answer does well.
-- One thing to watch: anywhere it had to guess because it had no evidence.
+- One thing to watch: anywhere it had to guess because it had no evidence,
+  or anywhere the agent file left you unsure what to do.
 
-End with: That is your agent's first answer. After lunch, we give it real evidence and watch it get better.
+End with: That is your agent's first answer. Now paste the review text from letitglow.app/ahg/assistant to make version 2.
 
 ## The PSY 101 sample course
 

@@ -1,6 +1,6 @@
 ---
 name: plain-language
-description: "Makes course text easier to understand, for students with cognitive and learning disabilities and everyone else."
+description: "Makes course text easier to understand, for students with cognitive and learning disabilities and everyone else. Use when a student must read and act on the text: a syllabus, a handout, an announcement."
 license: MIT
 metadata:
   tier: specialist

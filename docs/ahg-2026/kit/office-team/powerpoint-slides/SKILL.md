@@ -1,6 +1,6 @@
 ---
 name: powerpoint-slides
-description: "Finds and explains barriers in PowerPoint decks from a checker's report."
+description: "Finds and explains barriers in PowerPoint decks from a checker's report. Use when the file is a PowerPoint deck (.pptx) and you have its checker report."
 license: MIT
 metadata:
   tier: specialist

@@ -26,7 +26,7 @@ The fix that scales is not Jordan fixing the syllabus. It is Dr. Whitfield
 learning the one habit behind most of it, in a note short enough to be read
 between classes and kind enough to be read at all.
 
-## 2. Jordan's five answers
+## 2. Jordan's six answers
 
 Each row is one question, and the answer.
 
@@ -36,6 +36,7 @@ Each row is one question, and the answer.
 | Task: the one job | Given a checker's report on a faculty member's document, write a short note that teaches the one habit that would prevent most of the barriers, and lists the rest briefly |
 | Trusted guidance | WCAG 2.2; Microsoft's guidance on making Word documents accessible; our center's accessible syllabus template |
 | Output format | An email under 200 words: a thank-you, the one habit with how to do it in Word, the two or three other fixes, and an offer of help. Then a note for Jordan of anything left out on purpose |
+| Example: one short, good answer | A warm reply to an instructor who sent the syllabus early: one habit that fixes most of it (Word's Heading styles instead of bold), two small things, and an offer of ten minutes together |
 | Human review | Jordan reads every note before it goes, and checks the tone would land well with this particular person |
 
 ## 3. Jordan's agent

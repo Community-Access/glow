@@ -1,6 +1,7 @@
 ---
 name: ground-my-agent
-description: "Block 4. Give your agent real evidence, and compare before and after."
+description: "Block 4. Give your agent real evidence, compare before and after, then revise. Use when your agent has had a first try."
+disable-model-invocation: true
 ---
 Read `my-agent/SKILL.md` and act as that agent, following it exactly.
 
@@ -17,4 +18,4 @@ Read `my-agent/SKILL.md` and act as that agent, following it exactly.
    with Word's own Accessibility Checker results pasted in, to show the skill
    is the evidence, not the tool.
 
-End with: Your agent just stopped guessing. That is what "grounded" means.
+End with: Your agent just stopped guessing. That is what "grounded" means. Now type /review-my-agent: what you just learned belongs in the agent file.

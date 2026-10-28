@@ -46,12 +46,12 @@ block has every key and every expected result in words.
 | Block | Time | Command | What you get |
 |---|---|---|---|
 | 1. Why we are here | 10:30 | /ready-check | A ready laptop |
-| 2. Design your agent | 10:50 | /design-my-agent | Your own agent, in `my-agent/SKILL.md` |
-| 3. Your agent at work | 11:50 | /try-my-agent | Its first answer on a course document |
-| 4. Ground it | 1:15 | /ground-my-agent | Cited answers from real evidence |
-| 5. Share it | 2:20 | letitglow.app/ahg/share | Your agent in the collection, in your name |
-| 6. Build the office | 3:00 | /run-the-office | Your agent in a team, across the whole course |
-| 7. Take it home | 3:45 | /my-30-day-plan | A 30-day plan for your campus |
+| 2. Design your agent | 10:50 | /design-my-agent | Your own agent, in `my-agent/SKILL.md`: version 1 |
+| 3. Your agent at work | 11:40 | /try-my-agent, then /review-my-agent | Its first answer on a course document, and version 2 |
+| 4. Ground it | 1:15 | /ground-my-agent, then /review-my-agent | Cited answers from real evidence, and version 3 |
+| 5. Build the office | 2:15 | /run-the-office, then /review-my-agent | Your agent in a team, across the whole course, and version 4 |
+| 6. Share it | 3:05 | letitglow.app/ahg/share | Your best version in the collection, in your name |
+| 7. Take it home | 3:40 | /my-30-day-plan | A 30-day plan for your campus |
 
 ## What is in this folder
 
@@ -59,16 +59,20 @@ This list follows the folders in the Explorer, top to bottom.
 
 | Folder or file | What it is |
 |---|---|
-| `.github/` | The commands above, as agent skills in `skills/`, the office coordinator in `agents/`, and the workshop's rules for Copilot. You do not need to open it |
+| `.github/` | The commands above, as agent skills in `skills/`, beside all 113 Accessibility Agents skills; the office coordinator in `agents/`; and the workshop's rules for Copilot. You do not need to open it |
 | `.vscode/` | Settings for larger text and screen readers. You do not need to open it |
-| `any-assistant/` | One text per block for the browser path, to paste into any AI assistant |
+| `any-assistant/` | One text per block for the browser path, to paste into any AI assistant; the review text; and four Accessibility Agents texts, `aa-*.txt` |
 | `examples/` | Finished work for every step. Maria, Jordan and Sam's stories, and six ready-made agents in `examples/agents/` |
-| `my-agent/SKILL.md` | Your agent. Six headings: Role, Task, Trusted guidance, Output format, Human review, Never |
+| `my-agent/SKILL.md` | Your agent. Seven headings: Role, Task, Trusted guidance, Output format, Example, Human review, Never |
 | `office-team/` | The accessibility office: eight specialists your agent joins this afternoon |
 | `sample-course/` | PSY 101, the course everyone works on, with barriers planted on purpose, and `evidence/` with each file's checker report |
 | `step-cards/` | One card per block, as Markdown and as large print Word files |
 | `share-my-agent.html` | The offline copy of the share page |
 | `ahg-2026.code-profile` | The AHG 2026 VS Code profile, if you need to import it again |
+| `accessibility-agents.md` | Accessibility Agents after today: the six entry points, and how to keep using it |
+| `accessibility-agents-in-the-kit.md` | Which Accessibility Agents skills work fully in this kit, and what the rest do instead |
+| `accessibility-agents-LICENSE.txt` | Accessibility Agents' MIT licence, which travels with its skills |
+| `agent-file-principles.md` | What makes a good agent file, and the twelve review questions /review-my-agent uses |
 
 ## You cannot fall behind
 

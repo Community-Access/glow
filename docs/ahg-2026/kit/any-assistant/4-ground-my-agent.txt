@@ -75,7 +75,7 @@ Then act as that agent, following it exactly.
    agent will work from those instead. The skill is the evidence, not the
    tool.
 
-End with: Your agent just stopped guessing. That is what "grounded" means.
+End with: Your agent just stopped guessing. That is what "grounded" means. Now paste the review text from letitglow.app/ahg/assistant: what you just learned belongs in the agent file.
 
 ## The PSY 101 sample course
 

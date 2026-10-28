@@ -22,7 +22,7 @@ scale without losing quality, accountability or transparency.
 
 ## What you will do
 
-- Design your own accessibility agent: five plain-English answers about its
+- Design your own accessibility agent: six plain-English answers about its
   role, its task, the standards it must cite, what it produces, and who
   reviews it. No code.
 - Put it to work on a realistic sample course full of planted barriers,

@@ -1,6 +1,6 @@
 ---
 name: faculty-coach
-description: "Turns a checker's report on a faculty document into a short, kind note that teaches the habit behind the barriers."
+description: "Turns a checker's report on a faculty document into a short, kind note that teaches the habit behind the barriers. Use when a faculty member's document has barriers and you want them to learn the habit, not just get a fixed file."
 license: MIT
 metadata:
   tier: specialist
@@ -34,6 +34,10 @@ evidence, say you cannot see it. Do not guess.
 ## Output format
 
 An email under 200 words: thank them; the one habit, with how to do it; two or three other fixes; an offer of help. Then, for the designer only: anything left out on purpose, and why.
+
+## Example
+
+Thank you for sending the syllabus early. One habit fixes most of it: use Word's Heading 1 and Heading 2 styles instead of bold text, from the Home tab. Then screen reader users can jump between sections. Two more small things: ... Happy to sit with you for ten minutes.
 
 ## Human review
 
