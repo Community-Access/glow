@@ -53,7 +53,10 @@ SOURCES: dict[str, tuple[Path, Path, dict[str, str | None]]] = {
         REPO_ROOT / "docs" / "user-guide.md",
         PARTIALS_DIR / "guide_body.html",
         {
-            "toc_heading": "In This Guide",
+            # Not "In This Guide": the guide's Markdown has its own short
+            # contents list under that heading, and two headings with one
+            # name read as a duplicate in a screen reader's heading list.
+            "toc_heading": "Full contents",
             "toc_id": "guide-toc-heading",
             "body_class": "guide-content",
             "back_label": "Back to guide contents",

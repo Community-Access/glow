@@ -46,6 +46,12 @@ def test_guide_page_has_one_h1(guide_html):
     assert len(re.findall(r"<h1[\s>]", guide_html)) == 1
 
 
+def test_guide_page_has_no_repeated_section_heading(guide_html):
+    h2s = [re.sub(r"<[^>]+>", "", t).strip() for t in re.findall(r"<h2[^>]*>(.*?)</h2>", guide_html, re.S)]
+    repeated = sorted({t for t in h2s if h2s.count(t) > 1})
+    assert not repeated, f"level-two headings that appear more than once: {repeated}"
+
+
 def _without_code(md: str) -> str:
     return re.sub(r"^```.*?^```", "", md, flags=re.M | re.S)
 
@@ -75,9 +81,7 @@ def test_contents_list_matches_the_numbered_sections():
 
 def test_every_fragment_link_on_the_guide_page_resolves(guide_html):
     ids = _ids(guide_html)
-    missing = sorted(
-        {frag for frag in re.findall(r'href="#([^"]+)"', guide_html) if frag not in ids}
-    )
+    missing = sorted({frag for frag in re.findall(r'href="#([^"]+)"', guide_html) if frag not in ids})
     assert not missing, f"links to ids that do not exist: {missing}"
 
 
@@ -98,9 +102,7 @@ def test_links_into_the_guide_from_other_templates_resolve():
 
 def test_committed_partial_matches_the_markdown():
     pytest.importorskip("markdown")
-    spec = importlib.util.spec_from_file_location(
-        "build_doc_pages", REPO_ROOT / "scripts" / "build-doc-pages.py"
-    )
+    spec = importlib.util.spec_from_file_location("build_doc_pages", REPO_ROOT / "scripts" / "build-doc-pages.py")
     module = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(module)
     assert module.render("guide") == PARTIAL.read_text(encoding="utf-8"), (
