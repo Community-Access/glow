@@ -126,5 +126,6 @@ using assistive technology.
 Registering GLOW in the framework is a public tracking issue in the
 framework's repository, opened by the maintainer from the
 [Track your project's progress form](https://github.com/open-source-accessibility/Open-Source-Accessibility-Framework/issues/new?template=project-registration.yml).
-Once it exists, this page, ACCESSIBILITY.md and the README link to it, and the
-README shows the framework badge it provides.
+GLOW's tracking issue is [GLOW, issue 54](https://github.com/open-source-accessibility/Open-Source-Accessibility-Framework/issues/54), opened on 28 October 2026.
+This page, ACCESSIBILITY.md and the README link to it, and the README shows the
+framework badge it provides.

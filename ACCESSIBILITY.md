@@ -307,7 +307,8 @@ We are adopting the
 in its four phases. Each action counts as done only when its definition of done
 is met by what is in this repository; recurring actions are set up and then
 repeated. The full record, action by action with evidence, is in
-[docs/accessibility-framework.md](docs/accessibility-framework.md). As of
+[docs/accessibility-framework.md](docs/accessibility-framework.md), and the
+public tracking issue is [GLOW, issue 54](https://github.com/open-source-accessibility/Open-Source-Accessibility-Framework/issues/54). As of
 October 2026, 19 of 24 actions:
 
 - **Foundational:** this document; the `accessibility` label.
