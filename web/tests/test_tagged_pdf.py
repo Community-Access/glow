@@ -17,6 +17,7 @@ except ``write_tagged_pdf``, so a fourth call site cannot quietly go untagged.
 
 from __future__ import annotations
 
+import os
 import re
 import shutil
 import uuid
@@ -37,10 +38,17 @@ def _weasyprint_usable() -> bool:
     return True
 
 
+# On a developer machine without Pango or Pandoc these tests skip. In CI they
+# must run: a skip there would let an untagged PDF through unnoticed.
+_IN_CI = bool(os.environ.get("CI"))
+
 needs_weasyprint = pytest.mark.skipif(
-    not _weasyprint_usable(), reason="WeasyPrint (or its system libraries) not installed"
+    not _IN_CI and not _weasyprint_usable(),
+    reason="WeasyPrint (or its system libraries) not installed",
 )
-needs_pandoc = pytest.mark.skipif(shutil.which("pandoc") is None, reason="Pandoc not installed")
+needs_pandoc = pytest.mark.skipif(
+    not _IN_CI and shutil.which("pandoc") is None, reason="Pandoc not installed"
+)
 
 
 def _pdf_facts(pdf_bytes: bytes) -> dict:
