@@ -27,7 +27,7 @@ found, what is fixed first and why, who decided, and when.
 PSY 101 is one course. Sam wants a log entry for it that would survive a
 complaint, an audit, and the CIO reading it on a phone.
 
-## 2. Sam's five answers
+## 2. Sam's six answers
 
 Each row is one question, and the answer.
 
@@ -37,6 +37,7 @@ Each row is one question, and the answer.
 | Task: the one job | Given checker reports for a course's files, produce dated log entries: each barrier, its WCAG criterion, its severity, a priority with the reason, and the evidence source |
 | Trusted guidance | WCAG 2.2 (and note the 2.1 AA level the rule names); the checker reports; our remediation priority policy, which puts barriers that block a student first |
 | Output format | A table: file, barrier, WCAG criterion with link, severity, priority, reason, evidence, reviewer, status. Then a three-line summary for leadership |
+| Example: one short, good answer | One log row: the PSY 101 syllabus has no headings, 1.3.1, high priority, blocks navigation, from the GLOW audit, owned by the coordinator, proposed |
 | Human review | The coordinator approves every priority before the log is final, and initials each entry |
 
 ## 3. Sam's agent

@@ -89,7 +89,13 @@ def skill(
     author: str,
     derived_from: str = "",
     tier: str = "specialist",
+    use_when: str = "",
+    example: str = "",
 ) -> str:
+    # The description is what an assistant reads to decide whether to use
+    # the agent, so it says what the agent does and when to use it.
+    if use_when:
+        description = f"{description} Use when {use_when}"
     # Free text is written as a JSON string, which is valid YAML: an author
     # like "Example: Maria Alvarez" would otherwise be read as a mapping and
     # break the whole header for VS Code, Vale and the Agent Skills tools.
@@ -135,6 +141,7 @@ def skill(
         "",
         output_format,
         "",
+        *(["## Example", "", example, ""] if example else []),
         "## Human review",
         "",
         review,
@@ -158,6 +165,7 @@ def _wrap(text: str, width: int = 76) -> str:
 OFFICE = [
     dict(
         name="word-documents", title="Word Documents", derived_from="word-accessibility",
+        use_when="the file is a Word document (.docx) and you have its checker report.",
         description="Finds and explains barriers in Word documents from a checker's report.",
         domain="documents", output="findings",
         role="You are the Word document specialist in a university accessibility office.",
@@ -168,6 +176,7 @@ OFFICE = [
     ),
     dict(
         name="powerpoint-slides", title="PowerPoint Slides", derived_from="powerpoint-accessibility",
+        use_when="the file is a PowerPoint deck (.pptx) and you have its checker report.",
         description="Finds and explains barriers in PowerPoint decks from a checker's report.",
         domain="documents", output="findings",
         role="You are the PowerPoint specialist in a university accessibility office.",
@@ -178,6 +187,7 @@ OFFICE = [
     ),
     dict(
         name="excel-workbooks", title="Excel Workbooks", derived_from="excel-accessibility",
+        use_when="the file is an Excel workbook (.xlsx) and you have its checker report.",
         description="Finds and explains barriers in Excel workbooks from a checker's report.",
         domain="documents", output="findings",
         role="You are the Excel specialist in a university accessibility office.",
@@ -188,6 +198,7 @@ OFFICE = [
     ),
     dict(
         name="pdf-documents", title="PDF Documents", derived_from="pdf-accessibility",
+        use_when="the file is a PDF, scanned or not, and you have its checker report.",
         description="Finds and explains barriers in PDFs from a checker's report, including scanned ones.",
         domain="documents", output="findings",
         role="You are the PDF specialist in a university accessibility office.",
@@ -198,6 +209,7 @@ OFFICE = [
     ),
     dict(
         name="web-pages", title="Web Pages", derived_from="web-accessibility-wizard",
+        use_when="the file is a web page and you have axe or Accessibility Insights results.",
         description="Explains axe and Accessibility Insights results for a course web page in plain language.",
         domain="web", output="findings",
         role="You are the web page specialist in a university accessibility office.",
@@ -208,6 +220,7 @@ OFFICE = [
     ),
     dict(
         name="captions-and-media", title="Captions and Media", derived_from="media-accessibility",
+        use_when="the file is a caption file (.vtt or .srt) for a lecture or video.",
         description="Reviews caption files for accuracy, speakers and undescribed visuals.",
         domain="media", output="findings",
         role="You are the media specialist in a university accessibility office.",
@@ -218,6 +231,7 @@ OFFICE = [
     ),
     dict(
         name="plain-language", title="Plain Language and Cognitive Access", derived_from="cognitive-accessibility",
+        use_when="a student must read and act on the text: a syllabus, a handout, an announcement.",
         description="Makes course text easier to understand, for students with cognitive and learning disabilities and everyone else.",
         domain="documents", output="rewrite",
         role="You are the plain language specialist in a university accessibility office.",
@@ -228,6 +242,7 @@ OFFICE = [
     ),
     dict(
         name="standards-reviewer", title="Standards Reviewer", derived_from="wcag-guide",
+        use_when="the other specialists have finished, before any report goes out.",
         description="Checks every other agent's findings for evidence and correct WCAG citations before the report goes out.",
         domain="compliance", output="review",
         role="You are the standards reviewer in a university accessibility office. You check the other specialists' work.",
@@ -245,6 +260,13 @@ OFFICE = [
 READY = [
     dict(
         name="alternate-format-planner", title="Alternate Format Planner",
+        use_when="a student needs a course document in large print, audio, braille or another format.",
+        example=("Request: the scanned week 2 reading, in large print. Answer, in short: The problem: the PDF is "
+                 "pictures of text, so it cannot be enlarged or read aloud ([1.4.5 Images of Text]"
+                 "(https://www.w3.org/WAI/WCAG22/Understanding/images-of-text.html)). 1. Ask the instructor for the "
+                 "publisher's text version (alternate format specialist). 2. If there is none, OCR it and correct it "
+                 "page by page (specialist). 3. Produce 18 point large print (specialist). Before you send this: "
+                 "every page checked against the original; the student confirms the format works."),
         author="Example: Maria Alvarez, Mesa Ridge State University",
         description="Plans alternate formats for a course document from a checker's report and the formats a student needs.",
         domain="documents", output="plan",
@@ -256,6 +278,10 @@ READY = [
     ),
     dict(
         name="document-triage", title="Document Triage",
+        use_when="you have a checker's report on one course document and need to know what to fix first.",
+        example=("Blocks a student: no real headings, so a screen reader user cannot move through the syllabus "
+                 "([1.3.1 Info and Relationships](https://www.w3.org/WAI/WCAG22/Understanding/info-and-relationships.html)). "
+                 "Slows a student down: \"click here\" links. Everything else: margins and page numbers."),
         author="Example: Mesa Ridge State University",
         description="Decides what to fix first in a course document, and why, from a checker's report.",
         domain="documents", output="plan",
@@ -267,6 +293,10 @@ READY = [
     ),
     dict(
         name="faculty-coach", title="Faculty Coach",
+        use_when="a faculty member's document has barriers and you want them to learn the habit, not just get a fixed file.",
+        example=("Thank you for sending the syllabus early. One habit fixes most of it: use Word's Heading 1 and "
+                 "Heading 2 styles instead of bold text, from the Home tab. Then screen reader users can jump "
+                 "between sections. Two more small things: ... Happy to sit with you for ten minutes."),
         author="Example: Jordan Lee, Mesa Ridge State University",
         description="Turns a checker's report on a faculty document into a short, kind note that teaches the habit behind the barriers.",
         domain="documents", output="message",
@@ -278,6 +308,11 @@ READY = [
     ),
     dict(
         name="course-page-coach", title="Course Page Coach",
+        use_when="you have axe or Accessibility Insights results for a course page built in the learning management system.",
+        example=("1. In the page editor, select the gray text and choose the default text color, so it is readable "
+                 "([1.4.3 Contrast (Minimum)](https://www.w3.org/WAI/WCAG22/Understanding/contrast-minimum.html)). "
+                 "2. Change \"click here\" to the name of the page it opens. Ask the web team: the Submit button "
+                 "cannot be reached by keyboard."),
         author="Example: Mesa Ridge State University",
         description="Explains a course page's barriers in course-builder language, with steps a faculty member can follow.",
         domain="web", output="message",
@@ -289,6 +324,9 @@ READY = [
     ),
     dict(
         name="remediation-log-keeper", title="Remediation Log Keeper",
+        use_when="you need a dated, defensible record of a course's barriers for Title II.",
+        example=("| PSY 101 syllabus | No headings | [1.3.1](https://www.w3.org/WAI/WCAG22/Understanding/info-and-relationships.html) "
+                 "| High | 1 | Blocks navigation | GLOW audit | Coordinator | proposed |"),
         author="Example: Sam Okafor, Mesa Ridge State University",
         description="Turns checker reports for a course into dated, prioritized, evidence-backed remediation log entries.",
         domain="compliance", output="log",
@@ -300,6 +338,9 @@ READY = [
     ),
     dict(
         name="vendor-report-reader", title="Vendor Report Reader",
+        use_when="a vendor sends an accessibility conformance report (ACR or VPAT) before you buy or renew.",
+        example=("| 2.1.1 Keyboard | Partially supports | Some students cannot submit quizzes without a mouse |. "
+                 "Question 1: Which quiz controls cannot be used by keyboard, and when will they be fixed?"),
         author="Example: Mesa Ridge State University",
         description="Reads a vendor's accessibility conformance report and lists the gaps and the questions to ask.",
         domain="compliance", output="questions",
@@ -500,44 +541,52 @@ from 10:00 on the day. Nobody gets left behind.""",
     ),
     "2-design-my-agent": dict(
         title="Block 2: design your agent",
-        files=["my-agent/SKILL.md", *[f"examples/agents/{s['name']}/SKILL.md" for s in READY]],
+        files=["agent-file-principles.md", "my-agent/SKILL.md",
+               *[f"examples/agents/{s['name']}/SKILL.md" for s in READY]],
         task="""\
 You are helping a participant design their own accessibility agent. They are
 probably not a developer. Make this feel easy and make them feel good about
-what they are building.
+what they are building. Follow agent-file-principles.md, below.
 
 1. Ask which role card they picked: documents and alternate formats; course
    content and faculty coaching; or compliance and procurement. Then ask, in
    one sentence, what real problem from their own job they want help with.
-   Remind them: nothing private, no student names or records.
+   Remind them: nothing private, no student names or records. If they give a
+   name, a record or an accommodation, do not repeat or use it; ask them to
+   describe the problem without it.
 2. From the six ready-made agents below, tell them, in one line each, which
    two are closest. Offer to start from one.
-3. Ask the five questions one at a time, and wait for each answer:
+3. Ask these six questions one at a time, and wait for each answer:
    - Role: who is this agent, and who does it work for?
-   - Task: what is the one job it does?
+   - Task: what is the one job it does: what is it given, and what does it
+     give back?
    - Trusted guidance: which standards and local policies must it use?
-   - Output format: what should come back, in what shape?
+   - Output format: what should come back, in what shape, for whom?
+   - Example: what would one short, good answer look like? Offer to draft
+     one from the example agent if they are unsure.
    - Human review: who checks it before anything goes out?
    If they are unsure, offer the example's answer and let them change it.
 4. Ask for their name and institution, for the author line.
 5. Write their agent from the template below (my-agent/SKILL.md), keeping its
    headings and its "Never" section exactly. Set name to a short lowercase
-   name with hyphens, and author to the name and institution they gave you.
-   Keep description, title and author inside double quotes, as the template
-   has them, so a colon in someone's answer cannot break the file. Keep the
-   WCAG 2.2 links in Trusted guidance.
+   name with hyphens, at most 64 characters. Write the description as what it
+   does in one sentence, then a second sentence starting "Use when". Set
+   author to the name and institution they gave you, and add version: "1"
+   under metadata. Keep description, title and author inside double quotes,
+   as the template has them, so a colon in someone's answer cannot break the
+   file. Keep the WCAG 2.2 links in Trusted guidance.
 6. Give back the whole finished agent inside ONE code block, from the first
    three dashes to the last line, and nothing else inside that block.
 7. After the code block, in five lines or fewer: tell them one specific thing
    their agent does well, then how to keep it: press the Copy button on the
    code block, open letitglow.app/ahg/share in a new tab, paste it into the
    box "Your agent, as text", and press "Download as SKILL.md". That saves it
-   on their computer. Do not share it yet; that is block 5.
+   on their computer. Do not share it yet; that comes after the office.
 
-End with: Your agent exists. Next, we put it to work.
+End with: Your agent exists. This is version 1. Next, we put it to work, and then we make it better.
 
 Keep this conversation open all day: the next blocks use the agent you just
-wrote.""",
+wrote, and every revision replaces it.""",
     ),
     "3-try-my-agent": dict(
         title="Block 3: your agent at work",
@@ -561,9 +610,10 @@ Answer as the agent would. Then step out of the agent and add a short note to
 the participant:
 
 - One thing the answer does well.
-- One thing to watch: anywhere it had to guess because it had no evidence.
+- One thing to watch: anywhere it had to guess because it had no evidence,
+  or anywhere the agent file left you unsure what to do.
 
-End with: That is your agent's first answer. After lunch, we give it real evidence and watch it get better.""",
+End with: That is your agent's first answer. Now paste the review text from letitglow.app/ahg/assistant to make version 2.""",
     ),
     "4-ground-my-agent": dict(
         title="Block 4: ground it",
@@ -590,10 +640,10 @@ Then act as that agent, following it exactly.
    agent will work from those instead. The skill is the evidence, not the
    tool.
 
-End with: Your agent just stopped guessing. That is what "grounded" means.""",
+End with: Your agent just stopped guessing. That is what "grounded" means. Now paste the review text from letitglow.app/ahg/assistant: what you just learned belongs in the agent file.""",
     ),
-    "6-run-the-office": dict(
-        title="Block 6: build the office",
+    "5-run-the-office": dict(
+        title="Block 5: build the office",
         files=[
             ".github/agents/office-coordinator.agent.md",
             *[f"office-team/{s['name']}/SKILL.md" for s in OFFICE],
@@ -621,7 +671,43 @@ Then act as the office coordinator, following it exactly, and write the
 report. Work through the course files one at a time, and after each file
 write one line saying which specialists worked on it, so a screen reader user
 hears progress rather than silence. If you have to stop before the last file,
-say so and tell the participant to type: continue.""",
+say so and tell the participant to type: continue.
+
+End with one sentence on what their agent added to the team, and one on what
+would make it a better team member, then: Paste the review text from letitglow.app/ahg/assistant to make that change before you share it.""",
+    ),
+    "review-my-agent": dict(
+        title="Review and revise your agent",
+        files=["agent-file-principles.md"],
+        task="""\
+You are a kind, specific reviewer of the participant's accessibility agent.
+
+""" + ASK_FOR_AGENT + """
+
+Look at the most recent answer the agent gave in this conversation, if there
+is one: that answer is the best evidence of what to improve.
+
+1. Go through the twelve questions in "The review checklist" in
+   agent-file-principles.md, below. Report the result in one short list: each
+   question, then Yes or Not yet. Keep each line under fifteen words.
+2. Choose the ONE change that would most improve the agent's next answer.
+   Prefer a change the last answer showed was needed: a guess, a missing
+   citation, a format the reader would struggle with, a review step that was
+   vague. Say in two sentences why this change, and which principle it is.
+3. Show the exact text to change: the current lines, then the new lines.
+4. Ask: Shall I make this change? Wait for the answer. The participant may
+   reword it; use their words.
+5. When they agree, give back the whole revised agent inside ONE code block.
+   Change nothing else. Never remove or reword the three Never rules. Raise
+   version under metadata by one, adding version: "2" if it is missing. Keep
+   quoted fields in double quotes.
+6. After the code block, in three lines: This is version N of your agent. Copy
+   it with the code block's Copy button, paste it over the old one on
+   letitglow.app/ahg/share, and press "Download as SKILL.md" again. From now
+   on, use this version.
+
+Do not make more than one change per review. One change at a time is how
+they learn what each change does.""",
     ),
     "7-my-30-day-plan": dict(
         title="Block 7: take it home",
@@ -643,9 +729,85 @@ their agent's name in a heading at the top. Then tell them one specific
 reason their plan is realistic, and how to keep it: press the Copy button on
 the code block and paste it into an email to themselves or a Word document.
 
+Then, in one line: the full Accessibility Agents team works the same way in
+any assistant; the texts are under "Accessibility Agents in any assistant" on
+letitglow.app/ahg/assistant.
+
 End with: You came in with a problem. You are leaving with an agent, a team, and a plan. Go make one more champion.""",
     ),
 }
+
+# ---------------------------------------------------------------------------
+# Accessibility Agents itself, in any assistant
+# ---------------------------------------------------------------------------
+#
+# The real project's skills, vendored into .github/skills by
+# scripts/vendor_accessibility_agents.py. Each text carries one entry point
+# and the specialists it calls for one kind of work, kept under about 32 KB
+# so it pastes as one message. No assistant in a browser has the scanners,
+# so the text says so before anything else.
+
+AA_NO_TOOLS = """\
+You have none of Accessibility Agents' tools in this conversation: no
+scanners, no scripts, no hooks, no files. Wherever a skill below says to run
+a scanner, a script or a command, or to read or write a file, do not pretend
+to. Instead ask the participant for what that step would have produced:
+their checker's results (Word's, PowerPoint's or Acrobat's Accessibility
+Checker, Accessibility Insights, axe) or the text of the document. Never say
+you scanned, ran or opened anything. Never ask for student names, records,
+accommodation details or health information."""
+
+AA_TEXTS = {
+    "aa-office-documents": dict(
+        title="Accessibility Agents: Word, Excel and PowerPoint",
+        entry="document-accessibility-wizard",
+        skills=["document-accessibility-wizard", "word-accessibility", "excel-accessibility",
+                "powerpoint-accessibility", "office-remediator", "a11y-core"],
+    ),
+    "aa-pdf-and-epub": dict(
+        title="Accessibility Agents: PDF and ePub",
+        entry="document-accessibility-wizard",
+        skills=["document-accessibility-wizard", "pdf-accessibility", "pdf-remediator",
+                "epub-accessibility", "a11y-core"],
+    ),
+    "aa-web-pages": dict(
+        title="Accessibility Agents: web pages",
+        entry="web-accessibility-wizard",
+        skills=["web-accessibility-wizard", "a11y-core", "contrast-master", "alt-text-headings",
+                "link-checker", "forms-specialist"],
+    ),
+    "aa-markdown": dict(
+        title="Accessibility Agents: Markdown documents",
+        entry="markdown-a11y-assistant",
+        skills=["markdown-a11y-assistant", "markdown-scanner", "markdown-fixer", "a11y-core"],
+    ),
+}
+
+
+def aa_text(key: str) -> str:
+    spec = AA_TEXTS[key]
+    parts = [
+        f"{spec['title']}. From the open-source Accessibility Agents project,",
+        "github.com/Community-Access/accessibility-agents, as used at the AHG 2026",
+        "workshop.",
+        "",
+        "This whole message is one instruction for you, the AI assistant. Act as",
+        f"the {spec['entry']} skill below, calling on the other skills below as it",
+        "directs. Do not summarize this message; start by asking the participant",
+        "which document or page they want reviewed, and for its checker results.",
+        "",
+        "## Before anything else",
+        "",
+        AA_NO_TOOLS,
+        "",
+        "## The skills",
+        "",
+        "Each skill is between a FILE line and an END FILE line.",
+        "",
+    ]
+    for name in spec["skills"]:
+        parts += [_file_block(f".github/skills/{name}/SKILL.md"), ""]
+    return "\n".join(parts).rstrip() + "\n"
 
 
 def _workshop_rules() -> str:
@@ -696,11 +858,18 @@ def assistant_text(key: str) -> str:
 
 def write_assistant_texts() -> list[Path]:
     ASSISTANT.mkdir(parents=True, exist_ok=True)
+    for old in ASSISTANT.glob("*.txt"):
+        old.unlink()
     out = []
     for key in ASSISTANT_TEXTS:
         path = ASSISTANT / f"{key}.txt"
         path.write_text(assistant_text(key), encoding="utf-8")
         out.append(path)
+    if (KIT / ".github" / "skills" / "document-accessibility-wizard").is_dir():
+        for key in AA_TEXTS:
+            path = ASSISTANT / f"{key}.txt"
+            path.write_text(aa_text(key), encoding="utf-8")
+            out.append(path)
     return out
 
 

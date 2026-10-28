@@ -140,11 +140,11 @@ def _you_are_here(number: int) -> str:
 
 JOURNEY = (
     "The problem: a course full of barriers, and a team too small.",
-    "Your agent: five plain-English answers.",
-    "Your agent at work: your AI uses it on one course document.",
+    "Your agent: six plain-English answers.",
+    "Your agent at work: your AI uses it on one course document, and you revise it.",
     "Your agent, grounded: real evidence in, cited answers out.",
-    "Your agent, shared: in an open-source collection, with your name on it.",
     "Your agent in the team: the whole course, at once.",
+    "Your agent, shared: your best version, in an open-source collection, with your name on it.",
     "Your campus: a 30-day plan.",
 )
 
@@ -265,9 +265,10 @@ def build_slides(ctx: DeckContext) -> list[Slide]:
                     ("Task", "The one job it does."),
                     ("Trusted guidance", "The standards and policies it must cite: WCAG 2.2, your own procedures."),
                     ("Output format", "What comes back, in a shape a busy person can use."),
+                    ("Example", "One short, good answer, so it sees the shape you want."),
                     ("Human review", "Who checks it before anything goes out."),
                 )),
-                Para("An agent is those five answers, written in plain English. Writing one is writing, not coding.", big=True),
+                Para("An agent is those six answers, written in plain English. Writing one is writing, not coding.", big=True),
             ),
             notes=(
                 "This is the slide that lowers the shoulders. Say it twice: if you can write instructions for a new colleague, you can write an agent.",
@@ -316,7 +317,7 @@ def build_slides(ctx: DeckContext) -> list[Slide]:
             ),
         ),
         Slide(
-            id="s10", section="Design", kicker="Watch me first", title="Maria's five answers",
+            id="s10", section="Design", kicker="Watch me first", title="Maria's six answers",
             blocks=(
                 Table(
                     caption="Maria, from the Disability Resource Center, designing her alternate format planner:",
@@ -326,6 +327,7 @@ def build_slides(ctx: DeckContext) -> list[Slide]:
                         ("Task", "Plan the formats a student needs from a checker's report"),
                         ("Trusted guidance", "WCAG 2.2 1.4.5 and 1.1.1, ACB large print, our procedure"),
                         ("Output format", "Numbered steps with who does each, then a checklist"),
+                        ("Example", "The scanned reading: get the text, then 18 point large print"),
                         ("Human review", "The specialist checks page by page; the student confirms"),
                     ),
                 ),
@@ -357,11 +359,12 @@ def build_slides(ctx: DeckContext) -> list[Slide]:
         Slide(
             id="s12", section="Design", kicker=_you_are_here(3), title="Your agent at work",
             blocks=(
-                Para("By the end of this block: your agent's first answer on a real course document."),
+                Para("By the end of this block: your agent's first answer on a real course document, and version 2."),
                 Bullets(ordered=True, items=(
                     "In VS Code, type /try-my-agent. In a browser, paste the block 3 text.",
                     "Pick a file from the PSY 101 sample course.",
                     "Read what your agent says.",
+                    "Then /review-my-agent, or the review text: one change, version 2.",
                 )),
                 Para("It will guess a little. That is not a mistake. It is the setup for this afternoon.", big=True),
             ),
@@ -408,6 +411,7 @@ def build_slides(ctx: DeckContext) -> list[Slide]:
                     "Use the same file as this morning.",
                     "Your agent reads that file's checker report: GLOW for documents, axe for the web page.",
                     "Compare the two answers.",
+                    "Then /review-my-agent again: version 3.",
                 )),
             ),
             notes=(
@@ -453,59 +457,30 @@ def build_slides(ctx: DeckContext) -> list[Slide]:
         ),
         Slide(
             id="s18", section="Afternoon", kicker=f"Break - {rest.minutes} minutes", title=f"Back at {rest.resume}",
-            blocks=(Para("Next, your agent goes public. Nicely."),),
+            blocks=(Para("Next, your agent joins a team. Then it goes public."),),
             notes=("Short break on purpose. The next two blocks are where the day comes together.",),
         ),
-        # -- Block 5: share it ----------------------------------------------
+        # -- Block 5: build the office --------------------------------------
         Slide(
-            id="s19", section="Afternoon", kicker=_you_are_here(5), title="Share it",
-            blocks=(
-                Para("By the end of this block: your agent in the open-source AHG 2026 collection, committed in your name."),
-                Bullets(ordered=True, items=(
-                    "Open letitglow.app/ahg/share, and choose your SKILL.md, or paste your agent in.",
-                    "Press Open the share form on GitHub. The form opens, already filled in.",
-                    "Tick the privacy box, and press Submit new issue.",
-                    "Within a minute, the reply: Your agent is in.",
-                )),
-                Para("You did this once already, with your practice agent. Same again."),
-            ),
-            notes=(
-                _journey_note(5),
-                "Everyone shared a practice agent before the day, so this is the second time, not the first. Say so; it changes the room.",
-                "Helpers watch the issues labelled needs-a-hand and go to those people first. A Nearly there reply always says exactly what to fix.",
-            ),
-        ),
-        Slide(
-            id="s20", section="Afternoon", kicker="Open source, live", title="In the collection, with your name on it",
-            blocks=(
-                Para("As your agents arrive, the collection grows, here, on the screen."),
-                Para("Tonight every one of them goes into the Accessibility Agents project, with every author credited, for anyone in higher education to use and improve.", big=True),
-            ),
-            notes=(
-                "Project agents/README.md in github.com/Community-Access/ahg-2026 and refresh it as agents arrive. Read each name and agent title out loud. Applause is allowed and encouraged.",
-                "Each agent is committed in its author's name, so it shows on their own GitHub profile. Started from a ready-made agent? It still counts. Say so: what matters is that it is yours now.",
-            ),
-        ),
-        # -- Block 6: build the office --------------------------------------
-        Slide(
-            id="s21", section="Afternoon", kicker=_you_are_here(6), title="Build the office",
+            id="s19", section="Afternoon", kicker=_you_are_here(5), title="Build the office",
             blocks=(
                 Para("By the end of this block: your agent working inside a team, across the whole course, and one team report."),
                 Bullets(ordered=True, items=(
-                    "In VS Code, type /run-the-office. In a browser, paste the block 6 text.",
+                    "In VS Code, type /run-the-office. In a browser, paste the block 5 text.",
                     "The coordinator sends each course file to its specialists, and yours where it fits.",
                     "The standards reviewer checks everyone's work.",
                     "You get the team report, with your agent's section in it.",
+                    "Then /review-my-agent, or the review text: version 4, your best.",
                 )),
             ),
             notes=(
-                _journey_note(6),
+                _journey_note(5),
                 "This is building an agent team: they added a specialist, and their coordinator is running it. Copilot announces each file as it finishes, so screen reader users hear progress, not silence.",
-                "On the browser path the same coordinator and specialists travel inside the block 6 text, so ChatGPT or any assistant runs the same team. If an assistant stops part way, type continue.",
+                "On the browser path the same coordinator and specialists travel inside the block 5 text, so ChatGPT or any assistant runs the same team. If an assistant stops part way, type continue.",
             ),
         ),
         Slide(
-            id="s22", section="Afternoon", kicker="What scale looks like", title="One course, one report",
+            id="s20", section="Afternoon", kicker="What scale looks like", title="One course, one report",
             blocks=(
                 Bullets(items=(
                     "Seven files, eight specialists, plus yours.",
@@ -520,19 +495,65 @@ def build_slides(ctx: DeckContext) -> list[Slide]:
             ),
         ),
         Slide(
-            id="s23", section="Afternoon", kicker="Agents in action", title="Everyone's agents, together",
+            id="s21", section="Afternoon", kicker="The real thing", title="The full Accessibility Agents team",
+            blocks=(
+                Para("The office you just ran is a small version of a real open-source project: Accessibility Agents."),
+                Bullets(items=(
+                    "Six entry points, and 107 specialist, helper and reference skills behind them.",
+                    "The same course, on the screen: web, Word, PowerPoint, Excel and PDF.",
+                    "It is already in your kit, in .github/skills. Ask for document-accessibility-wizard by name.",
+                )),
+            ),
+            notes=(
+                "Fifteen minutes, on the projector, in VS Code with the kit open. Start a new chat and ask: use document-accessibility-wizard to review the PSY 101 course, using the files in sample-course/evidence.",
+                "Point out that the skills that need scanners say so and ask for checker results, as accessibility-agents-in-the-kit.md explains. Never let it claim a scan it did not run.",
+                "Close with: your agent goes into this project tonight, credited to you. That is the next block.",
+            ),
+        ),
+        # -- Block 6: share it ----------------------------------------------
+        Slide(
+            id="s22", section="Afternoon", kicker=_you_are_here(6), title="Share it",
+            blocks=(
+                Para("By the end of this block: your best version in the open-source AHG 2026 collection, committed in your name."),
+                Bullets(ordered=True, items=(
+                    "Open letitglow.app/ahg/share, and choose your newest SKILL.md, version 4, or paste it in.",
+                    "Press Open the share form on GitHub. The form opens, already filled in.",
+                    "Tick the privacy box, and press Submit new issue.",
+                    "Within a minute, the reply: Your agent is in.",
+                )),
+                Para("You did this once already, with your practice agent. Same again."),
+            ),
+            notes=(
+                _journey_note(6),
+                "Everyone shared a practice agent before the day, so this is the second time, not the first. Say so; it changes the room.",
+                "Helpers watch the issues labelled needs-a-hand and go to those people first. A Nearly there reply always says exactly what to fix.",
+            ),
+        ),
+        Slide(
+            id="s23", section="Afternoon", kicker="Open source, live", title="In the collection, with your name on it",
+            blocks=(
+                Para("As your agents arrive, the collection grows, here, on the screen."),
+                Para("Tonight every one of them goes into the Accessibility Agents project, with every author credited, for anyone in higher education to use and improve.", big=True),
+            ),
+            notes=(
+                "Project agents/README.md in github.com/Community-Access/ahg-2026 and refresh it as agents arrive. Read each name and agent title out loud. Applause is allowed and encouraged.",
+                "Each agent is committed in its author's name, so it shows on their own GitHub profile. Started from a ready-made agent? It still counts. Say so: what matters is that it is yours now.",
+            ),
+        ),
+        Slide(
+            id="s24", section="Afternoon", kicker="Agents in action", title="Everyone's agents, together",
             blocks=(
                 Para("One more run, on the screen: the office team with every agent this room shared."),
                 Para("Listen for yours."),
             ),
             notes=(
-                "Copy every agents/<login>/<name>/ folder from the ahg-2026 repository into a room/ folder in your kit, then run /run-the-office on the projector. Read out each agent's name as the coordinator calls it.",
+                "Last thing in this block. Copy every agents/<login>/<name>/ folder from the ahg-2026 repository into a room/ folder in your kit, then run /run-the-office on the projector. Read out each agent's name as the coordinator calls it.",
                 "If the run is slow, narrate it. If it stumbles, say what happened and why; a real failure explained well teaches more than a perfect demo.",
             ),
         ),
         # -- Block 7: take it home ------------------------------------------
         Slide(
-            id="s24", section="Close", kicker=_you_are_here(7), title="Take it home",
+            id="s25", section="Close", kicker=_you_are_here(7), title="Take it home",
             blocks=(
                 Para("By the end of this block: a 30-day plan for your own campus."),
                 Bullets(ordered=True, items=(
@@ -556,7 +577,7 @@ def build_slides(ctx: DeckContext) -> list[Slide]:
             ),
         ),
         Slide(
-            id="s25", section="Close", kicker=commitments.starts_at, title="The commitment wall",
+            id="s26", section="Close", kicker=commitments.starts_at, title="The commitment wall",
             blocks=(
                 Para("Every commitment in this room, on one screen, with no names on it."),
             ),
@@ -566,7 +587,7 @@ def build_slides(ctx: DeckContext) -> list[Slide]:
             ),
         ),
         Slide(
-            id="s26", section="Close", kicker=f"{evaluation.starts_at} - Thank you", title="Go make one more champion",
+            id="s27", section="Close", kicker=f"{evaluation.starts_at} - Thank you", title="Go make one more champion",
             blocks=(
                 Para("You came in with a problem. You are leaving with an agent, a team and a plan.", lead=True),
                 Para("Before you go: the session evaluation. It shapes next year's conference."),

@@ -1,6 +1,6 @@
 ---
 name: pdf-documents
-description: "Finds and explains barriers in PDFs from a checker's report, including scanned ones."
+description: "Finds and explains barriers in PDFs from a checker's report, including scanned ones. Use when the file is a PDF, scanned or not, and you have its checker report."
 license: MIT
 metadata:
   tier: specialist

@@ -3174,9 +3174,32 @@ AHG_ASSISTANT_BLOCKS = (
     ("2-design-my-agent", "Block 2: design your agent", "/design-my-agent"),
     ("3-try-my-agent", "Block 3: your agent at work", "/try-my-agent"),
     ("4-ground-my-agent", "Block 4: ground it", "/ground-my-agent"),
-    ("6-run-the-office", "Block 6: build the office", "/run-the-office"),
+    ("5-run-the-office", "Block 5: build the office", "/run-the-office"),
     ("7-my-30-day-plan", "Block 7: take it home", "/my-30-day-plan"),
 )
+
+# The review text, used at the end of blocks 3, 4 and 5, and the four texts
+# that carry an Accessibility Agents entry point and the specialists it calls.
+AHG_ASSISTANT_REVIEW = ("review-my-agent", "Review your agent", "/review-my-agent")
+AHG_ASSISTANT_AA = (
+    ("aa-office-documents", "Word, Excel and PowerPoint files", "document-accessibility-wizard"),
+    ("aa-pdf-and-epub", "PDF and ePub files", "document-accessibility-wizard"),
+    ("aa-web-pages", "Web pages", "web-accessibility-wizard"),
+    ("aa-markdown", "Markdown", "markdown-a11y-assistant"),
+)
+
+
+def _ahg_assistant_text(kit: Path, key: str, title: str, command: str, short: str) -> dict | None:
+    path = kit / "any-assistant" / f"{key}.txt"
+    if not path.is_file():
+        return None
+    text = path.read_text(encoding="utf-8")
+    return {
+        "key": key, "number": key.split("-", 1)[0], "short": short,
+        "title": title, "command": command,
+        "text": text, "kb": max(1, round(len(text.encode("utf-8")) / 1024)),
+        "raw_url": url_for("shortlinks.ahg_kit_raw", rel=f"any-assistant/{key}.txt", _external=True),
+    }
 
 
 def render_ahg_assistant():
@@ -3185,19 +3208,16 @@ def render_ahg_assistant():
     kit = _ahg_kit_dir()
     if kit is None:
         abort(404)
-    blocks = []
-    for key, title, command in AHG_ASSISTANT_BLOCKS:
-        path = kit / "any-assistant" / f"{key}.txt"
-        if not path.is_file():
-            continue
-        text = path.read_text(encoding="utf-8")
-        blocks.append({
-            "key": key, "number": key.split("-", 1)[0], "short": "block " + key.split("-", 1)[0],
-            "title": title, "command": command,
-            "text": text, "kb": max(1, round(len(text.encode("utf-8")) / 1024)),
-            "raw_url": url_for("shortlinks.ahg_kit_raw", rel=f"any-assistant/{key}.txt", _external=True),
-        })
-    return render_template("workshop/ahg_assistant.html", blocks=blocks)
+    blocks = [b for b in (
+        _ahg_assistant_text(kit, key, title, command, "block " + key.split("-", 1)[0])
+        for key, title, command in AHG_ASSISTANT_BLOCKS
+    ) if b]
+    review = _ahg_assistant_text(kit, *AHG_ASSISTANT_REVIEW, "the review")
+    aa_texts = [t for t in (
+        _ahg_assistant_text(kit, key, title, entry, title)
+        for key, title, entry in AHG_ASSISTANT_AA
+    ) if t]
+    return render_template("workshop/ahg_assistant.html", blocks=blocks, review=review, aa_texts=aa_texts)
 
 
 def render_ahg_paths():

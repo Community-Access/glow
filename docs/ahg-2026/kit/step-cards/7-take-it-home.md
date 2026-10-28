@@ -7,7 +7,7 @@ description: "A step card for the AHG 2026 Accessibility Agents workshop."
 
 # Step card 7: Take it home
 
-Block 7 of 7, 3:45 to 4:15.
+Block 7 of 7, 3:40 to 4:15.
 
 ## Where we are
 
@@ -52,4 +52,4 @@ You came in with a problem. You are leaving with an agent, a team and a plan.
 
 ## On Monday
 
-Keep the kit. Everything in it works after today, with any AI assistant and the checkers you already have. Help is at support@community-access.org.
+Keep the kit. Everything in it works after today, with any AI assistant and the checkers you already have. To keep using the full Accessibility Agents project on your own laptop, read accessibility-agents.md in the kit, or community-access.org/start.html for step-by-step setup in each AI app. Help is at support@community-access.org.

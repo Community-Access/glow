@@ -43,14 +43,14 @@ for both.
 |---|---|---|---|---|
 | 10:00 | 30 | Setup table open, outside the room | /ready-check | "Let's get you ready before we start." |
 | 10:30 | 20 | 1. Why we are here | /ready-check | "Forty thousand files and three people. Here is where we will be at four o'clock." |
-| 10:50 | 60 | 2. Design your agent | /design-my-agent | "Pick a card. Bring one real problem, nothing private. Copilot asks, you answer." |
-| 11:50 | 25 | 3. Your agent at work | /try-my-agent | "It will guess a little. That is the setup for this afternoon." |
-| 12:15 | 60 | Lunch | none | "You have an agent. That was the hard part." |
-| 1:15 | 55 | 4. Ground it | /ground-my-agent | "Real evidence in, cited answers out. Watch it stop guessing." |
-| 2:10 | 10 | Break | none | "Next, your agent goes public. Nicely." |
-| 2:20 | 40 | 5. Share it | letitglow.app/ahg/share | "One form, one button. You did this before the day; same again." |
-| 3:00 | 45 | 6. Build the office | /run-the-office | "Your specialist joins the team. The team works the whole course." |
-| 3:45 | 30 | 7. Take it home | /my-30-day-plan | "Small is the point. One workflow, one partner, one safeguard." |
+| 10:50 | 50 | 2. Design your agent | /design-my-agent | "Pick a card. Bring one real problem, nothing private. Copilot asks, you answer." |
+| 11:40 | 35 | 3. Your agent at work | /try-my-agent, then /review-my-agent | "It will guess a little. Then you change one thing: version 2." |
+| 12:15 | 60 | Lunch | none | "You have an agent, and you have already improved it." |
+| 1:15 | 50 | 4. Ground it | /ground-my-agent, then /review-my-agent | "Real evidence in, cited answers out. Watch it stop guessing. Version 3." |
+| 2:05 | 10 | Break | none | "Next, your agent joins a team." |
+| 2:15 | 50 | 5. Build the office | /run-the-office, then /review-my-agent | "Your specialist joins the team. The team works the whole course. Version 4 is the one you share." |
+| 3:05 | 35 | 6. Share it | letitglow.app/ahg/share | "One form, one button. You did this before the day; same again, with your best version." |
+| 3:40 | 35 | 7. Take it home | /my-30-day-plan | "Small is the point. One workflow, one partner, one safeguard." |
 | 4:15 | 10 | Commitments | GLOW wall | Read three aloud. Do not name anyone. |
 | 4:25 | 5 | Session evaluation | proctor | "Before you go: the session evaluation. It shapes next year." Then stop talking. |
 
@@ -62,15 +62,17 @@ Working time is 300 minutes, plus the hour for lunch.
   their "on track" sign, move on; helpers carry the rest.
 - Block 2 is the one that runs long. If it does, take five minutes from
   block 7, never from blocks 5 or 6.
-- Never cut the session evaluation, and never cut block 5: the shared agent
+- Never cut the session evaluation, and never cut block 6: the shared agent
   is the capstone the program promised.
-- In block 5, project the collection, `agents/README.md` in
+- In block 6, project the collection, `agents/README.md` in
   Community-Access/ahg-2026, and refresh it as agents arrive; read each name
   and agent title aloud. Helpers watch the issues labelled needs-a-hand and
   go to those people first.
-- In block 6, everyone runs their own team first. The projector run with
-  every shared agent comes at the end of the block, as a bonus, never as a
-  substitute. For it, copy each `agents/<login>/<name>/` folder from the
+- In block 5, everyone runs their own team first, then /review-my-agent.
+  The last 15 minutes are the full Accessibility Agents project on the
+  projector, on the same course, from the skills in the kit. The projector
+  run with every shared agent comes at the end of block 6, as a bonus, never
+  as a substitute. For it, copy each `agents/<login>/<name>/` folder from the
   ahg-2026 repository into a `room/` folder in your kit; the coordinator adds
   every agent there
   to the team.
@@ -103,7 +105,7 @@ Run down this ladder. Do not jump to the bottom.
 | A browser path participant's assistant forgets their agent | Paste the agent as its own message, then the block's text again | Nothing |
 | The profile did not import | Open the kit; VS Code offers the recommended extensions; a helper installs them | Nothing |
 | Conference wifi degrades | Everything except Copilot and GitHub is in the kit already; slow the room to one block at a time and demo each step on the projector | "We will do this one together on the screen." |
-| GitHub is unreachable in block 5 | Collect agent files from the kit on a USB stick; share them for people after the session, credited to them | "Your agent still goes in with your name on it." |
+| GitHub is unreachable in block 6 | Collect agent files from the kit on a USB stick; share them for people after the session, credited to them | "Your agent still goes in with your name on it." |
 | Projector fails | Read the slide aloud; everyone has the step cards in the kit | Nothing |
 
 ## 6. Pre-flight

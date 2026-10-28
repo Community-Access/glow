@@ -44,13 +44,13 @@
 {% if b.number == "1" %}
 <p>Do this before the day, and again at 10:30. Your assistant checks three things and tells you that you are ready.</p>
 {% elif b.number == "2" %}
-<p>Your assistant asks five questions, one at a time, and writes your agent. It gives your agent back in a box with a Copy button. Copy it, open the <a href="{{ url_for('shortlinks.ahg_share_short') }}">share page</a>, paste it into "Your agent, as text", and press "Download as SKILL.md" to keep it on your computer.</p>
+<p>Your assistant asks six questions, one at a time, and writes your agent. It gives your agent back in a box with a Copy button. Copy it, open the <a href="{{ url_for('shortlinks.ahg_share_short') }}">share page</a>, paste it into "Your agent, as text", and press "Download as SKILL.md" to keep it on your computer.</p>
 {% elif b.number == "3" %}
-<p>Your agent works on one course document, with no evidence yet. Watch where it has to guess.</p>
+<p>Your agent works on one course document, with no evidence yet. Watch where it has to guess. Then use <a href="#review">the review text</a> to make version 2.</p>
 {% elif b.number == "4" %}
-<p>The same agent, now with each course file's checker report. It cites WCAG 2.2 and stops guessing.</p>
-{% elif b.number == "6" %}
-<p>Your agent joins a team of eight specialists and a coordinator, and the team works through the whole course. This is the longest text; paste it all as one message. If your assistant stops before the last file, type <kbd>continue</kbd> and press Enter.</p>
+<p>The same agent, now with each course file's checker report. It cites WCAG 2.2 and stops guessing. Then use <a href="#review">the review text</a> again: version 3.</p>
+{% elif b.number == "5" %}
+<p>Your agent joins a team of eight specialists and a coordinator, and the team works through the whole course. This is the longest text; paste it all as one message. If your assistant stops before the last file, type <kbd>continue</kbd> and press Enter. Then use <a href="#review">the review text</a> once more: version 4, the one you share.</p>
 {% elif b.number == "7" %}
 <p>Six short questions, and a 30-day plan for your campus in a box with a Copy button. Paste it into an email to yourself or a Word document.</p>
 {% endif %}
@@ -65,16 +65,63 @@
   <textarea id="text-{{ b.key }}" readonly spellcheck="false" aria-describedby="status-{{ b.key }}">{{ b.text }}</textarea>
   <p><a href="{{ b.raw_url }}">The text for {{ b.short }} as plain text</a>, at <code>{{ b.raw_url }}</code></p>
 </details>
-{% if b.number == "4" %}
-<h2 id="block-5">Block 5: share it</h2>
+{% if b.number == "5" %}
+<h2 id="block-6">Block 6: share it</h2>
 <p>
   No text to paste for this one. Open the <a href="{{ url_for('shortlinks.ahg_share_short') }}">share page</a>,
-  leave "My real agent" chosen, paste your agent into "Your agent, as text"
-  (or choose the SKILL.md you downloaded in block 2), and press "Open the
-  share form on GitHub". Step card 5 has every key.
+  leave "My real agent" chosen, paste your newest version into "Your agent, as text"
+  (or choose the SKILL.md you saved last), and press "Open the
+  share form on GitHub". Step card 6 has every key.
 </p>
 {% endif %}
 {% endfor %}
+
+{% if review %}
+<h2 id="review">{{ review.title }}</h2>
+<p>
+  Use this at the end of blocks 3, 4 and 5, in the same conversation, right
+  after your agent has answered. Your assistant checks your agent against
+  twelve questions, suggests one change and asks before making it. Say yes,
+  or reword it, and it gives you the next version in a box with a Copy
+  button. In VS Code this is <kbd>{{ review.command }}</kbd>. About {{ review.kb }} KB of text.
+</p>
+<button type="button" hidden data-copy="text-{{ review.key }}" data-status="status-{{ review.key }}"
+        data-what="review text"
+        data-next="Now go to your assistant, paste it with {paste}, and press Enter.">Copy the review text</button>
+<div id="status-{{ review.key }}" role="status"></div>
+<details>
+  <summary>Read the text first: {{ review.title }}</summary>
+  <label for="text-{{ review.key }}">The review text</label>
+  <textarea id="text-{{ review.key }}" readonly spellcheck="false" aria-describedby="status-{{ review.key }}">{{ review.text }}</textarea>
+  <p><a href="{{ review.raw_url }}">The review text as plain text</a>, at <code>{{ review.raw_url }}</code></p>
+</details>
+{% endif %}
+
+{% if aa_texts %}
+<h2 id="accessibility-agents">Accessibility Agents in any assistant</h2>
+<p>
+  After today, or on the browser path in block 5, these texts bring the real
+  Accessibility Agents project to your assistant. Each carries one entry
+  point and the specialists it calls. Paste one as the first message in a
+  new conversation, then give it the document and your checker's results.
+  It never pretends to have scanned anything. In VS Code the kit already
+  has every skill: ask for the entry point by name.
+</p>
+{% for t in aa_texts %}
+<h3 id="{{ t.key }}">{{ t.title }}</h3>
+<p>Entry point: <code>{{ t.command }}</code>. About {{ t.kb }} KB of text.</p>
+<button type="button" hidden data-copy="text-{{ t.key }}" data-status="status-{{ t.key }}"
+        data-what="Accessibility Agents text for {{ t.title }}"
+        data-next="Now go to your assistant, start a new conversation, paste it with {paste}, and press Enter.">Copy the Accessibility Agents text for {{ t.title }}</button>
+<div id="status-{{ t.key }}" role="status"></div>
+<details>
+  <summary>Read the text first: {{ t.title }}</summary>
+  <label for="text-{{ t.key }}">The Accessibility Agents text for {{ t.title }}</label>
+  <textarea id="text-{{ t.key }}" readonly spellcheck="false" aria-describedby="status-{{ t.key }}">{{ t.text }}</textarea>
+  <p><a href="{{ t.raw_url }}">The text for {{ t.title }} as plain text</a>, at <code>{{ t.raw_url }}</code></p>
+</details>
+{% endfor %}
+{% endif %}
 
 <h2 id="help">If something goes wrong</h2>
 <ul>

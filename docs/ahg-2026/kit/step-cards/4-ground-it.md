@@ -7,7 +7,7 @@ description: "A step card for the AHG 2026 Accessibility Agents workshop."
 
 # Step card 4: Ground it
 
-Block 4 of 7, 1:15 to 2:10.
+Block 4 of 7, 1:15 to 2:05.
 
 ## Where we are
 
@@ -15,7 +15,7 @@ Step 4 of 7: your agent, grounded in real evidence.
 
 ## What you will have at the end
 
-The same agent, giving cited answers from real evidence, and a before and after you can show a colleague.
+Your agent giving cited answers from real evidence, a before and after you can show a colleague, and version 3 of your agent.
 
 ## Steps
 
@@ -39,9 +39,21 @@ The same agent, giving cited answers from real evidence, and a before and after 
 1. Open the syllabus in Word, choose Review, then Check Accessibility, and paste the results into the chat with your agent. Same skill, different checker.
 2. The course announcement is online at letitglow.app/ahg/site. Run Accessibility Insights FastPass on it and compare with its checker report.
 
+### Then make the next version, in a browser
+
+1. In the same conversation, paste the review text from letitglow.app/ahg/assistant, under "Review your agent", and press Enter.
+2. Read the twelve Yes or Not yet lines, then the one change it suggests and why.
+3. Say yes, or reword the change in your own words. Your assistant gives you version 3 of your agent in a box with a Copy button. Copy it and keep it, the same way as in block 2.
+
+### Then make the next version, in VS Code
+
+1. Type /review-my-agent and press Enter.
+2. Read the twelve Yes or Not yet lines, then the one change it suggests and why.
+3. Say yes, or reword the change. Copilot saves version 3 of your agent and installs it.
+
 ## You are on track if
 
-Your agent's new answer cites at least one WCAG 2.2 criterion with a link, and says what a person still needs to check.
+Your agent's new answer cites at least one WCAG 2.2 criterion with a link, says what a person still needs to check, and you have version 3.
 
 ## If you are stuck
 

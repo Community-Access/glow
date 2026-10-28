@@ -7,11 +7,11 @@ description: "A step card for the AHG 2026 Accessibility Agents workshop."
 
 # Step card 2: Design your agent
 
-Block 2 of 7, 10:50 to 11:50.
+Block 2 of 7, 10:50 to 11:40.
 
 ## Where we are
 
-Step 2 of 7: your agent, as five plain-English answers.
+Step 2 of 7: your agent, as six plain-English answers.
 
 ## What you will have at the end
 
@@ -26,7 +26,7 @@ Your own agent, with your answers in it and your name on it: the file SKILL.md.
 
 1. On letitglow.app/ahg/assistant, under "Block 2: design your agent", press the Copy button.
 2. Switch to your assistant's tab with Control+Tab, move to the message box, paste with Control+V on Windows or Command+V on a Mac, and press Enter.
-3. Answer your assistant's questions one at a time: your role card and problem, then role, task, trusted guidance, output format and human review, then your name and institution. Borrow from the example whenever you like.
+3. Answer your assistant's questions one at a time: your role card and problem, then role, task, trusted guidance, output format, an example of a good answer and human review, then your name and institution. Borrow from the example whenever you like.
 4. Your assistant gives your agent back in a box with a Copy button. Press that Copy button.
 5. Open letitglow.app/ahg/share in a new tab. Paste your agent into "Your agent, as text", then press "Download as SKILL.md". Your browser saves it, usually in your Downloads folder. Do not share it yet.
 
@@ -34,7 +34,7 @@ Your own agent, with your answers in it and your name on it: the file SKILL.md.
 
 1. Open Copilot Chat: Control+Alt+I on Windows, or Control+Command+I on a Mac.
 2. Type /design-my-agent and press Enter.
-3. Answer Copilot's questions one at a time: role, task, trusted guidance, output format, human review. Borrow from the example whenever you like.
+3. Answer Copilot's questions one at a time: role, task, trusted guidance, output format, an example of a good answer, human review. Borrow from the example whenever you like.
 4. Copilot writes your answers into my-agent/SKILL.md and reads the file back to you. If it asks before it changes the file, allow it.
 5. Optional: open my-agent/SKILL.md to read it yourself. Press Control+P on Windows or Command+P on a Mac, type SKILL, and choose my-agent.
 

@@ -37,6 +37,33 @@ REPO = Path(__file__).resolve().parents[1]
 AHG = REPO / "docs" / "ahg-2026"
 TEMPLATES = REPO / "web" / "src" / "acb_large_print_web" / "templates" / "workshop"
 
+# Accessibility Agents' own skills, copied unchanged into the kit by
+# scripts/vendor_accessibility_agents.py (D21). They are the open-source
+# project's text, not workshop material: they describe its scanners and its
+# install on purpose, and the project's own gates check them. So they are
+# left out here, both as files and where a browser text carries them.
+def _vendored() -> set[str]:
+    import json
+    manifest = AHG / "kit" / "accessibility-agents-skills.json"
+    if not manifest.is_file():
+        return set()
+    return {s["name"] for s in json.loads(manifest.read_text(encoding="utf-8"))["skills"]}
+
+
+VENDORED = _vendored()
+_VENDORED_BLOCK = re.compile(
+    r"^===== FILE: \.github/skills/([^/]+)/SKILL\.md =====\n.*?^===== END FILE: \.github/skills/\1/SKILL\.md =====$",
+    re.MULTILINE | re.DOTALL,
+)
+
+
+def _without_vendored(text: str) -> str:
+    """Blank out carried Accessibility Agents skills, keeping line numbers."""
+    def blank(m: re.Match[str]) -> str:
+        return "\n" * m.group(0).count("\n") if m.group(1) in VENDORED else m.group(0)
+    return _VENDORED_BLOCK.sub(blank, text)
+
+
 # Used on the day. These must conform.
 MATERIALS = [
     AHG / "workshop-frontfacing-guide.md",
@@ -55,7 +82,8 @@ MATERIALS = [
     AHG / "kit" / "examples" / "sam-remediation-log-keeper.md",
     AHG / "kit" / ".github" / "copilot-instructions.md",
     AHG / "kit" / ".github" / "agents" / "office-coordinator.agent.md",
-    *sorted((AHG / "kit" / ".github" / "skills").glob("*/SKILL.md")),
+    *sorted(p for p in (AHG / "kit" / ".github" / "skills").glob("*/SKILL.md")
+            if p.parent.name not in VENDORED),
     *sorted((AHG / "kit" / "any-assistant").glob("*.txt")),
     *sorted((AHG / "kit" / "step-cards").glob("*.md")),
     AHG / "ahg-speaker-guidance.md",
@@ -155,7 +183,7 @@ def check(path: Path, verbose: bool) -> list[str]:
     if not path.exists():
         return [f"{path.name}: MISSING"]
 
-    text = path.read_text(encoding="utf-8")
+    text = _without_vendored(path.read_text(encoding="utf-8"))
     for rule in RULES:
         for number, line in rule.violations(text):
             problems.append(

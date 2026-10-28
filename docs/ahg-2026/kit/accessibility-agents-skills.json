@@ -1,0 +1,972 @@
+{
+  "source": "https://github.com/Community-Access/accessibility-agents",
+  "commit": "aaf1cfbf62c49344f637a760fa7350c08d3c2b31",
+  "classified_by": "this script's reading of each SKILL.md",
+  "skills": [
+    {
+      "name": "a11y-core",
+      "description": "Shared contract for the Accessibility Agents skills - dispatch, findings schema, report rules. Read by skills, never dispatched on its own.",
+      "you_can_ask_for_it": false,
+      "needs": [
+        "scripts"
+      ],
+      "in_the_kit": [
+        "Its report scripts are not in the kit. It writes its findings directly instead."
+      ]
+    },
+    {
+      "name": "a11y-tool-builder",
+      "description": "Build accessibility scanners, rule engines, parsers and report generators.",
+      "you_can_ask_for_it": true,
+      "needs": [],
+      "in_the_kit": []
+    },
+    {
+      "name": "accessibility-lead",
+      "description": "Web UI accessibility lead. Use before writing or changing HTML, JSX, TSX, Vue, Svelte, CSS or templates. Picks specialists and merges their findings.",
+      "you_can_ask_for_it": true,
+      "needs": [
+        "scripts"
+      ],
+      "in_the_kit": [
+        "Its report scripts are not in the kit. It writes its findings directly instead."
+      ]
+    },
+    {
+      "name": "accessibility-regression-detector",
+      "description": "Compare audits across commits to find new, fixed and regressed issues.",
+      "you_can_ask_for_it": true,
+      "needs": [],
+      "in_the_kit": []
+    },
+    {
+      "name": "accessibility-statement",
+      "description": "Generate a W3C or EU model accessibility statement from audit results.",
+      "you_can_ask_for_it": true,
+      "needs": [],
+      "in_the_kit": []
+    },
+    {
+      "name": "actions-manager",
+      "description": "GitHub Actions: workflow runs, logs, re-runs and CI failure triage.",
+      "you_can_ask_for_it": true,
+      "needs": [
+        "github"
+      ],
+      "in_the_kit": [
+        "Needs the GitHub command-line tool. Use the full version in Codespaces."
+      ]
+    },
+    {
+      "name": "alt-text-headings",
+      "description": "Alt text, SVGs, figures, charts, heading order, page titles and landmarks.",
+      "you_can_ask_for_it": true,
+      "needs": [],
+      "in_the_kit": []
+    },
+    {
+      "name": "analytics",
+      "description": "GitHub metrics: velocity, review turnaround, churn and bottlenecks.",
+      "you_can_ask_for_it": true,
+      "needs": [],
+      "in_the_kit": []
+    },
+    {
+      "name": "aria-specialist",
+      "description": "ARIA roles, states and properties for custom widgets and dynamic content.",
+      "you_can_ask_for_it": true,
+      "needs": [],
+      "in_the_kit": []
+    },
+    {
+      "name": "ci-accessibility",
+      "description": "Set up and debug accessibility CI: baselines, SARIF and PR gating.",
+      "you_can_ask_for_it": true,
+      "needs": [
+        "scanners"
+      ],
+      "in_the_kit": [
+        "Its scanner tools are not in the kit. Give it your checker's results instead, or use the full version in Codespaces."
+      ]
+    },
+    {
+      "name": "cognitive-accessibility",
+      "description": "Plain language, WCAG 2.2 cognitive criteria, COGA guidance and auth UX.",
+      "you_can_ask_for_it": true,
+      "needs": [],
+      "in_the_kit": []
+    },
+    {
+      "name": "compliance-mapping",
+      "description": "Map findings to Section 508, EN 301 549, EAA, ADA, AODA; build a VPAT.",
+      "you_can_ask_for_it": true,
+      "needs": [],
+      "in_the_kit": []
+    },
+    {
+      "name": "contrast-master",
+      "description": "Color contrast, themes, dark mode, non-text contrast and color-only meaning.",
+      "you_can_ask_for_it": true,
+      "needs": [],
+      "in_the_kit": []
+    },
+    {
+      "name": "contributions-hub",
+      "description": "GitHub community: discussions, moderation, contributor health, CLAs.",
+      "you_can_ask_for_it": true,
+      "needs": [],
+      "in_the_kit": []
+    },
+    {
+      "name": "cross-document-analyzer",
+      "description": "Internal helper: cross-document patterns, severity scoring, templates.",
+      "you_can_ask_for_it": false,
+      "needs": [
+        "scripts"
+      ],
+      "in_the_kit": [
+        "Its report scripts are not in the kit. It writes its findings directly instead."
+      ]
+    },
+    {
+      "name": "cross-page-analyzer",
+      "description": "Internal helper: cross-page patterns, severity scoring, scorecards.",
+      "you_can_ask_for_it": false,
+      "needs": [
+        "scanners",
+        "scripts"
+      ],
+      "in_the_kit": [
+        "Its scanner tools are not in the kit. Give it your checker's results instead, or use the full version in Codespaces.",
+        "Its report scripts are not in the kit. It writes its findings directly instead."
+      ]
+    },
+    {
+      "name": "daily-briefing",
+      "description": "Daily GitHub briefing: issues, PRs, reviews, releases and discussions.",
+      "you_can_ask_for_it": true,
+      "needs": [],
+      "in_the_kit": []
+    },
+    {
+      "name": "data-visualization-accessibility",
+      "description": "Charts, graphs and dashboards: SVG ARIA, table alternatives, safe palettes.",
+      "you_can_ask_for_it": true,
+      "needs": [],
+      "in_the_kit": []
+    },
+    {
+      "name": "design-system-auditor",
+      "description": "Check color, focus ring, spacing and motion tokens before they reach UI.",
+      "you_can_ask_for_it": true,
+      "needs": [],
+      "in_the_kit": []
+    },
+    {
+      "name": "desktop-a11y-specialist",
+      "description": "Desktop a11y APIs: UI Automation, MSAA/IAccessible2, NSAccessibility, Qt Widgets.",
+      "you_can_ask_for_it": true,
+      "needs": [],
+      "in_the_kit": []
+    },
+    {
+      "name": "desktop-a11y-testing-coach",
+      "description": "Test desktop apps with NVDA, JAWS, Narrator, VoiceOver and UIA tooling.",
+      "you_can_ask_for_it": true,
+      "needs": [],
+      "in_the_kit": []
+    },
+    {
+      "name": "developer-hub",
+      "description": "Start here for Python, wxPython, desktop app, NVDA add-on and accessibility tooling work. Routes to the right specialist.",
+      "you_can_ask_for_it": true,
+      "needs": [
+        "scripts"
+      ],
+      "in_the_kit": [
+        "Its report scripts are not in the kit. It writes its findings directly instead."
+      ]
+    },
+    {
+      "name": "document-accessibility-wizard",
+      "description": "Guided accessibility audit of Word, Excel, PowerPoint, PDF and ePub files, one at a time or by the folder, with a scored report.",
+      "you_can_ask_for_it": true,
+      "needs": [
+        "scripts"
+      ],
+      "in_the_kit": [
+        "Its report scripts are not in the kit. It writes its findings directly instead."
+      ]
+    },
+    {
+      "name": "document-csv-reporter",
+      "description": "Internal helper: export document findings to CSV with help links.",
+      "you_can_ask_for_it": false,
+      "needs": [],
+      "in_the_kit": []
+    },
+    {
+      "name": "document-inventory",
+      "description": "Internal helper: discover documents, build an inventory, detect changes.",
+      "you_can_ask_for_it": false,
+      "needs": [],
+      "in_the_kit": []
+    },
+    {
+      "name": "email-accessibility",
+      "description": "HTML email accessibility under email client rendering constraints.",
+      "you_can_ask_for_it": true,
+      "needs": [],
+      "in_the_kit": []
+    },
+    {
+      "name": "epub-accessibility",
+      "description": "Scan and fix .epub files: EPUB Accessibility 1.1, reading order, nav.",
+      "you_can_ask_for_it": true,
+      "needs": [],
+      "in_the_kit": []
+    },
+    {
+      "name": "epub-scan-config",
+      "description": "Internal helper: manage .a11y-epub-config.json scan settings.",
+      "you_can_ask_for_it": false,
+      "needs": [
+        "scanners"
+      ],
+      "in_the_kit": [
+        "Its scanner tools are not in the kit. Give it your checker's results instead, or use the full version in Codespaces."
+      ]
+    },
+    {
+      "name": "excel-accessibility",
+      "description": "Scan and fix .xlsx files: sheet names, table headers, alt text, merges.",
+      "you_can_ask_for_it": true,
+      "needs": [],
+      "in_the_kit": []
+    },
+    {
+      "name": "forms-specialist",
+      "description": "Labels, validation, error handling, multi-step wizards and autocomplete.",
+      "you_can_ask_for_it": true,
+      "needs": [],
+      "in_the_kit": []
+    },
+    {
+      "name": "github-hub",
+      "description": "Start here for GitHub work: issues, pull requests, releases, projects, actions, security alerts, teams and wikis, and for adopting the Open Source Accessibility Framework in a repository.",
+      "you_can_ask_for_it": true,
+      "needs": [
+        "scripts"
+      ],
+      "in_the_kit": [
+        "Its report scripts are not in the kit. It writes its findings directly instead."
+      ]
+    },
+    {
+      "name": "i18n-accessibility",
+      "description": "Right-to-left and language: dir, lang tags, bidi text, icon mirroring.",
+      "you_can_ask_for_it": true,
+      "needs": [],
+      "in_the_kit": []
+    },
+    {
+      "name": "insiders-a11y-tracker",
+      "description": "Track accessibility changes in VS Code and other repos you follow.",
+      "you_can_ask_for_it": true,
+      "needs": [],
+      "in_the_kit": []
+    },
+    {
+      "name": "issue-tracker",
+      "description": "GitHub issues: find, triage, review and respond, with written reports.",
+      "you_can_ask_for_it": true,
+      "needs": [],
+      "in_the_kit": []
+    },
+    {
+      "name": "kb-accessibility-rules",
+      "description": "Reference data, not a reviewer. Cross-format accessibility rule reference with WCAG 2.2 mapping for Word, Excel, PowerPoint, and PDF documents.",
+      "you_can_ask_for_it": false,
+      "needs": [],
+      "in_the_kit": []
+    },
+    {
+      "name": "kb-ci-integration",
+      "description": "Reference data, not a reviewer. CI/CD accessibility pipeline patterns with axe-core CLI, SARIF output, PR annotations, baseline management, and multi-platform CI templates.",
+      "you_can_ask_for_it": false,
+      "needs": [
+        "scanners"
+      ],
+      "in_the_kit": [
+        "Its scanner tools are not in the kit. Give it your checker's results instead, or use the full version in Codespaces."
+      ]
+    },
+    {
+      "name": "kb-cognitive-accessibility",
+      "description": "Reference data, not a reviewer. Review UI for cognitive load, plain language clarity, and WCAG 2.2 cognitive SC (3.3.7, 3.3.8, 3.3.9). Includes COGA guidance, reading level, auth patterns, and timeout warnings.",
+      "you_can_ask_for_it": false,
+      "needs": [],
+      "in_the_kit": []
+    },
+    {
+      "name": "kb-data-visualization-accessibility",
+      "description": "Reference data, not a reviewer. Audit charts and graphs for accessibility: SVG ARIA, data table alternatives, keyboard interaction, color-safe palettes, and library APIs.",
+      "you_can_ask_for_it": false,
+      "needs": [],
+      "in_the_kit": []
+    },
+    {
+      "name": "kb-design-system",
+      "description": "Reference data, not a reviewer. Validate design system tokens for WCAG AA/AAA contrast. Compute color token contrast, focus ring validation (WCAG 2.4.13), motion tokens, and spacing for touch targets across frameworks.",
+      "you_can_ask_for_it": false,
+      "needs": [
+        "scanners"
+      ],
+      "in_the_kit": [
+        "Its scanner tools are not in the kit. Give it your checker's results instead, or use the full version in Codespaces."
+      ]
+    },
+    {
+      "name": "kb-document-scanning",
+      "description": "Reference data, not a reviewer. Discover and inventory documents for accessibility audits. Scans folders for .docx, .xlsx, .pptx, PDF and ePub files. Detects git changes and extracts title, author, and language metadata.",
+      "you_can_ask_for_it": false,
+      "needs": [],
+      "in_the_kit": []
+    },
+    {
+      "name": "kb-email-accessibility",
+      "description": "Reference data, not a reviewer. HTML email accessibility: table layouts, inline styles, dark mode, image fallbacks, and email client rendering constraints.",
+      "you_can_ask_for_it": false,
+      "needs": [],
+      "in_the_kit": []
+    },
+    {
+      "name": "kb-framework-accessibility",
+      "description": "Reference data, not a reviewer. Framework-specific accessibility patterns and fix templates for React, Vue, Angular, Svelte, Next.js, and Tailwind CSS.",
+      "you_can_ask_for_it": false,
+      "needs": [],
+      "in_the_kit": []
+    },
+    {
+      "name": "kb-github-a11y-scanner",
+      "description": "Reference data, not a reviewer. Integrate GitHub Accessibility Scanner. Detects configuration, parses scanner issues, correlates with local scans, and tracks Copilot-assigned fixes.",
+      "you_can_ask_for_it": false,
+      "needs": [
+        "scanners",
+        "scripts"
+      ],
+      "in_the_kit": [
+        "Its scanner tools are not in the kit. Give it your checker's results instead, or use the full version in Codespaces.",
+        "Its report scripts are not in the kit. It writes its findings directly instead."
+      ]
+    },
+    {
+      "name": "kb-github-analytics-scoring",
+      "description": "Reference data, not a reviewer. Score repository health (0-100, A-F grades), priorities, and delta tracking. Includes velocity metrics, confidence levels, and bottleneck detection.",
+      "you_can_ask_for_it": false,
+      "needs": [],
+      "in_the_kit": []
+    },
+    {
+      "name": "kb-github-scanning",
+      "description": "Reference data, not a reviewer. Search GitHub for issues, PRs, discussions, releases, and alerts. Includes query construction, date range handling, repo scoping, and cross-repo intelligence.",
+      "you_can_ask_for_it": false,
+      "needs": [],
+      "in_the_kit": []
+    },
+    {
+      "name": "kb-github-shared-instructions",
+      "description": "Reference data, not a reviewer. Persona, authentication, output and reporting rules every GitHub skill follows.",
+      "you_can_ask_for_it": false,
+      "needs": [
+        "scanners"
+      ],
+      "in_the_kit": [
+        "Its scanner tools are not in the kit. Give it your checker's results instead, or use the full version in Codespaces."
+      ]
+    },
+    {
+      "name": "kb-github-workflow-standards",
+      "description": "Reference data, not a reviewer. Core standards for GitHub workflow agents: authentication, repository discovery, dual MD+HTML output, accessibility compliance, safety rules, and parallel execution patterns.",
+      "you_can_ask_for_it": false,
+      "needs": [],
+      "in_the_kit": []
+    },
+    {
+      "name": "kb-help-url-reference",
+      "description": "Reference data, not a reviewer. Map accessibility findings to help resources: axe-core to Accessibility Insights, document rules to Microsoft Office/Adobe, WCAG criteria to W3C Understanding documents.",
+      "you_can_ask_for_it": false,
+      "needs": [],
+      "in_the_kit": []
+    },
+    {
+      "name": "kb-legal-compliance-mapping",
+      "description": "Reference data, not a reviewer. Map accessibility audit results to legal frameworks: Section 508, ADA, EN 301 549, EAA, AODA. Generate VPAT 2.5 conformance tables.",
+      "you_can_ask_for_it": false,
+      "needs": [],
+      "in_the_kit": []
+    },
+    {
+      "name": "kb-lighthouse-scanner",
+      "description": "Reference data, not a reviewer. Integrate Lighthouse CI accessibility audits. Detects configuration, parses results, maps findings to severity model, and tracks score regressions.",
+      "you_can_ask_for_it": false,
+      "needs": [
+        "scripts"
+      ],
+      "in_the_kit": [
+        "Its report scripts are not in the kit. It writes its findings directly instead."
+      ]
+    },
+    {
+      "name": "kb-markdown-accessibility",
+      "description": "Reference data, not a reviewer. Audit and fix markdown for accessibility. Covers ambiguous links, anchors, emoji (remove/translate), Mermaid/ASCII templates, heading hierarchy, table descriptions, and severity scoring.",
+      "you_can_ask_for_it": false,
+      "needs": [
+        "scripts"
+      ],
+      "in_the_kit": [
+        "Its report scripts are not in the kit. It writes its findings directly instead."
+      ]
+    },
+    {
+      "name": "kb-media-accessibility",
+      "description": "Reference data, not a reviewer. Video/audio accessibility: WebVTT/SRT/TTML captions, audio descriptions, accessible media player ARIA, and WCAG 1.2.x compliance.",
+      "you_can_ask_for_it": false,
+      "needs": [],
+      "in_the_kit": []
+    },
+    {
+      "name": "kb-mobile-accessibility",
+      "description": "Reference data, not a reviewer. Audit React Native, Expo, iOS, Android for accessibility. Review accessibilityLabel, accessibilityRole, accessibilityHint, touch targets (44x44pt min), screen reader support, and platform semantics.",
+      "you_can_ask_for_it": false,
+      "needs": [],
+      "in_the_kit": []
+    },
+    {
+      "name": "kb-office-remediation",
+      "description": "Reference data, not a reviewer. Remediate Office documents (Word/Excel/PowerPoint) for accessibility. Generates Python scripts via python-docx, openpyxl, python-pptx API references.",
+      "you_can_ask_for_it": false,
+      "needs": [],
+      "in_the_kit": []
+    },
+    {
+      "name": "kb-open-source-accessibility-framework",
+      "description": "Reference data, not a reviewer. Open Source Accessibility Framework: phases, action IDs and cadence, tracking issue, framing.",
+      "you_can_ask_for_it": false,
+      "needs": [
+        "scripts"
+      ],
+      "in_the_kit": [
+        "Its report scripts are not in the kit. It writes its findings directly instead."
+      ]
+    },
+    {
+      "name": "kb-path-instructions",
+      "description": "Reference data, not a reviewer. Per-file-type accessibility rules: semantic HTML, ARIA patterns, CSS, markdown, testing and terminology.",
+      "you_can_ask_for_it": false,
+      "needs": [],
+      "in_the_kit": []
+    },
+    {
+      "name": "kb-playwright-testing",
+      "description": "Reference data, not a reviewer. Browser accessibility testing using Playwright and @axe-core/playwright. Keyboard scans, contrast verification, and accessibility tree snapshots.",
+      "you_can_ask_for_it": false,
+      "needs": [
+        "scanners"
+      ],
+      "in_the_kit": [
+        "Its scanner tools are not in the kit. Give it your checker's results instead, or use the full version in Codespaces."
+      ]
+    },
+    {
+      "name": "kb-python-development",
+      "description": "Reference data, not a reviewer. Python and wxPython development: packaging (PyInstaller/Nuitka), testing, desktop accessibility APIs, cross-platform paths, and framework patterns.",
+      "you_can_ask_for_it": false,
+      "needs": [],
+      "in_the_kit": []
+    },
+    {
+      "name": "kb-report-generation",
+      "description": "Reference data, not a reviewer. Format accessibility audit reports with severity scoring (0-100, A-F grades), scorecard computation, and compliance exports including VPAT/ACR and remediation priorities.",
+      "you_can_ask_for_it": false,
+      "needs": [
+        "scripts"
+      ],
+      "in_the_kit": [
+        "Its report scripts are not in the kit. It writes its findings directly instead."
+      ]
+    },
+    {
+      "name": "kb-severity-mapping",
+      "description": "Reference data, not a reviewer. Canonical severity level definitions and cross-domain mapping for web, document, and markdown audits. Score impact ranges, WCAG conformance alignment, and cross-format normalization.",
+      "you_can_ask_for_it": false,
+      "needs": [
+        "scanners",
+        "scripts"
+      ],
+      "in_the_kit": [
+        "Its scanner tools are not in the kit. Give it your checker's results instead, or use the full version in Codespaces.",
+        "Its report scripts are not in the kit. It writes its findings directly instead."
+      ]
+    },
+    {
+      "name": "kb-testing-strategy",
+      "description": "Reference data, not a reviewer. Accessibility testing decision trees, browser/AT compatibility matrices, manual vs. automated test coverage, regression testing patterns, and acceptance criteria templates for user stories.",
+      "you_can_ask_for_it": false,
+      "needs": [
+        "scanners"
+      ],
+      "in_the_kit": [
+        "Its scanner tools are not in the kit. Give it your checker's results instead, or use the full version in Codespaces."
+      ]
+    },
+    {
+      "name": "kb-web-scanning",
+      "description": "Reference data, not a reviewer. Web content discovery, URL crawling, and page inventory for accessibility audits. Use when scanning web pages, crawling sites for audit scope, or building page inventories for multi-page audits.",
+      "you_can_ask_for_it": false,
+      "needs": [
+        "scanners"
+      ],
+      "in_the_kit": [
+        "Its scanner tools are not in the kit. Give it your checker's results instead, or use the full version in Codespaces."
+      ]
+    },
+    {
+      "name": "kb-web-severity-scoring",
+      "description": "Reference data, not a reviewer. Compute web accessibility scores (0-100, A-F grades) with severity scoring, confidence levels, and remediation tracking across audits.",
+      "you_can_ask_for_it": false,
+      "needs": [
+        "scanners",
+        "scripts"
+      ],
+      "in_the_kit": [
+        "Its scanner tools are not in the kit. Give it your checker's results instead, or use the full version in Codespaces.",
+        "Its report scripts are not in the kit. It writes its findings directly instead."
+      ]
+    },
+    {
+      "name": "keyboard-navigator",
+      "description": "Tab order, focus management, shortcuts, skip links and focus visibility.",
+      "you_can_ask_for_it": true,
+      "needs": [],
+      "in_the_kit": []
+    },
+    {
+      "name": "lighthouse-bridge",
+      "description": "Internal helper: read Lighthouse CI accessibility audits into findings.",
+      "you_can_ask_for_it": false,
+      "needs": [],
+      "in_the_kit": []
+    },
+    {
+      "name": "link-checker",
+      "description": "Find vague link text such as click here, read more or a bare URL.",
+      "you_can_ask_for_it": true,
+      "needs": [],
+      "in_the_kit": []
+    },
+    {
+      "name": "live-region-controller",
+      "description": "Announce dynamic updates: live regions, toasts, loading states and results.",
+      "you_can_ask_for_it": true,
+      "needs": [],
+      "in_the_kit": []
+    },
+    {
+      "name": "markdown-a11y-assistant",
+      "description": "Guided WCAG audit of markdown docs: link text, alt text, heading order, tables, emoji, diagrams and anchors.",
+      "you_can_ask_for_it": true,
+      "needs": [
+        "scripts"
+      ],
+      "in_the_kit": [
+        "Its report scripts are not in the kit. It writes its findings directly instead."
+      ]
+    },
+    {
+      "name": "markdown-csv-reporter",
+      "description": "Internal helper: export markdown findings to CSV with rule links.",
+      "you_can_ask_for_it": false,
+      "needs": [
+        "scripts"
+      ],
+      "in_the_kit": [
+        "Its report scripts are not in the kit. It writes its findings directly instead."
+      ]
+    },
+    {
+      "name": "markdown-fixer",
+      "description": "Internal helper: apply approved markdown fixes, surface judgment calls.",
+      "you_can_ask_for_it": false,
+      "needs": [],
+      "in_the_kit": []
+    },
+    {
+      "name": "markdown-scanner",
+      "description": "Internal helper: scan one markdown file across all nine domains.",
+      "you_can_ask_for_it": false,
+      "needs": [
+        "scripts"
+      ],
+      "in_the_kit": [
+        "Its report scripts are not in the kit. It writes its findings directly instead."
+      ]
+    },
+    {
+      "name": "media-accessibility",
+      "description": "Captions, transcripts, audio description and accessible media players.",
+      "you_can_ask_for_it": true,
+      "needs": [],
+      "in_the_kit": []
+    },
+    {
+      "name": "mobile-accessibility",
+      "description": "React Native, Expo, iOS and Android: labels, roles and touch targets.",
+      "you_can_ask_for_it": true,
+      "needs": [],
+      "in_the_kit": []
+    },
+    {
+      "name": "modal-specialist",
+      "description": "Dialogs, drawers, popovers and overlays: focus trap, return and dismissal.",
+      "you_can_ask_for_it": true,
+      "needs": [],
+      "in_the_kit": []
+    },
+    {
+      "name": "notifications-manager",
+      "description": "GitHub notifications: read, filter, triage and manage from the editor.",
+      "you_can_ask_for_it": true,
+      "needs": [
+        "github"
+      ],
+      "in_the_kit": [
+        "Needs the GitHub command-line tool. Use the full version in Codespaces."
+      ]
+    },
+    {
+      "name": "nvda-addon-specialist",
+      "description": "NVDA add-ons: plugin types, manifest, events, scripts and packaging.",
+      "you_can_ask_for_it": true,
+      "needs": [],
+      "in_the_kit": []
+    },
+    {
+      "name": "office-remediator",
+      "description": "Fix .docx, .xlsx and .pptx programmatically via python-docx and friends.",
+      "you_can_ask_for_it": true,
+      "needs": [],
+      "in_the_kit": []
+    },
+    {
+      "name": "office-scan-config",
+      "description": "Internal helper: manage .a11y-office-config.json scan settings.",
+      "you_can_ask_for_it": false,
+      "needs": [
+        "scanners"
+      ],
+      "in_the_kit": [
+        "Its scanner tools are not in the kit. Give it your checker's results instead, or use the full version in Codespaces."
+      ]
+    },
+    {
+      "name": "osaf-community",
+      "description": "Open Source Accessibility Framework Community phase: reports, participation, recognition, progress, resources.",
+      "you_can_ask_for_it": true,
+      "needs": [],
+      "in_the_kit": []
+    },
+    {
+      "name": "osaf-foundational",
+      "description": "Open Source Accessibility Framework Foundational phase: ACCESSIBILITY.md and an accessibility label.",
+      "you_can_ask_for_it": true,
+      "needs": [],
+      "in_the_kit": []
+    },
+    {
+      "name": "osaf-testing",
+      "description": "Open Source Accessibility Framework Testing phase: automated, keyboard, screen reader, manual and docs checks.",
+      "you_can_ask_for_it": true,
+      "needs": [],
+      "in_the_kit": []
+    },
+    {
+      "name": "osaf-workflow",
+      "description": "Open Source Accessibility Framework Workflow phase: expectations, reporting, triage, PR template, labels, docs.",
+      "you_can_ask_for_it": true,
+      "needs": [],
+      "in_the_kit": []
+    },
+    {
+      "name": "pdf-accessibility",
+      "description": "Scan and fix PDFs: PDF/UA, Matterhorn checks, tags and reading order.",
+      "you_can_ask_for_it": true,
+      "needs": [
+        "scanners"
+      ],
+      "in_the_kit": [
+        "Its scanner tools are not in the kit. Give it your checker's results instead, or use the full version in Codespaces."
+      ]
+    },
+    {
+      "name": "pdf-remediator",
+      "description": "Fix PDFs by script or Acrobat: title, language, reading order, tags.",
+      "you_can_ask_for_it": true,
+      "needs": [
+        "scanners"
+      ],
+      "in_the_kit": [
+        "Its scanner tools are not in the kit. Give it your checker's results instead, or use the full version in Codespaces."
+      ]
+    },
+    {
+      "name": "pdf-scan-config",
+      "description": "Internal helper: manage .a11y-pdf-config.json scan settings.",
+      "you_can_ask_for_it": false,
+      "needs": [
+        "scanners"
+      ],
+      "in_the_kit": [
+        "Its scanner tools are not in the kit. Give it your checker's results instead, or use the full version in Codespaces."
+      ]
+    },
+    {
+      "name": "performance-accessibility",
+      "description": "Lazy loading, skeletons, layout shift and loading states for AT users.",
+      "you_can_ask_for_it": true,
+      "needs": [],
+      "in_the_kit": []
+    },
+    {
+      "name": "playwright-scanner",
+      "description": "Internal helper: behavioral scans via Playwright for keyboard and state.",
+      "you_can_ask_for_it": false,
+      "needs": [
+        "scanners"
+      ],
+      "in_the_kit": [
+        "Its scanner tools are not in the kit. Give it your checker's results instead, or use the full version in Codespaces."
+      ]
+    },
+    {
+      "name": "playwright-verifier",
+      "description": "Internal helper: re-run targeted scans to confirm a fix works at runtime.",
+      "you_can_ask_for_it": false,
+      "needs": [
+        "scanners"
+      ],
+      "in_the_kit": [
+        "Its scanner tools are not in the kit. Give it your checker's results instead, or use the full version in Codespaces."
+      ]
+    },
+    {
+      "name": "powerpoint-accessibility",
+      "description": "Scan and fix .pptx files: slide titles, alt text and reading order.",
+      "you_can_ask_for_it": true,
+      "needs": [],
+      "in_the_kit": []
+    },
+    {
+      "name": "pr-review",
+      "description": "Review pull requests: diffs, comments, context and written review docs.",
+      "you_can_ask_for_it": true,
+      "needs": [],
+      "in_the_kit": []
+    },
+    {
+      "name": "projects-manager",
+      "description": "GitHub Projects v2: boards, views, fields, iterations, item workflows.",
+      "you_can_ask_for_it": true,
+      "needs": [
+        "github"
+      ],
+      "in_the_kit": [
+        "Needs the GitHub command-line tool. Use the full version in Codespaces."
+      ]
+    },
+    {
+      "name": "python-specialist",
+      "description": "Python debugging, packaging, testing, typing, async and performance.",
+      "you_can_ask_for_it": true,
+      "needs": [],
+      "in_the_kit": []
+    },
+    {
+      "name": "release-manager",
+      "description": "GitHub releases: create, edit and manage releases and their assets.",
+      "you_can_ask_for_it": true,
+      "needs": [
+        "github"
+      ],
+      "in_the_kit": [
+        "Needs the GitHub command-line tool. Use the full version in Codespaces."
+      ]
+    },
+    {
+      "name": "repo-admin",
+      "description": "Repo admin: collaborators, branch protection, webhooks and labels.",
+      "you_can_ask_for_it": true,
+      "needs": [],
+      "in_the_kit": []
+    },
+    {
+      "name": "repo-manager",
+      "description": "Scaffold a repo: templates, contributing guides, CI, labels, licenses.",
+      "you_can_ask_for_it": true,
+      "needs": [
+        "github"
+      ],
+      "in_the_kit": [
+        "Needs the GitHub command-line tool. Use the full version in Codespaces."
+      ]
+    },
+    {
+      "name": "scanner-bridge",
+      "description": "Internal helper: read GitHub Accessibility Scanner issues into findings.",
+      "you_can_ask_for_it": false,
+      "needs": [],
+      "in_the_kit": []
+    },
+    {
+      "name": "screen-reader-lab",
+      "description": "Simulate screen reader narration of HTML or JSX, step by step.",
+      "you_can_ask_for_it": true,
+      "needs": [],
+      "in_the_kit": []
+    },
+    {
+      "name": "security-dashboard",
+      "description": "Triage Dependabot, code scanning and secret scanning alerts.",
+      "you_can_ask_for_it": true,
+      "needs": [
+        "github"
+      ],
+      "in_the_kit": [
+        "Needs the GitHub command-line tool. Use the full version in Codespaces."
+      ]
+    },
+    {
+      "name": "tables-data-specialist",
+      "description": "Data tables and grids: headers, scope, captions, sorting and complex tables.",
+      "you_can_ask_for_it": true,
+      "needs": [],
+      "in_the_kit": []
+    },
+    {
+      "name": "team-manager",
+      "description": "GitHub org teams: create, staff, onboard, offboard and audit access.",
+      "you_can_ask_for_it": true,
+      "needs": [],
+      "in_the_kit": []
+    },
+    {
+      "name": "template-builder",
+      "description": "Build GitHub issue, PR and discussion templates from a guided wizard.",
+      "you_can_ask_for_it": true,
+      "needs": [],
+      "in_the_kit": []
+    },
+    {
+      "name": "testing-coach",
+      "description": "How to test: screen readers, keyboard passes, automated checks and CI.",
+      "you_can_ask_for_it": true,
+      "needs": [
+        "scanners"
+      ],
+      "in_the_kit": [
+        "Its scanner tools are not in the kit. Give it your checker's results instead, or use the full version in Codespaces."
+      ]
+    },
+    {
+      "name": "text-quality-reviewer",
+      "description": "Catch weak alt text, aria-labels and button names, and template leftovers.",
+      "you_can_ask_for_it": true,
+      "needs": [],
+      "in_the_kit": []
+    },
+    {
+      "name": "wcag-aaa",
+      "description": "WCAG 2.2 Level AAA criteria that go beyond the AA target.",
+      "you_can_ask_for_it": true,
+      "needs": [],
+      "in_the_kit": []
+    },
+    {
+      "name": "wcag-guide",
+      "description": "Explain WCAG 2.2 criteria, conformance levels and what changed.",
+      "you_can_ask_for_it": true,
+      "needs": [],
+      "in_the_kit": []
+    },
+    {
+      "name": "wcag3-preview",
+      "description": "WCAG 3.0 draft preview: core requirements, tiers, contrast and scope.",
+      "you_can_ask_for_it": true,
+      "needs": [],
+      "in_the_kit": []
+    },
+    {
+      "name": "web-accessibility-wizard",
+      "description": "Guided WCAG 2.2 audit of a web app or site, phase by phase, with severity scores, a written report and optional fixes.",
+      "you_can_ask_for_it": true,
+      "needs": [
+        "scanners",
+        "scripts"
+      ],
+      "in_the_kit": [
+        "Its scanner tools are not in the kit. Give it your checker's results instead, or use the full version in Codespaces.",
+        "Its report scripts are not in the kit. It writes its findings directly instead."
+      ]
+    },
+    {
+      "name": "web-component-specialist",
+      "description": "Custom elements and shadow DOM: ElementInternals, cross-shadow ARIA, focus.",
+      "you_can_ask_for_it": true,
+      "needs": [],
+      "in_the_kit": []
+    },
+    {
+      "name": "web-csv-reporter",
+      "description": "Internal helper: export web findings to CSV with Deque University links.",
+      "you_can_ask_for_it": false,
+      "needs": [
+        "scripts"
+      ],
+      "in_the_kit": [
+        "Its report scripts are not in the kit. It writes its findings directly instead."
+      ]
+    },
+    {
+      "name": "web-issue-fixer",
+      "description": "Internal helper: apply approved web accessibility fixes to source.",
+      "you_can_ask_for_it": false,
+      "needs": [],
+      "in_the_kit": []
+    },
+    {
+      "name": "wiki-manager",
+      "description": "GitHub wikis: create, edit, organize and search pages from the editor.",
+      "you_can_ask_for_it": true,
+      "needs": [
+        "github"
+      ],
+      "in_the_kit": [
+        "Needs the GitHub command-line tool. Use the full version in Codespaces."
+      ]
+    },
+    {
+      "name": "word-accessibility",
+      "description": "Scan and fix .docx files: title, headings, alt text, table headers.",
+      "you_can_ask_for_it": true,
+      "needs": [],
+      "in_the_kit": []
+    },
+    {
+      "name": "wxpython-specialist",
+      "description": "wxPython GUI: sizers, events, AUI, custom controls and threading.",
+      "you_can_ask_for_it": true,
+      "needs": [],
+      "in_the_kit": []
+    }
+  ]
+}

@@ -82,7 +82,7 @@ def test_every_block_has_its_copilot_command_and_step_card():
         assert skill_file.read_text(encoding="utf-8").startswith(f"---\nname: {command}\ndescription: ")
         assert not (KIT / ".github" / "prompts").exists()
         number = {"ready-check": 1, "design-my-agent": 2, "try-my-agent": 3, "ground-my-agent": 4,
-                  "run-the-office": 6, "my-30-day-plan": 7}[command]
+                  "run-the-office": 5, "my-30-day-plan": 7}[command]
         text = (KIT / "any-assistant" / f"{number}-{command}.txt").read_text(encoding="utf-8")
         assert text.startswith("AHG 2026 Accessibility Agents workshop. Block"), command
     cards = sorted(p.name for p in (KIT / "step-cards").glob("*.md"))
@@ -316,8 +316,8 @@ def test_the_kit_is_readable_online(client):
                 "office-team/word-documents/SKILL.md", ".github/skills/ready-check/SKILL.md"):
         assert f"/ahg/kit/{rel}" in body, rel
     assert "/ahg/kit.zip" in body or "/workshop/ahg-2026/kit.zip" in body
-    card = client.get("/ahg/kit/step-cards/5-share-it.md").get_data(as_text=True)
-    assert "Step card 5: Share it" in card and "/ahg/kit/raw/step-cards/5-share-it.md" in card
+    card = client.get("/ahg/kit/step-cards/6-share-it.md").get_data(as_text=True)
+    assert "Step card 6: Share it" in card and "/ahg/kit/raw/step-cards/6-share-it.md" in card
     raw = client.get("/ahg/kit/raw/my-agent/SKILL.md")
     assert raw.headers["Content-Type"].startswith("text/plain") and raw.get_data(as_text=True).startswith("---")
     assert client.get("/ahg/kit/share-my-agent.html").headers["Location"].endswith("/ahg/share")
@@ -342,19 +342,26 @@ def test_the_page_titles_name_the_conference_not_glow(client):
 def test_each_browser_path_text_carries_the_files_its_block_needs():
     texts = {p.stem: p.read_text(encoding="utf-8") for p in (KIT / "any-assistant").glob("*.txt")}
     assert set(texts) == {"1-ready-check", "2-design-my-agent", "3-try-my-agent",
-                          "4-ground-my-agent", "6-run-the-office", "7-my-30-day-plan"}
-    for text in texts.values():
-        # The workshop's rules travel with every block.
-        assert "Never say a document is \"compliant\"" in text
-        assert "Never ask for, accept or repeat student names" in text
+                          "4-ground-my-agent", "5-run-the-office", "7-my-30-day-plan",
+                          "review-my-agent", "aa-office-documents", "aa-pdf-and-epub",
+                          "aa-web-pages", "aa-markdown"}
+    for key, text in texts.items():
+        if key.startswith("aa-"):
+            # Accessibility Agents in any assistant: no tools, so it must never pretend.
+            assert "Never say\nyou scanned, ran or opened anything" in text or "Never say you scanned, ran or opened anything" in text, key
+            assert "Never ask for student names" in text, key
+            continue
+        # The workshop's rules travel with every block and the review text.
+        assert "Never say a document is \"compliant\"" in text, key
+        assert "Never ask for, accept or repeat student names" in text, key
     assert "===== FILE: my-agent/SKILL.md =====" in texts["1-ready-check"]
     for agent in ("alternate-format-planner", "faculty-coach", "vendor-report-reader"):
         assert f"===== FILE: examples/agents/{agent}/SKILL.md =====" in texts["2-design-my-agent"]
     evidence = sorted(p.name for p in (KIT / "sample-course" / "evidence").glob("*.txt"))
     for name in evidence:
         assert f"===== FILE: sample-course/evidence/{name} =====" in texts["4-ground-my-agent"], name
-        assert f"===== FILE: sample-course/evidence/{name} =====" in texts["6-run-the-office"], name
-    office = texts["6-run-the-office"]
+        assert f"===== FILE: sample-course/evidence/{name} =====" in texts["5-run-the-office"], name
+    office = texts["5-run-the-office"]
     assert "===== FILE: .github/agents/office-coordinator.agent.md =====" in office
     assert len(_agent_files("office-team")) == office.count("===== FILE: office-team/")
     # Block 3 is the before: it must not see the evidence.
@@ -372,11 +379,16 @@ def test_every_file_in_a_browser_path_text_is_the_kit_file_itself():
 def test_the_browser_path_page_offers_every_block_with_a_copy_button(client):
     body = client.get("/ahg/assistant").get_data(as_text=True)
     assert "<title>The workshop in any AI assistant - AHG 2026</title>" in body
-    for number in ("1", "2", "3", "4", "6", "7"):
+    for number in ("1", "2", "3", "4", "5", "7"):
         assert f'id="block-{number}"' in body
-    assert 'id="block-5"' in body and "/ahg/share" in body.split('id="block-5"')[1]
-    assert body.count("data-copy=") == 6 and body.count('role="status"') == 6
-    assert body.count("<textarea") == 6 and "readonly" in body
+    # Block 6, sharing, has no text: it points to the share page.
+    assert 'id="block-6"' in body and "/ahg/share" in body.split('id="block-6"')[1].split("<h2")[0]
+    # Six blocks, the review text, and four Accessibility Agents texts.
+    assert body.count("data-copy=") == 11 and body.count('role="status"') == 11
+    assert body.count("<textarea") == 11 and "readonly" in body
+    assert 'id="review"' in body and 'id="accessibility-agents"' in body
+    for key in ("aa-office-documents", "aa-pdf-and-epub", "aa-web-pages", "aa-markdown"):
+        assert f'id="{key}"' in body, key
     assert "Copy the text for Block 2: design your agent" in body
     assert "sign in" in body.lower()
 

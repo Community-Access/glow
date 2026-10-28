@@ -1,6 +1,6 @@
 ---
 name: web-pages
-description: "Explains axe and Accessibility Insights results for a course web page in plain language."
+description: "Explains axe and Accessibility Insights results for a course web page in plain language. Use when the file is a web page and you have axe or Accessibility Insights results."
 license: MIT
 metadata:
   tier: specialist
