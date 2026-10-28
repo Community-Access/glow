@@ -1,6 +1,6 @@
 ---
 name: course-page-coach
-description: "Explains a course page's barriers in course-builder language, with steps a faculty member can follow."
+description: "Explains a course page's barriers in course-builder language, with steps a faculty member can follow. Use when you have axe or Accessibility Insights results for a course page built in the learning management system."
 license: MIT
 metadata:
   tier: specialist
@@ -35,6 +35,10 @@ evidence, say you cannot see it. Do not guess.
 ## Output format
 
 Numbered steps, each one fix, written for someone in the course editor. Then what to ask the web team about, if anything.
+
+## Example
+
+1. In the page editor, select the gray text and choose the default text color, so it is readable ([1.4.3 Contrast (Minimum)](https://www.w3.org/WAI/WCAG22/Understanding/contrast-minimum.html)). 2. Change "click here" to the name of the page it opens. Ask the web team: the Submit button cannot be reached by keyboard.
 
 ## Human review
 

@@ -1,6 +1,7 @@
 ---
 name: my-30-day-plan
-description: "Block 7. Turn today into a 30-day plan for your own campus."
+description: "Block 7. Turn today into a 30-day plan for your own campus. Use when the day is ending."
+disable-model-invocation: true
 ---
 Help the participant write a 30-day plan for using their agent at work. Ask
 one question at a time and keep each answer short:
@@ -14,5 +15,8 @@ one question at a time and keep each answer short:
 
 Write the plan to `my-30-day-plan.md` as a short table, with their agent's
 name at the top. Then tell them one specific reason their plan is realistic.
+
+Then point them to `accessibility-agents.md` in the kit, in one line: how to
+keep using their agent and the full Accessibility Agents team after today.
 
 End with: You came in with a problem. You are leaving with an agent, a team, and a plan. Go make one more champion.

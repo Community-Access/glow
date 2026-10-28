@@ -1,6 +1,6 @@
 ---
 name: document-triage
-description: "Decides what to fix first in a course document, and why, from a checker's report."
+description: "Decides what to fix first in a course document, and why, from a checker's report. Use when you have a checker's report on one course document and need to know what to fix first."
 license: MIT
 metadata:
   tier: specialist
@@ -34,6 +34,10 @@ evidence, say you cannot see it. Do not guess.
 ## Output format
 
 Three short lists: Blocks a student, Slows a student down, Everything else. Each item has the WCAG criterion with its link and a one-line reason.
+
+## Example
+
+Blocks a student: no real headings, so a screen reader user cannot move through the syllabus ([1.3.1 Info and Relationships](https://www.w3.org/WAI/WCAG22/Understanding/info-and-relationships.html)). Slows a student down: "click here" links. Everything else: margins and page numbers.
 
 ## Human review
 

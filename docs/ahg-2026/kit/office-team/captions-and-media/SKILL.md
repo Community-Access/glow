@@ -1,6 +1,6 @@
 ---
 name: captions-and-media
-description: "Reviews caption files for accuracy, speakers and undescribed visuals."
+description: "Reviews caption files for accuracy, speakers and undescribed visuals. Use when the file is a caption file (.vtt or .srt) for a lecture or video."
 license: MIT
 metadata:
   tier: specialist

@@ -8,7 +8,7 @@ description: "How the AHG 2026 Accessibility Agents workshop keeps every promise
 # AHG 2026 workshop plan: Accessibility Agents for higher education
 
 Status: built 9 October 2026; three paths added 27 October 2026 (D18 to
-D20). Ready for review and testing. Everything in
+D20); Accessibility Agents itself added to the kit the same day (D21). Ready for review and testing. Everything in
 this plan exists except what section 16 says must be proven by a person, and
 the Accessibility Agents folder, which is ready to copy in from
 `for-accessibility-agents/`.
@@ -121,6 +121,7 @@ These replace L1 to L14 in the September plan.
 | D18 | Three paths, one day: the browser path with any AI assistant, VS Code on a computer, and VS Code for the Web. The browser path is the default for anyone unsure. Every path ends with the same agent, team report and share. The facilitator demonstrates in VS Code, so every participant sees agent teams built in VS Code with Copilot |
 | D19 | The six commands are agent skills in `.github/skills/`, not prompt files. Since VS Code 1.143 prompt files run only in Local chat sessions; skills run in the default Copilot sessions too |
 | D20 | The browser path pastes text, never files: one generated text per block, carrying the block's instructions and every kit file it needs, built by `scripts/build_ahg_kit.py` into `kit/any-assistant/`. Participants on it must sign in to their assistant; ChatGPT without an account stops after a message or two |
+| D21 | The kit carries Accessibility Agents itself: all 108 of its skills, copied unchanged into `.github/skills` from one pinned commit by `scripts/vendor_accessibility_agents.py`, so every VS Code participant has the whole project with nothing to install. The kit says plainly which skills work fully without the project's scanners, scripts and hooks, and what the others do instead. The browser path gets four texts that each carry an entry point and its specialists. `accessibility-agents.md` shows the ways to keep using it after the day. The day moves building the office before sharing, and blocks 3 to 5 each end with /review-my-agent, so participants share their best version. Section 2.13a of `ahg.md` tests it |
 
 ## 5. Every promise, and where it is kept
 
@@ -327,8 +328,11 @@ Built: `kit/`, what participants download and open in VS Code.
 | `ahg-2026.code-profile` | The AHG 2026 VS Code profile: GitHub Copilot Chat, GitHub Pull Requests, GitHub Repositories and the axe Accessibility Linter, with 18pt text, word wrap and screen reader support |
 | `.vscode/` | The same settings and recommendations, the safety net if the profile was skipped |
 | `.github/copilot-instructions.md` | The workshop's rules for Copilot: plain language, encouragement, evidence only, cite WCAG 2.2, never "compliant", nothing private |
-| `.github/skills/` | One command per block, as agent skills: /ready-check, /design-my-agent, /try-my-agent, /ground-my-agent, /run-the-office, /my-30-day-plan |
-| `any-assistant/` | The same six blocks as texts for the browser path, each carrying the files it needs |
+| `.github/skills/` | One command per block, as agent skills: /ready-check, /design-my-agent, /try-my-agent, /ground-my-agent, /run-the-office, /my-30-day-plan; with /review-my-agent and /install-my-agent; and beside them all 108 Accessibility Agents skills (D21) |
+| `any-assistant/` | The same blocks as texts for the browser path, each carrying the files it needs; the review text; and four Accessibility Agents texts, `aa-*.txt` |
+| `accessibility-agents.md` | Accessibility Agents after today: the six entry points, and how to keep using it |
+| `accessibility-agents-in-the-kit.md`, `accessibility-agents-skills.json` | Generated: the pinned commit, and which skills work fully in the kit |
+| `agent-file-principles.md` | The principles of a good agent file, and the review checklist |
 | `.github/agents/office-coordinator.agent.md` | The coordinator that routes the course to the specialists, the participant's agent included, and writes the team report |
 | `office-team/` | Eight specialists adapted from the Accessibility Agents project: Word, PowerPoint, Excel, PDF, web pages, captions and media, plain language, and a standards reviewer |
 | `my-agent/SKILL.md` | The participant's agent, from a template with the never-do list built in |
@@ -339,7 +343,9 @@ Built: `kit/`, what participants download and open in VS Code.
 | `README.md` | The welcome page VS Code opens first |
 
 The generated parts are rebuilt by `scripts/build_ahg_kit.py`, which also
-writes the downloadable zip.
+writes the downloadable zip. The Accessibility Agents skills are copied in
+beforehand by `scripts/vendor_accessibility_agents.py`, given a checkout of
+Accessibility Agents at the commit to carry.
 
 ## 14a. The hand-holding kit
 
@@ -379,7 +385,9 @@ path:
 2. Copilot in VS Code picks up the office team and the participant's agent
    from the kit, with no command line. Some Accessibility Agents specialists
    may expect scanning tools to be installed; any that do not work are
-   dropped from the office.
+   dropped from the office. The same holds for the 108 skills the kit now
+   carries (D21): section 2.13a of `ahg.md` proves the copy, and that the
+   skills that need scanners say so and ask for checker results instead.
 3. A GLOW audit report, pasted into Copilot with a sample agent, gives cited,
    useful answers, inside Copilot Free's monthly allowance.
 4. The share page, the issue form and the automation's reply, start to
@@ -411,6 +419,8 @@ Each row is one risk and what we do about it.
 | Risk | What we do |
 |---|---|
 | Accessibility Agents specialists do not run well under Copilot on documents | Proven first; the live team is trimmed to what works |
+| A skill claims to have scanned something when the kit has no scanners | The generated page says which skills work differently; the browser texts forbid it; AA-13 tests it |
+| Accessibility Agents changes before the day | The kit pins one commit; a week before, AA-09 compares it with main |
 | Free AI tools give different answers | Checks ask "did it find these barriers and cite the standard", not "does it match the screen" |
 | A free assistant refuses a long paste, or runs out | The texts are sized to fit, and tested in ChatGPT; the fallback is another assistant on the same block |
 | Prompt files stop working in a VS Code update | The commands are skills (D19); the browser path is the fallback for any VS Code problem |
@@ -428,6 +438,11 @@ Each row is one risk and what we do about it.
    Accessibility Agents repository before the end-of-day pull request.
 3. Helpers: who, and how many.
 4. Maria as the persona, or someone else.
+5. The Codespaces route in `accessibility-agents.md`: ask Accessibility
+   Agents for a dev container, or give the terminal steps, or drop it
+   (`ahg.md`, D-010).
+6. What block 5's step with the full Accessibility Agents team is (D-017).
+7. Five design questions or six (D-015).
 
 ## 20. Order of work
 

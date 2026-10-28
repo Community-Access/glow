@@ -1,6 +1,6 @@
 ---
 name: remediation-log-keeper
-description: "Turns checker reports for a course into dated, prioritized, evidence-backed remediation log entries."
+description: "Turns checker reports for a course into dated, prioritized, evidence-backed remediation log entries. Use when you need a dated, defensible record of a course's barriers for Title II."
 license: MIT
 metadata:
   tier: specialist
@@ -33,6 +33,10 @@ evidence, say you cannot see it. Do not guess.
 ## Output format
 
 A table: file, barrier, WCAG criterion with link, severity, priority, reason, evidence, reviewer, status. Then three lines for leadership.
+
+## Example
+
+| PSY 101 syllabus | No headings | [1.3.1](https://www.w3.org/WAI/WCAG22/Understanding/info-and-relationships.html) | High | 1 | Blocks navigation | GLOW audit | Coordinator | proposed |
 
 ## Human review
 

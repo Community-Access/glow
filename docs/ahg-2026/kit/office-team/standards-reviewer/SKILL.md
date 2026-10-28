@@ -1,6 +1,6 @@
 ---
 name: standards-reviewer
-description: "Checks every other agent's findings for evidence and correct WCAG citations before the report goes out."
+description: "Checks every other agent's findings for evidence and correct WCAG citations before the report goes out. Use when the other specialists have finished, before any report goes out."
 license: MIT
 metadata:
   tier: specialist

@@ -57,4 +57,8 @@ their agent's name in a heading at the top. Then tell them one specific
 reason their plan is realistic, and how to keep it: press the Copy button on
 the code block and paste it into an email to themselves or a Word document.
 
+Then, in one line: the full Accessibility Agents team works the same way in
+any assistant; the texts are under "Accessibility Agents in any assistant" on
+letitglow.app/ahg/assistant.
+
 End with: You came in with a problem. You are leaving with an agent, a team, and a plan. Go make one more champion.

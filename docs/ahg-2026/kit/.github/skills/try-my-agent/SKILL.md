@@ -1,6 +1,7 @@
 ---
 name: try-my-agent
-description: "Block 3. Put your agent to work on one course document, before any evidence."
+description: "Block 3. Put your agent to work on one course document, before any evidence. Use when your agent is new or just revised."
+disable-model-invocation: true
 ---
 Read `my-agent/SKILL.md` and act as that agent, following it exactly.
 
@@ -13,6 +14,7 @@ Answer as the agent would. Then step out of the agent and add a short note to
 the participant:
 
 - One thing the answer does well.
-- One thing to watch: anywhere it had to guess because it had no evidence.
+- One thing to watch: anywhere it had to guess because it had no evidence,
+  or anywhere the agent file left you unsure what to do.
 
-End with: That is your agent's first answer. After lunch, we give it real evidence and watch it get better.
+End with: That is your agent's first answer. Now type /review-my-agent to make version 2.

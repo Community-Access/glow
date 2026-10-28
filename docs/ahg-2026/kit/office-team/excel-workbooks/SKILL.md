@@ -1,6 +1,6 @@
 ---
 name: excel-workbooks
-description: "Finds and explains barriers in Excel workbooks from a checker's report."
+description: "Finds and explains barriers in Excel workbooks from a checker's report. Use when the file is an Excel workbook (.xlsx) and you have its checker report."
 license: MIT
 metadata:
   tier: specialist
