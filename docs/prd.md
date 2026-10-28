@@ -736,7 +736,7 @@ For complete step-by-step commands starting from a bare server, see the [Deploym
 
 ### Proposed Directory Structure
 
-```
+```text
 web/
   src/
     acb_large_print_web/
@@ -810,7 +810,7 @@ The speech platform was the most frequently requested feature across the BITS co
 
 ### Technical Architecture (from `docs/speech.md`)
 
-```
+```text
 User Input (text or GLOW document)
   ↓
 Text Analyzer (length estimate → async vs inline decision)
@@ -849,7 +849,7 @@ Short documents (under ~50 words) are generated inline. All others use async que
 
 ### Time Estimation API
 
-```
+```http
 POST /speech/estimate
 {
   "text": "...",

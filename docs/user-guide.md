@@ -1727,7 +1727,10 @@ If **Remember my settings** is enabled, these defaults persist in local browser 
 - **Microsoft Accessibility Checker Guide** -- [Microsoft's guide to the Office accessibility checker](https://support.microsoft.com/en-us/office/improve-accessibility-with-the-accessibility-checker-a16f6de0-2f39-4a2b-8bd8-5ad801426c7f)
 - **Project overview** -- [About GLOW](/about/)
 - **Deployment and operations notes** -- [Deployment Guide](/deployment/)
-# GLOW (Guided Layout & Output Workflow) -- User Guide
+
+## Earlier edition of this guide
+
+The sections below are from an earlier edition of this guide and are kept until they are merged into the current edition above ([issue #147](https://github.com/Community-Access/glow/issues/147)). Where the two differ, the current edition is right.
 
 Everything you need to know to audit, fix, convert, and template your documents for ACB Large Print compliance using **GLOW (Guided Layout & Output Workflow)**. New to accessibility? Start with the **Quick Start** path below.
 

@@ -1,0 +1,8 @@
+blank_issues_enabled: true
+contact_links:
+  - name: Send feedback from GLOW
+    url: https://letitglow.app/feedback/
+    about: The feedback form in the web app. No GitHub account needed.
+  - name: Report an accessibility barrier privately
+    url: mailto:support@community-access.org
+    about: If GitHub is a barrier for you, or you would rather not post publicly. See ACCESSIBILITY.md.

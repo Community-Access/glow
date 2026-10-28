@@ -10,6 +10,38 @@ Releases are tagged in the [GitHub repository](https://github.com/Community-Acce
 
 ### Added
 
+- **GLOW adopts the Open Source Accessibility Framework.** 19 of its 24
+  actions are done; the record, action by action, is in
+  [docs/accessibility-framework.md](https://github.com/Community-Access/glow/blob/main/docs/accessibility-framework.md), and the
+  first public progress update is
+  [docs/accessibility-progress.md](https://github.com/Community-Access/glow/blob/main/docs/accessibility-progress.md).
+  [ACCESSIBILITY.md](https://github.com/Community-Access/glow/blob/main/ACCESSIBILITY.md) (formerly the crawl log
+  `accessibility.md`) now states GLOW's priorities, contributor expectations,
+  how to report a barrier, severity, how we respond, ownership, the
+  dependencies that affect accessibility, supported environments and known
+  limitations. Open work: a screen reader check of the web app (#144), of the
+  desktop app and Word add-in (#146), tagged PDF output (#145), the duplicated
+  user guide (#147) and a person's keyboard pass (#143).
+- **Accessibility issue form and pull request checklist.**
+  `.github/ISSUE_TEMPLATE/accessibility.yml` applies the `accessibility` label,
+  asks four questions and never asks for disclosure; `config.yml` offers the
+  feedback form and email instead. `.github/PULL_REQUEST_TEMPLATE.md` is new,
+  with an accessibility checklist for content, interface, output documents and
+  dependencies.
+- **Keyboard-only smoke test and zoom and reflow check in CI.**
+  `web/e2e/tests/keyboard.spec.mjs` (`npm run test:keyboard`) walks each core
+  page's tab sequence (every control reachable, a visible focus style, reading
+  order, no trap) and completes audit, fix, convert and template with Tab,
+  Enter and Space only. `web/e2e/tests/reflow.spec.mjs` (`npm run test:reflow`)
+  checks six core pages at 640 and 320 CSS pixels (200 and 400 percent zoom).
+  Both run in the Accessibility Regression Gate. What they check and what still
+  needs a person is in
+  [docs/accessibility-testing.md](https://github.com/Community-Access/glow/blob/main/docs/accessibility-testing.md).
+- **Markdown accessibility lint.** The Docs Quality workflow now runs
+  markdownlint with the accessibility rules only (heading levels, one H1, alt
+  text, link text, table shape, code block languages) on all documentation,
+  configured in `.github/a11y.markdownlint-cli2.jsonc`.
+
 - **Site Audit checks heading structure and page title quality.** Two optional
   best-practice checks, on by default and switchable off, prompted by feedback
   from a screen reader user at the Carroll Center for the Blind: a page can pass
@@ -65,6 +97,19 @@ Releases are tagged in the [GitHub repository](https://github.com/Community-Acce
 - **Deduplicated security headers between Caddy and Flask.** Production responses were emitting `X-Content-Type-Options`, `X-Frame-Options`, and `Referrer-Policy` twice (once from Caddy, once from Flask), and the two `X-Frame-Options` values disagreed (`DENY` from Caddy versus `SAMEORIGIN` from Flask). Removed those three directives from the `letitglow.app` and `@sse` blocks in [web/Caddyfile](web/Caddyfile) and let Flask's existing `_add_security_headers` `after_request` hook own them. Caddy continues to emit only the transport-level / policy headers it should own (`Strict-Transport-Security`, `Permissions-Policy`).
 
 ### Fixed
+
+- **Documentation reads better with assistive technology.** 38 code blocks in
+  nine files now name their language; shell comments in `web/README.md` that
+  rendered as eight top-level headings are now a real "OIDC and Keycloak
+  integration" section; the deployment lifecycle and WSL staging diagrams have
+  a description in words; the directory tree in `CONTRIBUTING.md` no longer
+  uses box-drawing characters; and the user guide's second title, where an
+  earlier edition follows the current one, is a level-two heading ("Earlier
+  edition of this guide") until the two are merged (#147).
+- **Contributor links.** `CONTRIBUTING.md` and `CODE_OF_CONDUCT.md` no longer
+  send people to GitHub Discussions, which are not enabled for this
+  repository; they point to issues and support@community-access.org.
+  `CONTRIBUTING.md` links the feedback form at letitglow.app.
 
 - Default web Fix runs no longer show a custom-settings warning for balanced
   heading detection. Disabling detection or changing its accuracy is still

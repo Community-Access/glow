@@ -8,7 +8,9 @@ Thank you for your interest in contributing to the GLOW. We welcome contribution
 
 **Found a bug?** Use [GitHub Issues](https://github.com/Community-Access/glow/issues) to report it.
 
-**Have feedback or a feature request?** Use the [Feedback form](https://glow.bits-acb.org/feedback) on the web app. When support-hub sync is configured, your feedback is automatically converted into a tracked issue in [Community-Access/support](https://github.com/Community-Access/support/issues).
+**Found an accessibility barrier?** Use the [accessibility issue form](https://github.com/Community-Access/glow/issues/new?template=accessibility.yml), or see [Accessibility](#accessibility) below for other ways to tell us.
+
+**Have feedback or a feature request?** Use the [Feedback form](https://letitglow.app/feedback/) on the web app. When support-hub sync is configured, your feedback is automatically converted into a tracked issue in [Community-Access/support](https://github.com/Community-Access/support/issues).
 
 ### 2. Set Up Your Development Environment
 
@@ -118,8 +120,69 @@ python3 scripts/sync-feedback-to-github.py
 ## Code Standards
 
 - **Python:** PEP 8 via Ruff
-- **Accessibility:** WCAG 2.2 AA for all UI
-- **Documentation:** Markdown with clear examples
+- **Accessibility:** WCAG 2.2 AA for all UI, as a goal; see [Accessibility](#accessibility)
+- **Documentation:** Markdown with clear examples, following the documentation rules in [ACCESSIBILITY.md](ACCESSIBILITY.md#contributor-expectations)
+
+## Accessibility
+
+Every contribution follows the
+[contributor expectations in ACCESSIBILITY.md](ACCESSIBILITY.md#contributor-expectations):
+the checks to run, what to test for any interface change, and the rules for
+documentation. The pull request template turns them into a checklist.
+
+The accessibility checks you can run yourself, from `web/`:
+
+```bash
+pytest                    # includes the template accessibility guardrails
+npm ci                    # once, then: npx playwright install chromium
+npm run test:axe          # axe-core, WCAG 2.2 AA tags, every public page
+npm run test:keyboard     # keyboard-only smoke test of the core flows
+npm run test:reflow       # 200 and 400 percent zoom, no sideways scrolling
+```
+
+What each check covers, and the keyboard, screen reader and manual checks
+that need a person, are in
+[docs/accessibility-testing.md](docs/accessibility-testing.md).
+
+### Reporting an accessibility barrier
+
+Use the
+[accessibility issue form](https://github.com/Community-Access/glow/issues/new?template=accessibility.yml).
+If GitHub is a barrier for you, or you would rather not post publicly, use the
+[feedback form](https://letitglow.app/feedback/) in GLOW or email
+[support@community-access.org](mailto:support@community-access.org). How we
+triage and respond is in
+[ACCESSIBILITY.md](ACCESSIBILITY.md#reporting-accessibility-issues).
+
+### Accessibility work you can pick up
+
+- [Accessibility issues for new contributors](https://github.com/Community-Access/glow/issues?q=is%3Aissue+is%3Aopen+label%3Aaccessibility+label%3A%22good+first+issue%22),
+  labelled `accessibility` and `good first issue`.
+- [Accessibility issues where we need specialist help](https://github.com/Community-Access/glow/issues?q=is%3Aissue+is%3Aopen+label%3Aaccessibility+label%3A%22help+wanted%22),
+  labelled `accessibility` and `help wanted`; each says what experience it
+  needs.
+- [All open accessibility issues](https://github.com/Community-Access/glow/issues?q=is%3Aissue+is%3Aopen+label%3Aaccessibility).
+
+Not all of it is code. Testing GLOW with a screen reader, magnifier, voice
+control or the keyboard, reproducing a report someone else filed, reviewing
+the user guide, or checking that a document GLOW produced reads well are all
+contributions we value and credit.
+
+### Ways to take part
+
+Everything in GLOW's development happens asynchronously and in text: issues,
+pull requests and review comments on GitHub, the feedback form in the web app,
+and email to [support@community-access.org](mailto:support@community-access.org).
+No meeting or call is required to contribute. When we hold a project meeting,
+the agenda is posted in advance, notes are posted to an issue afterwards, and
+joining with a camera or by speaking is never required.
+
+If a tool or process we use is a barrier for you, or you need an accommodation
+to contribute, email
+[support@community-access.org](mailto:support@community-access.org) or
+[jeff@jeffbishop.com](mailto:jeff@jeffbishop.com) privately. You do not need to
+explain why, and we will not discuss it in public. How we reviewed the tools we
+use is in [docs/accessibility-framework.md](docs/accessibility-framework.md#community-phase).
 
 ## Testing
 
@@ -146,20 +209,21 @@ pytest --cov=src
 
 GLOW is organized as:
 
-```
+```text
 glow/
-├── web/                     # Flask web app
-│   ├── src/                 # Application source
-│   │   └── acb_large_print_web/
-│   │       ├── routes/      # API and page routes
-│   │       ├── templates/   # Jinja2 HTML templates
-│   │       └── static/      # CSS, JS, assets
-│   ├── tests/               # Test suite
-│   └── pyproject.toml       # Python dependencies
-├── docs/                    # User and deployment documentation
-├── scripts/                 # Deployment and utility scripts
-├── .github/workflows/       # CI/CD workflows
-└── README.md
+  web/                     Flask web app
+    src/                   Application source
+      acb_large_print_web/
+        routes/            API and page routes
+        templates/         Jinja2 HTML templates
+        static/            CSS, JS, assets
+    tests/                 Test suite
+    e2e/                   Playwright suites, including accessibility
+    pyproject.toml         Python dependencies
+  docs/                    User and deployment documentation
+  scripts/                 Deployment and utility scripts
+  .github/workflows/       CI/CD workflows
+  README.md
 ```
 
 ## Reporting Security Issues
@@ -172,8 +236,8 @@ This project adheres to the [Contributor Covenant](CODE_OF_CONDUCT.md). By parti
 
 ## Questions?
 
-- Open a [GitHub Discussion](https://github.com/Community-Access/glow/discussions)
-- Submit feedback via the [web app](https://glow.bits-acb.org/feedback)
-- Email the BITS team
+- Open a [GitHub issue](https://github.com/Community-Access/glow/issues)
+- Submit feedback via the [web app](https://letitglow.app/feedback/)
+- Email [support@community-access.org](mailto:support@community-access.org)
 
 Thank you for contributing to accessible technology.

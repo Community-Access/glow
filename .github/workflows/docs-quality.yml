@@ -3,21 +3,41 @@ name: Docs Quality
 on:
   pull_request:
     paths:
-      - "docs/**/*.md"
-      - "README.md"
+      - "**/*.md"
       - ".vale.ini"
       - ".vale/**"
+      - ".github/a11y.markdownlint-cli2.jsonc"
       - ".github/workflows/docs-quality.yml"
   push:
     branches: [main]
     paths:
-      - "docs/**/*.md"
-      - "README.md"
+      - "**/*.md"
       - ".vale.ini"
       - ".vale/**"
+      - ".github/a11y.markdownlint-cli2.jsonc"
       - ".github/workflows/docs-quality.yml"
 
 jobs:
+  markdown-accessibility:
+    # Open Source Accessibility Framework, Testing action 5: heading levels,
+    # one H1, image alternative text, descriptive link text, table shape and
+    # code block languages, on every Markdown file outside vendor/, the sample
+    # inputs and the AHG workshop materials. The rules and their reasons are in
+    # .github/a11y.markdownlint-cli2.jsonc and docs/accessibility-testing.md.
+    name: Markdown accessibility lint
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Run markdownlint (accessibility rules)
+        run: npx --yes markdownlint-cli2@0.18.1 --config .github/a11y.markdownlint-cli2.jsonc
+
   vale:
     name: Vale prose lint
     runs-on: ubuntu-latest

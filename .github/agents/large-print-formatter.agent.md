@@ -376,7 +376,7 @@ Use the `vscode_askQuestions` tool to gather input from the user when the intent
 
 Keep questions concise. Use the `options` parameter with clear labels. Example:
 
-```
+```yaml
 header: "CSS Delivery"
 question: "How should the ACB stylesheet be included?"
 options:

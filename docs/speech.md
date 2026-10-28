@@ -97,7 +97,7 @@ GLOW also detects Hugging Face's nested `en/...` download layout if those files 
 
 ## Audio Processing Pipeline
 
-```
+```text
 User text + voice + speed + pitch
         ↓
   Engine synthesize() → float32 numpy array + sample_rate
@@ -227,7 +227,7 @@ A self-hosted Text-to-Speech (TTS) platform built on Kokoro TTS, designed for Un
 
 ### High-Level Flow
 
-```
+```text
 
 User Input
 ↓
@@ -261,7 +261,7 @@ Storage + Download API
 
 ### Audio Processing
 - FFmpeg for conversion:
-```
+```bash
 
 ffmpeg -i input.wav -codec:a libmp3lame -b:a 192k output.mp3
 
@@ -272,7 +272,7 @@ ffmpeg -i input.wav -codec:a libmp3lame -b:a 192k output.mp3
 - Worker processes (2–4 per machine)
 
 ### Storage
-```
+```text
 
 /audio/{user_id}/{job_id}.mp3
 
@@ -324,7 +324,7 @@ Kokoro is CPU-friendly and does NOT require a GPU.
 
 ### 1. Async Job Processing (MANDATORY)
 
-```
+```text
 
 POST /generate → returns job_id
 GET /status → progress
@@ -346,14 +346,14 @@ GET /download → file
 
 Split long inputs:
 
-```
+```text
 
 Max chunk size: ~500 words
 
 ```
 
 Pipeline:
-```
+```text
 
 Split → Generate in parallel → Merge audio
 
@@ -372,7 +372,7 @@ Split → Generate in parallel → Merge audio
 ### 5. Caching
 
 Hash key:
-```
+```text
 
 hash(text + voice + parameters)
 
@@ -405,7 +405,7 @@ Reuse identical outputs.
 
 ### Processing Pipeline
 
-```
+```text
 
 Kokoro WAV
 ↓
@@ -434,7 +434,7 @@ MP3 encode
 
 ### Formula
 
-```
+```python
 
 words = len(text.split())
 speech_duration = words / 2.7
@@ -468,31 +468,31 @@ generation_time = speech_duration / speed_factor
 
 ### Preview
 
-```
+```http
 POST /preview
 ```
 
 ### Estimate
 
-```
+```http
 POST /estimate
 ```
 
 ### Generate
 
-```
+```http
 POST /generate
 ```
 
 ### Status
 
-```
+```http
 GET /status/{job_id}
 ```
 
 ### Download
 
-```
+```http
 GET /download/{job_id}
 ```
 

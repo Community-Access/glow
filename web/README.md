@@ -61,7 +61,7 @@ The job progress surface supports:
 
 The web app is a thin Flask layer over the existing `acb_large_print` Python library. It calls the same public API that the CLI and GUI use -- zero modifications to the core library.
 
-```
+```text
 web/
   src/
     acb_large_print_web/
@@ -306,6 +306,8 @@ Useful switches:
 
 ## Accessibility (WCAG 2.2 AA)
 
+WCAG 2.2 AA is the goal, not a verified conformance claim. How accessibility is owned, reported, tested and tracked for all of GLOW is in [ACCESSIBILITY.md](../ACCESSIBILITY.md); the tests are described in [docs/accessibility-testing.md](../docs/accessibility-testing.md). What the web app does today:
+
 - `lang="en"` on all pages
 - Skip navigation link
 - Landmark regions: header, nav, main, footer
@@ -335,11 +337,14 @@ Useful switches:
 | Container | Docker + Compose |
 | Reverse proxy | Caddy 2.x (production) |
 
-# --- OIDC/Keycloak Integration ---
-# Flask-OIDC is included in requirements.txt for Google/Keycloak login.
-# The Dockerfile and docker-compose.keycloak.yml support local Keycloak for dev/testing.
-#
-# For production, use a managed Keycloak or secure your own instance with a persistent DB and HTTPS.
-#
-# See docs/AUTH-KEYCLOAK-GUIDED-SETUP.md for full setup and onboarding instructions.
-# ---
+### OIDC and Keycloak integration
+
+Flask-OIDC is included in requirements.txt for Google and Keycloak login. The
+Dockerfile and docker-compose.keycloak.yml support a local Keycloak for
+development and testing.
+
+For production, use a managed Keycloak, or secure your own instance with a
+persistent database and HTTPS.
+
+See [the Keycloak guided setup](../docs/AUTH-KEYCLOAK-GUIDED-SETUP.md) for full
+setup and onboarding instructions.
