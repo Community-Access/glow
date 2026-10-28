@@ -16,6 +16,11 @@ Generated files:
 Usage:
     python scripts/build-doc-pages.py
     python scripts/build-doc-pages.py guide faq
+
+Build only the target whose source you changed. The committed partials for
+the other targets have drifted from their Markdown sources (some hold content
+added to the HTML by hand), so a full rebuild can delete live content; compare
+before committing a target you did not mean to rebuild.
 """
 
 from __future__ import annotations
@@ -40,15 +45,22 @@ PARTIALS_DIR = (
 # - toc_id: id for nav heading and back-to-top anchor
 # - body_class: wrapper class around converted body html
 # - back_label: back-to-top label text, or None to skip back link
+# - drop_title: when "yes", leave out the source's leading level-one heading.
+#   The page template already renders the page's only <h1>, so keeping the
+#   Markdown title would give the page two.
 SOURCES: dict[str, tuple[Path, Path, dict[str, str | None]]] = {
     "guide": (
         REPO_ROOT / "docs" / "user-guide.md",
         PARTIALS_DIR / "guide_body.html",
         {
-            "toc_heading": "In This Guide",
+            # Not "In This Guide": the guide's Markdown has its own short
+            # contents list under that heading, and two headings with one
+            # name read as a duplicate in a screen reader's heading list.
+            "toc_heading": "Full contents",
             "toc_id": "guide-toc-heading",
             "body_class": "guide-content",
             "back_label": "Back to guide contents",
+            "drop_title": "yes",
         },
     ),
     "changelog": (
@@ -131,6 +143,18 @@ def _slugify(value: str, separator: str = "-") -> str:
     return re.sub(r"[\s_]+", separator, slug.strip())
 
 
+def _drop_leading_title(md_text: str) -> str:
+    """Remove the first line when it is an ATX level-one heading ("# Title")."""
+    lines = md_text.splitlines(keepends=True)
+    for index, line in enumerate(lines):
+        if not line.strip():
+            continue
+        if line.startswith("# "):
+            return "".join(lines[:index] + lines[index + 1 :])
+        break
+    return md_text
+
+
 def _convert_md(md_text: str) -> tuple[str, str]:
     """Return (toc_html, body_html) from markdown text."""
     import markdown
@@ -149,14 +173,13 @@ def _convert_md(md_text: str) -> tuple[str, str]:
     return toc_html, body_html
 
 
-def build(name: str) -> bool:
-    src_path, out_path, options = SOURCES[name]
-
-    if not src_path.exists():
-        print(f"  [SKIP] {name}: source not found ({src_path})", file=sys.stderr)
-        return False
+def render(name: str) -> str:
+    """Return the partial for *name*, built from its Markdown source, without writing it."""
+    src_path, _out_path, options = SOURCES[name]
 
     md_text = src_path.read_text(encoding="utf-8")
+    if options.get("drop_title") == "yes":
+        md_text = _drop_leading_title(md_text)
     toc_html, body_html = _convert_md(md_text)
     toc_html = _escape_jinja(toc_html)
     body_html = _escape_jinja(body_html)
@@ -180,14 +203,21 @@ def build(name: str) -> bool:
     if back_label and toc_id:
         parts.append(f'<a href="#{toc_id}" class="back-to-top">{back_label}</a>')
 
-    out_path.parent.mkdir(parents=True, exist_ok=True)
     # No {% raw %} wrapper needed: all Jinja-like sequences ({{, {%, %}) are
     # already replaced with HTML entities by _escape_jinja() above.
     body = "\n".join(parts)
-    out_path.write_text(
-        BANNER.format(source=src_path.relative_to(REPO_ROOT)) + body + "\n",
-        encoding="utf-8",
-    )
+    return BANNER.format(source=src_path.relative_to(REPO_ROOT).as_posix()) + body + "\n"
+
+
+def build(name: str) -> bool:
+    src_path, out_path, _options = SOURCES[name]
+
+    if not src_path.exists():
+        print(f"  [SKIP] {name}: source not found ({src_path})", file=sys.stderr)
+        return False
+
+    out_path.parent.mkdir(parents=True, exist_ok=True)
+    out_path.write_text(render(name), encoding="utf-8")
 
     print(
         f"  [OK]   {name}: {src_path.relative_to(REPO_ROOT)} -> {out_path.relative_to(REPO_ROOT)}"

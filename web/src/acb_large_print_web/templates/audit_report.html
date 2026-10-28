@@ -201,7 +201,7 @@
     </div>
   </div>
   {% elif doc_format in ("xlsx", "pptx") %}
-  <p>Auto-fix for {{ doc_format | upper }} files is coming soon. Use the findings above to make corrections manually in Microsoft Office. The <a href="{{ url_for('guide.guide_page') }}#common-issues">common issues guide</a> has step-by-step Office instructions for the most frequent findings.</p>
+  <p>Auto-fix for {{ doc_format | upper }} files is coming soon. Use the findings above to make corrections manually in Microsoft Office. The <a href="{{ url_for('guide.guide_page') }}#15-common-issues-and-how-to-fix-them">common issues guide</a> has step-by-step Office instructions for the most frequent findings.</p>
   {% elif doc_format == "md" and feature_converter_enabled %}
   <p>Markdown files cannot be auto-fixed by the web tool. Edit the source <code>.md</code> file to address the findings above, then re-upload to confirm. When you are satisfied with the Markdown, <a href="{{ url_for('convert.convert_form') }}">Convert it to an accessible HTML page or PDF</a> using the Convert tool.</p>
   {% elif doc_format == "pdf" and feature_converter_enabled %}
@@ -216,8 +216,8 @@
   <ul>
     {% if feature_audit_enabled and (not result.findings or doc_format != "docx" or not feature_checker_enabled) %}<li><a href="{{ url_for('audit.audit_form') }}">Audit another document</a></li>{% endif %}
     <li><a href="{{ url_for('guidelines.guidelines_page') }}">Read the full ACB guidelines</a></li>
-    <li><a href="{{ url_for('guide.guide_page') }}#understanding-results">Help understanding these results</a></li>
-    <li><a href="{{ url_for('guide.guide_page') }}#common-issues">Common issues and how to fix them</a></li>
+    <li><a href="{{ url_for('guide.guide_page') }}#14-understanding-your-results">Help understanding these results</a></li>
+    <li><a href="{{ url_for('guide.guide_page') }}#15-common-issues-and-how-to-fix-them">Common issues and how to fix them</a></li>
   </ul>
 
   {% if share_url %}
