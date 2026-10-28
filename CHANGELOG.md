@@ -98,6 +98,19 @@ Releases are tagged in the [GitHub repository](https://github.com/Community-Acce
 
 ### Fixed
 
+- **PDF output is tagged (#145).** Every PDF GLOW renders with WeasyPrint --
+  Convert to PDF, the shared audit report's PDF download and the Document Chat
+  PDF export -- now asks for tagged output and the PDF/UA-1 variant, so the
+  file carries a structure tree (headings, lists, tables, reading order),
+  `/MarkInfo /Marked true`, a language, a displayed title and the PDF/UA-1
+  identifier in its metadata. Previously all three wrote untagged PDF. The
+  Document Chat export now gives Pandoc a page title and language, which
+  PDF/UA needs. The options live in one place,
+  `acb_large_print.pandoc_converter.write_tagged_pdf`, and
+  `web/tests/test_tagged_pdf.py` renders a PDF through each path, checks its
+  tags and metadata, and fails if any shipped code calls `write_pdf()`
+  directly. `web/requirements.txt` now pins WeasyPrint 68 or later, matching
+  `web/pyproject.toml`. A check with PAC or veraPDF is still to be recorded.
 - **Documentation reads better with assistive technology.** 38 code blocks in
   nine files now name their language; shell comments in `web/README.md` that
   rendered as eight top-level headings are now a real "OIDC and Keycloak

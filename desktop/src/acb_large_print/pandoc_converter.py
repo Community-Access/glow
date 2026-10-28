@@ -4,7 +4,7 @@ Wraps the Pandoc CLI to convert text-oriented document formats into:
 - Standalone, accessible HTML with embedded ACB Large Print CSS
 - Word (.docx) documents with optional ACB reference styling
 - EPUB 3 e-books with embedded ACB accessibility CSS
-- PDF documents rendered from ACB HTML via WeasyPrint
+- Tagged PDF/UA-1 documents rendered from ACB HTML via WeasyPrint
 
 Supported input: .md, .rst, .txt, .odt, .rtf, .docx, .epub.
 
@@ -426,6 +426,33 @@ _ACB_PDF_CSS_BINDING = _ACB_PDF_CSS.replace(
     "margin: 1in;",
     "margin: 1in 1in 1in 1.5in;",
 )
+
+
+# Options every GLOW call to WeasyPrint's ``write_pdf()`` passes, so the PDF
+# it writes is tagged (a structure tree with headings, lists, tables and
+# reading order, ``/MarkInfo /Marked true``) and identifies itself as PDF/UA-1
+# (ISO 14289-1) in its XMP metadata, with the document title shown in the
+# title bar. WeasyPrint has supported both since version 68, the minimum GLOW
+# pins. Without them WeasyPrint writes an untagged PDF that a screen reader
+# meets as one undifferentiated run of text (issue #145).
+#
+# The PDF/UA identifier is a claim, not a certificate: the HTML still has to
+# carry a <title>, a lang attribute, real headings and alt text, and the
+# result should be checked with PAC or veraPDF.
+TAGGED_PDF_OPTIONS: dict[str, object] = {
+    "pdf_variant": "pdf/ua-1",
+    "pdf_tags": True,
+}
+
+
+def write_tagged_pdf(html_doc, target=None):
+    """Render a ``weasyprint.HTML`` document as tagged PDF/UA-1.
+
+    Use this instead of calling WeasyPrint's ``write_pdf`` directly, so that no
+    PDF GLOW produces is untagged. *target* is passed through to WeasyPrint:
+    a path or file object to write to, or ``None`` to get the PDF as bytes.
+    """
+    return html_doc.write_pdf(target, **TAGGED_PDF_OPTIONS)
 
 
 def weasyprint_available() -> bool:
@@ -865,7 +892,7 @@ def convert_to_pdf(
             "WeasyPrint: rendering %s -> %s", html_intermediate.name, output_path.name
         )
         html_doc = weasyprint.HTML(filename=str(html_intermediate))
-        html_doc.write_pdf(str(output_path))
+        write_tagged_pdf(html_doc, str(output_path))
 
         size = output_path.stat().st_size
         log.info(

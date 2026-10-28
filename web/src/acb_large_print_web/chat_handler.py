@@ -1279,7 +1279,7 @@ class ChatSession:
         doc.save(str(output_path))
 
     def export_pdf(self, output_path: Path) -> None:
-        """Export conversation to PDF via markdown + Pandoc + WeasyPrint.
+        """Export conversation to tagged PDF/UA-1 via markdown + Pandoc + WeasyPrint.
 
         Raises on any failure so the caller does not serve a 0-byte PDF. The
         intermediate .md/.html siblings are always cleaned up.
@@ -1296,8 +1296,22 @@ class ChatSession:
 
             # Convert markdown to HTML via Pandoc
             try:
+                # --standalone with a page title and a language, so the
+                # HTML WeasyPrint renders gives the tagged PDF a document
+                # title and a /Lang (both required by PDF/UA). pagetitle
+                # sets <title> without adding a second visible heading.
                 subprocess.run(
-                    ["pandoc", str(md_path), "-o", str(html_path)],
+                    [
+                        "pandoc",
+                        "--standalone",
+                        "--metadata",
+                        f"pagetitle=Chat Session: {self.filename}",
+                        "--metadata",
+                        "lang=en",
+                        str(md_path),
+                        "-o",
+                        str(html_path),
+                    ],
                     check=True,
                     capture_output=True,
                     timeout=60,
@@ -1312,9 +1326,10 @@ class ChatSession:
 
             # Convert HTML to PDF via WeasyPrint
             try:
+                from acb_large_print.pandoc_converter import write_tagged_pdf
                 from weasyprint import HTML
 
-                HTML(str(html_path)).write_pdf(str(output_path))
+                write_tagged_pdf(HTML(str(html_path)), str(output_path))
             except Exception as e:
                 log.error("WeasyPrint PDF generation failed: %s", e)
                 raise RuntimeError("PDF export failed during WeasyPrint rendering") from e

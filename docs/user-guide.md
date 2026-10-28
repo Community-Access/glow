@@ -812,7 +812,7 @@ Creates a print-ready PDF formatted with ACB rules. Pandoc converts the source t
 
 - **Binding margin** -- adds 0.5 inches of extra left margin for printed and bound documents
 
-**When to use:** producing a document that will be printed and distributed in large print. Note: WeasyPrint produces CSS-rendered PDFs that are visually formatted but may not carry full PDF/UA structural tags. For maximum tagged-PDF accessibility, fix the source document first and export from Word or LibreOffice.
+**When to use:** producing a document that will be printed and distributed in large print. The PDF is tagged and identifies itself as PDF/UA-1: headings, lists, tables, reading order, the document title and its language reach a screen reader. The tags are only as good as the source, so fix the document first (real headings, alternative text, table header rows). GLOW's PDFs have not yet been checked with PAC or veraPDF; if you must deliver certified PDF/UA, check the file with one of them, or export PDF from Word or LibreOffice.
 
 ### To EPUB or DAISY (DAISY Pipeline)
 
@@ -2474,7 +2474,7 @@ Creates an accessible PDF formatted with ACB BOP print-optimized rules. Pandoc c
 
 - **Binding margin** -- adds 0.5 inches of extra left margin for printed/bound documents
 
-**Best when:** you need a print-ready document with ACB-compliant formatting. Good for meeting agendas, newsletters, and reports that will be printed and distributed in large print. Note: WeasyPrint produces CSS-rendered PDFs that are visually formatted but may not be fully PDF/UA tagged. For maximum PDF accessibility, fix the source document first and use your word processor's PDF export.
+**Best when:** you need a print-ready document with ACB-compliant formatting. Good for meeting agendas, newsletters, and reports that will be printed and distributed in large print. The PDF is tagged and identifies itself as PDF/UA-1, so its headings, lists and tables reach a screen reader; the tags are only as good as the source, so fix the document first. If you must deliver certified PDF/UA, check the file with PAC or veraPDF, or use your word processor's PDF export.
 
 ### To EPUB or DAISY (via DAISY Pipeline)
 

@@ -212,7 +212,7 @@ recorded yet, not that none exists.
 | Dependency | Affects | Known barriers and mitigation |
 |---|---|---|
 | Flask and Jinja templates | All web pages | GLOW writes its own HTML and CSS; no UI framework. Tested with axe-core and the keyboard suite |
-| [WeasyPrint](https://doc.courtbouillon.org/weasyprint/) | PDF output from Convert, the audit report as PDF, Document Chat export | GLOW does not yet ask WeasyPrint for tagged PDF, although WeasyPrint supports it; tracked in [#145](https://github.com/Community-Access/glow/issues/145). Workaround: fix the source document and export PDF from Word or LibreOffice |
+| [WeasyPrint](https://doc.courtbouillon.org/weasyprint/) | PDF output from Convert, the audit report as PDF, Document Chat export | GLOW asks WeasyPrint for tagged PDF that identifies itself as PDF/UA-1. The tags follow the HTML, so they are only as good as the source document. Checking the output with PAC or veraPDF is tracked in [#145](https://github.com/Community-Access/glow/issues/145) |
 | [Pandoc](https://pandoc.org/) | HTML, Word and ePub conversion | No known barrier. Headings, lists and tables come from the source structure |
 | [MarkItDown](https://github.com/microsoft/markitdown) | Conversion to Markdown | Text extraction quality depends on the source; image-only PDFs produce little text |
 | python-docx, python-pptx, openpyxl | Reading and fixing Office files | No known barrier |
@@ -276,11 +276,14 @@ These are the barriers we know about. Please
   tests.** Only the web app does. Tracked in
   [#146](https://github.com/Community-Access/glow/issues/146). The web app
   offers the same audit, fix and convert functions.
-- **PDF output is untagged.** PDFs made with WeasyPrint have no tags, so a
-  screen reader finds no headings or reading order. Tracked in
-  [#145](https://github.com/Community-Access/glow/issues/145). Workaround:
-  download the fixed Word document and export PDF from Word or LibreOffice,
-  or use the HTML, Markdown or ePub output.
+- **PDF output has not been checked with PAC or veraPDF.** PDFs made with
+  WeasyPrint are tagged and identify themselves as PDF/UA-1, with headings,
+  lists, tables, reading order, a title and a language, and a test checks that
+  every PDF path writes them. No one has yet run the output through a PDF/UA
+  checker or read it with a screen reader. Tracked in
+  [#145](https://github.com/Community-Access/glow/issues/145). If you must
+  deliver certified PDF/UA, check the file yourself, or export PDF from the
+  fixed Word document in Word or LibreOffice.
 - **The user guide holds two editions of itself.** Its heading list shows most
   sections twice, under two numbering schemes. Tracked in
   [#147](https://github.com/Community-Access/glow/issues/147). Workaround: use
