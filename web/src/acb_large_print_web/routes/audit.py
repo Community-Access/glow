@@ -753,8 +753,12 @@ def shared_report_pdf(share_token: str):
             from weasyprint import HTML  # type: ignore[import-not-found]
         except ImportError:
             abort(503)
+        from acb_large_print.pandoc_converter import write_tagged_pdf
+
         try:
-            pdf_bytes = HTML(string=html, base_url=request.url_root).write_pdf()
+            pdf_bytes = write_tagged_pdf(
+                HTML(string=html, base_url=request.url_root)
+            )
         except Exception:
             abort(500)
         if pdf_bytes:

@@ -134,7 +134,7 @@
         <input type="radio" name="direction" value="to-pdf"{% if not ns.default_set and pandoc_installed and weasyprint_installed %} checked{% set ns.default_set = true %}{% endif %}{% if not pandoc_installed or not weasyprint_installed %} disabled{% endif %}>
         <span>
           <strong>Accessible PDF</strong><br>
-          Create a PDF with ACB BOP print formatting -- Arial font, 18-point body text, 22-point headings, 1.15 line spacing, 1-inch margins, and flush-left alignment. Ready for printing or sharing as a fixed-layout document.
+          Create a PDF with ACB BOP print formatting -- Arial font, 18-point body text, 22-point headings, 1.15 line spacing, 1-inch margins, and flush-left alignment. Tagged as PDF/UA-1, so its headings, lists and tables reach a screen reader. Ready for printing or sharing as a fixed-layout document.
           {% if not pandoc_installed or not weasyprint_installed %}<br><em>This option is temporarily unavailable on this server.</em>{% endif %}
         </span>
       </label>
