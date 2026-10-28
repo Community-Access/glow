@@ -88,6 +88,14 @@ jobs:
           E2E_BASE_URL: "http://127.0.0.1:5100"
           E2E_AXE_FAIL_INCOMPLETE: "1"
 
+      - name: Run keyboard-only smoke test (core flows)
+        working-directory: web
+        run: npm run test:keyboard
+
+      - name: Run zoom and reflow check (200 and 400 percent)
+        working-directory: web
+        run: npm run test:reflow
+
       - name: Run weekly strict full axe-core audit
         if: github.event_name == 'schedule'
         working-directory: web

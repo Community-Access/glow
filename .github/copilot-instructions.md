@@ -28,6 +28,7 @@ This repository contains the GLOW -- a VS Code agent toolkit, desktop applicatio
 
 ## Key conventions
 
+- Accessibility expectations for every change are in `ACCESSIBILITY.md` ("Contributor expectations"); for web changes run `npm run test:axe`, `npm run test:keyboard` and `npm run test:reflow` in `web/`, and complete the accessibility checklist in `.github/PULL_REQUEST_TEMPLATE.md`
 - All CSS uses rem units (never px for text) to support browser zoom and reflow
 - Digital content uses WCAG 2.2 AA line-height (1.5) which overrides ACB print spec (1.15); print media query reverts to 1.15
 - Emphasis is underline only -- no italic anywhere, no bold for body emphasis

@@ -16,6 +16,23 @@ The suite in [e2e/tests/regression.spec.mjs](e2e/tests/regression.spec.mjs) cove
 - BITS Whisperer sample-audio transcription flow (`/whisperer`)
 - Static pages smoke checks (`/guidelines`, `/guide`, `/about`, `/changelog`, `/feedback`)
 
+Three accessibility suites run beside it in the Accessibility Regression Gate
+workflow:
+
+- [e2e/tests/axe-audit.spec.mjs](tests/axe-audit.spec.mjs) (`npm run test:axe`):
+  axe-core against every public page and the workshop pages, failing on any
+  critical or serious violation.
+- [e2e/tests/keyboard.spec.mjs](tests/keyboard.spec.mjs) (`npm run test:keyboard`):
+  the keyboard-only smoke test for the core flows. It walks each page's tab
+  sequence and completes the audit, fix and convert flows using only Tab,
+  Enter and Space.
+- [e2e/tests/reflow.spec.mjs](tests/reflow.spec.mjs) (`npm run test:reflow`):
+  the core pages at 320 and 640 CSS pixels wide (400 and 200 percent zoom),
+  with no sideways scrolling.
+
+What each one checks, and what still needs a person, is in
+[docs/accessibility-testing.md](../../docs/accessibility-testing.md).
+
 ## Prerequisites
 
 From [web/package.json](web/package.json) scripts:

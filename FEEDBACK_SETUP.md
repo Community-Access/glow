@@ -8,7 +8,7 @@
 ## Three-Minute Setup
 
 ### 1. Generate GitHub PAT
-```
+```text
 https://github.com/settings/tokens → Generate new token (classic)
 Name: community-access-support-sync-dev
 Scopes: repo, read:user
@@ -69,7 +69,7 @@ export FEEDBACK_PASSWORD=your-secure-password-here
 ## Local Development (.env File)
 
 Create `web/.env`:
-```
+```dotenv
 SECRET_KEY=dev-key-12345
 FEEDBACK_PASSWORD=dev-password
 SUPPORT_HUB_GITHUB_TOKEN=ghp_YOUR_TOKEN_HERE

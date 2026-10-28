@@ -1,0 +1,37 @@
+// Markdown accessibility lint for GLOW's documentation, run by the Docs
+// Quality workflow. Only the rules that affect how documentation reads with
+// assistive technology are on; style rules are left to authors.
+// What each rule protects is in docs/accessibility-testing.md
+// ("Documentation checks").
+{
+  "config": {
+    "default": false,
+    // Heading levels go up one at a time.
+    "MD001": true,
+    // One top-level heading per file.
+    "MD025": true,
+    // Every fenced code block names its language (text for plain output).
+    "MD040": true,
+    // Every image has alternative text.
+    "MD045": true,
+    // Tables have a consistent shape.
+    "MD055": true,
+    "MD056": true,
+    // Link text is descriptive ("click here" and the like are flagged).
+    "MD059": true
+  },
+  "gitignore": true,
+  "globs": ["**/*.md"],
+  "ignores": [
+    "**/node_modules/**",
+    "vendor/**",
+    "samples/**",
+    "tmp/**",
+    "plan/**",
+    "docs/ahg-2026/**",
+    "ahg.md",
+    "ahg-test-report.md",
+    "web/e2e/artifacts/**",
+    "web/test-results/**"
+  ]
+}

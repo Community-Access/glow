@@ -10,6 +10,8 @@
     "test:axe": "playwright test --config=e2e/playwright.config.mjs e2e/tests/axe-audit.spec.mjs",
     "test:axe:impacted": "node e2e/scripts/run-impacted-axe.mjs",
     "test:axe:strict": "playwright test --config=e2e/playwright.config.mjs e2e/tests/axe-audit.spec.mjs",
+    "test:keyboard": "playwright test --config=e2e/playwright.config.mjs e2e/tests/keyboard.spec.mjs",
+    "test:reflow": "playwright test --config=e2e/playwright.config.mjs e2e/tests/reflow.spec.mjs",
     "test:e2e:report": "playwright test --config=e2e/playwright.config.mjs || true; node e2e/scripts/generate-issue-report.mjs",
     "test:e2e:issues": "node e2e/scripts/generate-issue-report.mjs"
   },

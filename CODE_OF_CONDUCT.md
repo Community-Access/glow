@@ -39,7 +39,7 @@ This Code of Conduct applies within all community spaces, and also applies when 
 
 ## Reporting
 
-If you witness or experience behavior that violates this Code of Conduct, please report it by contacting the project team at [security@bits-acb.org](mailto:security@bits-acb.org) or via a private message to a project maintainer.
+If you witness or experience behavior that violates this Code of Conduct, please report it by contacting the project team at [security@bits-acb.org](mailto:security@bits-acb.org) or [support@community-access.org](mailto:support@community-access.org), or via a private message to a project maintainer.
 
 All complaints will be reviewed and investigated promptly and fairly. The project team is obligated to maintain the confidentiality of the reporter of an incident.
 
@@ -61,7 +61,7 @@ Community Impact Guidelines were inspired by [Mozilla's code of conduct enforcem
 
 ## Questions?
 
-If you have questions about this Code of Conduct, please contact the BITS team or open a discussion in the [community forum](https://github.com/Community-Access/glow/discussions).
+If you have questions about this Code of Conduct, please contact the project team at [support@community-access.org](mailto:support@community-access.org) or open an [issue](https://github.com/Community-Access/glow/issues).
 
 ---
 

@@ -160,7 +160,7 @@ Design intent:
 
 ## Workspace structure
 
-```
+```text
 lp/
   .github/
     copilot-instructions.md              Repo-level Copilot context
@@ -523,6 +523,19 @@ Confidence statement:
 - We are confident in the current lessons learned for heading detection and ACB repair behavior on the scenarios we generated and measured.
 - We are also confident that the fixer path is written in a cross-platform way because it uses platform-neutral Python and document-processing libraries rather than OS-specific APIs.
 - We have runtime proof for Windows in this session. Final cross-platform runtime proof still requires executing the same validation commands on macOS and Linux CI runners.
+
+## Accessibility of this project
+
+GLOW holds itself to the standards it checks. Our accessibility priorities,
+what we ask of contributors, how to report a barrier (on GitHub, through the
+feedback form or by email), how we respond, what we test on and what we know
+is not yet good enough are in [ACCESSIBILITY.md](ACCESSIBILITY.md). The tests
+behind it are in [docs/accessibility-testing.md](docs/accessibility-testing.md).
+
+We are adopting GitHub's
+[Open Source Accessibility Framework](https://open-source-accessibility.github.io/Open-Source-Accessibility-Framework/),
+an improvement framework, not a certification. Our progress, action by action,
+is in [docs/accessibility-framework.md](docs/accessibility-framework.md).
 
 ## License
 

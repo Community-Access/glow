@@ -1,0 +1,119 @@
+name: Accessibility barrier
+description: Something in GLOW is hard or impossible to use with your setup, including assistive technology.
+title: "[a11y]: "
+labels: ["accessibility"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thank you for telling us. Accessibility reports are expertise, not complaints, and partial reports are welcome: fill in what you can. Only the first four questions are required.
+
+        You never need to tell us about a disability or diagnosis. If you would rather not post publicly, or this form is hard to use, use the feedback form at https://letitglow.app/feedback/ or email support@community-access.org instead.
+
+        How we triage and respond is in [ACCESSIBILITY.md](https://github.com/Community-Access/glow/blob/main/ACCESSIBILITY.md#reporting-accessibility-issues).
+
+  - type: textarea
+    id: summary
+    attributes:
+      label: What happened
+      description: What you were trying to do, and what got in the way. Your own words are best.
+      placeholder: "Example: after I run an audit, my screen reader does not announce that the report is ready, so I do not know the page has changed."
+    validations:
+      required: true
+
+  - type: dropdown
+    id: area
+    attributes:
+      label: Where
+      description: The part of GLOW the barrier is in.
+      options:
+        - The web app (letitglow.app or a self-hosted copy)
+        - A document GLOW produced (fixed, converted, template, PDF, ePub, braille or audio)
+        - An audit report or its CSV export
+        - The desktop app
+        - The Word add-in
+        - The MCP server or the VS Code agents
+        - Documentation (user guide, FAQ, README, docs/)
+        - The GitHub repository, issue or pull request templates
+        - Something else
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: What you expected
+      description: What should have happened instead.
+    validations:
+      required: true
+
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      description: How we can see it ourselves. Name the keys you pressed if you used a keyboard.
+      placeholder: |
+        1. Go to https://letitglow.app/audit/
+        2. Press Tab to move to "Upload a document", then Space to choose a file
+        3. Press Tab to "Run Audit", then Enter
+        4. Notice that ...
+    validations:
+      required: true
+
+  - type: input
+    id: location
+    attributes:
+      label: Page URL or screen
+      description: Optional. The page address, the desktop app screen or the add-in panel, if you know it.
+    validations:
+      required: false
+
+  - type: dropdown
+    id: severity
+    attributes:
+      label: How much does this get in your way? (optional; we confirm this during triage)
+      description: |
+        - Critical: I cannot complete the task at all.
+        - Serious: I can complete it only with real difficulty or a workaround.
+        - Moderate: it works, but is confusing, slow or inconsistent.
+        - Minor: a small problem with little effect.
+      options:
+        - Critical
+        - Serious
+        - Moderate
+        - Minor
+        - Not sure
+    validations:
+      required: false
+
+  - type: input
+    id: assistive-technology
+    attributes:
+      label: Assistive technology
+      description: Optional. For example NVDA 2026.3, JAWS 2026, VoiceOver, Narrator, ZoomText, Windows Magnifier, Dragon, high contrast, or keyboard only.
+    validations:
+      required: false
+
+  - type: input
+    id: environment
+    attributes:
+      label: Operating system, browser or Word version
+      description: Optional. For example Windows 11 with Chrome 140, or macOS 26 with Word for Mac.
+    validations:
+      required: false
+
+  - type: input
+    id: wcag
+    attributes:
+      label: Related WCAG success criterion
+      description: Optional. If you know it; we will work it out in triage if not.
+    validations:
+      required: false
+
+  - type: textarea
+    id: context
+    attributes:
+      label: Anything else
+      description: Optional. A workaround you found, a screenshot or recording, or related issues. Do not attach documents that hold private information.
+    validations:
+      required: false

@@ -174,7 +174,7 @@ acb-large-print batch fix docs/ -r --output-dir fixed/
 
 ## Architecture
 
-```
+```text
 desktop/
   src/acb_large_print/
     __init__.py          Version and metadata

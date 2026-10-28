@@ -142,7 +142,9 @@ If the health check fails:
 
 ## Deployment Lifecycle
 
-```
+In words: `deploy-app.sh` runs pre-flight checks, backs up the feedback database, turns on maintenance mode, then builds and starts the containers. If the health check passes, maintenance mode is turned off and the site is live. If it fails, the script rolls back to the previous commit, rebuilds and checks health again. A passing rollback ends with a status message and the site URLs; a failing rollback stops with exit code 1 for manual intervention. The diagram below shows the same flow.
+
+```text
 ┌─────────────────────────────────────┐
 │  User runs: bash deploy-app.sh      │
 └──────────────┬──────────────────────┘

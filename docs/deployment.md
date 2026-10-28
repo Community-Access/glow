@@ -681,7 +681,7 @@ Use this method if you prefer not to use git on the server, or if you are deploy
 
 The Docker build requires these directories from the repository:
 
-```
+```text
 app/
   web/
     Dockerfile
@@ -756,7 +756,7 @@ nano .env
 
 Paste the following, replacing the placeholder values:
 
-```
+```dotenv
 SECRET_KEY=PASTE_GENERATED_KEY_HERE
 FEEDBACK_PASSWORD=CHOOSE_A_STRONG_PASSWORD
 FEEDBACK_GITHUB_TOKEN=PASTE_GITHUB_TOKEN_FOR_ISSUE_SYNC
@@ -782,7 +782,7 @@ KEYCLOAK_ADMIN_PASSWORD=PASTE_GENERATED_KEY_HERE
 
 Optional resilience tuning for AI-heavy workloads (recommended for large files and peak traffic):
 
-```
+```dotenv
 OPENROUTER_MAX_RETRIES=2
 OPENROUTER_RETRY_BASE_SECONDS=1.0
 GLOW_AI_QUEUE_WAIT_SECONDS=25
@@ -836,7 +836,7 @@ The JSON should show `services.openrouter.status` as `ok`, `services.keycloak.st
 
 Set these values in `.env`:
 
-```
+```dotenv
 ADMIN_LOCAL_EMAIL=jeff@jeffbishop.com
 ADMIN_LOCAL_PASSWORD=YOUR_BOOTSTRAP_PASSWORD
 ```
@@ -864,7 +864,7 @@ nano ~/app/web/caddy/Caddyfile
 
 Paste the following content. If your domains differ from `csedesigns.com` and `glow.bits-acb.org`, replace them:
 
-```
+```caddyfile
 # Main website -- static files
 csedesigns.com, www.csedesigns.com {
     root * /srv/www
@@ -1128,7 +1128,7 @@ To check your TLS grade externally, test at `https://www.ssllabs.com/ssltest/ana
 
 If you want to test certificate issuance without hitting Let's Encrypt production rate limits (5 certificates per registered domain per week), add this global block at the **top** of your Caddyfile:
 
-```
+```caddyfile
 {
     acme_ca https://acme-staging-v02.api.letsencrypt.org/directory
 }
@@ -1145,7 +1145,7 @@ docker compose -f docker-compose.prod.yml restart caddy
 
 If you need to use a certificate from a different CA (not Let's Encrypt), update the relevant site block in your Caddyfile:
 
-```
+```caddyfile
 glow.bits-acb.org {
     tls /etc/caddy/certs/cert.pem /etc/caddy/certs/key.pem
     reverse_proxy web:8000
@@ -1223,7 +1223,7 @@ crontab -e
 
 Add this line to log a warning if root filesystem usage exceeds 80%:
 
-```
+```text
 0 6 * * * df -h / | awk 'NR==2 && int($5)>80' >> /home/deploy/disk-alerts.log 2>&1
 ```
 
@@ -1537,7 +1537,7 @@ crontab -e
 
 Add this line to run daily at 2 AM:
 
-```
+```text
 0 2 * * * /home/deploy/app/scripts/backup-feedback.sh >> /home/deploy/backups/backup.log 2>&1
 ```
 
@@ -1590,7 +1590,7 @@ The script validates the backup file, stops the container, copies the backup, st
 
 Set `FEEDBACK_PASSWORD` in your `.env` file (see Phase 4.2), then rebuild and visit:
 
-```
+```text
 https://glow.bits-acb.org/feedback/review?key=YOUR_PASSWORD
 ```
 
@@ -2505,7 +2505,7 @@ The staging regression covers the same assertions as the production post-deploy 
 
 ### Step 5: Expected Output (Clean Pass)
 
-```
+```text
 [WSL-STAGE] Checking WSL distro: Ubuntu ... OK
 [WSL-STAGE] Starting stack inside WSL...
 [WSL-STAGE] Waiting for /health on http://localhost:8000 ...
@@ -2543,7 +2543,9 @@ Another service is using port 8000. Pass `-Port 8001` (or any free port) to the 
 
 ### Step 7: WSL Staging in the Pre-Production Workflow
 
-```
+The order, from a feature branch to the server: run pytest and mypy locally until they pass, then run `wsl-stage-regression.ps1` until it passes (the new gate), then push and run `deploy-app.sh` on the server, which ends with `post-deploy-check.sh`.
+
+```text
 [ Your feature branch ]
         |
         v
