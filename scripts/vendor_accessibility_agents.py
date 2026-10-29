@@ -122,6 +122,15 @@ def front(skill_dir: Path) -> dict[str, str]:
 LIMITS_PAGE = KIT / "accessibility-agents-in-the-kit.md"
 
 
+def _first_sentence(text: str) -> str:
+    """A skill's description, up to its first full stop, safe in a table cell."""
+    text = " ".join(text.split())
+    end = text.find(". ")
+    if end != -1:
+        text = text[: end + 1]
+    return text.replace("|", r"\|")
+
+
 def write_limits_page(skills: list[dict], sha: str) -> None:
     """A page a participant can read: what works in the kit, and what does not."""
     full = [s for s in skills if not s["needs"]]
@@ -150,10 +159,12 @@ def write_limits_page(skills: list[dict], sha: str) -> None:
         "",
         "## Works fully in the kit",
         "",
-        f"{len(full)} skills need nothing the kit lacks. These are the ones you can ask for by name; the rest are specialists they call for you:",
+        f"{len(full)} skills need nothing the kit lacks. Each row is one you can ask for by name, and what it does; the rest are specialists they call for you.",
         "",
+        "| Skill | What it does |",
+        "|---|---|",
     ]
-    lines += [f"- `{s['name']}`" for s in full if s["you_can_ask_for_it"]]
+    lines += [f"| `{s['name']}` | {_first_sentence(s['description'])} |" for s in full if s["you_can_ask_for_it"]]
     lines += [
         "",
         "## Works differently in the kit",

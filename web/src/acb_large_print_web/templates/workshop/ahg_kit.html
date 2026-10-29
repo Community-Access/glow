@@ -29,7 +29,7 @@
   {% for f in g.files %}
   <li>
     <a href="{{ url_for('shortlinks.ahg_kit_file', rel=f.rel) }}">{{ f.label }}</a>
-    {%- if f.docx %}, or <a href="{{ url_for('shortlinks.ahg_kit_file', rel=f.docx) }}">download the Word file<span class="visually-hidden">: {{ f.label }}</span></a>{% endif %}
+    {%- if f.formats %}. Download it as {% for label, alt in f.formats %}<a href="{{ url_for('shortlinks.ahg_kit_file', rel=alt) }}">{{ label }}<span class="visually-hidden">: {{ f.label }}</span></a>{% if not loop.last %}{% if loop.revindex == 2 %} or {% else %}, {% endif %}{% endif %}{% endfor %}{% endif %}
   </li>
   {% endfor %}
 </ul>

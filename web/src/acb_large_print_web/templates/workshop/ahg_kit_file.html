@@ -8,7 +8,7 @@
   <li>
     <a href="{{ raw_url }}">This file as plain text</a>, at <code>{{ raw_url }}</code>
   </li>
-  {% if docx %}<li><a href="{{ url_for('shortlinks.ahg_kit_file', rel=docx) }}">Download this card as a large print Word file</a></li>{% endif %}
+  {% for label, alt in formats %}<li><a href="{{ url_for('shortlinks.ahg_kit_file', rel=alt) }}">Download this as {{ "a large print Word file" if label == "Word" else ("a PowerPoint deck" if label == "PowerPoint" else "an HTML page to keep") }}</a></li>{% endfor %}
   <li><a href="{{ url_for('shortlinks.ahg_kit_short') }}">Everything in the kit</a></li>
 </ul>
 
