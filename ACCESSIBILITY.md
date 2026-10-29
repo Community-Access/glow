@@ -334,7 +334,7 @@ is met by what is in this repository; recurring actions are set up and then
 repeated. The full record, action by action with evidence, is in
 [docs/accessibility-framework.md](docs/accessibility-framework.md), and the
 public tracking issue is [GLOW, issue 54](https://github.com/open-source-accessibility/Open-Source-Accessibility-Framework/issues/54). As of
-October 2026, 19 of 24 actions:
+October 2026, 20 of 24 actions:
 
 - **Foundational:** this document; the `accessibility` label.
 - **Workflow:** all ten actions: priorities and contributor expectations,
@@ -346,10 +346,14 @@ October 2026, 19 of 24 actions:
   documentation checks, and supported environments with known limitations.
   The screen reader spot check and the manual checks need people, and are
   next.
-- **Community:** an open invitation to help, a published progress update, and
-  shared resources. Responding to reports is documented but has no reports to
-  show yet; accessible ways to collaborate, and public recognition with
-  consent, are next.
+- **Community:** an open invitation to help; responding to reports, documented
+  in [How we respond](#how-we-respond) and, since 29 October 2026, enforced by
+  the accessibility-reports workflow, which acknowledges every report, reminds
+  the owner after 5 business days without a reply, reopens a report closed
+  without a documented outcome, and invites the reporter to confirm a fix (no
+  user reports were on record yet, so the rule covers the first one); a
+  published progress update; and shared resources. Accessible ways to
+  collaborate, and public recognition with consent, are next.
 
 ## Feedback
 

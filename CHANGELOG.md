@@ -20,7 +20,7 @@ Releases are tagged in the [GitHub repository](https://github.com/Community-Acce
   release-notes block. The logic is `.github/scripts/a11y-community.mjs`,
   tested by `.github/workflows/a11y-community-tests.yml`. See "How we
   respond" in ACCESSIBILITY.md.
-- **GLOW adopts the Open Source Accessibility Framework.** 19 of its 24
+- **GLOW adopts the Open Source Accessibility Framework.** 20 of its 24
   actions are done; the record, action by action, is in
   [docs/accessibility-framework.md](https://github.com/Community-Access/glow/blob/main/docs/accessibility-framework.md), and the
   first public progress update is
