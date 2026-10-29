@@ -39,9 +39,11 @@ This Code of Conduct applies within all community spaces, and also applies when 
 
 ## Reporting
 
-If you witness or experience behavior that violates this Code of Conduct, please report it by contacting the project team at [security@bits-acb.org](mailto:security@bits-acb.org) or [support@community-access.org](mailto:support@community-access.org), or via a private message to a project maintainer.
+If you witness or experience behavior that violates this Code of Conduct, please report it by contacting the project team at [jeff@jeffbishop.com](mailto:jeff@jeffbishop.com) or [support@community-access.org](mailto:support@community-access.org), or via a private message to a project maintainer.
 
 All complaints will be reviewed and investigated promptly and fairly. The project team is obligated to maintain the confidentiality of the reporter of an incident.
+
+This Code of Conduct is enforced. The maintainer, Jeff Bishop, receives every report sent to the addresses above and applies the enforcement steps below.
 
 ## Enforcement
 
