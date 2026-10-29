@@ -43,7 +43,7 @@ Jeff Bishop - BITS, an affiliate of the American Council of the Blind
 
 The problem
 
-WCAG 2.2 is the standard. Title II made it a deadline for public colleges and universities.
+WCAG 2.2 is the current standard. Title II requires WCAG 2.1 AA of public colleges and universities, from April 2027 for most.
 
 Every syllabus, slide deck, scanned reading and course page is in scope, and most of them are documents, not web pages.
 
@@ -53,7 +53,7 @@ Nobody fixes that by working harder. The question is how to scale without losing
 
 > Ask, warmly: who here has a backlog? Who has a spreadsheet with the word final in its name more than once? Let the laugh happen; it is recognition, not mockery.
 >
-> Title II's rule points to WCAG 2.1 AA; 2.2 is the current standard and includes everything 2.1 does. Say it once and move on.
+> Title II's rule points to WCAG 2.1 AA; 2.2 is the current standard and includes everything 2.1 does. The Department of Justice's interim final rule of 20 April 2026 moved the dates to 26 April 2027 for entities of 50,000 people or more and 26 April 2028 for smaller ones (ada.gov, the web rule page). Check that page the week before in case the dates move again. Say it once and move on.
 
 ---
 
@@ -95,9 +95,20 @@ The map for today
 6. Your agent, shared: your best version, in an open-source collection, with your name on it.
 7. Your campus: a 30-day plan.
 
+By 4:30 you will be able to:
+
+- Describe an accessibility task as an agent.
+- Ground an agent's answers in checker evidence, citing WCAG 2.2.
+- Name what no checker finds, and write the review step that catches it.
+- Explain how a team of specialists and a coordinator scales the work.
+- Contribute to an open-source project, credited in your name.
+- Plan one workflow to try on your own campus in 30 days.
+
 ### Speaker notes, slide 4
 
 > Read all seven, slowly. This list comes back at the start of every block with one step marked, so nobody ever wonders where we are.
+>
+> Then read the six outcomes once. They come back at 4:15, when everyone's 30-day plan reads them back with what they made today.
 >
 > Promise them out loud: every step has a finished example to fall back on. Nobody gets stuck and stays stuck.
 
@@ -454,7 +465,7 @@ By the end of this block: your best version in the open-source AHG 2026 collecti
 
 1. Open letitglow.app/ahg/share, and choose your newest SKILL.md, version 4, or paste it in.
 2. Press Open the share form on GitHub. The form opens, already filled in.
-3. Tick the privacy box, and press Submit new issue.
+3. Select the privacy check box, and press Submit new issue.
 4. Within a minute, the reply: Your agent is in.
 
 You did this once already, with your practice agent. Same again.

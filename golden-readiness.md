@@ -234,8 +234,8 @@ that block. Copy the final actual timings into section 2 of
 | 2. Design your agent | | | | |
 | 3. Your agent at work | | | | |
 | 4. Ground it | | | | |
-| 5. Share it and the workshop repository | | | | |
-| 6. Build the office | | | | |
+| 5. Build the office | | | | |
+| 6. Share it and the workshop repository | | | | |
 | 7. Take it home and the commitment wall | | | | |
 
 ## Step 6: Close defects and finish event preparation
@@ -260,6 +260,7 @@ that block. Copy the final actual timings into section 2 of
 | 2026-10-22 | Browser/axe/reflow sweep | Local Windows workstation | 49/50; UI, axe, reflow passed; Load-01 36/40 | `scripts/ahg_browser_checks.py`; production `https://letitglow.app` | Four `WinError 10060` timeouts; investigate/accept explicitly |
 | 2026-10-22 | Load-01, controlled workstation repeat | Windows workstation; 20 concurrent workers | 40/40 HTTP 200; average 1.84 s, max 3.17 s; 583,659 bytes each | PowerShell `HttpClient`/`Invoke-WebRequest` repeat against production | No timeout reproduced; endpoint responds `no-cache` and `Server: gunicorn`; dynamic ZIP generation is a plausible workload factor, not a confirmed cause |
 | 2026-10-22 | Production 30-participant latency; rehearsal run 39846481244 | GitHub Actions runner; 30 participants; production `https://letitglow.app` | 1,110/1,110 HTTP 200; 0 rate limits; 0 error responses; median 982 ms; p95 3,603 ms; slowest 14,315 ms; 176 requests over 2 s; latency gate failed; guarded cleanup passed | [Workshop Production Rehearsal run 39846481244](https://github.com/Community-Access/glow/actions/runs/39846481244); artifact `workshop-production-rehearsal-39846481244-1` | CSRF harness defect fixed in PR #129; remaining production latency defect. No sign-off until optimized and retested |
+| 2026-10-29 | Automated checks after the primary-source pass | Claude, Windows workstation | Kit build exit 0; formats 19 of 19 (76 files); GLOW audit 74 of 74; AHG web tests 110 passed; survey axe-core 0 violations at 1280 and 320 px | `scripts/build_ahg_kit.py`, `check_ahg_formats.py`, `audit_ahg_docs.py`, `web/tests/test_*ahg*` | None |
 | | Auto-06 axe sweep | | | | |
 | | Setup and Copilot cases | | | | |
 | | Screen-reader matrix Env-2/3/4 | | | | |

@@ -44,7 +44,7 @@ Each row is one question, and the answer.
 ```markdown
 ---
 name: faculty-coach
-description: Turns a checker's report on a faculty document into a short, kind note that teaches the habit behind the barriers.
+description: Turns a checker's report on a faculty document into a short, kind note that teaches the habit behind the barriers. Use when a faculty member's document has barriers and you want them to learn the habit, not just get a fixed file.
 license: MIT
 metadata:
   tier: specialist
@@ -176,3 +176,13 @@ Each row is one part of the plan, and the answer.
 | First step this week | Send three coach notes and count the replies |
 | Who needs to know | The center director; this changes what we report as "done" |
 | What it looks like if it worked | Next semester's syllabi arrive with real headings, without us touching them |
+
+## Sources
+
+Checked on 29 October 2026.
+
+- [WCAG 2.2](https://www.w3.org/TR/WCAG22/), the current W3C Recommendation.
+- [Understanding 1.3.1 Info and Relationships](https://www.w3.org/WAI/WCAG22/Understanding/info-and-relationships.html)
+  and [Understanding 2.4.4 Link Purpose (In Context)](https://www.w3.org/WAI/WCAG22/Understanding/link-purpose-in-context.html).
+- [Make your Word documents accessible](https://support.microsoft.com/en-us/office/make-your-word-documents-accessible-to-people-with-disabilities-d9bf3683-87ac-47ea-b91a-78dcacb3c66d),
+  Microsoft Support.

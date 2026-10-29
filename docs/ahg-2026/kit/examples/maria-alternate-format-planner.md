@@ -49,7 +49,7 @@ the frontmatter or the never-do list; they come from the template.
 ```markdown
 ---
 name: alternate-format-planner
-description: Plans alternate formats for a course document from a checker's report and the formats a student needs.
+description: Plans alternate formats for a course document from a checker's report and the formats a student needs. Use when a student needs a course document in large print, audio, braille or another format.
 license: MIT
 metadata:
   tier: specialist
@@ -187,7 +187,7 @@ Her section of the team report:
 ## 6. Her agent in the collection
 
 At 3:05 Maria opens the share page, chooses her newest file, version 4, and presses the button.
-GitHub's share form opens already filled in; she ticks the privacy box and
+GitHub's share form opens already filled in; she checks the privacy check box and
 presses Submit new issue. A minute later the reply says "Your agent is in",
 and her agent is in the AHG 2026 collection as
 `agents/<her GitHub account>/alternate-format-planner/SKILL.md`, committed in
@@ -201,7 +201,17 @@ Each row is one part of the plan, and the answer.
 |---|---|
 | One workflow | Every scanned-reading request goes through the planner before I touch it |
 | One partner | Our two student workers, who do the text recognition |
-| One safeguard | Nothing goes to a student until the page-by-page check is ticked |
+| One safeguard | Nothing goes to a student until the page-by-page check box is checked |
 | First step this week | Run the planner on the next five requests and compare with what I would have done |
 | Who needs to know | My director, because this changes our intake form |
 | What it looks like if it worked | Requests out in three days instead of eight, and no "the syllables were wrong" emails |
+
+## Sources
+
+Checked on 29 October 2026.
+
+- [WCAG 2.2](https://www.w3.org/TR/WCAG22/), the current W3C Recommendation.
+- [Understanding 1.4.5 Images of Text](https://www.w3.org/WAI/WCAG22/Understanding/images-of-text.html)
+  and [Understanding 1.1.1 Non-text Content](https://www.w3.org/WAI/WCAG22/Understanding/non-text-content.html).
+- [ACB Large Print Guidelines](https://acb.org/large-print-guidelines), from the
+  American Council of the Blind.

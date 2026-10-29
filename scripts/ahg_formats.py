@@ -61,6 +61,7 @@ SOURCES: tuple[str, ...] = (
     "kit/agent-file-principles.md",
     "kit/accessibility-agents.md",
     "kit/accessibility-agents-in-the-kit.md",
+    "kit/glossary.md",
     "kit/step-cards/0-before-the-day.md",
     "kit/step-cards/1-why-we-are-here.md",
     "kit/step-cards/2-design-your-agent.md",

@@ -1,0 +1,78 @@
+{% extends "workshop/ahg_base.html" %}
+{% block title %}{% if errors %}Check your answers: {% endif %}Before the day: a short survey{% endblock %}
+{% block heading %}Before the day: a short survey{% endblock %}
+
+{% block content %}
+{%- set error_for = {} -%}
+{%- for key, message in errors -%}{%- if key not in error_for -%}{%- set _ = error_for.update({key: message}) -%}{%- endif -%}{%- endfor -%}
+
+{% if errors %}
+<div class="panel" id="error-summary" role="alert" tabindex="-1" aria-labelledby="error-summary-title">
+  <h2 id="error-summary-title">{{ errors | length }} thing{{ "s" if errors | length != 1 }} to fix</h2>
+  <ul>
+  {% for key, message in errors %}
+    <li><a href="#q-{{ key }}">{{ message }}</a></li>
+  {% endfor %}
+  </ul>
+</div>
+{% endif %}
+
+<p>
+  About five minutes. It tells us which path you plan to take, what your
+  laptop and campus allow, and what to have ready for you at 10:00 on 16
+  November, so the day starts where you are.
+</p>
+<p>
+  Only the two questions marked "needed" must be answered. Nothing here goes
+  to an AI or to GitHub. Do not include student names, records or
+  accommodation details. The answers are read by the workshop team only and
+  deleted by {{ delete_by }}.
+</p>
+
+<form method="post" action="{{ url_for('ahg_survey.survey_submit') }}" novalidate>
+  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+  {% for group in groups %}
+  <h2>{{ group }}</h2>
+  {% for q in questions if q.group == group %}
+    {%- set err = error_for.get(q.key) -%}
+    {%- set described = [] -%}
+    {%- if q.hint %}{% set _ = described.append("h-" ~ q.key) %}{% endif -%}
+    {%- if err %}{% set _ = described.append("e-" ~ q.key) %}{% endif -%}
+    {% if q.kind in ("radio", "check") %}
+    <fieldset id="q-{{ q.key }}" tabindex="-1"{% if described %} aria-describedby="{{ described | join(' ') }}"{% endif %}>
+      <legend>{{ q.label }}{% if q.required %} (needed){% endif %}{% if q.kind == "check" %} Choose any.{% endif %}</legend>
+      {% if q.hint %}<p class="hint" id="h-{{ q.key }}">{{ q.hint }}</p>{% endif %}
+      {% if err %}<p class="hint" id="e-{{ q.key }}"><strong>Error:</strong> {{ err }}</p>{% endif %}
+      {% for option in q.options %}
+      {%- set chosen = answers.get(q.key) -%}
+      <label><input type="{{ 'radio' if q.kind == 'radio' else 'checkbox' }}" name="{{ q.key }}" value="{{ option }}"
+        {%- if (q.kind == 'radio' and chosen == option) or (q.kind == 'check' and chosen and option in chosen) %} checked{% endif %}> {{ option }}</label>
+      {% endfor %}
+    </fieldset>
+    {% else %}
+    <label for="q-{{ q.key }}">{{ q.label }}</label>
+    {% if q.hint %}<p class="hint" id="h-{{ q.key }}">{{ q.hint }}</p>{% endif %}
+    {% if err %}<p class="hint" id="e-{{ q.key }}"><strong>Error:</strong> {{ err }}</p>{% endif %}
+    {% if q.kind == "text" %}
+    <textarea id="q-{{ q.key }}" name="{{ q.key }}" maxlength="2000" rows="4"{% if described %} aria-describedby="{{ described | join(' ') }}"{% endif %}{% if err %} aria-invalid="true"{% endif %}>{{ answers.get(q.key, "") }}</textarea>
+    {% else %}
+    <input type="{{ 'email' if q.kind == 'email' else 'text' }}" id="q-{{ q.key }}" name="{{ q.key }}" value="{{ answers.get(q.key, '') }}"
+      autocomplete="{{ 'email' if q.kind == 'email' else 'name' }}"{% if described %} aria-describedby="{{ described | join(' ') }}"{% endif %}{% if err %} aria-invalid="true"{% endif %}>
+    {% endif %}
+    {% endif %}
+  {% endfor %}
+  {% endfor %}
+  <button type="submit">Send my answers</button>
+</form>
+
+<p>Questions, or anything you would rather say than type: support@community-access.org.</p>
+{% endblock %}
+
+{% block scripts %}
+{% if errors %}
+<script nonce="{{ csp_nonce }}">
+  // Move focus to the list of things to fix, so it is the first thing read.
+  document.getElementById("error-summary").focus();
+</script>
+{% endif %}
+{% endblock %}

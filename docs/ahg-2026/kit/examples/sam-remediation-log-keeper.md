@@ -10,8 +10,8 @@ description: "Worked example: a remediation log keeper agent, from problem to 30
 Role card: Compliance and procurement.
 
 Sam Okafor is the IT accessibility coordinator at Mesa Ridge State
-University. Sam reports to the CIO, who asked one question after the Title II
-deadline passed: "Where are we, and can we prove it?" Sam has a spreadsheet
+University. Sam reports to the CIO, who asked one question when the Title II web
+rule was published: "Where are we, and can we prove it?" Sam has a spreadsheet
 named `FINAL_final_v3.xlsx`, and would like a better answer.
 
 The answers in step 4 are examples written for the workshop. On the day,
@@ -45,7 +45,7 @@ Each row is one question, and the answer.
 ```markdown
 ---
 name: remediation-log-keeper
-description: Turns checker reports for a course into dated, prioritized, evidence-backed remediation log entries.
+description: Turns checker reports for a course into dated, prioritized, evidence-backed remediation log entries. Use when you need a dated, defensible record of a course's barriers for Title II.
 license: MIT
 metadata:
   tier: specialist
@@ -163,3 +163,15 @@ Each row is one part of the plan, and the answer.
 | First step this week | Log the ten highest-enrollment courses |
 | Who needs to know | The CIO and general counsel |
 | What it looks like if it worked | When asked "where are we", I send a link, not a spreadsheet named FINAL_final_v4 |
+
+## Sources
+
+Checked on 29 October 2026.
+
+- [ADA Title II web rule, ada.gov](https://www.ada.gov/resources/2024-03-08-web-rule/):
+  state and local governments, public colleges and universities included,
+  must meet WCAG 2.1 AA. An interim final rule of 20 April 2026 moved the
+  compliance dates to 26 April 2027 for entities of 50,000 people or more
+  and 26 April 2028 for smaller ones.
+- [WCAG 2.2](https://www.w3.org/TR/WCAG22/), the current W3C
+  Recommendation, which includes everything in WCAG 2.1.

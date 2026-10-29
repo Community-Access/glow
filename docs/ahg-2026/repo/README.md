@@ -33,7 +33,7 @@ You do not need to know Git, and you never make a fork or a pull request.
 
 1. Open the share page: `https://letitglow.app/workshop/ahg-2026/share`.
 2. Choose your agent file. The page fills in a short form here on GitHub.
-3. Check the workshop code, tick the privacy box, and press Submit new issue.
+3. Check the workshop code, select the privacy check box, and press Submit new issue.
 
 A reply arrives on that page within about a minute. Either your agent is in,
 with a link to it and your name on it, or the reply says exactly what to fix.

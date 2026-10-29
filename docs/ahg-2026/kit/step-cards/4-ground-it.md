@@ -68,3 +68,9 @@ Your agent stopped guessing. That is what grounded means, and it is the trusted 
 ## On Monday
 
 Before you ask any AI about a document, run a checker and give it the results: Word's, PowerPoint's or Acrobat's own checker, Accessibility Insights, or axe.
+
+## Sources
+
+Checked on 29 October 2026: the keys on this card are in the kit's
+README, with their sources. The standard every agent cites is
+[WCAG 2.2](https://www.w3.org/TR/WCAG22/).

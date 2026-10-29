@@ -63,3 +63,9 @@ You built part of an agent team today, and it just worked through a whole course
 ## On Monday
 
 Big jobs split into specialists and a coordinator. Start with one specialist; add the next when the first one earns its place.
+
+## Sources
+
+Checked on 29 October 2026: the keys on this card are in the kit's
+README, with their sources. The standard every agent cites is
+[WCAG 2.2](https://www.w3.org/TR/WCAG22/).

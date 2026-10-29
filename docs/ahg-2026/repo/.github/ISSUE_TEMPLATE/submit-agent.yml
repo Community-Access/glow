@@ -7,7 +7,7 @@ body:
     attributes:
       value: |
         Welcome. If you came here from the share page, your agent is already filled in below.
-        Check the workshop code, tick the box, and press Submit new issue at the bottom of the page.
+        Check the workshop code, select the check box, and press Submit new issue at the bottom of the page.
         Within about a minute, a reply on this page tells you your agent is in, with a link to it.
   - type: input
     id: workshop-code

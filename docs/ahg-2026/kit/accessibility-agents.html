@@ -101,7 +101,7 @@ blockquote { border-left: 4px solid var(--rule); margin-left: 0; padding-left: 1
 <tbody>
 <tr>
 <td>VS Code with Copilot</td>
-<td>Turn on the <code>chat.plugins.enabled</code> setting, then run Chat: Install Plugin From Source with <code>https://github.com/Community-Access/accessibility-agents</code></td>
+<td>Turn on the <code>chat.plugins.enabled</code> setting, then run Chat: Install Plugin from Source with <code>https://github.com/Community-Access/accessibility-agents</code></td>
 </tr>
 <tr>
 <td>GitHub Copilot on the command line</td>
@@ -129,6 +129,52 @@ blockquote { border-left: 4px solid var(--rule); margin-left: 0; padding-left: 1
 <p>Step-by-step setup for each app, written for people new to all of this, is at community-access.org/start.html. The VS Code extension in the repository is retired; use one of the ways above instead.</p>
 <h3 id="in-chatgpt-claude-or-another-assistant-in-a-browser">In ChatGPT, Claude or another assistant in a browser</h3>
 <p>On letitglow.app/ahg/assistant, under "Accessibility Agents in any assistant", copy the text for the entry point you want and paste it as your first message. Each text carries the entry point and the specialists it calls. Then give it your checker's results.</p>
+<h3 id="where-accessibility-agents-is-available-as-of-29-october-2026">Where Accessibility Agents is available, as of 29 October 2026</h3>
+<p>Each row is one place you might use it, whether it works there today, and how.</p>
+<div class="table-scroll" role="region" aria-label="Table 3" tabindex="0">
+<table>
+<thead>
+<tr>
+<th scope="col">Where</th>
+<th scope="col">Available now</th>
+<th scope="col">How</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>VS Code, on a computer or at vscode.dev</td>
+<td>Yes, all 113 skills</td>
+<td>Already in this kit, or copy the <code>skills</code> folders into <code>.github/skills</code></td>
+</tr>
+<tr>
+<td>GitHub Codespaces</td>
+<td>Yes, with the scanners</td>
+<td>codespaces.new/Community-Access/accessibility-agents</td>
+</tr>
+<tr>
+<td>GitHub Copilot CLI, Claude Code, Codex, Gemini CLI</td>
+<td>Yes, with the scanners and review hooks</td>
+<td>The install lines above</td>
+</tr>
+<tr>
+<td>ChatGPT, on a free or paid account</td>
+<td>Yes, by pasting</td>
+<td>The texts on letitglow.app/ahg/assistant, as above</td>
+</tr>
+<tr>
+<td>ChatGPT's plugin directory</td>
+<td>Not yet</td>
+<td>Being prepared. When it is listed, you will install it once from Plugins in ChatGPT's sidebar instead of pasting a text</td>
+</tr>
+<tr>
+<td>Claude, Gemini, Copilot on github.com, a campus assistant</td>
+<td>Yes, by pasting</td>
+<td>The same texts</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>ChatGPT itself: a free account works for the whole day. Sign in before you start, because ChatGPT without an account stops after a message or two. On the web and on a phone, ChatGPT reads skills only when they come in a plugin from its directory; until Accessibility Agents is listed there, the pasted texts are the way in. In every assistant, a skill that needs a scanner asks for your checker's results instead.</p>
 <h2 id="using-it-with-your-own-agent">Using it with your own agent</h2>
 <ul>
 <li>Keep your agent beside the others: put it in <code>.github/skills/&lt;name&gt;/</code>, next to the Accessibility Agents folders. It is the same format, so it works the same way.</li>
@@ -140,6 +186,15 @@ blockquote { border-left: 4px solid var(--rule); margin-left: 0; padding-left: 1
 <li>Questions about the workshop: <a href="mailto:support@community-access.org">support@community-access.org</a>.</li>
 <li>A rule an agent gets wrong, or a pattern it should catch: open an issue on github.com/Community-Access/accessibility-agents.</li>
 <li>The two rules still apply: nothing private goes into any AI, and a person reviews everything an agent writes.</li>
+</ul>
+<h2 id="sources">Sources</h2>
+<p>Checked on 29 October 2026.</p>
+<ul>
+<li><a href="https://github.com/Community-Access/accessibility-agents#readme">Accessibility Agents README</a>: the six entry points and the install line for each tool. The kit carries the skills from the commit named in <code>accessibility-agents-skills.json</code>.</li>
+<li><a href="https://code.visualstudio.com/docs/copilot/customization/agent-plugins">VS Code: agent plugins</a>: installing a plugin from a repository, and the <code>chat.plugins.enabled</code> setting it needs.</li>
+<li><a href="https://docs.github.com/en/copilot/how-tos/copilot-cli/customize-copilot/plugins-finding-installing">GitHub Docs: finding and installing Copilot CLI plugins</a>: the <code>copilot plugin marketplace add</code> and <code>copilot plugin install</code> commands.</li>
+<li><a href="https://code.visualstudio.com/docs/copilot/customization/agent-skills">VS Code: use Agent Skills</a>: why copying the skills into <code>.github/skills</code> is all an install needs.</li>
+<li><a href="https://docs.github.com/en/billing/concepts/product-billing/github-codespaces">GitHub Docs: Codespaces billing</a>: the free monthly hours for a personal account.</li>
 </ul>
 </main>
 </body>

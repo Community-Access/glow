@@ -100,12 +100,19 @@
 {% if aa_texts %}
 <h2 id="accessibility-agents">Accessibility Agents in any assistant</h2>
 <p>
-  After today, or on the browser path in block 5, these texts bring the real
+  After today, or at the end of block 5 if you want to try what the projector
+  shows, these texts bring the real
   Accessibility Agents project to your assistant. Each carries one entry
   point and the specialists it calls. Paste one as the first message in a
   new conversation, then give it the document and your checker's results.
   It never pretends to have scanned anything. In VS Code the kit already
   has every skill: ask for the entry point by name.
+</p>
+<p>
+  In ChatGPT, these texts are the way in for now, on a free or paid account.
+  Accessibility Agents is being prepared for ChatGPT's plugin directory; once
+  it is listed there, you install it once from Plugins in the sidebar and
+  stop pasting. The texts stay here for every other assistant.
 </p>
 {% for t in aa_texts %}
 <h3 id="{{ t.key }}">{{ t.title }}</h3>

@@ -130,6 +130,7 @@ The second table is the rehearsal; the day works badly without it.
 | 7 | Copilot Free's allowance measured against one participant's full day; Copilot now bills in GitHub AI Credits and publishes no chat count for Free | The share of the allowance one day uses, written down, with headroom |
 | 7a | Every block run on the browser path in ChatGPT, signed in, and on both VS Code paths | `ahg.md` sections 2.7 to 2.12, each path column |
 | 8 | Timed dry run with a second person playing a participant who has never opened VS Code, once on the browser path and once in VS Code | Real minutes written beside section 2 |
+| 10 | The pre-workshop survey: `AHG_SURVEY_KEY` is set on the server, the survey went out with the second setup message, and the answers were read on 13 November | `/ahg/survey/results?key=...` opens; paths, access needs and helper requests are in the pocket card's blanks |
 | 9 | Freeze: tag the release, rebuild the kit, print the pocket card | No merges in the final week |
 
 ## 6a. After the session: into Accessibility Agents

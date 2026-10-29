@@ -51,3 +51,9 @@ You are set up. That was the hardest part of the day, and it is done.
 ## On Monday
 
 The two rules travel with you: nothing private goes into any AI, and a person reviews everything an agent writes.
+
+## Sources
+
+Checked on 29 October 2026: the keys on this card are in the kit's
+README, with their sources. The standard every agent cites is
+[WCAG 2.2](https://www.w3.org/TR/WCAG22/).

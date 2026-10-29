@@ -708,7 +708,7 @@ These check the 30-day plan on each path.
 | ID | Steps | Expected | ChatGPT | Desktop | Web |
 |---|---|---|---|---|---|
 | Plan-01 | Start the block; answer six questions | One question at a time. ChatGPT: the plan in one code block as a table. VS Code: `my-30-day-plan.md` saved | | | |
-| Plan-02 | Read the last line | One reason the plan is realistic; ends "Go make one more champion." | | | |
+| Plan-02 | Read the last lines | One reason the plan is realistic; the six learning outcomes read back, each tied to something made today; ends "Go make one more champion." | | | |
 
 The commitment wall is the same on every path.
 
@@ -817,6 +817,15 @@ that found it passes again.
 | D-015 | Inspection, 27 Oct | /design-my-agent now asks six questions, adding Example; Design-02 and the agenda's block 2 line say five | Choose one and align the command, the browser text, the step card, the agenda and Design-02. 28 Oct: six, as /design-my-agent and the template already had them: the step card, agenda, deck, assistant page, examples and plan now say six | Closed, 28 Oct |
 | D-016 | Inspection, 27 Oct | Run with no checkout, the vendor script records the word "main" instead of a commit, so the kit could not say which version it carries | Look up the commit, or require a checkout. 28 Oct: without a checkout the script now asks GitHub which commit main is at, downloads that commit, and records it | Closed, 28 Oct |
 | D-017 | Inspection, 27 Oct | The agenda says block 5 ends with "the full Accessibility Agents team", but /run-the-office and its text have no such step | Decide the step, then write it into /run-the-office, its browser text and the step card, with a test case. 28 Oct: as the agenda says, the last 15 minutes of block 5 are the full Accessibility Agents project on the projector, from the kit, run by the facilitator; a new slide, the step card and the run of show say so. There is no participant step | Closed, 28 Oct; confirm in the dry run |
+| D-018 | Inspection, 29 Oct | Pre-event message, "What the day looks like", said share before the team: the order before D-012 | Afternoon now reads team, then share | Pass, 29 Oct: web tests and formats check |
+| D-019 | Inspection, 29 Oct | Session guide, "What you will do", listed Share it before Build the office | Bullets in the order of the day | Pass, 29 Oct: web tests and formats check |
+| D-020 | Inspection, 29 Oct | `/ahg/paths` said GitHub is needed "to share your agent in block 5" | Block 6 | Pass, 29 Oct: web tests and formats check |
+| D-021 | Inspection, 29 Oct | `golden-readiness.md` Step 5 timing table had rows 5 and 6 in the old order | Build the office is row 5, Share it row 6 | Pass, 29 Oct: web tests and formats check |
+| D-022 | Inspection, 29 Oct | Kit README said /ready-check "checks five things"; it checks six | Six | Pass, 29 Oct: web tests and formats check |
+| D-023 | Inspection, 29 Oct | Kit README said step cards come as Markdown and large print Word only | Markdown, HTML, large print Word and a reading deck | Pass, 29 Oct: web tests and formats check |
+| D-024 | Inspection, 29 Oct | Step card 2, VS Code steps, listed only the six answers; /design-my-agent also asks the role card, the problem, and name and institution | Step 3 lists every question in order, as the browser steps do | Pass, 29 Oct: web tests and formats check |
+| D-025 | Inspection, 29 Oct | `agent-file-principles.md` says never to combine `disable-model-invocation` with `user-invocable: false`, but 46 vendored reference skills do, on purpose | One sentence explains why the reference skills do | Pass, 29 Oct: web tests and formats check |
+| D-026 | Inspection, 29 Oct | `/ahg/assistant` said "on the browser path in block 5", though the end of block 5 is a projector run, not a participant step | "At the end of block 5 if you want to try what the projector shows" | Pass, 29 Oct: web tests and formats check |
 
 ### 2.14a Results so far
 
@@ -850,6 +859,24 @@ repository checks:
 - The web tests pass (section 2.4).
 - After deploy, `/ahg/assistant` on letitglow.app has blocks 1 to 7, the
   review text and the four Accessibility Agents texts.
+
+On 29 October, Claude checked every claim about tools and standards in the
+participant documents against its primary source and corrected the stale
+ones (the Title II dates and level, where each tool finds skills,
+`chat.fontSize`, the VS Code and Codex install lines, the
+`disable-model-invocation` note, "check box" wording); fixed D-018 to D-026;
+added the six learning outcomes to slide 4, `/my-30-day-plan` and step card
+7 (Plan-02); made `/review-my-agent` prefer a Human review change after
+block 4; added `kit/glossary.md` (four formats), `helpers-card.md`, a screen
+reader section in the kit README, dated sources on every step card and
+example, and a table of where Accessibility Agents is available today,
+ChatGPT included; and added the pre-workshop survey at `/ahg/survey`. Then:
+
+- `build_ahg_kit.py` exit 0; `check_ahg_formats.py` 19 documents, 76 files,
+  19 pass; `audit_ahg_docs.py` 74 of 74; the AHG web tests 110 passed.
+- axe-core in Edge on `/ahg/survey`, empty, with errors and after sending,
+  at 1280 and 320 CSS px: no violations, no sideways scroll, focus on the
+  error summary when there are errors.
 
 What remains, in order:
 

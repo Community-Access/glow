@@ -289,7 +289,7 @@ No AI and no key. Built on 9 October.
 3. The AHG 2026 profile at a stable address, for VS Code's Import Profile.
 4. The share page, letitglow.app/ahg/share: it opens the Share my agent
    form in Community-Access/ahg-2026 with the participant's agent already
-   filled in. They tick the privacy box and press Submit new issue; the
+   filled in. They select the privacy check box and press Submit new issue; the
    repository's automation checks the agent, commits it in their name, and
    replies within a minute. GLOW holds no GitHub token. An offline copy is in
    the kit.

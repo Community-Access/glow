@@ -14,7 +14,9 @@ that answer is the best evidence of what to improve.
 2. Choose the ONE change that would most improve the agent's next answer.
    Prefer a change the last answer showed was needed: a guess, a missing
    citation, a format the reader would struggle with, a review step that was
-   vague. Say in two sentences why this change, and which principle it is.
+   vague. After block 4, if the before and after named something no checker
+   can see, prefer a change to the Human review section that catches it.
+   Say in two sentences why this change, and which principle it is.
 3. Show the exact text to change: the current lines, then the new lines.
 4. Ask: Shall I make this change? Wait for the answer. The participant may
    reword it; use their words.

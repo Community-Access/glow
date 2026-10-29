@@ -68,6 +68,7 @@ its four formats. Slide counts include the title slide.
 | `kit/agent-file-principles.md` | Read in block 2, used by /review-my-agent | md, html, docx, pptx |
 | `kit/accessibility-agents.md` | Keeping Accessibility Agents after the day | md, html, docx, pptx |
 | `kit/accessibility-agents-in-the-kit.md` | Which skills work fully in the kit | md, html, docx, pptx |
+| `kit/glossary.md` | The words used today, read before the day | md, html, docx, pptx |
 | `kit/step-cards/0-before-the-day.md` | Setup, before the day | md, html, docx, pptx |
 | `kit/step-cards/1-why-we-are-here.md` | Block 1 | md, html, docx, pptx |
 | `kit/step-cards/2-design-your-agent.md` | Block 2 | md, html, docx, pptx |
@@ -99,7 +100,7 @@ the one format it has.
 | The sample course, `kit/sample-course/*` | It is deliberately inaccessible: every barrier is planted for the agents to find. Converting it would remove or change the barriers. Its checker reports, `sample-course/evidence/*.txt`, are plain text for the same reason as the browser path texts |
 | `kit/share-my-agent.html` | The offline copy of a form, not a document |
 | `kit/.vscode/*.json`, `kit/ahg-2026.code-profile`, `kit/accessibility-agents-skills.json`, `kit/accessibility-agents-LICENSE.txt` | Settings and data that VS Code or a script reads, and a licence that must travel unchanged |
-| `answer-key.md`, `run-of-show.md`, `facilitator-card.md`, `plan.md` and the rest of this folder | For facilitators, not participants |
+| `answer-key.md`, `run-of-show.md`, `facilitator-card.md`, `helpers-card.md`, `plan.md` and the rest of this folder | For facilitators, not participants |
 | `workshop-frontfacing-exercises.md`, `workshop-frontfacing-utilization.md` | September's Workshop Mode day, which GLOW still offers for other trainings; not part of the AHG day |
 | `repo/agents/README.md`, `repo/practice/README.md` | One line each, pointing at the gallery; GitHub shows them in place |
 | `for-accessibility-agents/community/ahg-2026/README.md` | Goes into the Accessibility Agents repository, which takes Markdown only |
