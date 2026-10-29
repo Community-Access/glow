@@ -8,7 +8,7 @@ description: "Which Accessibility Agents skills work fully in the AHG 2026 kit, 
 # Accessibility Agents in this kit
 
 This kit carries all 113 Accessibility Agents skills, from
-commit `aaf1cfb` of [Accessibility Agents](https://github.com/Community-Access/accessibility-agents), in `.github/skills`. Open the
+commit `2f4fe22` of [Accessibility Agents](https://github.com/Community-Access/accessibility-agents), in `.github/skills`. Open the
 kit in VS Code, on a computer or at vscode.dev, and they are there:
 start a new chat and ask for one by name. Nothing to install.
 
