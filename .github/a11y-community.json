@@ -1,0 +1,9 @@
+{
+  "projectName": "GLOW",
+  "accessibilityLabel": "accessibility",
+  "installDate": "2026-10-29",
+  "owner": "accesswatch",
+  "accessibilityDoc": "https://github.com/Community-Access/glow/blob/main/ACCESSIBILITY.md",
+  "responseBusinessDays": 5,
+  "creditReminderDays": 14
+}
