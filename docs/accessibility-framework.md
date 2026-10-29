@@ -110,6 +110,16 @@ using assistive technology.
   are credited in `CHANGELOG.md` and the release notes for the release that
   ships them, and may be shared in the
   [Open Source Accessibility community shoutouts](https://github.com/orgs/open-source-accessibility/discussions/new?category=shoutout).
+- `.github/workflows/accessibility-credits.yml` asks the question on each
+  accessibility contribution from outside the maintainers and records the
+  answer as a `credit: yes`, `credit: anonymous` or `credit: no` label.
+- Release step: before tagging a release, run
+  `node .github/scripts/a11y-credits.mjs --since <previous tag>` and paste the
+  block it prints into the release's `CHANGELOG.md` section and release notes.
+  It lists items labelled `credit: yes` or `credit: anonymous` closed since
+  that tag, as code and other contributions, and warns about `credit: asked`
+  items with no answer after 14 days: leave those contributors out, or ask
+  them again.
 
 ### Progress update practice
 

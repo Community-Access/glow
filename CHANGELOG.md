@@ -10,6 +10,16 @@ Releases are tagged in the [GitHub repository](https://github.com/Community-Acce
 
 ### Added
 
+- **Two enforced rules for accessibility reports and credits.**
+  `.github/workflows/accessibility-reports.yml` acknowledges each report,
+  reminds the accessibility owner after 5 business days without a maintainer
+  reply, reopens a report closed without an outcome, and invites the reporter
+  to confirm a fix. `.github/workflows/accessibility-credits.yml` asks each
+  outside contributor once how they want to be credited and records their
+  answer; `node .github/scripts/a11y-credits.mjs --since <tag>` prints the
+  release-notes block. The logic is `.github/scripts/a11y-community.mjs`,
+  tested by `.github/workflows/a11y-community-tests.yml`. See "How we
+  respond" in ACCESSIBILITY.md.
 - **GLOW adopts the Open Source Accessibility Framework.** 19 of its 24
   actions are done; the record, action by action, is in
   [docs/accessibility-framework.md](https://github.com/Community-Access/glow/blob/main/docs/accessibility-framework.md), and the

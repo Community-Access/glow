@@ -178,6 +178,33 @@ GLOW gives findings in your documents (Critical, High, Medium and Low).
 - We thank you, and credit you in the release notes only in the way you choose,
   or not at all.
 
+Two workflows hold us to this for reports opened from 29 October 2026 on.
+Their logic and its tests are in `.github/scripts/a11y-community.mjs`.
+
+- **When you report a barrier,** a bot replies once: it thanks you, says a
+  maintainer will reply with a status and a next step within 5 business days,
+  points you to [Known limitations](#known-limitations), and invites, but never
+  requires, details of your setup. The issue is labelled
+  `a11y: awaiting response` until a maintainer comments.
+- **If no maintainer has replied after 5 business days** (Monday to Friday),
+  the issue is labelled `a11y: response overdue` and the accessibility owner
+  is reminded on the issue.
+- **A report cannot close without an outcome.** Maintainers close it from the
+  pull request or commit that fixes it, or write a comment with a line that
+  starts `Outcome:`, after the reporter's last comment, saying what changed or
+  why it cannot. A report closed without either is reopened automatically,
+  with a note saying how to add one. When a report closes as fixed, you are
+  invited to confirm that the fix works for you, and the issue is labelled
+  `a11y: validation requested`.
+- **Credit is your choice.** When an accessibility pull request from outside
+  the maintainers is merged, or your report closes as fixed, a bot asks you
+  once how you would like to be credited, and you reply with one line:
+  `credit: @handle`, `credit: name <Name>`, `credit: anonymous` or
+  `credit: no`. Only your own reply counts, you can change it later, and
+  nothing about you beyond the credit you choose is published. The answer is
+  recorded as a `credit:` label, and each release's credits are listed from
+  those labels.
+
 Critical and serious barriers come before other work. We do not yet publish
 target resolution times; when we do, they will be here.
 
