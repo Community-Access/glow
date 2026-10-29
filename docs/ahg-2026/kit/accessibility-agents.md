@@ -133,7 +133,9 @@ scanner asks for your checker's results instead.
   to the Accessibility Agents folders. It is the same format, so it works the
   same way.
 - Revise it the way you did today: try it, read where it guessed, change one
-  thing. The principles are in `agent-file-principles.md` in this kit.
+  thing. The principles are in `agent-file-principles.md` in this kit, and
+  `write-your-own-agent.md` walks through writing a new one from a blank
+  file.
 - Your shared agent is in the AHG 2026 collection, and goes into
   Accessibility Agents in `community/ahg-2026/` with your name on it.
 

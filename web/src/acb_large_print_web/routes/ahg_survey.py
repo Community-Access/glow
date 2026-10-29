@@ -20,6 +20,7 @@ import io
 import json
 import logging
 import os
+import re
 import sqlite3
 from dataclasses import dataclass
 from datetime import UTC, datetime
@@ -41,7 +42,7 @@ DELETE_BY = "31 January 2027"
 class Question:
     key: str
     label: str
-    kind: str  # "radio", "check", "text", "line", "email"
+    kind: str  # "radio", "check", "text", "line", "email", "github"
     options: tuple[str, ...] = ()
     hint: str = ""
     required: bool = False
@@ -206,7 +207,6 @@ QUESTIONS: tuple[Question, ...] = (
         group="Your goals",
     ),
     Question("success", "What would make the day worth it for you?", "text", group="Your goals"),
-    # Contact
     Question(
         "contact",
         "Would you like a helper to contact you before the day?",
@@ -215,17 +215,50 @@ QUESTIONS: tuple[Question, ...] = (
             "Yes, please",
             "No, thank you",
         ),
-        group="Contact, optional",
+        hint="We will use the email address you gave above.",
+        group="Your goals",
     ),
-    Question("name", "Your name", "line", group="Contact, optional"),
+)
+
+#: Who is answering. Asked first, so the setup help and the share on the day
+#: can be matched to the person. The GitHub account is optional here because
+#: some people make it after reading the survey; the links say how.
+DETAILS: tuple[Question, ...] = (
+    Question("name", "Your name", "line", required=True, group="Your details"),
     Question(
         "email",
         "Your email address",
         "email",
-        hint="Only if you want a helper to contact you. Used for nothing else.",
-        group="Contact, optional",
+        hint="The one you registered for AHG with. Used only to help you get ready for the day.",
+        required=True,
+        group="Your details",
+    ),
+    Question(
+        "github",
+        "Your GitHub username",
+        "github",
+        hint="You share your agent on GitHub in block 6. No account yet? It is free and takes a few minutes; leave this empty and come back.",
+        group="Your details",
     ),
 )
+
+#: Help links shown under a question, as (text, address) pairs.
+LINKS: dict[str, tuple[tuple[str, str], ...]] = {
+    "github": (
+        ("Make a free GitHub account", "https://github.com/signup"),
+        (
+            "GitHub's guide to creating an account",
+            "https://docs.github.com/en/get-started/start-your-journey/creating-an-account-on-github",
+        ),
+        ("Choosing a path, with every setup step", "/ahg/paths"),
+    ),
+}
+
+QUESTIONS = DETAILS + QUESTIONS
+
+#: A GitHub username: letters, digits and single hyphens, 39 characters at
+#: most, never starting or ending with a hyphen.
+GITHUB_NAME = re.compile(r"^[A-Za-z0-9](?:[A-Za-z0-9]|-(?=[A-Za-z0-9])){0,38}$")
 
 GROUPS: tuple[str, ...] = tuple(dict.fromkeys(q.group for q in QUESTIONS))
 MAX_TEXT = 2000
@@ -254,6 +287,8 @@ def _answers_from_form() -> dict[str, object]:
         elif q.kind == "radio":
             value = request.form.get(q.key, "")
             answers[q.key] = value if value in q.options else ""
+        elif q.kind == "github":
+            answers[q.key] = request.form.get(q.key, "").strip().removeprefix("@")[:100]
         else:
             answers[q.key] = request.form.get(q.key, "").strip()[:MAX_TEXT]
     return answers
@@ -266,9 +301,12 @@ def _errors(answers: dict[str, object]) -> list[tuple[str, str]]:
             errors.append((q.key, f'Answer "{q.label}"'))
     email = str(answers.get("email", ""))
     if email and ("@" not in email or " " in email or len(email) > 254):
-        errors.append(("email", "Check your email address, or leave it empty"))
-    if answers.get("contact") == "Yes, please" and not email:
-        errors.append(("email", "Add an email address so a helper can contact you"))
+        errors.append(("email", "Check your email address: it needs an @ and no spaces"))
+    github = str(answers.get("github", "")).removeprefix("@")
+    if github and not GITHUB_NAME.match(github):
+        errors.append(
+            ("github", "Check your GitHub username: letters, numbers and single hyphens only, or leave it empty")
+        )
     return errors
 
 
@@ -278,6 +316,7 @@ def survey_form():
         "workshop/ahg_survey.html",
         questions=QUESTIONS,
         groups=GROUPS,
+        links=LINKS,
         answers={},
         errors=[],
         delete_by=DELETE_BY,
@@ -294,6 +333,7 @@ def survey_submit():
             "workshop/ahg_survey.html",
             questions=QUESTIONS,
             groups=GROUPS,
+            links=LINKS,
             answers=answers,
             errors=errors,
             delete_by=DELETE_BY,

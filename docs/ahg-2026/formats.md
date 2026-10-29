@@ -69,6 +69,7 @@ its four formats. Slide counts include the title slide.
 | `kit/accessibility-agents.md` | Keeping Accessibility Agents after the day | md, html, docx, pptx |
 | `kit/accessibility-agents-in-the-kit.md` | Which skills work fully in the kit | md, html, docx, pptx |
 | `kit/glossary.md` | The words used today, read before the day | md, html, docx, pptx |
+| `kit/write-your-own-agent.md` | The full tutorial, for writing agents after the day | md, html, docx, pptx |
 | `kit/step-cards/0-before-the-day.md` | Setup, before the day | md, html, docx, pptx |
 | `kit/step-cards/1-why-we-are-here.md` | Block 1 | md, html, docx, pptx |
 | `kit/step-cards/2-design-your-agent.md` | Block 2 | md, html, docx, pptx |

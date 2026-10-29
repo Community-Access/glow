@@ -5,6 +5,26 @@
 {% block content %}
 <p>{{ rows | length }} response{{ "s" if rows | length != 1 }}. <a href="{{ url_for('ahg_survey.survey_results_csv', key=key) }}">Download every answer as CSV</a>.</p>
 
+<div class="table-scroll" tabindex="0" role="region" aria-labelledby="t-roster">
+<table>
+  <caption id="t-roster">Who answered</caption>
+  <thead><tr><th scope="col">Name</th><th scope="col">Email</th><th scope="col">GitHub</th><th scope="col">Path</th><th scope="col">Ready check</th></tr></thead>
+  <tbody>
+  {% for row in rows %}
+    <tr>
+      <th scope="row">{{ row.get("name") or "No name given" }}</th>
+      <td>{{ row.get("email") }}</td>
+      <td>{% if row.get("github") %}<a href="https://github.com/{{ row.get('github') }}">{{ row.get("github") }}</a>{% else %}Not yet{% endif %}</td>
+      <td>{{ row.get("path") }}</td>
+      <td>{{ row.get("ready") or "Not answered" }}</td>
+    </tr>
+  {% else %}
+    <tr><td colspan="5">No answers yet.</td></tr>
+  {% endfor %}
+  </tbody>
+</table>
+</div>
+
 {% for q in questions if q.kind in ("radio", "check") %}
 <div class="table-scroll" tabindex="0" role="region" aria-labelledby="t-{{ q.key }}">
 <table>

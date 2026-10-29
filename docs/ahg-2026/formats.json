@@ -25,7 +25,7 @@
     },
     "kit/README.md": {
       "title": "Welcome to the AHG 2026 agent kit",
-      "sha256": "05e6cf3d3deb0db60a5a9cb68827377e8b15ebc191a54af6810e7472be24ca92",
+      "sha256": "8b7f583cecfe399c62ab1129f401f57f8010f18432c5a9dd65155e9c4e51e0f5",
       "formats": [
         "README.md",
         "read-me.html",
@@ -47,7 +47,7 @@
     },
     "kit/accessibility-agents.md": {
       "title": "Accessibility Agents, after today",
-      "sha256": "6cb0e67c366f256d8ae14f587435b8a14272a465c6de4202e216afd0bc1da4ec",
+      "sha256": "607e64f3e06fea6d478001cf394c44032766d11162b8c47ed1aed9798cc4429d",
       "formats": [
         "accessibility-agents.md",
         "accessibility-agents.html",
@@ -78,9 +78,20 @@
       ],
       "slides": 10
     },
+    "kit/write-your-own-agent.md": {
+      "title": "Write your own accessibility agent: a tutorial",
+      "sha256": "72dc5b1ac805528df27c3a5fb9f310a1cef20963dde20bfd0fcb084d7c6506a8",
+      "formats": [
+        "write-your-own-agent.md",
+        "write-your-own-agent.html",
+        "write-your-own-agent.docx",
+        "write-your-own-agent.pptx"
+      ],
+      "slides": 59
+    },
     "kit/step-cards/0-before-the-day.md": {
       "title": "Step card 0: Before the day",
-      "sha256": "d38bb776536f83d83cb971cd5336be4663c2ff4b77b8b30b2bd19c1db915b49c",
+      "sha256": "9c8c89fc8f68ddd2eb255d4ff64afe6f146bc4ff06d29a3ecd2e26846bfcb890",
       "formats": [
         "0-before-the-day.md",
         "0-before-the-day.html",
@@ -157,7 +168,7 @@
     },
     "kit/step-cards/7-take-it-home.md": {
       "title": "Step card 7: Take it home",
-      "sha256": "a1cf9e2c3e6aee3b4a70452915b3fcb68809a75970b161845ae21c4a22cf602e",
+      "sha256": "85f0d23b42325b7e9ade6869c2246afdeb546094d6f1ec8eb2eb012f94d655c4",
       "formats": [
         "7-take-it-home.md",
         "7-take-it-home.html",

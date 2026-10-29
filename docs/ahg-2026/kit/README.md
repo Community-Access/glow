@@ -74,6 +74,7 @@ This list follows the folders in the Explorer, top to bottom.
 | `accessibility-agents-LICENSE.txt` | Accessibility Agents' MIT licence, which travels with its skills |
 | `agent-file-principles.md` | What makes a good agent file, and the twelve review questions /review-my-agent uses |
 | `glossary.md` | The words used today, one line each |
+| `write-your-own-agent.md` | The full tutorial: write, test, ground, revise and share an agent on your own, in any assistant |
 
 ## You cannot fall behind
 

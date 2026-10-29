@@ -23,10 +23,12 @@
   November, so the day starts where you are.
 </p>
 <p>
-  Only the two questions marked "needed" must be answered. Nothing here goes
-  to an AI or to GitHub. Do not include student names, records or
-  accommodation details. The answers are read by the workshop team only and
-  deleted by {{ delete_by }}.
+  Only the questions marked "needed" must be answered. Your name, email
+  address and GitHub username are used only to help you get ready and to
+  match your shared agent to you on the day. Nothing here goes to an AI or to
+  GitHub. Do not include student names, records or accommodation details.
+  The answers are read by the workshop team only and deleted by
+  {{ delete_by }}.
 </p>
 
 <form method="post" action="{{ url_for('ahg_survey.survey_submit') }}" novalidate>
@@ -50,14 +52,19 @@
       {% endfor %}
     </fieldset>
     {% else %}
-    <label for="q-{{ q.key }}">{{ q.label }}</label>
+    <label for="q-{{ q.key }}">{{ q.label }}{% if q.required %} (needed){% endif %}</label>
     {% if q.hint %}<p class="hint" id="h-{{ q.key }}">{{ q.hint }}</p>{% endif %}
+    {% if links.get(q.key) %}
+    <ul class="hint">
+      {% for text, href in links[q.key] %}<li><a href="{{ href }}"{% if href.startswith('http') %} target="_blank" rel="noopener"{% endif %}>{{ text }}{% if href.startswith('http') %} (opens in a new tab){% endif %}</a></li>{% endfor %}
+    </ul>
+    {% endif %}
     {% if err %}<p class="hint" id="e-{{ q.key }}"><strong>Error:</strong> {{ err }}</p>{% endif %}
     {% if q.kind == "text" %}
     <textarea id="q-{{ q.key }}" name="{{ q.key }}" maxlength="2000" rows="4"{% if described %} aria-describedby="{{ described | join(' ') }}"{% endif %}{% if err %} aria-invalid="true"{% endif %}>{{ answers.get(q.key, "") }}</textarea>
     {% else %}
     <input type="{{ 'email' if q.kind == 'email' else 'text' }}" id="q-{{ q.key }}" name="{{ q.key }}" value="{{ answers.get(q.key, '') }}"
-      autocomplete="{{ 'email' if q.kind == 'email' else 'name' }}"{% if described %} aria-describedby="{{ described | join(' ') }}"{% endif %}{% if err %} aria-invalid="true"{% endif %}>
+      autocomplete="{{ {'email': 'email', 'github': 'username'}.get(q.kind, 'name') }}"{% if q.kind == 'github' %} spellcheck="false" autocapitalize="none"{% endif %}{% if q.required %} aria-required="true"{% endif %}{% if described %} aria-describedby="{{ described | join(' ') }}"{% endif %}{% if err %} aria-invalid="true"{% endif %}>
     {% endif %}
     {% endif %}
   {% endfor %}

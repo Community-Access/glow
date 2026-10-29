@@ -61,7 +61,7 @@ And you can now:
 
 ## On Monday
 
-Keep the kit. Everything in it works after today, with any AI assistant and the checkers you already have. To keep using the full Accessibility Agents project on your own laptop, read accessibility-agents.md in the kit, or community-access.org/start.html for step-by-step setup in each AI app. Help is at support@community-access.org.
+To write your next agent on your own, follow `write-your-own-agent.md` in the kit: eight steps, from a blank file to a shared agent, in any assistant. Keep the kit. Everything in it works after today, with any AI assistant and the checkers you already have. To keep using the full Accessibility Agents project on your own laptop, read accessibility-agents.md in the kit, or community-access.org/start.html for step-by-step setup in each AI app. Help is at support@community-access.org.
 
 ## Sources
 

@@ -39,6 +39,9 @@ letitglow.app/ahg/paths compares them.
    your work email if your institution allows it. If GitHub asks you to set
    up two-factor sign-in, choose the option that works best with your screen
    reader or phone; GitHub Mobile and an authenticator app both work.
+2. Answer the five-minute survey at letitglow.app/ahg/survey: your name,
+   email and GitHub username, your path, what your laptop and campus allow,
+   and anything we should have ready for you.
 
 ### In a browser
 

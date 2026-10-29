@@ -36,6 +36,8 @@ def client(app: Flask):
 
 def _minimal() -> dict[str, str]:
     return {
+        "name": "Maria Alvarez",
+        "email": "maria@example.edu",
         "role": "Alternate formats",
         "path": "The browser path, with an AI assistant",
     }
@@ -69,9 +71,21 @@ def test_every_choice_group_is_a_fieldset_and_every_field_has_a_label(client):
         assert html.rfind("<label>", 0, match.start()) > html.rfind("</label>", 0, match.start())
 
 
-def test_the_two_needed_questions_are_marked(client):
+def test_the_four_needed_questions_are_marked(client):
     html = client.get("/ahg/survey").get_data(as_text=True)
-    assert html.count("(needed)") == sum(q.required for q in QUESTIONS) == 2
+    assert html.count("(needed)") == sum(q.required for q in QUESTIONS) == 4
+    assert [q.key for q in QUESTIONS if q.required] == ["name", "email", "role", "path"]
+    assert html.count('aria-required="true"') == 2  # the two text fields; groups say it in the legend
+
+
+def test_your_details_come_first_with_github_help_links(client):
+    html = client.get("/ahg/survey").get_data(as_text=True)
+    assert [q.key for q in QUESTIONS[:3]] == ["name", "email", "github"]
+    assert html.index('id="q-name"') < html.index('id="q-role"')
+    assert 'href="https://github.com/signup"' in html
+    assert "creating-an-account-on-github" in html
+    assert "(opens in a new tab)" in html
+    assert 'autocomplete="username"' in html and 'autocomplete="email"' in html
 
 
 def test_a_minimal_answer_is_saved_and_thanked(client):
@@ -93,11 +107,28 @@ def test_missing_answers_come_back_with_a_focusable_error_summary(client):
     assert 'value="Faculty" checked' in html
 
 
-def test_a_helper_request_needs_an_email(client):
-    data = {**_minimal(), "contact": "Yes, please"}
+def test_name_and_email_are_needed_and_checked(client):
+    data = {**_minimal(), "email": "not an address"}
+    del data["name"]
     html = client.post("/ahg/survey", data=data).get_data(as_text=True)
-    assert "Add an email address" in html
+    assert '<a href="#q-name">' in html and '<a href="#q-email">' in html
+    assert "Check your email address" in html
     assert 'aria-invalid="true"' in html
+
+
+@pytest.mark.parametrize("name", ["accesswatch", "@accesswatch", "a-b-c", "A1"])
+def test_good_github_usernames_are_kept(client, monkeypatch, name):
+    monkeypatch.setenv("AHG_SURVEY_KEY", "k")
+    assert client.post("/ahg/survey", data={**_minimal(), "github": name}).status_code == 303
+    rows = list(csv.DictReader(io.StringIO(client.get("/ahg/survey/results.csv?key=k").get_data(as_text=True))))
+    assert rows[-1]["github"] == name.removeprefix("@")
+
+
+@pytest.mark.parametrize("name", ["-lead", "trail-", "two--hyphens", "has space", "under_score", "x" * 40])
+def test_bad_github_usernames_are_refused(client, name):
+    response = client.post("/ahg/survey", data={**_minimal(), "github": name})
+    assert response.status_code == 400
+    assert "Check your GitHub username" in response.get_data(as_text=True)
 
 
 def test_unknown_options_are_dropped_not_stored(app, client):
