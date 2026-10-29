@@ -10,7 +10,7 @@ Counts are counts, not scores or ratings.
 
 GLOW adopted the
 [Open Source Accessibility Framework](https://open-source-accessibility.github.io/Open-Source-Accessibility-Framework/)
-this month: 19 of its 24 actions are done, as recorded in
+this month: 20 of its 24 actions are done, as recorded in
 [the framework record](accessibility-framework.md).
 
 ### Completed
@@ -23,6 +23,12 @@ this month: 19 of its 24 actions are done, as recorded in
   with the in-app feedback form and email as alternatives for anyone who cannot
   or would rather not use GitHub.
 - An accessibility checklist in the pull request template.
+- A rule for responding to reports, from 29 October 2026: the
+  accessibility-reports workflow acknowledges every report, reminds the owner
+  after 5 business days without a reply, reopens a report closed without a
+  documented outcome (a merged fix or an `Outcome:` line), and invites the
+  reporter to confirm a fix. No user reports were on record yet, so the rule
+  covers the first one.
 - A keyboard-only smoke test of the five core flows (finding your way around,
   audit, fix, convert, template) that runs on every pull request that changes
   the web app, alongside the existing axe-core gate. Its first runs passed: every
