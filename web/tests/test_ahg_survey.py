@@ -23,7 +23,7 @@ from acb_large_print_web.routes.ahg_survey import QUESTIONS
 
 @pytest.fixture()
 def app(tmp_path: Path) -> Flask:
-    application = create_app({"TESTING": True, "WTF_CSRF_ENABLED": False, "RATELIMIT_ENABLED": False})
+    application = create_app({"TESTING": True, "WTF_CSRF_ENABLED": False})
     application.instance_path = str(tmp_path / "instance")
     Path(application.instance_path).mkdir(parents=True, exist_ok=True)
     return application
