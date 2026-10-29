@@ -22,7 +22,9 @@ program's promises.
 | 1 | `plan.md` | The plan: every promise in the program and where it is kept, decisions D1 to D15, the day, and the order of work |
 | 2 | `run-of-show.md` | The day by the clock, with the command for each block, pacing rules, the fallback ladder and pre-flight |
 | 3 | `facilitator-card.md` | The pocket card |
-| 4 | `kit/` | What every VS Code participant opens: the commands as skills in `.github/skills/`, the browser path texts in `any-assistant/`, office team, examples, ready-made agents, the sample course and its evidence, step cards. Start with `kit/README.md` |
+| 3a | `helpers-card.md` | One page for the helpers: how to help, what to watch for in each block, the fallbacks, the needs-a-hand label |
+| 4 | `kit/` | What every VS Code participant opens: the commands as skills in `.github/skills/`, the browser path texts in `any-assistant/`, office team, examples, ready-made agents, the sample course and its evidence, step cards, and `glossary.md`. Start with `kit/README.md` |
+| 4a | `formats.md` | Every document a participant receives, in Markdown, HTML, Word and PowerPoint: the inventory, how the copies are built and checked, and why some files have only one format |
 | 5 | `slides.*` | The deck, generated from `workshop_deck.py`, in four formats |
 | 6 | `pre-event-message.md` | The setup message participants are sent three times |
 | 7 | `answer-key.md` | Every barrier planted in the sample course. Facilitators only; not in the kit |
@@ -37,6 +39,7 @@ Rebuild everything generated, in this order:
 ```text
 python scripts/build_ahg_sample_course.py
 python scripts/build_ahg_kit.py
+python scripts/check_ahg_formats.py
 flask --app acb_large_print_web.app:create_app workshop-deck --code ahg-2026
 ```
 

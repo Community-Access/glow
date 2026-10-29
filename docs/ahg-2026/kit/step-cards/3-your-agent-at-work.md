@@ -62,3 +62,9 @@ Your agent has done real work on a real course document, and you made it better.
 ## On Monday
 
 Try your agent on one document from your own work, with nothing private in it.
+
+## Sources
+
+Checked on 29 October 2026: the keys on this card are in the kit's
+README, with their sources. The standard every agent cites is
+[WCAG 2.2](https://www.w3.org/TR/WCAG22/).

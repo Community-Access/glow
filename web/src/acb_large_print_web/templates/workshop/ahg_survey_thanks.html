@@ -1,0 +1,9 @@
+{% extends "workshop/ahg_base.html" %}
+{% block title %}Thank you{% endblock %}
+{% block heading %}Thank you{% endblock %}
+
+{% block content %}
+<p>Your answers are in. They help us have the right things ready on 16 November.</p>
+<p>If you have not set up yet, the next step is your path's setup and the ready check: <a href="{{ url_for('shortlinks.ahg_paths') }}">choosing a path</a>.</p>
+<p>Everything for the day is at <a href="{{ url_for('shortlinks.ahg_landing') }}">letitglow.app/ahg</a>.</p>
+{% endblock %}

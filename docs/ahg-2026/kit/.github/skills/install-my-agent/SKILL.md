@@ -13,9 +13,11 @@ Install the participant's agent as a skill in this folder.
 3. Explain in three short lines:
    - VS Code finds skills in `.github/skills`, one folder per skill, the
      folder named after the skill. That is all installing is.
-   - Accessibility Agents is 108 skills installed exactly the same way.
+   - Accessibility Agents is 113 skills installed exactly the same way.
    - Every time you revise `my-agent/SKILL.md`, /review-my-agent installs
      the new version for you.
 4. Tell them to try it: type /<name> followed by a request, for example
-   /<name> plan the scanned reading. If the command does not appear, start a
-   New Chat; VS Code reads skills when a chat starts.
+   /<name> plan the scanned reading. If the command does not appear, check
+   that the folder name and the `name` in the header match exactly (VS Code
+   skips a skill whose name does not match its folder), then start a New
+   Chat and try again.

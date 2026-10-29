@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html lang="en" xml:lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="author" content="Jeff Bishop, BITS">
+<meta name="description" content="A start-to-finish tutorial for writing, testing, grounding and sharing an accessibility agent, in any AI assistant, after the AHG 2026 workshop.">
+<title>Write your own accessibility agent: a tutorial</title>
+<style>
+:root { color-scheme: light dark; --bg: #ffffff; --fg: #1a1a1a; --link: #0b57d0; --rule: #6b6b6b; --code-bg: #f2f2f2; --focus: #b3261e; }
+@media (prefers-color-scheme: dark) { :root { --bg: #121212; --fg: #f1f1f1; --link: #a8c7fa; --rule: #9a9a9a; --code-bg: #262626; --focus: #ffb4ab; } }
+html { font-size: 112.5%; }
+body { background: var(--bg); color: var(--fg); font-family: Arial, Helvetica, sans-serif; line-height: 1.5; max-width: 46rem; margin: 0 auto; padding: 1rem; }
+a { color: var(--link); text-decoration: underline; }
+a:focus-visible, [tabindex]:focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; }
+h1, h2, h3, h4 { line-height: 1.25; }
+code, pre { font-family: Consolas, "Courier New", monospace; background: var(--code-bg); }
+pre { padding: 0.75rem; overflow-x: auto; white-space: pre-wrap; }
+table { border-collapse: collapse; margin: 1rem 0; }
+th, td { border: 1px solid var(--rule); padding: 0.4rem 0.6rem; text-align: left; vertical-align: top; }
+.table-scroll { overflow-x: auto; }
+blockquote { border-left: 4px solid var(--rule); margin-left: 0; padding-left: 1rem; }
+@media print { body { max-width: none; } a { color: inherit; } }
+</style>
+</head>
+<body>
+<main>
+<h1 id="write-your-own-accessibility-agent-a-tutorial">Write your own accessibility agent: a tutorial</h1>
+<p>This tutorial takes you from a blank file to an agent you trust, on your own, in any AI assistant. It does not need the workshop's commands, and it does not need code. If you were at the workshop, it is the same method, slowed down and written out, so you can do it again on Monday for a different job.</p>
+<p>It takes about an hour the first time. Have this open in one window and your AI assistant in another.</p>
+<h2 id="how-this-tutorial-works">How this tutorial works</h2>
+<p>There are eight steps. Each one has what to do, what good looks like, and a check before you move on. One example runs all the way through: Dev, a media services coordinator, writes an agent for lecture captions. The example uses the sample course in this kit, so you can follow along with real files. Dev is fictional, and the answers quoted are examples written for this tutorial; your assistant's own answers will differ.</p>
+<p>Each row is one step, what you do in it, and what you have at the end.</p>
+<div class="table-scroll" role="region" aria-label="Table 1" tabindex="0">
+<table>
+<thead>
+<tr>
+<th scope="col">Step</th>
+<th scope="col">You do</th>
+<th scope="col">You end with</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>Choose one job</td>
+<td>One sentence: given what, produce what, for whom</td>
+</tr>
+<tr>
+<td>2</td>
+<td>Write the header</td>
+<td>A name and a description that says when to use it</td>
+</tr>
+<tr>
+<td>3</td>
+<td>Write the six sections</td>
+<td>Role, Task, Trusted guidance, Output format, Example, Human review</td>
+</tr>
+<tr>
+<td>4</td>
+<td>Keep the Never rules</td>
+<td>The three lines every agent keeps</td>
+</tr>
+<tr>
+<td>5</td>
+<td>Try it, with no evidence</td>
+<td>A first answer, and a list of where it guessed</td>
+</tr>
+<tr>
+<td>6</td>
+<td>Ground it</td>
+<td>A second answer that cites evidence and WCAG 2.2</td>
+</tr>
+<tr>
+<td>7</td>
+<td>Revise, one change at a time</td>
+<td>Versions 2, 3 and 4</td>
+</tr>
+<tr>
+<td>8</td>
+<td>Install it and share it</td>
+<td>Your agent where you work, and in the open-source collection</td>
+</tr>
+</tbody>
+</table>
+</div>
+<h2 id="before-you-start">Before you start</h2>
+<ul>
+<li>Open <code>my-agent/SKILL.md</code> in this kit, or copy the template at the end of this tutorial into a new file named <code>SKILL.md</code>.</li>
+<li>Open <code>agent-file-principles.md</code> beside it. This tutorial refers to its twelve principles by number.</li>
+<li>Read the two rules again. Never paste anything private into any AI: student records, health or disability information, or anyone's name. Every agent ends with a named person checking its work.</li>
+</ul>
+<h2 id="step-1-choose-one-job">Step 1: choose one job</h2>
+<p>An agent is a set of plain-English instructions that tells an AI assistant how to do one job, the way you would brief a new colleague. The single biggest mistake is giving it two jobs.</p>
+<p>Write one sentence in this shape:</p>
+<blockquote>
+<p>Given [what it is handed], produce [what it hands back], for [who reads it].</p>
+</blockquote>
+<p>Then test the sentence:</p>
+<ul>
+<li>Does it have the word "and" in it twice? Then you have two agents (principle 1). Pick the one you would use most this month.</li>
+<li>Could you hand the input to a new colleague today? If the input is "the course", it is too big. If it is "a caption file and the course's list of names and terms", it is right.</li>
+<li>Do you know who reads the output? If you cannot name them, you cannot choose its format in step 3.</li>
+</ul>
+<p>Dev's first try was: "Check captions and fix accessibility for all our videos." That is three jobs and no reader. Dev's second try:</p>
+<blockquote>
+<p>Given a lecture's caption file and the course's list of names and terms, produce a correction request for our captioning vendor, for me to check and send.</p>
+</blockquote>
+<h3 id="step-1-check">Step 1 check</h3>
+<p>You have one sentence with one input, one output and one reader.</p>
+<h2 id="step-2-write-the-header">Step 2: write the header</h2>
+<p>The header is the few lines at the top of <code>SKILL.md</code>, between two lines of three dashes. Two fields are needed: <code>name</code> and <code>description</code>. The rest is optional.</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode markdown"><code class="sourceCode markdown"><span id="cb1-1"><span class="co">---</span></span>
+<span id="cb1-2"><span class="an">name:</span><span class="co"> caption-correction-request</span></span>
+<span id="cb1-3"><span class="an">description:</span><span class="co"> &quot;Turns a lecture caption file and a course&#39;s names and terms into a correction request for the captioning vendor. Use when lecture captions have misheard names, terms or speakers.&quot;</span></span>
+<span id="cb1-4"><span class="an">license:</span><span class="co"> MIT</span></span>
+<span id="cb1-5"><span class="an">metadata:</span></span>
+<span id="cb1-6"><span class="co">  title: &quot;Caption Correction Request&quot;</span></span>
+<span id="cb1-7"><span class="co">  author: &quot;Dev Patel, Mesa Ridge State University&quot;</span></span>
+<span id="cb1-8"><span class="co">  version: &quot;1&quot;</span></span>
+<span id="cb1-9"><span class="co">---</span></span></code></pre></div>
+<p>The name:</p>
+<ul>
+<li>Lowercase letters, numbers and hyphens, at most 64 characters, no spaces (principle 2). When you install the agent, its folder must have exactly this name, or the assistant skips it without telling you.</li>
+</ul>
+<p>The description matters more than anything else in the header:</p>
+<ul>
+<li>An assistant reads only the name and description of every agent up front, and decides from those whether to use yours (principle 3). The rest of the file is read only when the agent is used.</li>
+<li>Say what it does in one sentence. Then start a second sentence with "Use when", naming the situation that calls for it.</li>
+<li>At most 1,024 characters. Aim for under 200.</li>
+<li>Keep the description and title inside double quotes, so a colon in your wording cannot break the header.</li>
+</ul>
+<h3 id="step-2-check">Step 2 check</h3>
+<p>The name matches the folder you will put it in. The description has a "Use when" sentence that a stranger could act on.</p>
+<h2 id="step-3-write-the-six-sections">Step 3: write the six sections</h2>
+<p>Under the header, write these headings, in this order. Each one answers one question.</p>
+<h3 id="role-who-is-this-agent-and-who-does-it-work-for">Role: who is this agent, and who does it work for?</h3>
+<p>Name a role and a person (principle 4). The person it works for is who it writes for.</p>
+<blockquote>
+<p>You are a caption quality assistant in a university media services office. You work for the media services coordinator, who sends correction requests to the captioning vendor.</p>
+</blockquote>
+<h3 id="task-what-is-it-given-and-what-does-it-give-back">Task: what is it given, and what does it give back?</h3>
+<p>Copy your step 1 sentence, then add what "done" means (principle 5).</p>
+<blockquote>
+<p>Given a lecture's caption file (WebVTT or SRT) and the course's list of names and terms, produce a correction request: every caption that misspells or mishears a listed name or term, every caption that is missing a speaker change, and the time stamp of each.</p>
+</blockquote>
+<h3 id="trusted-guidance-what-must-it-use-and-cite">Trusted guidance: what must it use and cite?</h3>
+<p>Name your sources, with links, and add the rule every workshop agent has: work only from the evidence given (principle 6).</p>
+<blockquote>
+<p>Cite by name and link:</p>
+<ul>
+<li><a href="https://www.w3.org/WAI/WCAG22/Understanding/captions-prerecorded.html">WCAG 2.2, 1.2.2 Captions (Prerecorded)</a></li>
+<li><a href="https://www.w3.org/WAI/media/av/captions/">W3C WAI: captions and subtitles</a></li>
+<li>Our captioning contract's accuracy clause</li>
+</ul>
+<p>Work only from the caption file and the list of names and terms. If something is not in them, say you cannot see it. Do not guess.</p>
+</blockquote>
+<h3 id="output-format-what-comes-back-and-in-what-shape">Output format: what comes back, and in what shape?</h3>
+<p>Shape it for the person who reads it (principle 7). The best format is the one your reader already uses. Dev's vendor takes a table.</p>
+<blockquote>
+<p>A short note to the vendor naming the course and lecture. Then a table: time stamp, what the caption says, what it should say, and why (name, term or speaker). Most serious first. Then a "Before you send this" checklist for the coordinator.</p>
+</blockquote>
+<h3 id="example-what-does-one-good-answer-look-like">Example: what does one good answer look like?</h3>
+<p>One short example teaches the shape, the tone and the length faster than any description (principle 8). Use the fictional course, never a real student.</p>
+<blockquote>
+<div class="table-scroll" role="region" aria-label="Table 2" tabindex="0">
+<table>
+<thead>
+<tr>
+<th scope="col">Time</th>
+<th scope="col">Caption says</th>
+<th scope="col">Should say</th>
+<th scope="col">Why</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>00:00:04.500</td>
+<td>herman ebb in house</td>
+<td>Hermann Ebbinghaus</td>
+<td>Name on the course list</td>
+</tr>
+</tbody>
+</table>
+</div>
+</blockquote>
+<h3 id="human-review-who-checks-it-and-what-do-they-check">Human review: who checks it, and what do they check?</h3>
+<p>Name the person and what they check, and end every answer with a checklist for them (principle 9). If nobody is named, nobody reviewed it.</p>
+<blockquote>
+<p>The media services coordinator checks every correction against the recording before sending, and checks anything the agent marked as not sure. End every answer with "Before you send this":</p>
+<ul class="task-list">
+<li><label><input type="checkbox" />Each correction checked against the recording</label></li>
+<li><label><input type="checkbox" />Any caption marked "not sure" listened to again</label></li>
+<li><label><input type="checkbox" />Nothing in the request names a student</label></li>
+</ul>
+</blockquote>
+<h3 id="step-3-check">Step 3 check</h3>
+<p>Every heading has at least one sentence of your own. The Example is under ten lines. Human review names a role, not "someone".</p>
+<h2 id="step-4-keep-the-never-rules">Step 4: keep the Never rules</h2>
+<p>End the file with a Never section. Every workshop agent keeps these three, word for word, and you may add your own (principle 10).</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode markdown"><code class="sourceCode markdown"><span id="cb2-1"><span class="fu">## Never</span></span>
+<span id="cb2-2"></span>
+<span id="cb2-3"><span class="ss">- </span>Never ask for, or use, student names, records, accommodation details or</span>
+<span id="cb2-4">  health information.</span>
+<span id="cb2-5"><span class="ss">- </span>Never say a document is &quot;compliant&quot; or &quot;accessible&quot;. Say what you checked,</span>
+<span id="cb2-6">  what you found, and what a person still needs to check.</span>
+<span id="cb2-7"><span class="ss">- </span>Never invent a finding that is not in the evidence.</span></code></pre></div>
+<p>Dev added one more: "Never change a caption's time stamps."</p>
+<h3 id="step-4-check">Step 4 check</h3>
+<p>The three rules are there, unchanged. Your own rule is one line.</p>
+<h2 id="step-5-try-it-with-no-evidence">Step 5: try it, with no evidence</h2>
+<p>Now see what the agent does when it has to guess. This first answer is supposed to be weak; it shows you what to fix.</p>
+<ol type="1">
+<li>Start a new conversation in your assistant.</li>
+<li>Paste the whole agent file as your first message. In VS Code with the agent installed (step 8), type <code>/</code> and its name instead.</li>
+<li>Ask it to do its job, giving it only a file name. Dev asked: "Write the correction request for psy101-week3-captions.vtt."</li>
+<li>Read the answer, and write down every place it guessed.</li>
+</ol>
+<p>Dev's first answer apologised for not seeing the file, then listed "common caption errors" from nowhere and called the captions "not ADA compliant". Three problems, each a lesson: it had no evidence, it filled the gap with generic advice, and it used a word its Never rules forbid.</p>
+<p>Read the answer for these, every time:</p>
+<ul>
+<li>Did it guess at anything it was not given?</li>
+<li>Did it cite a source, with a link?</li>
+<li>Is the output in the shape you asked for?</li>
+<li>Does it end with the reviewer's checklist?</li>
+<li>Did it break a Never rule?</li>
+</ul>
+<h3 id="step-5-check">Step 5 check</h3>
+<p>You have the first answer, and a written list of what was wrong with it.</p>
+<h2 id="step-6-ground-it-in-evidence">Step 6: ground it in evidence</h2>
+<p>Grounding means giving the agent the evidence it needs, so it stops guessing. Evidence is a checker's report, the text of a document, or what you tell it.</p>
+<ol type="1">
+<li>In the same conversation, give it the evidence. Dev pasted the caption file from <code>sample-course/psy101-week3-captions.vtt</code>, then the course's names and terms: Hermann Ebbinghaus, the nonsense syllables DAX, BOK and YAT, the spacing effect.</li>
+<li>Ask the same question again.</li>
+<li>Compare the two answers side by side.</li>
+</ol>
+<p>Dev's grounded answer found "herman ebb in house" at 00:00:04.500 and "docks and bach" at 00:00:09.000, cited 1.2.2 with its link, flagged the question from the room at 00:00:21.500 as a speaker change with no label, and ended with the checklist.</p>
+<p>Some barriers no checker sees. Captions are the clearest case: no automated tool judges whether "ebb in house" is right. That is why the evidence here is the caption file and your list of terms, and why the reviewer listens to the recording. For a Word file, a PDF or a web page, the evidence is a checker's report: Word's, PowerPoint's or Acrobat's own Accessibility Checker, Accessibility Insights, axe or GLOW. Paste its results.</p>
+<h3 id="step-6-check">Step 6 check</h3>
+<p>The second answer cites at least one WCAG 2.2 criterion with a link, names what it could not check, and guesses at nothing.</p>
+<h2 id="step-7-revise-one-change-at-a-time">Step 7: revise, one change at a time</h2>
+<p>Now improve the agent file, not the answer. Change one thing, try again, and see what that one change did (principle 12).</p>
+<ol type="1">
+<li>Ask the twelve review questions in <code>agent-file-principles.md</code> of your agent. Every "not yet" is a revision you could make.</li>
+<li>Choose the one change that would most improve the next answer. Prefer a change the last answer showed was needed.</li>
+<li>Make that change in the file, raise <code>version</code> by one, and save it.</li>
+<li>Try again, in a new conversation, with the same evidence.</li>
+</ol>
+<p>Dev's three revisions:</p>
+<p>Each row is one version, the one thing that changed, and why.</p>
+<div class="table-scroll" role="region" aria-label="Table 3" tabindex="0">
+<table>
+<thead>
+<tr>
+<th scope="col">Version</th>
+<th scope="col">What changed</th>
+<th scope="col">Why</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>2</td>
+<td>Task now says "the course's list of names and terms is part of the input; ask for it if it is missing"</td>
+<td>Version 1 never asked for the list</td>
+</tr>
+<tr>
+<td>3</td>
+<td>Output format adds a "not sure" column</td>
+<td>Version 2 presented every guess as certain</td>
+</tr>
+<tr>
+<td>4</td>
+<td>Human review adds "listen again to every caption marked not sure"</td>
+<td>Version 3's not-sure items needed a person, and nobody was told</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>Ways agents commonly go wrong, and the one change that fixes each:</p>
+<p>Each row is one thing an agent does wrong, and the one change that fixes it.</p>
+<div class="table-scroll" role="region" aria-label="Table 4" tabindex="0">
+<table>
+<thead>
+<tr>
+<th scope="col">It does this</th>
+<th scope="col">Change this</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Guesses when evidence is missing</td>
+<td>Trusted guidance: "If the evidence is missing, ask for it. Do not guess"</td>
+</tr>
+<tr>
+<td>Gives a lecture instead of a result</td>
+<td>Output format: describe the exact shape, and shorten the Example</td>
+</tr>
+<tr>
+<td>Cites WCAG with no links, or the wrong version</td>
+<td>Trusted guidance: list the criteria by number, name and link</td>
+</tr>
+<tr>
+<td>Says "compliant"</td>
+<td>Check the Never rules are there, word for word</td>
+</tr>
+<tr>
+<td>Does two jobs</td>
+<td>Task: cut to one; make the second job its own agent</td>
+</tr>
+<tr>
+<td>The review step is vague</td>
+<td>Human review: name the role and what they check</td>
+</tr>
+<tr>
+<td>Gets too long to read</td>
+<td>Move reference material into a <code>references</code> folder (below)</td>
+</tr>
+</tbody>
+</table>
+</div>
+<h3 id="when-the-file-gets-long">When the file gets long</h3>
+<p>Keep <code>SKILL.md</code> short enough to read in five minutes (principle 11). The Agent Skills format asks for under 500 lines. Long material, such as a vendor's style guide or your office's procedure, goes in a <code>references</code> folder beside <code>SKILL.md</code>. Point to it from the instructions, for example "For the vendor's spelling rules, read references/vendor-style.md". The assistant opens that file only when the instructions send it there.</p>
+<h3 id="when-to-split-one-agent-into-two">When to split one agent into two</h3>
+<p>Split it when the Task has grown a second job, when two readers need two different formats, or when the Example no longer fits in ten lines. Dev later wrote a second agent that drafts the note to the instructor about the same captions: same evidence, different reader, different job.</p>
+<h3 id="step-7-check">Step 7 check</h3>
+<p>You have at least three versions, each with one change you can name.</p>
+<h2 id="step-8-install-it-and-share-it">Step 8: install it and share it</h2>
+<p>The same file works everywhere; only the place changes. Each row is one tool, where the file goes, and how you use it.</p>
+<div class="table-scroll" role="region" aria-label="Table 5" tabindex="0">
+<table>
+<thead>
+<tr>
+<th scope="col">Tool</th>
+<th scope="col">Put the file here</th>
+<th scope="col">Then</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>VS Code with GitHub Copilot, on a computer or at vscode.dev</td>
+<td><code>.github/skills/&lt;name&gt;/SKILL.md</code> in the folder you open</td>
+<td>Type <code>/</code> and the agent's name in Copilot Chat</td>
+</tr>
+<tr>
+<td>GitHub Copilot CLI</td>
+<td><code>.github/skills/&lt;name&gt;/SKILL.md</code> in the project, or <code>~/.agents/skills/&lt;name&gt;/SKILL.md</code> for every project</td>
+<td>It appears by name</td>
+</tr>
+<tr>
+<td>Claude Code</td>
+<td><code>.claude/skills/&lt;name&gt;/SKILL.md</code>, or <code>~/.claude/skills/&lt;name&gt;/SKILL.md</code> for every project</td>
+<td>It appears by name</td>
+</tr>
+<tr>
+<td>Codex</td>
+<td><code>.agents/skills/&lt;name&gt;/SKILL.md</code>, or <code>~/.agents/skills/&lt;name&gt;/SKILL.md</code></td>
+<td>It appears by name</td>
+</tr>
+<tr>
+<td>Gemini CLI</td>
+<td><code>.gemini/skills/&lt;name&gt;/SKILL.md</code>, or <code>.agents/skills/&lt;name&gt;/SKILL.md</code></td>
+<td>It appears by name</td>
+</tr>
+<tr>
+<td>ChatGPT, Claude, Gemini, Copilot on github.com, or a campus assistant, in a browser</td>
+<td>Paste the whole file as your first message, or into a project's or custom assistant's instructions</td>
+<td>Ask in the same conversation</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>In ChatGPT on the web and on a phone, a skill works only when it comes in a plugin from ChatGPT's directory, so pasting is the way in for your own agent. In the ChatGPT desktop app, standalone skills work too.</p>
+<p>If the agent does not appear, check three things: the folder name matches <code>name</code> exactly; the header starts and ends with three dashes; you started a new chat after installing it.</p>
+<p>To share it, open letitglow.app/ahg/share, choose your newest version, and press the button. It goes into the AHG 2026 collection on GitHub, committed in your name, and into the Accessibility Agents project with you credited.</p>
+<h3 id="step-8-check">Step 8 check</h3>
+<p>The agent answers by name where you work, and you know where its newest version is.</p>
+<h2 id="keeping-it-good">Keeping it good</h2>
+<ul>
+<li>Re-run it whenever a standard, a policy or your vendor's contract changes, and update Trusted guidance first.</li>
+<li>Keep a short changelog at the end of the file: version, date, the one change.</li>
+<li>When someone else's agent does part of your job better, use theirs and give credit. Accessibility Agents has 113 skills you can read and borrow from; <code>accessibility-agents.md</code> in this kit says how to get them.</li>
+</ul>
+<h2 id="practice">Practice</h2>
+<p>Three exercises, each with a model answer. Try each one before you read the answer.</p>
+<h3 id="exercise-1-a-description-that-says-when">Exercise 1: a description that says when</h3>
+<p>Rewrite this description so an assistant knows when to use it: "Helps with PDFs."</p>
+<p>Model answer: "Plans fixes for an untagged or scanned course PDF from Acrobat's Accessibility Checker report. Use when a course PDF fails Acrobat's check or cannot be read aloud."</p>
+<h3 id="exercise-2-one-job-not-two">Exercise 2: one job, not two</h3>
+<p>This Task has two jobs. Split it: "Review the syllabus for accessibility and write an email to the instructor."</p>
+<p>Model answer: agent 1, "Given a checker's report on a syllabus, list each barrier with its WCAG 2.2 criterion and fix." Agent 2, "Given that list, write a short, kind note to the instructor teaching the one habit behind most of it." The second is Jordan's faculty coach in <code>examples/</code>.</p>
+<h3 id="exercise-3-a-review-step-with-a-name-on-it">Exercise 3: a review step with a name on it</h3>
+<p>This Human review is too vague. Fix it: "Someone should check this."</p>
+<p>Model answer: "The alternate format specialist checks the converted text against the original, page by page, before it goes to the student. End every answer with a 'Before you send this' checklist."</p>
+<h2 id="one-page-checklist">One-page checklist</h2>
+<p>Go down this list before you share an agent.</p>
+<ul class="task-list">
+<li><label><input type="checkbox" />One job: given what, produce what, for whom.</label></li>
+<li><label><input type="checkbox" /><code>name</code>: lowercase, hyphens, at most 64 characters, matches the folder.</label></li>
+<li><label><input type="checkbox" /><code>description</code>: what it does, then "Use when".</label></li>
+<li><label><input type="checkbox" />Role names a role and who it works for.</label></li>
+<li><label><input type="checkbox" />Task names the input and the output.</label></li>
+<li><label><input type="checkbox" />Trusted guidance links its sources and says to work only from evidence.</label></li>
+<li><label><input type="checkbox" />Output format is shaped for the reader.</label></li>
+<li><label><input type="checkbox" />One short example of a good answer.</label></li>
+<li><label><input type="checkbox" />Human review names who checks what, and ends with a checklist.</label></li>
+<li><label><input type="checkbox" />The three Never rules, word for word.</label></li>
+<li><label><input type="checkbox" />Short enough to read in five minutes; long material in <code>references</code>.</label></li>
+<li><label><input type="checkbox" />Tried with no evidence, grounded, then revised one change at a time.</label></li>
+</ul>
+<h2 id="the-template">The template</h2>
+<p>Copy this into a new file named <code>SKILL.md</code>, in a folder with the same name as <code>name</code>.</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode markdown"><code class="sourceCode markdown"><span id="cb3-1"><span class="co">---</span></span>
+<span id="cb3-2"><span class="an">name:</span><span class="co"> my-agent-name</span></span>
+<span id="cb3-3"><span class="an">description:</span><span class="co"> &quot;What this agent does, for whom, in one sentence. Use when: the situation that calls for it.&quot;</span></span>
+<span id="cb3-4"><span class="an">license:</span><span class="co"> MIT</span></span>
+<span id="cb3-5"><span class="an">metadata:</span></span>
+<span id="cb3-6"><span class="co">  title: &quot;My Agent Title&quot;</span></span>
+<span id="cb3-7"><span class="co">  author: &quot;Your Name, Your Institution&quot;</span></span>
+<span id="cb3-8"><span class="co">  version: &quot;1&quot;</span></span>
+<span id="cb3-9"><span class="co">---</span></span>
+<span id="cb3-10"><span class="fu">## Role</span></span>
+<span id="cb3-11"></span>
+<span id="cb3-12">Who this agent is, and who it works for.</span>
+<span id="cb3-13"></span>
+<span id="cb3-14"><span class="fu">## Task</span></span>
+<span id="cb3-15"></span>
+<span id="cb3-16">What it is given, and what it gives back. One job.</span>
+<span id="cb3-17"></span>
+<span id="cb3-18"><span class="fu">## Trusted guidance</span></span>
+<span id="cb3-19"></span>
+<span id="cb3-20">The sources it must use and cite, by name and link:</span>
+<span id="cb3-21"></span>
+<span id="cb3-22"><span class="ss">- </span><span class="co">[</span><span class="ot">WCAG 2.2</span><span class="co">](https://www.w3.org/TR/WCAG22/)</span></span>
+<span id="cb3-23"><span class="ss">- </span><span class="co">[</span><span class="ot">Understanding WCAG 2.2</span><span class="co">](https://www.w3.org/WAI/WCAG22/Understanding/)</span></span>
+<span id="cb3-24"><span class="ss">- </span>Your own policy, style guide or procedure.</span>
+<span id="cb3-25"></span>
+<span id="cb3-26">Work only from the evidence you are given. If something is not in the</span>
+<span id="cb3-27">evidence, say you cannot see it. Do not guess.</span>
+<span id="cb3-28"></span>
+<span id="cb3-29"><span class="fu">## Output format</span></span>
+<span id="cb3-30"></span>
+<span id="cb3-31">What comes back, in what shape, for the person who reads it.</span>
+<span id="cb3-32"></span>
+<span id="cb3-33"><span class="fu">## Example</span></span>
+<span id="cb3-34"></span>
+<span id="cb3-35">One short example of a good answer, using a fictional case.</span>
+<span id="cb3-36"></span>
+<span id="cb3-37"><span class="fu">## Human review</span></span>
+<span id="cb3-38"></span>
+<span id="cb3-39">Who checks what before anything goes out. End every answer with a &quot;Before</span>
+<span id="cb3-40">you send this&quot; checklist for that person.</span>
+<span id="cb3-41"></span>
+<span id="cb3-42"><span class="fu">## Never</span></span>
+<span id="cb3-43"></span>
+<span id="cb3-44"><span class="ss">- </span>Never ask for, or use, student names, records, accommodation details or</span>
+<span id="cb3-45">  health information.</span>
+<span id="cb3-46"><span class="ss">- </span>Never say a document is &quot;compliant&quot; or &quot;accessible&quot;. Say what you checked,</span>
+<span id="cb3-47">  what you found, and what a person still needs to check.</span>
+<span id="cb3-48"><span class="ss">- </span>Never invent a finding that is not in the evidence.</span></code></pre></div>
+<h2 id="sources">Sources</h2>
+<p>Checked on 29 October 2026.</p>
+<ul>
+<li><a href="https://agentskills.io/specification">Agent Skills specification</a>: the file format, <code>name</code> (at most 64 characters, matching its folder), <code>description</code> (at most 1,024 characters), the advice to keep <code>SKILL.md</code> under 500 lines, and the <code>references</code> folder.</li>
+<li><a href="https://code.visualstudio.com/docs/copilot/customization/agent-skills">VS Code: use Agent Skills</a>: where VS Code finds skills, typing <code>/</code> to use one, and how a skill is loaded in three steps, name and description first.</li>
+<li><a href="https://docs.github.com/en/copilot/concepts/agents/about-agent-skills">GitHub Docs: about agent skills</a>, <a href="https://code.claude.com/docs/en/skills">Claude Code: skills</a>, <a href="https://learn.chatgpt.com/docs/build-skills">Codex: build skills</a> and <a href="https://geminicli.com/docs/cli/skills/">Gemini CLI: skills</a>: where each tool finds skills, and where ChatGPT reads them.</li>
+<li><a href="https://www.w3.org/TR/WCAG22/">WCAG 2.2</a> and <a href="https://www.w3.org/WAI/WCAG22/Understanding/captions-prerecorded.html">Understanding 1.2.2 Captions (Prerecorded)</a>.</li>
+<li><a href="https://www.w3.org/WAI/media/av/captions/">W3C WAI: captions and subtitles</a>.</li>
+<li><code>agent-file-principles.md</code> in this kit: the twelve principles and the review questions this tutorial follows.</li>
+</ul>
+</main>
+</body>
+</html>

@@ -542,6 +542,7 @@ def create_app(config: dict | None = None) -> Flask:
     from .routes.export import export_bp
     from .routes.guidelines import guidelines_bp
     from .routes.feedback import feedback_bp
+    from .routes.ahg_survey import ahg_survey_bp
     from .routes.about import about_bp
     from .routes.convert import convert_bp
     from .routes.docs_pages import guide_bp, changelog_bp, prd_bp, deployment_bp, faq_bp, announcement_bp
@@ -602,6 +603,7 @@ def create_app(config: dict | None = None) -> Flask:
     app.register_blueprint(workshop_bp, url_prefix="/workshop")
     app.register_blueprint(passport_bp, url_prefix="/passport")
     # No prefix: these are the short URLs a facilitator reads out loud.
+    app.register_blueprint(ahg_survey_bp)
     app.register_blueprint(short_bp)
 
     # Configure speech engine model directory from instance path

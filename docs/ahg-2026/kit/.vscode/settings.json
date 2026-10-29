@@ -5,6 +5,7 @@
   "editor.wordWrap": "on",
   "markdown.preview.fontSize": 18,
   "terminal.integrated.fontSize": 18,
+  "chat.fontSize": 18,
   "chat.editor.fontSize": 18,
   "chat.agent.enabled": true,
   "files.autoSave": "afterDelay",

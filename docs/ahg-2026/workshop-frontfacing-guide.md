@@ -29,12 +29,12 @@ scale without losing quality, accountability or transparency.
   with GitHub Copilot in VS Code or with the AI assistant you already use.
 - Ground it in real evidence from GLOW, axe-core and Accessibility Insights,
   so it cites WCAG 2.2 instead of guessing.
+- Build the office: add your agent to an agent team of coordinated
+  specialists and run the team across the whole course.
 - Share it: add your agent to the open-source AHG 2026 collection on
   GitHub with one form and one button, committed in your name. At the end of
   the day every agent goes into the Accessibility Agents project, with its
   author credited.
-- Build the office: add your agent to an agent team of coordinated
-  specialists and run the team across the whole course.
 - Leave with a 30-day plan for your own campus.
 
 ## Who it is for

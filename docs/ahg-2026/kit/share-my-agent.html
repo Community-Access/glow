@@ -41,9 +41,9 @@
   fieldset { border: 2px solid var(--fg); padding: 0.5rem 1rem 1rem; margin-top: 1.5rem; min-width: 0; }
   fieldset label { font-weight: 400; margin-top: 0.5rem; }
   .hint { margin: 0.25rem 0 0.5rem; }
-  input[type="text"], input[type="file"], textarea { font: inherit; width: 100%; padding: 0.5rem;
+  input[type="text"], input[type="email"], input[type="file"], textarea { font: inherit; width: 100%; padding: 0.5rem;
          border: 2px solid var(--fg); background: var(--bg); color: var(--fg); }
-  input[type="radio"] { width: 1.25rem; height: 1.25rem; margin-right: 0.5rem; vertical-align: -0.1em; }
+  input[type="radio"], input[type="checkbox"] { width: 1.25rem; height: 1.25rem; margin-right: 0.5rem; vertical-align: -0.1em; }
   textarea { min-height: 12rem; }
   button { font: inherit; font-weight: 700; margin-top: 1.5rem; padding: 0.6rem 1.2rem; min-height: 44px;
            background: var(--accent); color: var(--bg); border: 2px solid var(--accent); cursor: pointer; }
@@ -108,7 +108,7 @@ no pull request.</p>
 <h2>What happens on GitHub</h2>
 <ol>
   <li>GitHub opens the "Share my agent" form, already filled in: the workshop code, which agent it is, and your agent.</li>
-  <li>Move to the end of the form and tick the privacy box: your agent contains nothing private.</li>
+  <li>Move to the end of the form and select the privacy check box: your agent contains nothing private.</li>
   <li>Press <strong>Submit new issue</strong>.</li>
 </ol>
 <p>Within about a minute, a reply appears on that page. Either your agent is
@@ -276,7 +276,7 @@ line. That counts.</p>
       return;
     }
     window.open(url, "_blank", "noopener");
-    say("The share form is open in a new tab, filled in. Tick the privacy box, then press Submit new issue. " +
+    say("The share form is open in a new tab, filled in. Select the privacy check box, then press Submit new issue. " +
         "If no tab opened, <a href=\"" + url + "\" target=\"_blank\" rel=\"noopener\">open the share form</a>.");
   });
 }());

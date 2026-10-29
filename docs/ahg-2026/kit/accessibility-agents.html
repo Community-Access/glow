@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en" xml:lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="author" content="Jeff Bishop, BITS">
+<meta name="description" content="What Accessibility Agents is, how to get it, and how to use it with your own agent after the AHG 2026 workshop.">
+<title>Accessibility Agents, after today</title>
+<style>
+:root { color-scheme: light dark; --bg: #ffffff; --fg: #1a1a1a; --link: #0b57d0; --rule: #6b6b6b; --code-bg: #f2f2f2; --focus: #b3261e; }
+@media (prefers-color-scheme: dark) { :root { --bg: #121212; --fg: #f1f1f1; --link: #a8c7fa; --rule: #9a9a9a; --code-bg: #262626; --focus: #ffb4ab; } }
+html { font-size: 112.5%; }
+body { background: var(--bg); color: var(--fg); font-family: Arial, Helvetica, sans-serif; line-height: 1.5; max-width: 46rem; margin: 0 auto; padding: 1rem; }
+a { color: var(--link); text-decoration: underline; }
+a:focus-visible, [tabindex]:focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; }
+h1, h2, h3, h4 { line-height: 1.25; }
+code, pre { font-family: Consolas, "Courier New", monospace; background: var(--code-bg); }
+pre { padding: 0.75rem; overflow-x: auto; white-space: pre-wrap; }
+table { border-collapse: collapse; margin: 1rem 0; }
+th, td { border: 1px solid var(--rule); padding: 0.4rem 0.6rem; text-align: left; vertical-align: top; }
+.table-scroll { overflow-x: auto; }
+blockquote { border-left: 4px solid var(--rule); margin-left: 0; padding-left: 1rem; }
+@media print { body { max-width: none; } a { color: inherit; } }
+</style>
+</head>
+<body>
+<main>
+<h1 id="accessibility-agents-after-today">Accessibility Agents, after today</h1>
+<p>Accessibility Agents is the open-source project your agent joins at the end of the day. It is a team of 113 accessibility skills, written in the same format as yours, from Community Access: github.com/Community-Access/accessibility-agents.</p>
+<p>The office team you ran this afternoon is a small version of it. The full project reviews web pages, Word, Excel, PowerPoint, PDF and ePub files, Markdown, Python and desktop apps, NVDA add-ons and GitHub work, and it cites WCAG 2.2 for every finding.</p>
+<h2 id="how-it-is-organized">How it is organized</h2>
+<p>You talk to six entry points. Each one calls the specialists it needs, so you never have to know all 113.</p>
+<div class="table-scroll" role="region" aria-label="Table 1" tabindex="0">
+<table>
+<thead>
+<tr>
+<th scope="col">You are working on</th>
+<th scope="col">Ask for</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>A web page, a form, a template or a component</td>
+<td><code>accessibility-lead</code></td>
+</tr>
+<tr>
+<td>A whole site or app, not one change</td>
+<td><code>web-accessibility-wizard</code></td>
+</tr>
+<tr>
+<td>Word, Excel, PowerPoint, PDF or ePub files</td>
+<td><code>document-accessibility-wizard</code></td>
+</tr>
+<tr>
+<td>Markdown documentation</td>
+<td><code>markdown-a11y-assistant</code></td>
+</tr>
+<tr>
+<td>Python, desktop apps, NVDA add-ons, accessibility tools</td>
+<td><code>developer-hub</code></td>
+</tr>
+<tr>
+<td>GitHub issues, pull requests, releases and projects</td>
+<td><code>github-hub</code></td>
+</tr>
+</tbody>
+</table>
+</div>
+<h2 id="getting-it">Getting it</h2>
+<p>There are three ways, from no effort to the full version.</p>
+<h3 id="already-in-this-kit">Already in this kit</h3>
+<p>This kit carries all 113 Accessibility Agents skills, in <code>.github/skills</code>, with the project's MIT licence in <code>accessibility-agents-LICENSE.txt</code>. Open the kit in VS Code, on a computer or at vscode.dev, start a new chat, and ask for one of the six entry points by name, for example: use document-accessibility-wizard to review psy101-syllabus.docx, using sample-course/evidence/psy101-syllabus.txt.</p>
+<p>The kit cannot carry the project's scanner tools, scripts or hooks, so a few skills work differently here: <code>accessibility-agents-in-the-kit.md</code> lists every one and what it does instead. In short, give them your checker's results, the way you gave your own agent evidence today.</p>
+<h3 id="the-full-version-in-your-browser-with-one-click">The full version, in your browser, with one click</h3>
+<p>GitHub Codespaces opens the whole project, scanners included, in VS Code in your browser, using the GitHub account you made for today.</p>
+<ol type="1">
+<li>Go to codespaces.new/Community-Access/accessibility-agents and sign in.</li>
+<li>Choose Create codespace. The first start takes a few minutes; later starts are quicker.</li>
+<li>Wait for the setup to finish: it installs the project, its scanners and a browser for the web scans, then copies the skills to where Copilot reads them. If VS Code asks whether to start the MCP server named accessibility-agents, choose to start it: that is the scanners.</li>
+<li>Open Copilot Chat with Control+Alt+I and ask for an entry point by name, as above. The scanners run for you.</li>
+</ol>
+<p>Personal GitHub accounts include a monthly allowance of free Codespaces time. Stop the codespace when you finish, from github.com/codespaces, so it does not use your allowance while idle.</p>
+<h3 id="in-your-own-projects-in-vs-code-with-nothing-to-install">In your own projects in VS Code, with nothing to install</h3>
+<p>VS Code uses any skill in the <code>.github/skills</code> folder of the folder you have open. This is how your own agent became <code>/&lt;name&gt;</code> today, with <code>/install-my-agent</code>.</p>
+<ol type="1">
+<li>On github.com/Community-Access/accessibility-agents, choose Code, then Download ZIP, and unzip it.</li>
+<li>In the project folder you work in, make a <code>.github/skills</code> folder if it does not have one.</li>
+<li>Copy every folder from the unzipped <code>skills</code> folder into <code>.github/skills</code>. Copy all of them: the six entry points call the others by name.</li>
+<li>Start a new chat in Copilot Chat and ask for one of the six entry points.</li>
+</ol>
+<h3 id="with-your-it-team-on-a-laptop">With your IT team, on a laptop</h3>
+<p>The full install adds the scanners and the review hooks on your own laptop. Each line is one way to install it.</p>
+<div class="table-scroll" role="region" aria-label="Table 2" tabindex="0">
+<table>
+<thead>
+<tr>
+<th scope="col">For</th>
+<th scope="col">Run</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>VS Code with Copilot</td>
+<td>Turn on the <code>chat.plugins.enabled</code> setting, then run Chat: Install Plugin from Source with <code>https://github.com/Community-Access/accessibility-agents</code></td>
+</tr>
+<tr>
+<td>GitHub Copilot on the command line</td>
+<td><code>copilot plugin marketplace add Community-Access/accessibility-agents</code>, then <code>copilot plugin install accessibility-agents@community-access</code></td>
+</tr>
+<tr>
+<td>Claude Code</td>
+<td><code>/plugin marketplace add Community-Access/accessibility-agents</code>, then <code>/plugin install accessibility-agents@community-access</code></td>
+</tr>
+<tr>
+<td>Codex</td>
+<td><code>codex plugin marketplace add Community-Access/accessibility-agents</code>, then <code>codex plugin add accessibility-agents@community-access</code></td>
+</tr>
+<tr>
+<td>Gemini CLI</td>
+<td><code>gemini extensions install https://github.com/Community-Access/accessibility-agents</code></td>
+</tr>
+<tr>
+<td>Every AI tool on the laptop</td>
+<td>In a copy of the repository: <code>npm install</code>, then <code>npm run setup</code></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>Step-by-step setup for each app, written for people new to all of this, is at community-access.org/start.html. The VS Code extension in the repository is retired; use one of the ways above instead.</p>
+<h3 id="in-chatgpt-claude-or-another-assistant-in-a-browser">In ChatGPT, Claude or another assistant in a browser</h3>
+<p>On letitglow.app/ahg/assistant, under "Accessibility Agents in any assistant", copy the text for the entry point you want and paste it as your first message. Each text carries the entry point and the specialists it calls. Then give it your checker's results.</p>
+<h3 id="where-accessibility-agents-is-available-as-of-29-october-2026">Where Accessibility Agents is available, as of 29 October 2026</h3>
+<p>Each row is one place you might use it, whether it works there today, and how.</p>
+<div class="table-scroll" role="region" aria-label="Table 3" tabindex="0">
+<table>
+<thead>
+<tr>
+<th scope="col">Where</th>
+<th scope="col">Available now</th>
+<th scope="col">How</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>VS Code, on a computer or at vscode.dev</td>
+<td>Yes, all 113 skills</td>
+<td>Already in this kit, or copy the <code>skills</code> folders into <code>.github/skills</code></td>
+</tr>
+<tr>
+<td>GitHub Codespaces</td>
+<td>Yes, with the scanners</td>
+<td>codespaces.new/Community-Access/accessibility-agents</td>
+</tr>
+<tr>
+<td>GitHub Copilot CLI, Claude Code, Codex, Gemini CLI</td>
+<td>Yes, with the scanners and review hooks</td>
+<td>The install lines above</td>
+</tr>
+<tr>
+<td>ChatGPT, on a free or paid account</td>
+<td>Yes, by pasting</td>
+<td>The texts on letitglow.app/ahg/assistant, as above</td>
+</tr>
+<tr>
+<td>ChatGPT's plugin directory</td>
+<td>Not yet</td>
+<td>Being prepared. When it is listed, you will install it once from Plugins in ChatGPT's sidebar instead of pasting a text</td>
+</tr>
+<tr>
+<td>Claude, Gemini, Copilot on github.com, a campus assistant</td>
+<td>Yes, by pasting</td>
+<td>The same texts</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>ChatGPT itself: a free account works for the whole day. Sign in before you start, because ChatGPT without an account stops after a message or two. On the web and on a phone, ChatGPT reads skills only when they come in a plugin from its directory; until Accessibility Agents is listed there, the pasted texts are the way in. In every assistant, a skill that needs a scanner asks for your checker's results instead.</p>
+<h2 id="using-it-with-your-own-agent">Using it with your own agent</h2>
+<ul>
+<li>Keep your agent beside the others: put it in <code>.github/skills/&lt;name&gt;/</code>, next to the Accessibility Agents folders. It is the same format, so it works the same way.</li>
+<li>Revise it the way you did today: try it, read where it guessed, change one thing. The principles are in <code>agent-file-principles.md</code> in this kit, and <code>write-your-own-agent.md</code> walks through writing a new one from a blank file.</li>
+<li>Your shared agent is in the AHG 2026 collection, and goes into Accessibility Agents in <code>community/ahg-2026/</code> with your name on it.</li>
+</ul>
+<h2 id="getting-help-and-helping">Getting help, and helping</h2>
+<ul>
+<li>Questions about the workshop: <a href="mailto:support@community-access.org">support@community-access.org</a>.</li>
+<li>A rule an agent gets wrong, or a pattern it should catch: open an issue on github.com/Community-Access/accessibility-agents.</li>
+<li>The two rules still apply: nothing private goes into any AI, and a person reviews everything an agent writes.</li>
+</ul>
+<h2 id="sources">Sources</h2>
+<p>Checked on 29 October 2026.</p>
+<ul>
+<li><a href="https://github.com/Community-Access/accessibility-agents#readme">Accessibility Agents README</a>: the six entry points and the install line for each tool. The kit carries the skills from the commit named in <code>accessibility-agents-skills.json</code>.</li>
+<li><a href="https://code.visualstudio.com/docs/copilot/customization/agent-plugins">VS Code: agent plugins</a>: installing a plugin from a repository, and the <code>chat.plugins.enabled</code> setting it needs.</li>
+<li><a href="https://docs.github.com/en/copilot/how-tos/copilot-cli/customize-copilot/plugins-finding-installing">GitHub Docs: finding and installing Copilot CLI plugins</a>: the <code>copilot plugin marketplace add</code> and <code>copilot plugin install</code> commands.</li>
+<li><a href="https://code.visualstudio.com/docs/copilot/customization/agent-skills">VS Code: use Agent Skills</a>: why copying the skills into <code>.github/skills</code> is all an install needs.</li>
+<li><a href="https://docs.github.com/en/billing/concepts/product-billing/github-codespaces">GitHub Docs: Codespaces billing</a>: the free monthly hours for a personal account.</li>
+</ul>
+</main>
+</body>
+</html>

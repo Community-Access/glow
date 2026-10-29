@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en" xml:lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="author" content="Jeff Bishop, BITS">
+<meta name="description" content="The workshop kit and every accessibility agent built at Accessing Higher Ground 2026.">
+<title>Accessibility Agents at AHG 2026</title>
+<style>
+:root { color-scheme: light dark; --bg: #ffffff; --fg: #1a1a1a; --link: #0b57d0; --rule: #6b6b6b; --code-bg: #f2f2f2; --focus: #b3261e; }
+@media (prefers-color-scheme: dark) { :root { --bg: #121212; --fg: #f1f1f1; --link: #a8c7fa; --rule: #9a9a9a; --code-bg: #262626; --focus: #ffb4ab; } }
+html { font-size: 112.5%; }
+body { background: var(--bg); color: var(--fg); font-family: Arial, Helvetica, sans-serif; line-height: 1.5; max-width: 46rem; margin: 0 auto; padding: 1rem; }
+a { color: var(--link); text-decoration: underline; }
+a:focus-visible, [tabindex]:focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; }
+h1, h2, h3, h4 { line-height: 1.25; }
+code, pre { font-family: Consolas, "Courier New", monospace; background: var(--code-bg); }
+pre { padding: 0.75rem; overflow-x: auto; white-space: pre-wrap; }
+table { border-collapse: collapse; margin: 1rem 0; }
+th, td { border: 1px solid var(--rule); padding: 0.4rem 0.6rem; text-align: left; vertical-align: top; }
+.table-scroll { overflow-x: auto; }
+blockquote { border-left: 4px solid var(--rule); margin-left: 0; padding-left: 1rem; }
+@media print { body { max-width: none; } a { color: inherit; } }
+</style>
+</head>
+<body>
+<main>
+<h1 id="accessibility-agents-at-ahg-2026">Accessibility Agents at AHG 2026</h1>
+<p>This is the home of "Accessibility Agents: Building Human-Centered AI Workflows for Trusted Accessibility Automation at Scale", a full-day workshop at Accessing Higher Ground, Monday 16 November 2026, in Denver.</p>
+<p>People who work in higher education accessibility come in with a problem and leave with an accessibility agent of their own, written in plain English, grounded in real evidence, working inside a team of agents, and shared here with their name on it.</p>
+<h2 id="if-you-are-taking-the-workshop">If you are taking the workshop</h2>
+<p>Everything starts at the setup page: <code>https://letitglow.app/workshop/ahg-2026</code>.</p>
+<ol type="1">
+<li>Follow the four setup steps there. About 20 minutes, no code.</li>
+<li>Share your practice agent, using the share page. It takes one form and one button, and you get a reply here within about a minute.</li>
+<li>On the day, you will do the same with your real agent.</li>
+</ol>
+<p>Stuck at any point? Write to <a href="mailto:support@community-access.org">support@community-access.org</a>. A person answers.</p>
+<h2 id="sharing-an-agent">Sharing an agent</h2>
+<p>You do not need to know Git, and you never make a fork or a pull request.</p>
+<ol type="1">
+<li>Open the share page: <code>https://letitglow.app/workshop/ahg-2026/share</code>.</li>
+<li>Choose your agent file. The page fills in a short form here on GitHub.</li>
+<li>Check the workshop code, select the privacy check box, and press Submit new issue.</li>
+</ol>
+<p>A reply arrives on that page within about a minute. Either your agent is in, with a link to it and your name on it, or the reply says exactly what to fix. To fix something, edit the issue and save; it is checked again straight away.</p>
+<p>Your agent is committed in your name, so it shows on your own GitHub profile.</p>
+<h2 id="what-is-here">What is here</h2>
+<p>The table lists each folder and what it holds.</p>
+<div class="table-scroll" role="region" aria-label="Table 1" tabindex="0">
+<table>
+<thead>
+<tr>
+<th scope="col">Folder</th>
+<th scope="col">What it holds</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>agents/</code></td>
+<td>Every agent shared on the day, one folder per person, and the gallery in <code>agents/README.md</code></td>
+</tr>
+<tr>
+<td><code>practice/</code></td>
+<td>Practice agents shared before the day</td>
+</tr>
+<tr>
+<td><code>kit/</code></td>
+<td>The agent kit: open this folder in VS Code on a computer or at vscode.dev. The browser path uses its <code>any-assistant/</code> texts, also at letitglow.app/ahg/assistant. The same kit downloads from the setup page</td>
+</tr>
+<tr>
+<td><code>.github/</code></td>
+<td>The share form and the automation that adds each agent</td>
+</tr>
+<tr>
+<td><code>scripts/</code></td>
+<td>The script that sends every agent to the Accessibility Agents project</td>
+</tr>
+</tbody>
+</table>
+</div>
+<h2 id="where-the-agents-go-next">Where the agents go next</h2>
+<p>At the end of the day, every agent in <code>agents/</code> goes into the open-source <a href="https://github.com/Community-Access/accessibility-agents">Accessibility Agents</a> project, in its <code>community/ahg-2026/</code> folder, with each author credited as a co-author of that contribution.</p>
+<h2 id="two-rules">Two rules</h2>
+<ol type="1">
+<li>Nothing private goes into any agent: no student names, records, accommodation details or health information. The share form checks for the obvious ones.</li>
+<li>Every agent ends with a person checking its work.</li>
+</ol>
+<h2 id="licence-and-owners">Licence and owners</h2>
+<p>Everything here is under the MIT licence. The repository belongs to Community Access and is looked after by Jeff Bishop.</p>
+</main>
+</body>
+</html>

@@ -8,7 +8,7 @@ description: "Which Accessibility Agents skills work fully in the AHG 2026 kit, 
 # Accessibility Agents in this kit
 
 This kit carries all 113 Accessibility Agents skills, from
-commit `aaf1cfb` of [Accessibility Agents](https://github.com/Community-Access/accessibility-agents), in `.github/skills`. Open the
+commit `2f4fe22` of [Accessibility Agents](https://github.com/Community-Access/accessibility-agents), in `.github/skills`. Open the
 kit in VS Code, on a computer or at vscode.dev, and they are there:
 start a new chat and ask for one by name. Nothing to install.
 
@@ -22,58 +22,60 @@ full version, with everything, is one click away in Codespaces:
 
 ## Works fully in the kit
 
-72 skills need nothing the kit lacks. These are the ones you can ask for by name; the rest are specialists they call for you:
+72 skills need nothing the kit lacks. Each row is one you can ask for by name, and what it does; the rest are specialists they call for you.
 
-- `a11y-tool-builder`
-- `accessibility-regression-detector`
-- `accessibility-statement`
-- `alt-text-headings`
-- `analytics`
-- `aria-specialist`
-- `cognitive-accessibility`
-- `compliance-mapping`
-- `contrast-master`
-- `contributions-hub`
-- `daily-briefing`
-- `data-visualization-accessibility`
-- `design-system-auditor`
-- `desktop-a11y-specialist`
-- `desktop-a11y-testing-coach`
-- `email-accessibility`
-- `epub-accessibility`
-- `excel-accessibility`
-- `forms-specialist`
-- `i18n-accessibility`
-- `insiders-a11y-tracker`
-- `issue-tracker`
-- `keyboard-navigator`
-- `link-checker`
-- `live-region-controller`
-- `media-accessibility`
-- `mobile-accessibility`
-- `modal-specialist`
-- `nvda-addon-specialist`
-- `office-remediator`
-- `osaf-community`
-- `osaf-foundational`
-- `osaf-testing`
-- `osaf-workflow`
-- `performance-accessibility`
-- `powerpoint-accessibility`
-- `pr-review`
-- `python-specialist`
-- `repo-admin`
-- `screen-reader-lab`
-- `tables-data-specialist`
-- `team-manager`
-- `template-builder`
-- `text-quality-reviewer`
-- `wcag-aaa`
-- `wcag-guide`
-- `wcag3-preview`
-- `web-component-specialist`
-- `word-accessibility`
-- `wxpython-specialist`
+| Skill | What it does |
+|---|---|
+| `a11y-tool-builder` | Build accessibility scanners, rule engines, parsers and report generators. |
+| `accessibility-regression-detector` | Compare audits across commits to find new, fixed and regressed issues. |
+| `accessibility-statement` | Generate a W3C or EU model accessibility statement from audit results. |
+| `alt-text-headings` | Alt text, SVGs, figures, charts, heading order, page titles and landmarks. |
+| `analytics` | GitHub metrics: velocity, review turnaround, churn and bottlenecks. |
+| `aria-specialist` | ARIA roles, states and properties for custom widgets and dynamic content. |
+| `cognitive-accessibility` | Plain language, WCAG 2.2 cognitive criteria, COGA guidance and auth UX. |
+| `compliance-mapping` | Map findings to Section 508, EN 301 549, EAA, ADA, AODA; build a VPAT. |
+| `contrast-master` | Color contrast, themes, dark mode, non-text contrast and color-only meaning. |
+| `contributions-hub` | GitHub community: discussions, moderation, contributor health, CLAs. |
+| `daily-briefing` | Daily GitHub briefing: issues, PRs, reviews, releases and discussions. |
+| `data-visualization-accessibility` | Charts, graphs and dashboards: SVG ARIA, table alternatives, safe palettes. |
+| `design-system-auditor` | Check color, focus ring, spacing and motion tokens before they reach UI. |
+| `desktop-a11y-specialist` | Desktop a11y APIs: UI Automation, MSAA/IAccessible2, NSAccessibility, Qt Widgets. |
+| `desktop-a11y-testing-coach` | Test desktop apps with NVDA, JAWS, Narrator, VoiceOver and UIA tooling. |
+| `email-accessibility` | HTML email accessibility under email client rendering constraints. |
+| `epub-accessibility` | Scan and fix .epub files: EPUB Accessibility 1.1, reading order, nav. |
+| `excel-accessibility` | Scan and fix .xlsx files: sheet names, table headers, alt text, merges. |
+| `forms-specialist` | Labels, validation, error handling, multi-step wizards and autocomplete. |
+| `i18n-accessibility` | Right-to-left and language: dir, lang tags, bidi text, icon mirroring. |
+| `insiders-a11y-tracker` | Track accessibility changes in VS Code and other repos you follow. |
+| `issue-tracker` | GitHub issues: find, triage, review and respond, with written reports. |
+| `keyboard-navigator` | Tab order, focus management, shortcuts, skip links and focus visibility. |
+| `link-checker` | Find vague link text such as click here, read more or a bare URL. |
+| `live-region-controller` | Announce dynamic updates: live regions, toasts, loading states and results. |
+| `media-accessibility` | Captions, transcripts, audio description and accessible media players. |
+| `mobile-accessibility` | React Native, Expo, iOS and Android: labels, roles and touch targets. |
+| `modal-specialist` | Dialogs, drawers, popovers and overlays: focus trap, return and dismissal. |
+| `nvda-addon-specialist` | NVDA add-ons: plugin types, manifest, events, scripts and packaging. |
+| `office-remediator` | Fix .docx, .xlsx and .pptx programmatically via python-docx and friends. |
+| `osaf-community` | Open Source Accessibility Framework Community phase: reports, participation, recognition, progress, resources. |
+| `osaf-foundational` | Open Source Accessibility Framework Foundational phase: ACCESSIBILITY.md and an accessibility label. |
+| `osaf-testing` | Open Source Accessibility Framework Testing phase: automated, keyboard, screen reader, manual and docs checks. |
+| `osaf-workflow` | Open Source Accessibility Framework Workflow phase: expectations, reporting, triage, PR template, labels, docs. |
+| `performance-accessibility` | Lazy loading, skeletons, layout shift and loading states for AT users. |
+| `powerpoint-accessibility` | Scan and fix .pptx files: slide titles, alt text and reading order. |
+| `pr-review` | Review pull requests: diffs, comments, context and written review docs. |
+| `python-specialist` | Python debugging, packaging, testing, typing, async and performance. |
+| `repo-admin` | Repo admin: collaborators, branch protection, webhooks and labels. |
+| `screen-reader-lab` | Simulate screen reader narration of HTML or JSX, step by step. |
+| `tables-data-specialist` | Data tables and grids: headers, scope, captions, sorting and complex tables. |
+| `team-manager` | GitHub org teams: create, staff, onboard, offboard and audit access. |
+| `template-builder` | Build GitHub issue, PR and discussion templates from a guided wizard. |
+| `text-quality-reviewer` | Catch weak alt text, aria-labels and button names, and template leftovers. |
+| `wcag-aaa` | WCAG 2.2 Level AAA criteria that go beyond the AA target. |
+| `wcag-guide` | Explain WCAG 2.2 criteria, conformance levels and what changed. |
+| `wcag3-preview` | WCAG 3.0 draft preview: core requirements, tiers, contrast and scope. |
+| `web-component-specialist` | Custom elements and shadow DOM: ElementInternals, cross-shadow ARIA, focus. |
+| `word-accessibility` | Scan and fix .docx files: title, headings, alt text, table headers. |
+| `wxpython-specialist` | wxPython GUI: sizers, events, AUI, custom controls and threading. |
 
 ## Works differently in the kit
 

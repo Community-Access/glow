@@ -2,7 +2,8 @@
 """Run GLOW's own audits over every AHG 2026 document a person reads.
 
 Markdown documents go through GLOW's Markdown auditor; the Word and
-PowerPoint deck and the Word step cards go through GLOW's Office auditors.
+PowerPoint deck and the Word and PowerPoint copy of every participant
+document go through GLOW's Office auditors.
 A document passes when GLOW says it passes and has no critical or high
 finding.
 
@@ -56,7 +57,14 @@ def office_files() -> list[tuple[Path, object]]:
         (AHG / "slides.docx", audit_document),
         (AHG / "slides.pptx", audit_presentation),
     ]
-    files += [(p, audit_document) for p in sorted((AHG / "kit" / "step-cards").glob("*.docx"))]
+    # The Word and PowerPoint copy of every participant document, step cards
+    # included (scripts/ahg_formats.py; the inventory is formats.md).
+    sys.path.insert(0, str(REPO / "scripts"))
+    import ahg_formats
+
+    for rel in ahg_formats.SOURCES:
+        stem = AHG / ahg_formats.output_stem(rel)
+        files += [(stem.with_suffix(".docx"), audit_document), (stem.with_suffix(".pptx"), audit_presentation)]
     return files
 
 

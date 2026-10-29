@@ -3148,15 +3148,14 @@ def render_ahg_kit_index():
         group = kit_online.group_of(rel)
         if group not in grouped:
             continue
-        if rel.startswith("step-cards/") and rel.endswith(".docx"):
-            continue  # offered beside its card
+        if kit_online.is_other_format(kit, rel):
+            continue  # offered beside its Markdown
         label = kit_online.label_for(rel)
         if rel.endswith(".md") and label == rel.split("/")[-1]:
             label = kit_online.title_for(rel, (kit / rel).read_text(encoding="utf-8"))
-        entry = {"rel": rel, "label": label}
+        entry = {"rel": rel, "label": label, "formats": kit_online.other_formats(kit, rel)}
         if rel.startswith("step-cards/"):
             entry["label"] = _ahg_card_title(kit / rel)
-            entry["docx"] = rel[:-3] + ".docx" if (kit / (rel[:-3] + ".docx")).is_file() else ""
         grouped[group].append(entry)
     groups = [
         {"key": key, "title": title, "about": about, "files": grouped[key]}
@@ -3252,11 +3251,10 @@ def render_ahg_kit_file(rel: str):
     if suffix == ".md":
         front, body = kit_online.markdown_page(text)
     title = _ahg_card_title(path) if rel.startswith("step-cards/") else kit_online.title_for(rel, text)
-    docx = rel[:-3] + ".docx" if rel.startswith("step-cards/") and (kit / (rel[:-3] + ".docx")).is_file() else ""
     return render_template(
         "workshop/ahg_kit_file.html",
         rel=rel, title=title, front=front, body=body,
-        plain=text if body is None else "", docx=docx, raw_text=text,
+        plain=text if body is None else "", formats=kit_online.other_formats(kit, rel), raw_text=text,
         raw_url=url_for("shortlinks.ahg_kit_raw", rel=rel, _external=True),
     )
 

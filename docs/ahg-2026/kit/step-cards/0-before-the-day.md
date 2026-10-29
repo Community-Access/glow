@@ -16,6 +16,9 @@ A laptop that is ready for the whole workshop, a message from your AI
 assistant saying so, and your practice agent already shared, so sharing on
 the day is the second time, not the first.
 
+New to words like agent, skill or Copilot Chat? Read `glossary.md` in the
+kit, or at letitglow.app/ahg/kit, first. It is one page.
+
 ## Choose your path
 
 The day is the same on every path. Not sure? Take the browser path.
@@ -36,6 +39,9 @@ letitglow.app/ahg/paths compares them.
    your work email if your institution allows it. If GitHub asks you to set
    up two-factor sign-in, choose the option that works best with your screen
    reader or phone; GitHub Mobile and an authenticator app both work.
+2. Answer the five-minute survey at letitglow.app/ahg/survey: your name,
+   email and GitHub username, your path, what your laptop and campus allow,
+   and anything we should have ready for you.
 
 ### In a browser
 
@@ -54,8 +60,8 @@ letitglow.app/ahg/paths compares them.
    paste with Control+V on Windows or Command+V on a Mac, and press Enter.
 5. Share your practice agent. Open letitglow.app/ahg/share, choose "My
    practice agent", press "Fill in the practice template", and press "Open
-   the share form on GitHub". On GitHub, sign in if asked, tick the privacy
-   box at the end of the form, and press "Submit new issue".
+   the share form on GitHub". On GitHub, sign in if asked, select the privacy
+   check box at the end of the form, and press "Submit new issue".
 
 ### In VS Code on your computer
 
@@ -76,8 +82,8 @@ letitglow.app/ahg/paths compares them.
    Mac. Type /ready-check and press Enter.
 7. Share your practice agent. Open letitglow.app/ahg/share in your browser,
    choose "My practice agent", choose the file my-agent/SKILL.md from the
-   kit, and press "Open the share form on GitHub". On GitHub, tick the
-   privacy box at the end of the form and press "Submit new issue".
+   kit, and press "Open the share form on GitHub". On GitHub, select the
+   privacy check box at the end of the form and press "Submit new issue".
 
 ### In VS Code for the Web
 
@@ -110,3 +116,11 @@ blocked at work? Write to us; nobody is left out.
 
 You are set up, and you have already shared an agent once. The hardest part
 of the day is done.
+
+## Sources
+
+Checked on 29 October 2026: [setting up Copilot in VS Code](https://code.visualstudio.com/docs/copilot/setup)
+(signing in turns on Copilot Free), [profiles](https://code.visualstudio.com/docs/configure/profiles)
+(importing one) and [VS Code for the Web](https://code.visualstudio.com/docs/setup/vscode-web)
+(opening a folder needs Chrome or Edge). The keys on every card are in the
+kit's README, with its sources.

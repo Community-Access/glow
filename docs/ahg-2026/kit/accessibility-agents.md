@@ -89,7 +89,7 @@ Each line is one way to install it.
 
 | For | Run |
 |---|---|
-| VS Code with Copilot | Turn on the `chat.plugins.enabled` setting, then run Chat: Install Plugin From Source with `https://github.com/Community-Access/accessibility-agents` |
+| VS Code with Copilot | Turn on the `chat.plugins.enabled` setting, then run Chat: Install Plugin from Source with `https://github.com/Community-Access/accessibility-agents` |
 | GitHub Copilot on the command line | `copilot plugin marketplace add Community-Access/accessibility-agents`, then `copilot plugin install accessibility-agents@community-access` |
 | Claude Code | `/plugin marketplace add Community-Access/accessibility-agents`, then `/plugin install accessibility-agents@community-access` |
 | Codex | `codex plugin marketplace add Community-Access/accessibility-agents`, then `codex plugin add accessibility-agents@community-access` |
@@ -107,13 +107,35 @@ assistant", copy the text for the entry point you want and paste it as your
 first message. Each text carries the entry point and the specialists it
 calls. Then give it your checker's results.
 
+### Where Accessibility Agents is available, as of 29 October 2026
+
+Each row is one place you might use it, whether it works there today, and how.
+
+| Where | Available now | How |
+|---|---|---|
+| VS Code, on a computer or at vscode.dev | Yes, all 113 skills | Already in this kit, or copy the `skills` folders into `.github/skills` |
+| GitHub Codespaces | Yes, with the scanners | codespaces.new/Community-Access/accessibility-agents |
+| GitHub Copilot CLI, Claude Code, Codex, Gemini CLI | Yes, with the scanners and review hooks | The install lines above |
+| ChatGPT, on a free or paid account | Yes, by pasting | The texts on letitglow.app/ahg/assistant, as above |
+| ChatGPT's plugin directory | Not yet | Being prepared. When it is listed, you will install it once from Plugins in ChatGPT's sidebar instead of pasting a text |
+| Claude, Gemini, Copilot on github.com, a campus assistant | Yes, by pasting | The same texts |
+
+ChatGPT itself: a free account works for the whole day. Sign in before you
+start, because ChatGPT without an account stops after a message or two.
+On the web and on a phone, ChatGPT reads skills only when they come in a
+plugin from its directory; until Accessibility Agents is listed there, the
+pasted texts are the way in. In every assistant, a skill that needs a
+scanner asks for your checker's results instead.
+
 ## Using it with your own agent
 
 - Keep your agent beside the others: put it in `.github/skills/<name>/`, next
   to the Accessibility Agents folders. It is the same format, so it works the
   same way.
 - Revise it the way you did today: try it, read where it guessed, change one
-  thing. The principles are in `agent-file-principles.md` in this kit.
+  thing. The principles are in `agent-file-principles.md` in this kit, and
+  `write-your-own-agent.md` walks through writing a new one from a blank
+  file.
 - Your shared agent is in the AHG 2026 collection, and goes into
   Accessibility Agents in `community/ahg-2026/` with your name on it.
 
@@ -124,3 +146,21 @@ calls. Then give it your checker's results.
   github.com/Community-Access/accessibility-agents.
 - The two rules still apply: nothing private goes into any AI, and a person
   reviews everything an agent writes.
+
+## Sources
+
+Checked on 29 October 2026.
+
+- [Accessibility Agents README](https://github.com/Community-Access/accessibility-agents#readme):
+  the six entry points and the install line for each tool. The kit carries
+  the skills from the commit named in `accessibility-agents-skills.json`.
+- [VS Code: agent plugins](https://code.visualstudio.com/docs/copilot/customization/agent-plugins):
+  installing a plugin from a repository, and the `chat.plugins.enabled`
+  setting it needs.
+- [GitHub Docs: finding and installing Copilot CLI plugins](https://docs.github.com/en/copilot/how-tos/copilot-cli/customize-copilot/plugins-finding-installing):
+  the `copilot plugin marketplace add` and `copilot plugin install`
+  commands.
+- [VS Code: use Agent Skills](https://code.visualstudio.com/docs/copilot/customization/agent-skills):
+  why copying the skills into `.github/skills` is all an install needs.
+- [GitHub Docs: Codespaces billing](https://docs.github.com/en/billing/concepts/product-billing/github-codespaces):
+  the free monthly hours for a personal account.

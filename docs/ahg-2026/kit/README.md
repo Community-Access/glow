@@ -28,7 +28,7 @@ share on GitHub. letitglow.app/ahg/paths compares them.
 
 1. Open Copilot Chat: Control+Alt+I on Windows, or Control+Command+I on a
    Mac.
-2. Type /ready-check and press Enter. Copilot checks five things and tells
+2. Type /ready-check and press Enter. Copilot checks six things and tells
    you that you are ready.
 
 If a banner says Restricted Mode, choose Manage, then Trust first. It is the
@@ -66,13 +66,15 @@ This list follows the folders in the Explorer, top to bottom.
 | `my-agent/SKILL.md` | Your agent. Seven headings: Role, Task, Trusted guidance, Output format, Example, Human review, Never |
 | `office-team/` | The accessibility office: eight specialists your agent joins this afternoon |
 | `sample-course/` | PSY 101, the course everyone works on, with barriers planted on purpose, and `evidence/` with each file's checker report |
-| `step-cards/` | One card per block, as Markdown and as large print Word files |
+| `step-cards/` | One card per block, each as Markdown, HTML, a large print Word file and a reading deck |
 | `share-my-agent.html` | The offline copy of the share page |
 | `ahg-2026.code-profile` | The AHG 2026 VS Code profile, if you need to import it again |
 | `accessibility-agents.md` | Accessibility Agents after today: the six entry points, and how to keep using it |
 | `accessibility-agents-in-the-kit.md` | Which Accessibility Agents skills work fully in this kit, and what the rest do instead |
 | `accessibility-agents-LICENSE.txt` | Accessibility Agents' MIT licence, which travels with its skills |
 | `agent-file-principles.md` | What makes a good agent file, and the twelve review questions /review-my-agent uses |
+| `glossary.md` | The words used today, one line each |
+| `write-your-own-agent.md` | The full tutorial: write, test, ground, revise and share an agent on your own, in any assistant |
 
 ## You cannot fall behind
 
@@ -82,6 +84,27 @@ name on it, and carry on. That is still your agent, and it still goes into
 the open-source project with your name on it. If VS Code gives you trouble,
 switch to the browser path and carry on from the same block.
 
+## If you use a screen reader
+
+Everything today works with NVDA, JAWS and VoiceOver, on every path.
+
+- In VS Code, Copilot's answers are long. Move to the answer and press
+  Alt+F2 (Option+F2 on a Mac) to read it as plain text in the Accessible
+  View. Inside it, Control+Alt+Page Down and Control+Alt+Page Up move
+  between code blocks.
+- VS Code plays a sound when an answer arrives, and another when Copilot
+  needs you to approve something, such as saving your agent file. Help:
+  List Signal Sounds turns them on or off.
+- Alt+F1 (Option+F1) in the chat box opens accessibility help for chat.
+  F6 moves between the parts of the window.
+- On the browser path, every block's text at letitglow.app/ahg/assistant
+  has a Copy button. A message under the button says it is copied.
+- On GitHub's share form, everything is filled in for you. Move to the end
+  of the form, select the check box that says your agent contains nothing
+  private, then press Submit new issue. The reply appears on the same page
+  in about a minute; press F5 if your screen reader does not announce it.
+- Step cards 3 and 5 say where the long answers are and how to read them.
+
 ## Keys worth knowing
 
 These work in every part of VS Code, on a computer and at vscode.dev.
@@ -89,11 +112,18 @@ These work in every part of VS Code, on a computer and at vscode.dev.
 | To | Windows | Mac |
 |---|---|---|
 | Open Copilot Chat | Control+Alt+I | Control+Command+I |
-| Read Copilot's last answer as plain text | Alt+F2 | Option+F2 |
+| Read an answer as plain text, in the Accessible View: move to the answer, then press | Alt+F2 | Option+F2 |
 | Open any file by name | Control+P | Command+P |
 | Find any command | Control+Shift+P | Command+Shift+P |
 | Move between parts of the window | F6 | F6 |
 | Accessibility help for where you are | Alt+F1 | Option+F1 |
+
+With a screen reader running, VS Code plays a sound when Copilot's answer
+arrives and another when Copilot needs you to approve something. The
+settings are `accessibility.signals.chatResponseReceived` and
+`accessibility.signals.chatUserActionRequired`. While Copilot works, it
+says what it is doing; `accessibility.verboseChatProgressUpdates` turns
+that off. The kit sets chat text to 18 point with `chat.fontSize`.
 
 ## The two rules
 
@@ -102,3 +132,19 @@ These work in every part of VS Code, on a computer and at vscode.dev.
 2. Every agent ends with a person checking its work.
 
 Help, before or after the day: support@community-access.org.
+
+## Sources
+
+Checked on 29 October 2026.
+
+- [VS Code: accessibility](https://code.visualstudio.com/docs/configure/accessibility/accessibility):
+  the Accessible View (Alt+F2), accessibility help (Alt+F1) and moving
+  between parts of the window (F6).
+- [VS Code: Copilot features cheat sheet](https://code.visualstudio.com/docs/copilot/reference/copilot-vscode-features):
+  opening Copilot Chat.
+- [VS Code: Copilot settings reference](https://code.visualstudio.com/docs/copilot/reference/copilot-settings):
+  the chat sound, progress and text size settings.
+- [VS Code for the Web](https://code.visualstudio.com/docs/setup/vscode-web):
+  opening a folder from your computer works in Chrome and Edge.
+- [VS Code: use Agent Skills](https://code.visualstudio.com/docs/copilot/customization/agent-skills):
+  how the commands in `.github/skills` work.

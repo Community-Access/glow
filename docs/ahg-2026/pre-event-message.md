@@ -55,6 +55,8 @@ Then, on any path:
 3. Share your practice agent at letitglow.app/ahg/share: one form, one
    button, and a reply within a minute. On the day you do it once more, with
    your real agent.
+4. Answer the five-minute survey at letitglow.app/ahg/survey, so we have
+   your path, your laptop and any access needs ready on the day.
 
 If a step does not work, write to support@community-access.org before the
 day, or come to the setup table outside the room from 10:00 on the day.
@@ -65,7 +67,8 @@ out on the day.
 ### Bring
 
 - A Windows or Mac laptop and its charger.
-- Headphones, if you use a screen reader.
+- Headphones, if you use a screen reader. Read "If you use a screen
+  reader" in the kit's README before the day; it is at letitglow.app/ahg/kit.
 - One real accessibility problem from your job. Nothing private: no student
   names, records or accommodation details. You will work on a sample course,
   and your problem is what makes your agent yours.
@@ -76,9 +79,9 @@ out on the day.
   document with GitHub Copilot or the assistant you chose.
 - After lunch: ground it in real evidence from GLOW, axe and Accessibility
   Insights, so it cites WCAG 2.2 instead of guessing.
-- Afternoon: share it to the open-source AHG 2026 collection on GitHub,
-  with one form and your name on it, then add it to an agent team and watch
-  the team work through the whole course.
+- Afternoon: add it to an agent team and watch the team work through the
+  whole course, then share it to the open-source AHG 2026 collection on
+  GitHub, with one form and your name on it.
 - The last five minutes are the session evaluation. It shapes next year's
   conference.
 

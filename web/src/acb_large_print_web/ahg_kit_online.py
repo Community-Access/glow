@@ -41,6 +41,40 @@ ELSEWHERE = {
 }
 
 
+# Every participant document also comes as HTML, Word and PowerPoint, built
+# beside it by scripts/ahg_formats.py. A README's copies are read-me.*.
+OTHER_FORMATS: tuple[tuple[str, str], ...] = (
+    (".docx", "Word"),
+    (".pptx", "PowerPoint"),
+    (".html", "HTML"),
+)
+
+
+def _format_stem(rel: str) -> str:
+    folder, _, name = rel.rpartition("/")
+    stem = "read-me" if name == "README.md" else name[:-3]
+    return f"{folder}/{stem}" if folder else stem
+
+
+def other_formats(kit: Path, rel: str) -> list[tuple[str, str]]:
+    """(label, rel) for each other format of a Markdown file that has them."""
+    if not rel.endswith(".md"):
+        return []
+    stem = _format_stem(rel)
+    return [(label, stem + ext) for ext, label in OTHER_FORMATS if (kit / (stem + ext)).is_file()]
+
+
+def is_other_format(kit: Path, rel: str) -> bool:
+    """True for read-me.docx, 3-your-agent-at-work.pptx and the like."""
+    suffix = rel[rel.rfind("."):] if "." in rel else ""
+    if suffix not in {ext for ext, _ in OTHER_FORMATS}:
+        return False
+    folder, _, name = rel.rpartition("/")
+    stem = name[: -len(suffix)]
+    source = "README.md" if stem == "read-me" else stem + ".md"
+    return (kit / folder / source).is_file()
+
+
 def kit_files(kit: Path) -> list[str]:
     """Every file in the kit, as kit-relative paths with forward slashes."""
     return sorted(p.relative_to(kit).as_posix() for p in kit.rglob("*") if p.is_file())

@@ -28,6 +28,8 @@ Everything participants need starts from the setup page.
 |---|---|
 | Everything, for everyone | letitglow.app/ahg |
 | Share page | letitglow.app/ahg/share |
+| The pre-workshop survey | letitglow.app/ahg/survey |
+| Survey answers, for the team | letitglow.app/ahg/survey/results, with the survey key (in your password manager, never on a slide or card) |
 | The kit, online, no unzipping | letitglow.app/ahg/kit |
 | The browser path: one text per block | letitglow.app/ahg/assistant |
 | Choosing a path, and assistant setup | letitglow.app/ahg/paths |

@@ -34,7 +34,7 @@ Your own agent, with your answers in it and your name on it: the file SKILL.md.
 
 1. Open Copilot Chat: Control+Alt+I on Windows, or Control+Command+I on a Mac.
 2. Type /design-my-agent and press Enter.
-3. Answer Copilot's questions one at a time: role, task, trusted guidance, output format, an example of a good answer, human review. Borrow from the example whenever you like.
+3. Answer Copilot's questions one at a time: your role card and problem, then role, task, trusted guidance, output format, an example of a good answer and human review, then your name and institution. Borrow from the example whenever you like.
 4. Copilot writes your answers into my-agent/SKILL.md and reads the file back to you. If it asks before it changes the file, allow it.
 5. Optional: open my-agent/SKILL.md to read it yourself. Press Control+P on Windows or Command+P on a Mac, type SKILL, and choose my-agent.
 
@@ -56,4 +56,10 @@ Your agent exists. You wrote it in plain English, and it follows the same format
 
 ## On Monday
 
-Writing an agent works in any AI assistant your campus allows: paste the five parts in as instructions.
+Writing an agent works in any AI assistant your campus allows: paste the whole agent file in as its instructions.
+
+## Sources
+
+Checked on 29 October 2026: the keys on this card are in the kit's
+README, with their sources. The standard every agent cites is
+[WCAG 2.2](https://www.w3.org/TR/WCAG22/).

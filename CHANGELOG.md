@@ -10,6 +10,28 @@ Releases are tagged in the [GitHub repository](https://github.com/Community-Acce
 
 ### Added
 
+- **AHG 2026: every participant document in four formats, checked against
+  primary sources, and a pre-workshop survey.** `scripts/ahg_formats.py`
+  writes an HTML page, an ACB large print Word file and a reading deck beside
+  each document a participant receives; `scripts/check_ahg_formats.py` and
+  `web/tests/test_workshop_ahg_formats.py` check every copy, and
+  `docs/ahg-2026/formats.md` is the inventory. Accessibility Agents is
+  vendored at `2f4fe22` (113 skills). On 29 October 2026 every claim about
+  tools and standards in the kit was checked against its primary source and
+  the stale ones corrected: the Title II dates (26 April 2027 and 2028, from
+  the Department of Justice interim final rule of 20 April 2026), where Claude
+  Code finds skills, the `chat.fontSize` setting, the VS Code and Codex
+  install lines, and the `disable-model-invocation` note. The kit gains a
+  glossary, a screen reader section in its README, dated sources on every
+  step card, a table of where Accessibility Agents is available today
+  (ChatGPT included), and the six learning outcomes read back at the end of
+  the day; facilitators gain a helpers' card. `/ahg/survey` asks registered
+  participants their path, what their laptop and campus allow, their access
+  needs and the problem they bring; answers stay on the server, are never
+  sent to an AI, are read at `/ahg/survey/results` with `AHG_SURVEY_KEY`,
+  and are deleted by 31 January 2027 (`routes/ahg_survey.py`,
+  `web/tests/test_ahg_survey.py`).
+
 - **Two enforced rules for accessibility reports and credits.**
   `.github/workflows/accessibility-reports.yml` acknowledges each report,
   reminds the accessibility owner after 5 business days without a maintainer

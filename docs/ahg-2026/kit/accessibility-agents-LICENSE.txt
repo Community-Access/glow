@@ -1,4 +1,4 @@
-Accessibility Agents, https://github.com/Community-Access/accessibility-agents, commit aaf1cfbf62c49344f637a760fa7350c08d3c2b31
+Accessibility Agents, https://github.com/Community-Access/accessibility-agents, commit 2f4fe226b9ed1691509b1751a2748b778eab477a
 The skills in .github/skills that are not the kit's own commands are
 copied unchanged from that project, under this licence.
 

@@ -1,0 +1,61 @@
+{% extends "workshop/ahg_base.html" %}
+{% block title %}Survey results{% endblock %}
+{% block heading %}Survey results{% endblock %}
+
+{% block content %}
+<p>{{ rows | length }} response{{ "s" if rows | length != 1 }}. <a href="{{ url_for('ahg_survey.survey_results_csv', key=key) }}">Download every answer as CSV</a>.</p>
+
+<div class="table-scroll" tabindex="0" role="region" aria-labelledby="t-roster">
+<table>
+  <caption id="t-roster">Who answered</caption>
+  <thead><tr><th scope="col">Name</th><th scope="col">Email</th><th scope="col">GitHub</th><th scope="col">Path</th><th scope="col">Ready check</th></tr></thead>
+  <tbody>
+  {% for row in rows %}
+    <tr>
+      <th scope="row">{{ row.get("name") or "No name given" }}</th>
+      <td>{{ row.get("email") }}</td>
+      <td>{% if row.get("github") %}<a href="https://github.com/{{ row.get('github') }}">{{ row.get("github") }}</a>{% else %}Not yet{% endif %}</td>
+      <td>{{ row.get("path") }}</td>
+      <td>{{ row.get("ready") or "Not answered" }}</td>
+    </tr>
+  {% else %}
+    <tr><td colspan="5">No answers yet.</td></tr>
+  {% endfor %}
+  </tbody>
+</table>
+</div>
+
+{% for q in questions if q.kind in ("radio", "check") %}
+<div class="table-scroll" tabindex="0" role="region" aria-labelledby="t-{{ q.key }}">
+<table>
+  <caption id="t-{{ q.key }}">{{ q.label }}</caption>
+  <thead><tr><th scope="col">Answer</th><th scope="col">People</th></tr></thead>
+  <tbody>
+  {% for option, count in tallies[q.key].items() %}
+    <tr><th scope="row">{{ option }}</th><td>{{ count }}</td></tr>
+  {% endfor %}
+  </tbody>
+</table>
+</div>
+{% endfor %}
+
+{% for q in questions if q.kind == "text" %}
+<h2>{{ q.label }}</h2>
+<ul>
+{% for row in rows if row.get(q.key) %}
+  <li>{{ row.get(q.key) }}</li>
+{% else %}
+  <li>No answers yet.</li>
+{% endfor %}
+</ul>
+{% endfor %}
+
+<h2>Asked for a helper before the day</h2>
+<ul>
+{% for row in rows if row.get("contact") == "Yes, please" %}
+  <li>{{ row.get("name") or "No name given" }}, {{ row.get("email") }}{% if row.get("ready") %}: {{ row.get("ready") }}{% endif %}{% if row.get("path") %}; {{ row.get("path") }}{% endif %}</li>
+{% else %}
+  <li>Nobody yet.</li>
+{% endfor %}
+</ul>
+{% endblock %}

@@ -148,6 +148,18 @@ JOURNEY = (
     "Your campus: a 30-day plan.",
 )
 
+#: The six learning outcomes in the session guide, one line each. They are
+#: read at the start of the day (slide 4) and read back at the end of it
+#: (/my-30-day-plan and step card 7).
+OUTCOMES = (
+    "Describe an accessibility task as an agent.",
+    "Ground an agent's answers in checker evidence, citing WCAG 2.2.",
+    "Name what no checker finds, and write the review step that catches it.",
+    "Explain how a team of specialists and a coordinator scales the work.",
+    "Contribute to an open-source project, credited in your name.",
+    "Plan one workflow to try on your own campus in 30 days.",
+)
+
 
 def _journey_note(number: int) -> str:
     return f"Say where we are on the journey: step {number} of 7, \"{JOURNEY[number - 1]}\" Then show what they will have at the end of this block before anyone starts."
@@ -184,13 +196,13 @@ def build_slides(ctx: DeckContext) -> list[Slide]:
         Slide(
             id="s2", section="Opening", kicker="The problem", title="Forty thousand files and three people",
             blocks=(
-                Para("WCAG 2.2 is the standard. Title II made it a deadline for public colleges and universities."),
+                Para("WCAG 2.2 is the current standard. Title II requires WCAG 2.1 AA of public colleges and universities, from April 2027 for most."),
                 Para("Every syllabus, slide deck, scanned reading and course page is in scope, and most of them are documents, not web pages."),
                 Para("Nobody fixes that by working harder. The question is how to scale without losing quality, accountability or trust.", big=True),
             ),
             notes=(
                 "Ask, warmly: who here has a backlog? Who has a spreadsheet with the word final in its name more than once? Let the laugh happen; it is recognition, not mockery.",
-                "Title II's rule points to WCAG 2.1 AA; 2.2 is the current standard and includes everything 2.1 does. Say it once and move on.",
+                "Title II's rule points to WCAG 2.1 AA; 2.2 is the current standard and includes everything 2.1 does. The Department of Justice's interim final rule of 20 April 2026 moved the dates to 26 April 2027 for entities of 50,000 people or more and 26 April 2028 for smaller ones (ada.gov, the web rule page). Check that page the week before in case the dates move again. Say it once and move on.",
             ),
         ),
         Slide(
@@ -217,9 +229,14 @@ def build_slides(ctx: DeckContext) -> list[Slide]:
         ),
         Slide(
             id="s4", section="Opening", kicker="The map for today", title="The journey",
-            blocks=(Bullets(ordered=True, items=JOURNEY),),
+            blocks=(
+                Bullets(ordered=True, items=JOURNEY),
+                Para("By 4:30 you will be able to:"),
+                Bullets(items=OUTCOMES),
+            ),
             notes=(
                 "Read all seven, slowly. This list comes back at the start of every block with one step marked, so nobody ever wonders where we are.",
+                "Then read the six outcomes once. They come back at 4:15, when everyone's 30-day plan reads them back with what they made today.",
                 "Promise them out loud: every step has a finished example to fall back on. Nobody gets stuck and stays stuck.",
             ),
         ),
@@ -518,7 +535,7 @@ def build_slides(ctx: DeckContext) -> list[Slide]:
                 Bullets(ordered=True, items=(
                     "Open letitglow.app/ahg/share, and choose your newest SKILL.md, version 4, or paste it in.",
                     "Press Open the share form on GitHub. The form opens, already filled in.",
-                    "Tick the privacy box, and press Submit new issue.",
+                    "Select the privacy check box, and press Submit new issue.",
                     "Within a minute, the reply: Your agent is in.",
                 )),
                 Para("You did this once already, with your practice agent. Same again."),

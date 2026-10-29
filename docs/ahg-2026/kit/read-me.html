@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en" xml:lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="author" content="Jeff Bishop, BITS">
+<meta name="description" content="Welcome page for the AHG 2026 agent kit.">
+<title>Welcome to the AHG 2026 agent kit</title>
+<style>
+:root { color-scheme: light dark; --bg: #ffffff; --fg: #1a1a1a; --link: #0b57d0; --rule: #6b6b6b; --code-bg: #f2f2f2; --focus: #b3261e; }
+@media (prefers-color-scheme: dark) { :root { --bg: #121212; --fg: #f1f1f1; --link: #a8c7fa; --rule: #9a9a9a; --code-bg: #262626; --focus: #ffb4ab; } }
+html { font-size: 112.5%; }
+body { background: var(--bg); color: var(--fg); font-family: Arial, Helvetica, sans-serif; line-height: 1.5; max-width: 46rem; margin: 0 auto; padding: 1rem; }
+a { color: var(--link); text-decoration: underline; }
+a:focus-visible, [tabindex]:focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; }
+h1, h2, h3, h4 { line-height: 1.25; }
+code, pre { font-family: Consolas, "Courier New", monospace; background: var(--code-bg); }
+pre { padding: 0.75rem; overflow-x: auto; white-space: pre-wrap; }
+table { border-collapse: collapse; margin: 1rem 0; }
+th, td { border: 1px solid var(--rule); padding: 0.4rem 0.6rem; text-align: left; vertical-align: top; }
+.table-scroll { overflow-x: auto; }
+blockquote { border-left: 4px solid var(--rule); margin-left: 0; padding-left: 1rem; }
+@media print { body { max-width: none; } a { color: inherit; } }
+</style>
+</head>
+<body>
+<main>
+<h1 id="welcome-to-the-ahg-2026-agent-kit">Welcome to the AHG 2026 agent kit</h1>
+<p>You are in the right place. This page opens by itself when you open the kit in VS Code. Nothing here needs code, and nothing here can break.</p>
+<h2 id="three-paths-into-the-same-day">Three paths into the same day</h2>
+<p>Every path gives you the same agent, the same team report and the same share on GitHub. letitglow.app/ahg/paths compares them.</p>
+<ul>
+<li>In a browser: no kit needed. Open letitglow.app/ahg/assistant, copy each block's text, and paste it into ChatGPT, Copilot on github.com, Claude, Gemini or your campus assistant. The same texts are in this kit, in <code>any-assistant/</code>.</li>
+<li>In VS Code on your computer: you are probably reading this there. Each block is one command in Copilot Chat.</li>
+<li>In VS Code for the Web: the same, at vscode.dev in Chrome or Edge, with this folder opened from your laptop.</li>
+</ul>
+<h2 id="start-here-in-vs-code">Start here, in VS Code</h2>
+<ol type="1">
+<li>Open Copilot Chat: Control+Alt+I on Windows, or Control+Command+I on a Mac.</li>
+<li>Type /ready-check and press Enter. Copilot checks six things and tells you that you are ready.</li>
+</ol>
+<p>If a banner says Restricted Mode, choose Manage, then Trust first. It is the workshop kit, and Copilot cannot work on its files until you trust it.</p>
+<p>Every block of the day has its own command, listed below, and its own step card in the step-cards folder.</p>
+<h2 id="the-day-one-command-per-block">The day, one command per block</h2>
+<p>Each command is typed into Copilot Chat. On the browser path, the same block is one text on letitglow.app/ahg/assistant. The step card for each block has every key and every expected result in words.</p>
+<div class="table-scroll" role="region" aria-label="Table 1" tabindex="0">
+<table>
+<thead>
+<tr>
+<th scope="col">Block</th>
+<th scope="col">Time</th>
+<th scope="col">Command</th>
+<th scope="col">What you get</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1. Why we are here</td>
+<td>10:30</td>
+<td>/ready-check</td>
+<td>A ready laptop</td>
+</tr>
+<tr>
+<td>2. Design your agent</td>
+<td>10:50</td>
+<td>/design-my-agent</td>
+<td>Your own agent, in <code>my-agent/SKILL.md</code>: version 1</td>
+</tr>
+<tr>
+<td>3. Your agent at work</td>
+<td>11:40</td>
+<td>/try-my-agent, then /review-my-agent</td>
+<td>Its first answer on a course document, and version 2</td>
+</tr>
+<tr>
+<td>4. Ground it</td>
+<td>1:15</td>
+<td>/ground-my-agent, then /review-my-agent</td>
+<td>Cited answers from real evidence, and version 3</td>
+</tr>
+<tr>
+<td>5. Build the office</td>
+<td>2:15</td>
+<td>/run-the-office, then /review-my-agent</td>
+<td>Your agent in a team, across the whole course, and version 4</td>
+</tr>
+<tr>
+<td>6. Share it</td>
+<td>3:05</td>
+<td>letitglow.app/ahg/share</td>
+<td>Your best version in the collection, in your name</td>
+</tr>
+<tr>
+<td>7. Take it home</td>
+<td>3:40</td>
+<td>/my-30-day-plan</td>
+<td>A 30-day plan for your campus</td>
+</tr>
+</tbody>
+</table>
+</div>
+<h2 id="what-is-in-this-folder">What is in this folder</h2>
+<p>This list follows the folders in the Explorer, top to bottom.</p>
+<div class="table-scroll" role="region" aria-label="Table 2" tabindex="0">
+<table>
+<thead>
+<tr>
+<th scope="col">Folder or file</th>
+<th scope="col">What it is</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>.github/</code></td>
+<td>The commands above, as agent skills in <code>skills/</code>, beside all 113 Accessibility Agents skills; the office coordinator in <code>agents/</code>; and the workshop's rules for Copilot. You do not need to open it</td>
+</tr>
+<tr>
+<td><code>.vscode/</code></td>
+<td>Settings for larger text and screen readers. You do not need to open it</td>
+</tr>
+<tr>
+<td><code>any-assistant/</code></td>
+<td>One text per block for the browser path, to paste into any AI assistant; the review text; and four Accessibility Agents texts, <code>aa-*.txt</code></td>
+</tr>
+<tr>
+<td><code>examples/</code></td>
+<td>Finished work for every step. Maria, Jordan and Sam's stories, and six ready-made agents in <code>examples/agents/</code></td>
+</tr>
+<tr>
+<td><code>my-agent/SKILL.md</code></td>
+<td>Your agent. Seven headings: Role, Task, Trusted guidance, Output format, Example, Human review, Never</td>
+</tr>
+<tr>
+<td><code>office-team/</code></td>
+<td>The accessibility office: eight specialists your agent joins this afternoon</td>
+</tr>
+<tr>
+<td><code>sample-course/</code></td>
+<td>PSY 101, the course everyone works on, with barriers planted on purpose, and <code>evidence/</code> with each file's checker report</td>
+</tr>
+<tr>
+<td><code>step-cards/</code></td>
+<td>One card per block, each as Markdown, HTML, a large print Word file and a reading deck</td>
+</tr>
+<tr>
+<td><code>share-my-agent.html</code></td>
+<td>The offline copy of the share page</td>
+</tr>
+<tr>
+<td><code>ahg-2026.code-profile</code></td>
+<td>The AHG 2026 VS Code profile, if you need to import it again</td>
+</tr>
+<tr>
+<td><code>accessibility-agents.md</code></td>
+<td>Accessibility Agents after today: the six entry points, and how to keep using it</td>
+</tr>
+<tr>
+<td><code>accessibility-agents-in-the-kit.md</code></td>
+<td>Which Accessibility Agents skills work fully in this kit, and what the rest do instead</td>
+</tr>
+<tr>
+<td><code>accessibility-agents-LICENSE.txt</code></td>
+<td>Accessibility Agents' MIT licence, which travels with its skills</td>
+</tr>
+<tr>
+<td><code>agent-file-principles.md</code></td>
+<td>What makes a good agent file, and the twelve review questions /review-my-agent uses</td>
+</tr>
+<tr>
+<td><code>glossary.md</code></td>
+<td>The words used today, one line each</td>
+</tr>
+<tr>
+<td><code>write-your-own-agent.md</code></td>
+<td>The full tutorial: write, test, ground, revise and share an agent on your own, in any assistant</td>
+</tr>
+</tbody>
+</table>
+</div>
+<h2 id="you-cannot-fall-behind">You cannot fall behind</h2>
+<p>Every step has a finished version in <code>examples/</code>. If anything goes wrong, start from one of the six ready-made agents in <code>examples/agents/</code>, put your name on it, and carry on. That is still your agent, and it still goes into the open-source project with your name on it. If VS Code gives you trouble, switch to the browser path and carry on from the same block.</p>
+<h2 id="if-you-use-a-screen-reader">If you use a screen reader</h2>
+<p>Everything today works with NVDA, JAWS and VoiceOver, on every path.</p>
+<ul>
+<li>In VS Code, Copilot's answers are long. Move to the answer and press Alt+F2 (Option+F2 on a Mac) to read it as plain text in the Accessible View. Inside it, Control+Alt+Page Down and Control+Alt+Page Up move between code blocks.</li>
+<li>VS Code plays a sound when an answer arrives, and another when Copilot needs you to approve something, such as saving your agent file. Help: List Signal Sounds turns them on or off.</li>
+<li>Alt+F1 (Option+F1) in the chat box opens accessibility help for chat. F6 moves between the parts of the window.</li>
+<li>On the browser path, every block's text at letitglow.app/ahg/assistant has a Copy button. A message under the button says it is copied.</li>
+<li>On GitHub's share form, everything is filled in for you. Move to the end of the form, select the check box that says your agent contains nothing private, then press Submit new issue. The reply appears on the same page in about a minute; press F5 if your screen reader does not announce it.</li>
+<li>Step cards 3 and 5 say where the long answers are and how to read them.</li>
+</ul>
+<h2 id="keys-worth-knowing">Keys worth knowing</h2>
+<p>These work in every part of VS Code, on a computer and at vscode.dev.</p>
+<div class="table-scroll" role="region" aria-label="Table 3" tabindex="0">
+<table>
+<thead>
+<tr>
+<th scope="col">To</th>
+<th scope="col">Windows</th>
+<th scope="col">Mac</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Open Copilot Chat</td>
+<td>Control+Alt+I</td>
+<td>Control+Command+I</td>
+</tr>
+<tr>
+<td>Read an answer as plain text, in the Accessible View: move to the answer, then press</td>
+<td>Alt+F2</td>
+<td>Option+F2</td>
+</tr>
+<tr>
+<td>Open any file by name</td>
+<td>Control+P</td>
+<td>Command+P</td>
+</tr>
+<tr>
+<td>Find any command</td>
+<td>Control+Shift+P</td>
+<td>Command+Shift+P</td>
+</tr>
+<tr>
+<td>Move between parts of the window</td>
+<td>F6</td>
+<td>F6</td>
+</tr>
+<tr>
+<td>Accessibility help for where you are</td>
+<td>Alt+F1</td>
+<td>Option+F1</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>With a screen reader running, VS Code plays a sound when Copilot's answer arrives and another when Copilot needs you to approve something. The settings are <code>accessibility.signals.chatResponseReceived</code> and <code>accessibility.signals.chatUserActionRequired</code>. While Copilot works, it says what it is doing; <code>accessibility.verboseChatProgressUpdates</code> turns that off. The kit sets chat text to 18 point with <code>chat.fontSize</code>.</p>
+<h2 id="the-two-rules">The two rules</h2>
+<ol type="1">
+<li>Never paste anything private into any AI: student records, health or disability information, or anyone's name. Use the sample course.</li>
+<li>Every agent ends with a person checking its work.</li>
+</ol>
+<p>Help, before or after the day: <a href="mailto:support@community-access.org">support@community-access.org</a>.</p>
+<h2 id="sources">Sources</h2>
+<p>Checked on 29 October 2026.</p>
+<ul>
+<li><a href="https://code.visualstudio.com/docs/configure/accessibility/accessibility">VS Code: accessibility</a>: the Accessible View (Alt+F2), accessibility help (Alt+F1) and moving between parts of the window (F6).</li>
+<li><a href="https://code.visualstudio.com/docs/copilot/reference/copilot-vscode-features">VS Code: Copilot features cheat sheet</a>: opening Copilot Chat.</li>
+<li><a href="https://code.visualstudio.com/docs/copilot/reference/copilot-settings">VS Code: Copilot settings reference</a>: the chat sound, progress and text size settings.</li>
+<li><a href="https://code.visualstudio.com/docs/setup/vscode-web">VS Code for the Web</a>: opening a folder from your computer works in Chrome and Edge.</li>
+<li><a href="https://code.visualstudio.com/docs/copilot/customization/agent-skills">VS Code: use Agent Skills</a>: how the commands in <code>.github/skills</code> work.</li>
+</ul>
+</main>
+</body>
+</html>

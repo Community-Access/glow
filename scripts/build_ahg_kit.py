@@ -12,7 +12,9 @@ consistent with each other and with the sample course:
 * ``sample-course/evidence/*.txt`` -- each course file's checker report as
   plain text, ready to give an agent. GLOW for the documents, axe-core for
   the web page.
-* ``step-cards/*.docx`` -- each step card as an ACB large print Word file.
+* ``*.html``, ``*.docx``, ``*.pptx`` beside every participant document,
+  step cards included -- see ``scripts/ahg_formats.py`` and
+  ``docs/ahg-2026/formats.md``.
 * ``share-my-agent.html`` -- the offline copy of GLOW's share page.
 * ``any-assistant/*.txt`` -- one text per block for the browser path: the
   block's instructions and every kit file it needs, to paste into ChatGPT,
@@ -22,6 +24,7 @@ consistent with each other and with the sample course:
 
     python scripts/build_ahg_kit.py            # everything
     python scripts/build_ahg_kit.py --no-axe   # skip the browser step
+    python scripts/build_ahg_kit.py --formats-only   # just the four formats
 
 Run ``scripts/build_ahg_sample_course.py`` first if the course has changed.
 """
@@ -874,109 +877,20 @@ def write_assistant_texts() -> list[Path]:
 
 
 # ---------------------------------------------------------------------------
-# Step cards as Word, and the offline share page
+# Every participant document in four formats, and the offline share page
 # ---------------------------------------------------------------------------
 
 
-def _md_to_docx(md_path: Path, docx_path: Path) -> None:
-    """Our step cards use a small Markdown subset: headings, lists, paragraphs."""
-    import re
+def build_formats() -> list[Path]:
+    """Every participant document as HTML, Word and PowerPoint beside its Markdown.
 
-    from acb_large_print.template import apply_acb_large_print
-    from docx import Document
+    The step cards' Word files are among them. See scripts/ahg_formats.py,
+    and docs/ahg-2026/formats.md for the inventory.
+    """
+    sys.path.insert(0, str(Path(__file__).resolve().parent))
+    import ahg_formats
 
-    lines = md_path.read_text(encoding="utf-8").splitlines()
-    if lines and lines[0] == "---":
-        # Front matter is for Markdown tools; Word gets its title from it.
-        end = lines.index("---", 1)
-        lines = lines[end + 1:]
-    title = next(line for line in lines if line.startswith("# ")).lstrip("# ").strip()
-    doc = apply_acb_large_print(Document(), title=title)
-    paragraph: list[str] = []
-    item: tuple[str, list[str]] | None = None
-
-    # Step cards have one numbered list per path. Word's List Number style
-    # keeps counting across the whole document, so each new list gets its own
-    # numbering instance that starts again at 1.
-    current_list: list[int] = []  # the numbering instance of the list being written
-
-    def new_numbering() -> int:
-        from docx.oxml import OxmlElement
-        from docx.oxml.ns import qn
-
-        style_num = doc.styles["List Number"].element.pPr.numPr.numId.val
-        numbering = doc.part.numbering_part.element
-        abstract = next(n for n in numbering.findall(qn("w:num")) if n.get(qn("w:numId")) == str(style_num))
-        abstract_id = abstract.find(qn("w:abstractNumId")).get(qn("w:val"))
-        new_id = max(int(n.get(qn("w:numId"))) for n in numbering.findall(qn("w:num"))) + 1
-        num = OxmlElement("w:num")
-        num.set(qn("w:numId"), str(new_id))
-        ref = OxmlElement("w:abstractNumId")
-        ref.set(qn("w:val"), abstract_id)
-        num.append(ref)
-        override = OxmlElement("w:lvlOverride")
-        override.set(qn("w:ilvl"), "0")
-        start = OxmlElement("w:startOverride")
-        start.set(qn("w:val"), "1")
-        override.append(start)
-        num.append(override)
-        numbering.append(num)
-        return new_id
-
-    def flush():
-        nonlocal paragraph, item
-        if item:
-            style, words = item
-            para = doc.add_paragraph(" ".join(words), style=style)
-            if style == "List Number":
-                if not current_list:
-                    current_list.append(new_numbering())
-                num_pr = para._p.get_or_add_pPr().get_or_add_numPr()
-                num_pr.get_or_add_ilvl().val = 0
-                num_pr.get_or_add_numId().val = current_list[0]
-            else:
-                current_list.clear()
-            item = None
-        if paragraph:
-            doc.add_paragraph(" ".join(paragraph))
-            paragraph = []
-            current_list.clear()
-
-    for line in lines:
-        stripped = line.strip()
-        if not stripped:
-            flush()
-            continue
-        heading = re.match(r"^(#{1,3}) (.*)$", stripped)
-        numbered = re.match(r"^\d+\. (.*)$", stripped)
-        bullet = re.match(r"^- (.*)$", stripped)
-        if heading:
-            flush()
-            current_list.clear()
-            doc.add_heading(heading.group(2), level=len(heading.group(1)))
-        elif numbered:
-            flush()
-            item = ("List Number", [numbered.group(1)])
-        elif bullet:
-            flush()
-            item = ("List Bullet", [bullet.group(1)])
-        elif item and line.startswith("  "):
-            item[1].append(stripped)
-        else:
-            if item:
-                flush()
-            paragraph.append(stripped)
-    flush()
-    doc.save(docx_path)
-
-
-def build_step_cards() -> list[Path]:
-    out = []
-    for md in sorted((KIT / "step-cards").glob("*.md")):
-        target = md.with_suffix(".docx")
-        _md_to_docx(md, target)
-        out.append(target)
-    return out
+    return ahg_formats.build()
 
 
 def build_offline_share_page() -> Path:
@@ -1015,10 +929,14 @@ def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     parser.add_argument("--no-axe", action="store_true", help="skip the axe-core browser scan")
     parser.add_argument("--axe-js", type=Path, help="path to axe.min.js if web/node_modules is not installed")
+    parser.add_argument("--formats-only", action="store_true",
+                        help="only rebuild the HTML, Word and PowerPoint copies of the participant documents")
     args = parser.parse_args()
 
-    for path in build_step_cards():
-        print(f"  {path.relative_to(KIT)}")
+    for path in build_formats():
+        print(f"  {path.relative_to(REPO)}")
+    if args.formats_only:
+        return 0
     print(f"  {build_offline_share_page().relative_to(KIT)}")
     for path in write_skills():
         print(f"  {path.relative_to(KIT)}")
