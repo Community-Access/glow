@@ -283,22 +283,29 @@ tested have been tested.
   it; the client's own interface is outside GLOW.
 - **Assistive technology:** GLOW is designed for NVDA, JAWS and Narrator on
   Windows, VoiceOver on macOS and iOS, TalkBack on Android, screen
-  magnification and browser zoom. **No screen reader test has been recorded
-  yet** for any part of GLOW; see [Known limitations](#known-limitations).
+  magnification and browser zoom.
+  - **Tested with a screen reader, web app only:** JAWS 2026
+    (2026.2608.25.400) and NVDA 2026.2, with Chrome 156 and Edge 156, on
+    Windows 11 Pro, by the accessibility owner, recorded 29 October 2026; see
+    [the screen reader run record](docs/accessibility-testing.md#screen-reader-run-record).
+  - **Zoom, reflow, contrast and forced colors:** checked on the core flows on
+    29 October 2026 in Chrome 156 on Windows 11 Pro; see
+    [the manual checks run record](docs/accessibility-testing.md#manual-checks-run-record).
+  - Narrator, VoiceOver, TalkBack and screen magnification software have not
+    been tested; see [Known limitations](#known-limitations).
 
 ## Known limitations
 
 These are the barriers we know about. Please
 [report any we have missed](#reporting-accessibility-issues).
 
-- **No recorded screen reader testing.** Automated tests check structure,
-  names, focus and contrast, but nobody has yet recorded a test of the core
-  flows with a screen reader, so we cannot say how well uploads, progress
-  messages, reports and downloads work when heard. Tracked in
-  [#144](https://github.com/Community-Access/glow/issues/144) (web) and
-  [#146](https://github.com/Community-Access/glow/issues/146) (desktop app and
-  Word add-in). If something does not work for you, the feedback form and
-  email above reach a person.
+- **Screen reader testing is narrow.** The web app's core flows have been
+  run with JAWS and NVDA in Chrome and Edge on Windows 11, by the
+  accessibility owner. Nothing has been recorded for VoiceOver, TalkBack or
+  Narrator, and the desktop app and the Word add-in have not been tested with
+  a screen reader
+  ([#146](https://github.com/Community-Access/glow/issues/146)). If something
+  does not work for you, the feedback form and email above reach a person.
 - **The desktop app and the Word add-in have no automated accessibility
   tests.** Only the web app does. Tracked in
   [#146](https://github.com/Community-Access/glow/issues/146). The web app
@@ -314,11 +321,12 @@ These are the barriers we know about. Please
 - **Feature-gated AI pages are tested only when enabled.** Document Chat, BITS
   Whisperer, the Alt-Text Helper and the AI Playground are off in CI, so the
   automated suites do not reach them. Treat them as untested.
-- **Human checks are not yet recorded.** Plain language, how descriptive the
-  wording is, real browser zoom and text-only resizing still need a person;
-  [#143](https://github.com/Community-Access/glow/issues/143) and the manual
-  records in [docs/accessibility-testing.md](docs/accessibility-testing.md)
-  track them.
+- **Abbreviations are not spelled out.** The core pages use ACB (American
+  Council of the Blind), APH (American Printing House for the Blind) and WCAG
+  (Web Content Accessibility Guidelines) without expanding them. Tracked in
+  [#157](https://github.com/Community-Access/glow/issues/157). A person's own
+  keyboard pass of the core flows is still welcome
+  ([#143](https://github.com/Community-Access/glow/issues/143)).
 - **The last production crawl was in May 2026,** before the move to
   letitglow.app. It reported no confirmed axe-core violations, and seven
   color contrast results that axe could not decide, on code blocks in the
@@ -334,7 +342,9 @@ is met by what is in this repository; recurring actions are set up and then
 repeated. The full record, action by action with evidence, is in
 [docs/accessibility-framework.md](docs/accessibility-framework.md), and the
 public tracking issue is [GLOW, issue 54](https://github.com/open-source-accessibility/Open-Source-Accessibility-Framework/issues/54). As of
-October 2026, 21 of 24 actions:
+29 October 2026, all 24 actions are checked. That completes the checklist, not
+the work: the recurring actions go on, and the open issues below are still
+open.
 
 - **Foundational:** this document; the `accessibility` label.
 - **Workflow:** all ten actions: priorities and contributor expectations,
@@ -342,10 +352,12 @@ October 2026, 21 of 24 actions:
   request checklist, labelled starter and expert-help issues, an owner,
   accessible documentation checked in CI, interface requirements, and the
   dependency record above.
-- **Testing:** automated axe-core, keyboard and reflow checks in CI,
-  documentation checks, and supported environments with known limitations.
-  The screen reader spot check and the manual checks need people, and are
-  next.
+- **Testing:** automated axe-core, keyboard and reflow checks in CI;
+  documentation checks; supported environments with known limitations; a
+  screen reader spot check of the core web flows with JAWS and NVDA, run by
+  the accessibility owner; and manual checks of keyboard, wording, zoom,
+  reflow and contrast, run by an agent and accepted by the owner, whose
+  barriers were fixed or tracked (#157).
 - **Community:** an open invitation to help; responding to reports, documented
   in [How we respond](#how-we-respond) and, since 29 October 2026, enforced by
   the accessibility-reports workflow, which acknowledges every report, reminds
@@ -353,8 +365,31 @@ October 2026, 21 of 24 actions:
   without a documented outcome, and invites the reporter to confirm a fix (no
   user reports were on record yet, so the rule covers the first one); a
   published progress update; shared resources; and accessible ways to
-  collaborate, with a Code of Conduct the maintainer enforces. Public
-  recognition with consent is next.
+  collaborate, with a Code of Conduct the maintainer enforces; and public
+  recognition, in [Thanks](#thanks) below.
+
+## Thanks
+
+People who have helped make GLOW work better, credited by their public GitHub
+handle and what they did. From 29 October 2026, credit follows each
+contributor's own answer (see [How we respond](#how-we-respond)). The
+contributions below came before that rule existed and are credited from the
+public record, as the project's owner decided; nothing about anyone beyond
+their handle and their work is published. If you are listed and would like to
+be named differently, or not at all, say so on any issue or by email and we
+will change it.
+
+- [@stickbear2015](https://github.com/stickbear2015) reported that Speech
+  Studio, which turns a document into spoken audio, stopped with a "Text must
+  not be empty" error for Word and plain text files
+  ([#83](https://github.com/Community-Access/glow/issues/83), June 2026), with
+  steps to reproduce. Fixed for every speech endpoint.
+- [@brlgirl](https://github.com/brlgirl) reported that the Quick Start route
+  to speech sent people back to upload the same file again and never offered
+  a preview or a download
+  ([#84](https://github.com/Community-Access/glow/issues/84), June 2026),
+  with every step written down. Fixed, with a
+  regression test that drives the real preparation job.
 
 ## Feedback
 

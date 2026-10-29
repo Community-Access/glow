@@ -104,29 +104,6 @@
   </form>
 </section>
 
-<section>
-  <h2 id="next-heading">What's Next?</h2>
-  <div class="next-step-callout">
-    <h3>Re-Audit to Confirm</h3>
-    <p>Run the audit again to verify all fixes were applied correctly and check for any new issues.</p>
-    <div class="next-step-actions">
-      <form method="post" action="{{ url_for('audit.audit_from_fix') }}">
-        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-        <input type="hidden" name="token" value="{{ token }}">
-        <input type="hidden" name="download_name" value="{{ download_name }}">
-        <input type="hidden" name="standards_profile" value="acb_2025">
-        <input type="hidden" name="prev_score" value="{{ pre_score }}">
-        <input type="hidden" name="prev_rule_ids" value="{{ pre_finding_ids or '' }}">
-        <button type="submit" class="btn-primary">Re-Audit Fixed Document</button>
-      </form>
-      <a href="{{ url_for('fix.fix_form') }}" class="btn-secondary">Fix Another Document</a>
-    </div>
-  </div>
-  <ul>
-    <li><a href="{{ url_for('audit.audit_form') }}">Audit a new document</a></li>
-    <li><a href="{{ url_for('guidelines.guidelines_page') }}">Review ACB guidelines</a></li>
-  </ul>
-</section>
 <script nonce="{{ csp_nonce }}">
 (function () {
   'use strict';

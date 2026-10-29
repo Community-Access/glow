@@ -2280,6 +2280,26 @@ html[data-theme="dark"] .occurrence-count--multi {
   color: #2e6b2e;
 }
 
+/* Dark theme: the light card fill left the page's light text at 1.2:1 and
+   the focus ring at 2:1 (found by the manual checks, 29 October 2026). */
+html[data-theme="dark"] .next-step-callout {
+  background: #0a1a3a;
+  border-color: #4d8ff5;
+}
+
+html[data-theme="dark"] .next-step-callout h3 {
+  color: #9cc2ff;
+}
+
+html[data-theme="dark"] .next-step-callout.next-step-success {
+  background: #0d240d;
+  border-color: #5fb85f;
+}
+
+html[data-theme="dark"] .next-step-callout.next-step-success h3 {
+  color: #8fd88f;
+}
+
 .next-step-actions {
   display: flex;
   gap: 1rem;
