@@ -9,6 +9,10 @@ Automated checks find likely barriers. They do not replace testing by people,
 and above all by people who use assistive technology every day. A check that
 has not been run says "Not yet run"; nothing here is a claim of conformance.
 
+An agent's run (Claude, an AI coding agent, driving a real browser) is
+preparation, not a result, unless the accessibility owner accepts it as a
+result; its record then says so. The manual checks below are such a run.
+
 ## Core flows
 
 The key tasks a new user must be able to complete. They are the flows the
@@ -160,9 +164,8 @@ Each run, newest first.
 ## Screen reader spot checks
 
 An agent or a script cannot do these: they need a person running a real screen
-reader. They are tracked in
-[#144](https://github.com/Community-Access/glow/issues/144). Use at least one
-combination, and record it:
+reader. The first run is recorded below; more combinations are always welcome.
+Use at least one combination, and record it:
 
 - Windows: NVDA or JAWS, with Chrome, Edge or Firefox.
 - macOS: VoiceOver with Safari.
@@ -186,7 +189,9 @@ For each core flow, check:
 
 | Date | Tested by | Screen reader, browser and operating system, with versions | Flows | Result |
 |---|---|---|---|---|
-| Not yet run | | | | |
+| Recorded 2026-10-29 | Jeff Bishop ([@accesswatch](https://github.com/accesswatch)), the accessibility owner | What the owner's test machine has: JAWS 2026 (2026.2608.25.400) and NVDA 2026.2, with Chrome 156 and Edge 156, on Windows 11 Pro | All five core flows: find your way around, audit, fix, convert and create a template | Signed off by the accessibility owner as run. No per-check findings were written down, and no barriers were filed from the run ([#144](https://github.com/Community-Access/glow/issues/144)) |
+
+macOS, iOS and Android have not been tested with a screen reader.
 
 ## Manual checks
 
@@ -208,14 +213,67 @@ tool; the rest need a person.
 
 ### Manual checks run record
 
-| Check | Evidence so far | Status |
+The latest run is the agent run of 29 October 2026, below, which the
+accessibility owner accepted as a result.
+
+| Check | Result, 29 October 2026 | Evidence |
 |---|---|---|
-| Keyboard | The keyboard records above | Automated pass; a person has not yet run it |
-| Alternative text | axe-core `image-alt` and related rules pass on every page | Automated only; quality in context not yet judged by a person |
-| Descriptive titles, headings, labels and errors | axe-core `document-title`, `label` and `heading-order` rules pass | Automated only; wording not yet judged by a person |
-| Plain language | Vale's plain-language rule on the documentation | Not yet run on the interface |
-| Zoom 200 percent and reflow 400 percent | `npm run test:reflow`, 2026-10-28: 12 of 12 pass (six pages at 640 and 320 CSS pixels, Chromium) | Automated only; real browser zoom and text resizing not yet run |
-| Contrast and color use | axe-core `color-contrast`, light and dark mode, gate fails on incomplete results | Automated only; images of text, focus indicator contrast and forced colors not yet checked by a person |
+| Keyboard | Pass | The keyboard records above; every focus stop on the nine pages showed an indicator of at least 3:1 |
+| Alternative text | Pass | One informative image, the Community Access logo, with the alternative text "Community Access"; all 17 icons are hidden from assistive technology |
+| Descriptive titles, headings, labels and errors | Pass, after fixes | Fixed: a second "What's Next?" section on the fix results page, and the "No file selected" error not tied to its field |
+| Plain language | Open | ACB, APH, WCAG and other abbreviations are not spelled out on first use: [#157](https://github.com/Community-Access/glow/issues/157) |
+| Zoom 200 percent and reflow 400 percent | Pass | No sideways scrolling, clipped text or lost control on nine pages at 640 and 320 CSS pixels and with text alone at 200 percent; `npm run test:reflow` also passes |
+| Contrast and color use | Pass, after a fix | Fixed: dark-mode text at 1.21:1 and focus rings at 1.98:1 on the result pages' next-step cards. Severity is always written as text |
+
+### Agent run: manual checks, 29 October 2026
+
+Run by Claude, an AI coding agent, for the accessibility owner, who accepted
+it as a result on 29 October 2026.
+
+- **Environment:** Google Chrome 156.0.8078.48, headless, driven by
+  Playwright 1.64.1 on Windows 11 Pro, against a local Flask server running
+  this repository's code.
+- **Pages:** the nine pages of the five core flows: home, the audit form and
+  its "no file" error, the audit report, the fix form and fix results, the
+  convert form and conversion complete, and the template form. The report,
+  results and conversion pages came from uploading
+  `samples/GLOW_Test_2-fixed.docx`.
+- **Settings:** each page in seven settings: 1280 by 720 CSS pixels in light
+  mode, in dark mode and in forced colors; 640 and 320 CSS pixels wide, the
+  layout a 1280 pixel window gives at 200 and 400 percent browser zoom, with
+  320 also in dark mode; and text alone at 200 percent, by doubling the root
+  font size, at 1280 pixels.
+- **Zoom and reflow:** in every setting, no page scrolled sideways, no text
+  was clipped, the main heading and the primary navigation (through the menu
+  button where it collapses) were there, and every form's submit button was
+  visible.
+- **Contrast:** 6,264 text measurements, each against the background it is
+  actually drawn on, needing 4.5:1, or 3:1 for large text. In dark mode, the
+  next-step card on the audit report, fix results and conversion complete
+  pages kept its light fill under the page's light text, at 1.21:1. Fixed in
+  `forms.css`; after the fix nothing measured falls short.
+- **Focus indicators:** every focusable element on every page was focused
+  from the keyboard and its indicator measured against what surrounds it.
+  Before the fix, the same cards gave the focus ring 1.98:1 in dark mode.
+  After it, the lowest is 5.8:1 in light mode and 7.01:1 in dark mode, and
+  every indicator stays visible in forced colors.
+- **Color use:** findings carry their severity as a word (Critical, High,
+  Medium, Low), not only a color.
+- **Descriptive language:** every page has its own title ("Audit a Document",
+  "Fix Results") and one H1. The fix results page had two "What's Next?"
+  sections with the same heading, id and button, which read as a repeat; the
+  older one is removed. The audit, fix and convert forms announced "No file
+  selected" in an alert and marked the file field invalid, but did not tie the
+  message to the field; it is now in the field's description. The batch audit
+  heading lost a decorative sparkle emoji that a screen reader reads aloud.
+- **Plain language:** short, direct instructions throughout, but ACB, APH,
+  WCAG, BOP, MS and CMS are never spelled out on the core pages; tracked in
+  [#157](https://github.com/Community-Access/glow/issues/157).
+- **Alternative text:** one informative image (the Community Access logo,
+  alternative text "Community Access"); the 17 navigation icons are SVG with
+  `aria-hidden="true"`.
+- **Not checked:** the feature-gated AI pages (see Known limitations), and
+  Windows High Contrast themes beyond the browser's forced colors emulation.
 
 ## Desktop app and Word add-in
 

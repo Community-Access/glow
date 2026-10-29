@@ -10,8 +10,9 @@ Counts are counts, not scores or ratings.
 
 GLOW adopted the
 [Open Source Accessibility Framework](https://open-source-accessibility.github.io/Open-Source-Accessibility-Framework/)
-this month: 20 of its 24 actions are done, as recorded in
-[the framework record](accessibility-framework.md).
+this month. By 29 October all 24 of its actions were checked, as recorded in
+[the framework record](accessibility-framework.md). That completes the
+checklist, not the work.
 
 ### Completed
 
@@ -42,23 +43,29 @@ this month: 20 of its 24 actions are done, as recorded in
   diagrams gained a description in words.
 - A record of how GLOW is tested, in
   [docs/accessibility-testing.md](accessibility-testing.md).
+- A screen reader spot check of the five core web flows, run by the
+  accessibility owner with JAWS 2026 and NVDA 2026.2 in Chrome 156 and Edge
+  156 on Windows 11 Pro.
+- Manual checks of the core flows for wording, zoom, reflow, contrast and
+  color, which found and fixed unreadable dark-mode text and focus rings on
+  the result pages, a repeated "What's Next?" section on the fix results page,
+  and a form error not tied to its field.
+- Thanks, in [ACCESSIBILITY.md](../ACCESSIBILITY.md#thanks), to the people
+  whose reports led to fixes.
 
 ### In progress and open
 
-Five issues are open with the `accessibility` label, plus one carried over:
+Open with the `accessibility` label, as of 29 October 2026:
 
-- [#144](https://github.com/Community-Access/glow/issues/144): no screen
-  reader test of the web app has been recorded. Help wanted from someone who
-  uses a screen reader every day.
+- [#157](https://github.com/Community-Access/glow/issues/157): ACB, APH,
+  WCAG and other abbreviations are not spelled out on the core pages.
 - [#146](https://github.com/Community-Access/glow/issues/146): the desktop
   app and the Word add-in have not been tested with assistive technology. Help
   wanted. The web app offers the same functions meanwhile.
 - [#145](https://github.com/Community-Access/glow/issues/145): PDFs made
-  with WeasyPrint are untagged. Workaround: export PDF from the fixed Word
-  document in Word or LibreOffice. Help wanted from someone who knows tagged
-  PDF.
-- [#147](https://github.com/Community-Access/glow/issues/147): the user guide
-  holds two editions of itself. Workaround: use the contents at the top.
+  with WeasyPrint are now tagged as PDF/UA-1, but have not been checked with
+  PAC or veraPDF. Workaround: export PDF from the fixed Word document in Word
+  or LibreOffice. Help wanted from someone who knows tagged PDF.
 - [#143](https://github.com/Community-Access/glow/issues/143): a person's
   keyboard pass of the core flows. A good first issue; no code needed.
 - [#125](https://github.com/Community-Access/glow/issues/125): human sign-off

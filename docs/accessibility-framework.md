@@ -21,15 +21,15 @@ already been repeated.
 
 ## Summary
 
-Status as of 28 October 2026, by phase.
+Status as of 29 October 2026, by phase.
 
 | Phase | Done | Not done |
 |---|---:|---:|
 | Foundational | 2 | 0 |
 | Workflow | 10 | 0 |
-| Testing | 4 | 2 |
-| Community | 4 | 2 |
-| Total | 20 | 4 |
+| Testing | 6 | 0 |
+| Community | 6 | 0 |
+| Total | 24 | 0 |
 
 ## Foundational phase
 
@@ -67,8 +67,8 @@ The six actions that make checking repeatable.
 |---:|---|---|---|
 | 1 | Add at least one automated accessibility check (`add-at-least-one-automated-accessibility-check`) | Done; recurring | The Accessibility Regression Gate (`.github/workflows/accessibility-regression.yml`) runs axe-core through Playwright and the axe CLI with SARIF upload on every pull request and push that changes `web/`, and weekly; it fails on critical or serious violations. Issues are fixed in the pull request or tracked with the `accessibility` label |
 | 2 | Perform a keyboard-only smoke test for core flows (`perform-a-keyboard-only-smoke-test-for-core-flows`) | Done; recurring | The five core flows have keyboard-only records in [the testing document](accessibility-testing.md#keyboard-only-checks), covering focus, operation, visible focus, order and traps. `web/e2e/tests/keyboard.spec.mjs` performs them with keys only and runs in CI; the run record is in the testing document. A person's pass is tracked in #143 |
-| 3 | Perform a screen reader spot check for core flows (`perform-a-screen-reader-spot-check-for-core-flows`) | Not done | The checks are documented per core flow, but no person has run them and no test environment is recorded yet. Tracked in #144 (web) and #146 (desktop app and Word add-in) |
-| 4 | Perform manual accessibility checks (`perform-manual-accessibility-checks`) | Not done | The checks for keyboard, descriptive and plain language, zoom and reflow, and contrast are documented, with automated evidence for reflow at 200 and 400 percent (`npm run test:reflow`) and contrast (axe-core). Plain and descriptive language, real browser zoom and contrast of images and focus indicators still need a person |
+| 3 | Perform a screen reader spot check for core flows (`perform-a-screen-reader-spot-check-for-core-flows`) | Done; recurring | Item 1: the screen reader checks are documented for each core flow in [the testing document](accessibility-testing.md#screen-reader-spot-checks). Item 2: the accessibility owner, Jeff Bishop, ran the five core web flows with JAWS 2026 (2026.2608.25.400) and NVDA 2026.2, with Chrome 156 and Edge 156, on Windows 11 Pro (what his test machine has), recorded on 29 October 2026 in [the run record](accessibility-testing.md#screen-reader-run-record); #144 is closed. Item 3: no barriers were filed from the run; the desktop app and Word add-in are tracked in #146 |
+| 4 | Perform manual accessibility checks (`perform-manual-accessibility-checks`) | Done; recurring | Item 1: the checks for keyboard, descriptive and plain language, zoom and reflow, and contrast and color use are documented in [the testing document](accessibility-testing.md#manual-checks). On 29 October 2026 an agent ran them on the nine pages of the five core flows in Chrome 156, in seven settings, and the accessibility owner accepted the run as a result ([the record](accessibility-testing.md#agent-run-manual-checks-29-october-2026)). Item 2: no page scrolled sideways, clipped text or lost a control at 200 and 400 percent or with text alone at 200 percent. Item 3: fixed in the same change: dark-mode text at 1.21:1 and focus rings at 1.98:1 on the result pages' next-step cards, a repeated "What's Next?" section, and a form error not tied to its field; tracked: abbreviations not spelled out, #157 |
 | 5 | Perform accessibility checks for documentation (`perform-accessibility-checks-for-documentation`) | Done; recurring | "Documentation checks" in the testing document covers structure, alternatives, links, captions, tables and code blocks; 70 Markdown files were reviewed on 2026-10-28; what was found was fixed, the duplicated user guide later (#147); the lint runs on every pull request |
 | 6 | Document supported environments and known limitations (`document-supported-environments-and-known-limitations`) | Done; recurring | "Supported environments" in ACCESSIBILITY.md lists platforms, browsers, viewports, input methods and assistive technology, separating supported from tested and saying plainly that no screen reader test is recorded. "Known limitations" describes each barrier by its effect, with a workaround and an issue link |
 
@@ -81,7 +81,7 @@ The six actions that involve the people who use and build GLOW.
 | 1 | Invite community help on accessibility work (`invite-community-help-on-accessibility-work`) | Done; recurring | Public label searches and non-code ways to help in [CONTRIBUTING.md](../CONTRIBUTING.md#accessibility-work-you-can-pick-up); #143 to #147 have scope, context and acceptance criteria; questions go to the issue or support@community-access.org; the in-app feedback form is the standing feedback channel: submissions reach the maintainers' feedback review page and, when support-hub sync is configured, become tracked issues |
 | 2 | Respond constructively to accessibility reports (`respond-constructively-to-accessibility-reports`) | Done; recurring | Item 1: how to respond is documented in "How we respond" in ACCESSIBILITY.md. Items 2 and 3: since 29 October 2026 `.github/workflows/accessibility-reports.yml` acknowledges every report, reminds the owner after 5 business days without a reply, reopens a report closed without a documented outcome (a merged fix or an `Outcome:` line), and invites the reporter to confirm a fix. No accessibility reports from users were on record yet, so the rule covers the first one. The owner, Jeff Bishop, decided that past reports are not reopened |
 | 3 | Provide accessible and respectful ways to contribute and collaborate (`provide-accessible-and-respectful-ways-to-contribute-and-collaborate`) | Done | Asynchronous ways to take part, meeting practice and a private accommodation route are in [CONTRIBUTING.md](../CONTRIBUTING.md#ways-to-take-part); the tool review is below; [the Code of Conduct](../CODE_OF_CONDUCT.md) names dismissiveness toward accessibility concerns and publishing private information, with an enforcement ladder. On 28 October 2026 the maintainer confirmed that the code of conduct is enforced and made jeff@jeffbishop.com its reporting address, beside support@community-access.org. Recommended next: a review of the collaboration tools by someone who uses assistive technology |
-| 4 | Recognize accessibility contributions publicly (`recognize-accessibility-contributions-publicly`) | Not done | The practice is below. No contribution has yet been credited with recorded consent |
+| 4 | Recognize accessibility contributions publicly (`recognize-accessibility-contributions-publicly`) | Done; recurring | Item 2: [Thanks](../ACCESSIBILITY.md#thanks) in ACCESSIBILITY.md credits @stickbear2015 and @brlgirl for their reports of Speech Studio failures (#83, #84). Item 1: those contributions predate the consent rule, so, as the project's owner decided, they are credited only by public GitHub handle and the work, from the public record, with an offer to change or remove the credit; no disability, assistive technology or other personal detail is mentioned. From 29 October 2026 credit follows each contributor's own answer (the practice below) |
 | 5 | Publish accessibility progress updates (`publish-accessibility-progress-updates`) | Done; recurring | The first update is [docs/accessibility-progress.md](accessibility-progress.md), summarised in `CHANGELOG.md`, which the site publishes at `/changelog/`. It lists completed work, remaining work, known barriers and links. The practice, one update per release, is in ACCESSIBILITY.md and below |
 | 6 | Share accessibility resources (`share-accessibility-resources`) | Done; recurring | [docs/accessibility-resources.md](accessibility-resources.md): the keyboard and reflow test suites, the issue form, the pull request checklist and the test records, each with the problem it solves, prerequisites, limitations and where it does not apply; maintained by the accessibility owner |
 
@@ -101,6 +101,11 @@ using assistive technology.
 
 ### Recognition practice
 
+- Contributions made before this practice began on 29 October 2026 are
+  credited by public GitHub handle and what was done, taken from the public
+  record, with no personal detail, and changed or removed on request. The
+  project's owner decided this, since there was no way to have asked at the
+  time.
 - Before crediting anyone, the maintainer asks how they want to be credited
   (name, handle, or not at all) and records the answer on the issue or pull
   request.

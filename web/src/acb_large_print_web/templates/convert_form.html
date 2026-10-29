@@ -13,7 +13,7 @@
 <p>This page converts your documents between formats. You can extract plain text from almost any file, including short MP3 and WAV clips through MarkItDown, or create an accessible web page ready for publishing. Each step below walks you through the process.</p>
 
 {% if error %}
-<div class="error-box" role="alert">
+<div class="error-box" id="form-error" role="alert">
   <p><strong>Error:</strong> {{ error }}</p>
 </div>
 {% endif %}
@@ -58,7 +58,7 @@
     <div class="form-group">
       <label for="document">Choose a file from your computer</label>
       <input type="file" id="document" name="document" accept="{{ all_accept }}"
-             aria-describedby="file-help"
+             aria-describedby="file-help{% if error %} form-error{% endif %}"
              {% if error %}aria-invalid="true"{% endif %}>
       <p id="file-help" class="help-text">Maximum file size: 500 MB. After you choose a file, the output format options below will automatically reflect what is available for that file type.</p>
     </div>

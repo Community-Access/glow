@@ -18,7 +18,7 @@
 </details>
 
 {% if error %}
-<div class="error-box" role="alert">
+<div class="error-box" id="form-error" role="alert">
   <p><strong>Error:</strong> {{ error }}</p>
 </div>
 {% elif request.args.get('notice') == 'session_expired' %}
@@ -44,7 +44,7 @@
   <div class="form-group">
     <label for="document">Upload a document</label>
     <input type="file" id="document" name="document" accept=".docx,.xlsx,.pptx,.md,.pdf,.epub"
-           aria-describedby="file-help"
+           aria-describedby="file-help{% if error %} form-error{% endif %}"
            {% if error %}aria-invalid="true"{% endif %}>
     <p id="file-help" class="help-text">Accepted formats: Word (.docx) and Markdown (.md) for auto-fix; Excel (.xlsx), PowerPoint (.pptx), PDF (.pdf), and ePub (.epub) for audit-only guidance. Maximum size: 500 MB.</p>
   </div>

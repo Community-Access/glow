@@ -20,8 +20,8 @@ Releases are tagged in the [GitHub repository](https://github.com/Community-Acce
   release-notes block. The logic is `.github/scripts/a11y-community.mjs`,
   tested by `.github/workflows/a11y-community-tests.yml`. See "How we
   respond" in ACCESSIBILITY.md.
-- **GLOW adopts the Open Source Accessibility Framework.** 20 of its 24
-  actions are done; the record, action by action, is in
+- **GLOW adopts the Open Source Accessibility Framework.** All 24 of its
+  actions are checked, which completes the checklist, not the work; the record, action by action, is in
   [docs/accessibility-framework.md](https://github.com/Community-Access/glow/blob/main/docs/accessibility-framework.md), and the
   first public progress update is
   [docs/accessibility-progress.md](https://github.com/Community-Access/glow/blob/main/docs/accessibility-progress.md).
@@ -29,9 +29,12 @@ Releases are tagged in the [GitHub repository](https://github.com/Community-Acce
   `accessibility.md`) now states GLOW's priorities, contributor expectations,
   how to report a barrier, severity, how we respond, ownership, the
   dependencies that affect accessibility, supported environments and known
-  limitations. Open work: a screen reader check of the web app (#144), of the
-  desktop app and Word add-in (#146), tagged PDF output (#145), the duplicated
-  user guide (#147) and a person's keyboard pass (#143).
+  limitations. The core web flows have a screen reader spot check (JAWS and
+  NVDA, by the accessibility owner) and recorded manual checks. Open work: the
+  desktop app and Word add-in (#146), checking tagged PDF output (#145),
+  abbreviations on the core pages (#157) and a person's keyboard pass (#143).
+  Thanks to @stickbear2015 and @brlgirl, whose reports fixed Speech Studio
+  (#83, #84).
 - **Accessibility issue form and pull request checklist.**
   `.github/ISSUE_TEMPLATE/accessibility.yml` applies the `accessibility` label,
   asks four questions and never asks for disclosure; `config.yml` offers the
@@ -108,6 +111,13 @@ Releases are tagged in the [GitHub repository](https://github.com/Community-Acce
 
 ### Fixed
 
+- **Readable next-step cards in dark mode.** The "What's Next?" card on the
+  audit report, fix results and conversion complete pages kept its light fill
+  in dark mode, leaving its text at 1.21:1 and the focus ring at 1.98:1. It now
+  has a dark fill. The fix results page no longer shows two "What's Next?"
+  sections, and the "No file selected" error on the audit, fix and convert
+  forms is now part of the file field's description. Found by the manual
+  accessibility checks recorded in `docs/accessibility-testing.md`.
 - **PDF output is tagged (#145).** Every PDF GLOW renders with WeasyPrint --
   Convert to PDF, the shared audit report's PDF download and the Document Chat
   PDF export -- now asks for tagged output and the PDF/UA-1 variant, so the

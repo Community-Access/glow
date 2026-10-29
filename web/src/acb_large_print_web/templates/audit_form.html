@@ -32,7 +32,7 @@
 </details>
 
 {% if error %}
-<div class="error-box" role="alert">
+<div class="error-box" id="form-error" role="alert">
   <p><strong>Error:</strong> {{ error }}</p>
 </div>
 {% endif %}
@@ -65,7 +65,7 @@
       </label>
     </div>
     <div class="batch-audit-batch">
-      <h2>✨ Batch Audit (3 Files)</h2>
+      <h2>Batch Audit (3 Files)</h2>
       <p><strong>Compare document variants, audit multiple formats, or review a set together.</strong> Upload up to 3 files and get a combined scorecard showing which document meets the most requirements. Great for:</p>
       <ul style="margin-top: 0.5rem;">
         <li>Testing multiple formats (Word + PDF + ePub of the same content)</li>
@@ -83,7 +83,7 @@
   <div id="single-upload-section" class="form-group">
     <label for="document">Upload a document</label>
     <input type="file" id="document" name="document" accept=".docx,.xlsx,.pptx,.md,.pdf,.epub"
-           aria-describedby="file-help"
+           aria-describedby="file-help{% if error %} form-error{% endif %}"
            {% if error %}aria-invalid="true"{% endif %}>
     <p id="file-help" class="help-text">Accepted formats: Word (.docx), Excel (.xlsx), PowerPoint (.pptx), Markdown (.md), PDF (.pdf), ePub (.epub). Maximum size: 500 MB.</p>
   </div>
