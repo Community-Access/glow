@@ -449,6 +449,14 @@ def _rewrite_opf(epub: Path, summary: str) -> None:
             zf.writestr(zipfile.ZipInfo(info.filename, date_time=info.date_time), data, compress_type=method)
 
 
+def _no_highlighting() -> str:
+    """Code blocks in the reader's own colours: Pandoc's highlighting fails contrast (Ace, color-contrast)."""
+    first = run([F.pandoc(), "--version"]).stdout.split("\n", 1)[0]
+    found = re.search(r"(\d+)\.(\d+)", first)
+    new = bool(found) and (int(found.group(1)), int(found.group(2))) >= (3, 8)
+    return "--syntax-highlighting=none" if new else "--no-highlight"
+
+
 def write_epub(rel: str, title: str, target: Path, built: str) -> None:
     meta, body = markdown_body(rel)
     author = meta.get("author", "Community Access")
@@ -467,7 +475,7 @@ def write_epub(rel: str, title: str, target: Path, built: str) -> None:
         source = Path(tmp) / "source.json"
         source.write_text(json.dumps(document), encoding="utf-8")
         cmd = [F.pandoc(), str(source), "-f", "json", "-t", "epub3", "-o", str(target),
-               "--epub-title-page=false", f"--css={css}", "--toc-depth=3",
+               "--epub-title-page=false", f"--css={css}", "--toc-depth=3", _no_highlighting(),
                "--metadata", f"title={title}", "--metadata", f"lang={lang}",
                "--metadata", f"author={author}", "--metadata", f"publisher={PUBLISHER}",
                "--metadata", f"date={built}", "--metadata", f"description={description}",
