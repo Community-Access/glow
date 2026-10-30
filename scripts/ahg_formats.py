@@ -340,6 +340,9 @@ def _docx_hyperlink(paragraph, run: Run) -> None:
     r_id = paragraph.part.relate_to(run.url, RT.HYPERLINK, is_external=True)
     link = OxmlElement("w:hyperlink")
     link.set(qn("r:id"), r_id)
+    # The ScreenTip. Word's PDF export writes it as the link's Contents,
+    # which PDF/UA requires of every link (veraPDF 7.18.1-2 and 7.18.5-2).
+    link.set(qn("w:tooltip"), run.text)
     r = OxmlElement("w:r")
     rpr = OxmlElement("w:rPr")
     style = OxmlElement("w:rStyle")
