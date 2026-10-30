@@ -1,7 +1,7 @@
 ---
 title: "AHG 2026 speaker guidance, checked against this workshop"
 lang: en
-author: "Jeff Bishop, BITS"
+author: "Jeff Bishop, University of Arizona, IT Accessibility Consultant"
 description: "Every AHG 2026 speaker recommendation and where the workshop meets it."
 ---
 
@@ -65,10 +65,10 @@ Each row is one recommendation from the orientation, and where the workshop meet
 
 | Recommendation | Where it is met |
 |---|---|
-| Say what you will and will not cover | Slide 6 speaker notes |
-| Address ethical and responsible use | Slide 6: never paste anything private, and a named person reviews every agent. The same rules are built into every agent's "Never" section and into the kit's instructions to Copilot |
-| Do not alienate the hesitant, or the advocates | Slide 6 notes name privacy, accuracy and jobs once, and answer each |
-| Say how this differs from the other AI sessions | Slide 6 notes: higher education accessibility work at scale, built by the people who do it, open source |
+| Say what you will and will not cover | Slide 10 speaker notes |
+| Address ethical and responsible use | Slide 10: never paste anything private, and a named person reviews every agent. The same rules are built into every agent's "Never" section and into the kit's instructions to Copilot |
+| Do not alienate the hesitant, or the advocates | Slide 10 notes name privacy, accuracy and jobs once, and answer each |
+| Say how this differs from the other AI sessions | Slide 10 notes: higher education accessibility work at scale, built by the people who do it, open source |
 | Keep the emphasis on accessibility | Every agent and every example is about a real student barrier |
 
 ## Logistics
@@ -77,11 +77,11 @@ Each row is one recommendation from the orientation, and where the workshop meet
 
 | Recommendation | Where it is met |
 |---|---|
-| Save time for the session evaluation | The last five minutes of the AHG day in the agenda module; slides 5 and 26 |
+| Save time for the session evaluation | The last five minutes of the AHG day in the agenda module; slides 6 and 35 |
 | Bring your own laptop, charger and adaptors | The pocket card checklist |
 | Visit the room ahead of time | The pocket card checklist |
 | BYOD: attendees may lack admin rights | The browser path and VS Code for the Web need nothing installed; VS Code installs without administrator rights on Windows; the setup message and setup page say so, and support is offered before the day |
-| Times are Mountain Time | The setup message, the setup page, the run of show, the pocket card and slide 5 |
+| Times are Mountain Time | The setup message, the setup page, the run of show, the pocket card and slide 6 |
 | Upload materials to Cvent (DOC, DOCX, PPTX, PDF; under 250 MB) | Run of show pre-flight item 5: `slides.pptx`, `slides.docx` and the step cards |
 
 ## Only a person can do these

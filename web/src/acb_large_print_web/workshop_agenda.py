@@ -215,19 +215,19 @@ BLOCK = "block"
 
 AHG_DAY: tuple[Block, ...] = (
     Block(
-        start=10 * 60 + 30, minutes=20,
+        start=10 * 60 + 30, minutes=35,
         title="Why we are here",
-        mode="The problem, and the finished result shown first", kind=WELCOME,
-        note="Show the team report first. Then the journey map.",
+        mode="The finished result first, a ready check, the kit and the site, and how agents work", kind=WELCOME,
+        note="Show the team report first, then the map. Give the ready check five full minutes, and the automation slide time.",
     ),
     Block(
-        start=10 * 60 + 50, minutes=50,
+        start=11 * 60 + 5, minutes=40,
         title="Design your agent",
         mode="Six plain-English answers become version 1 of your agent", kind=BLOCK,
         note="Everyone starts from an example. Nobody starts from a blank page.",
     ),
     Block(
-        start=11 * 60 + 40, minutes=35,
+        start=11 * 60 + 45, minutes=30,
         title="Your agent at work",
         mode="Try it on a course document, then revise it: version 2", kind=BLOCK,
         note="The first answer will not be perfect. The revision is where the learning is.",

@@ -1,7 +1,7 @@
 ---
 title: "What makes a good agent file"
 lang: en
-author: "Jeff Bishop, BITS"
+author: "Jeff Bishop, University of Arizona, IT Accessibility Consultant"
 description: "The principles of a good accessibility agent file, and the checklist /review-my-agent uses, from the Agent Skills specification and the Accessibility Agents project."
 ---
 

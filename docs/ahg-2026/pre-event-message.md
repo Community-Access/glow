@@ -1,7 +1,7 @@
 ---
 title: "Pre-event message"
 lang: en
-author: "Jeff Bishop, BITS"
+author: "Jeff Bishop, University of Arizona, IT Accessibility Consultant"
 description: "The setup message sent to registered participants before the AHG 2026 workshop."
 ---
 
@@ -58,6 +58,10 @@ Then, on any path:
 4. Answer the five-minute survey at letitglow.app/ahg/survey, so we have
    your path, your laptop and any access needs ready on the day.
 
+Want the short version to pass on to a colleague? The workshop in plain
+language, in about 150 words, is at
+letitglow.app/ahg/kit/session-in-plain-language.md.
+
 If a step does not work, write to support@community-access.org before the
 day, or come to the setup table outside the room from 10:00 on the day.
 Locked-down work laptop? Take the browser path: it needs nothing
@@ -94,7 +98,9 @@ it.
 See you in Denver,
 
 Jeff Bishop
-BITS, an affiliate of the American Council of the Blind
+[University of Arizona](https://accessibility.arizona.edu), IT Accessibility Consultant
+
+In collaboration with [Blind Information Technology Solutions (BITS)](https://www.bits-acb.org) and [Techopolis](https://www.techopolis.app), with special thanks to Taylor Arndt, who helped dream up and build Accessibility Agents.
 
 ---
 

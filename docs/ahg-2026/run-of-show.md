@@ -1,7 +1,7 @@
 ---
 title: "Run of show: Accessibility Agents at AHG 2026"
 lang: en
-author: "Jeff Bishop, BITS"
+author: "Jeff Bishop, University of Arizona, IT Accessibility Consultant"
 description: "The AHG 2026 workshop day by the clock, with commands, pacing rules, fallbacks and pre-flight."
 ---
 
@@ -22,7 +22,7 @@ page gets fixed.
   on a computer with the AHG 2026 profile and the kit; or VS Code for the Web
   at vscode.dev with the kit. Everyone uses their own GitHub account to share,
   and GLOW for the evidence and the commitment wall
-- Facilitator: Jeff Bishop, with at least one helper per ten participants
+- Facilitator: Jeff Bishop, University of Arizona, IT Accessibility Consultant, with at least one helper per ten participants
 
 ## 1. The one thing to hold on to
 
@@ -42,9 +42,9 @@ for both.
 | Clock | Minutes | Block | Command | Say |
 |---|---|---|---|---|
 | 10:00 | 30 | Setup table open, outside the room | /ready-check | "Let's get you ready before we start." |
-| 10:30 | 20 | 1. Why we are here | /ready-check | "Forty thousand files and three people. Here is where we will be at four o'clock." |
-| 10:50 | 50 | 2. Design your agent | /design-my-agent | "Pick a card. Bring one real problem, nothing private. Copilot asks, you answer." |
-| 11:40 | 35 | 3. Your agent at work | /try-my-agent, then /review-my-agent | "It will guess a little. Then you change one thing: version 2." |
+| 10:30 | 35 | 1. Why we are here | /ready-check | "Forty thousand files and three people. Here is where we will be at four o'clock." |
+| 11:05 | 40 | 2. Design your agent | /design-my-agent | "Pick a card. Bring one real problem, nothing private. Copilot asks, you answer." |
+| 11:45 | 30 | 3. Your agent at work | /try-my-agent, then /review-my-agent | "It will guess a little. Then you change one thing: version 2." |
 | 12:15 | 60 | Lunch | none | "You have an agent, and you have already improved it." |
 | 1:15 | 50 | 4. Ground it | /ground-my-agent, then /review-my-agent | "Real evidence in, cited answers out. Watch it stop guessing. Version 3." |
 | 2:05 | 10 | Break | none | "Next, your agent joins a team." |
@@ -88,8 +88,27 @@ The conference's own guidance, applied to this room. The full mapping is
 - Key point first: accessibility in higher education scales by making more
   people who can, and agents carry one person's know-how across a whole
   course.
-- Set the AI context on slide 6: what the day covers, what it does not, and
+- Set the AI context on slide 10: what the day covers, what it does not, and
   the privacy rule.
+- Give the ready check (slide 7) five full minutes, and walk the kit and the
+  website (slides 8 and 9) on the projector, so nobody spends the day looking
+  for things.
+- Slow down on slides 11 to 13: what makes up an agent, the six answers, and
+  what automation cannot decide. Everything after builds on them.
+- Every slide in the HTML, Word, PowerPoint and Markdown decks links to its
+  part of the kit or the site, so anyone reading along can go straight there.
+  The large print handout (`slides-large-print-handout.docx`) is the same
+  slides without the notes, every link written out; print a few.
+- Every slide inside a block says where it is ("Block 4 of 7, slide 2 of
+  3"), and every hands-on slide says what to do if you are behind. Read the
+  "Behind?" line out loud; it is permission, not a footnote.
+- Captions, all day. Ask the conference whether CART is booked for the
+  room. If not, present from PowerPoint with Slide Show, Always Use
+  Subtitles on, or turn on Windows Live Captions (Windows key + Control + L)
+  with microphone audio included. Say at 10:30 where the captions are.
+- Before lunch, the check-in: letitglow.app/ahg/check-in, two questions, no
+  name. Helpers read `/ahg/check-in/results?key=...` (the survey's key) over
+  lunch and go first to anyone stuck.
 - The last five minutes are the session evaluation. The proctor runs it.
 
 ## 5. Fallback ladder
@@ -131,6 +150,8 @@ The second table is the rehearsal; the day works badly without it.
 | 7a | Every block run on the browser path in ChatGPT, signed in, and on both VS Code paths | `ahg.md` sections 2.7 to 2.12, each path column |
 | 8 | Timed dry run with a second person playing a participant who has never opened VS Code, once on the browser path and once in VS Code | Real minutes written beside section 2 |
 | 10 | The pre-workshop survey: `AHG_SURVEY_KEY` is set on the server, the survey went out with the second setup message, and the answers were read on 13 November | `/ahg/survey/results?key=...` opens; paths, access needs and helper requests are in the pocket card's blanks |
+| 11 | Captions: CART confirmed with the conference, or PowerPoint subtitles or Windows Live Captions tested on the presenting laptop with the room microphone | Captions read back a test sentence correctly from the back row |
+| 12 | The check-in: `/ahg/check-in` accepts an answer and `/ahg/check-in/results?key=...` shows it | One test check-in, then the results page read by ear |
 | 9 | Freeze: tag the release, rebuild the kit, print the pocket card | No merges in the final week |
 
 ## 6a. After the session: into Accessibility Agents
@@ -153,7 +174,7 @@ Agents with its author credited.
 
 Collect these. They are the next proposal's evidence.
 
-- Ready checks passed by 10:50.
+- Ready checks passed by 11:05.
 - Practice agents shared before the day, and real agents shared on it, and
   how many started from a ready-made agent: count the folders in `practice/`
   and `agents/` in the ahg-2026 repository.

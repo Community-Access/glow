@@ -1,7 +1,7 @@
 ---
 title: "PSY 101 sample course: answer key"
 lang: en
-author: "Jeff Bishop, BITS"
+author: "Jeff Bishop, University of Arizona, IT Accessibility Consultant"
 description: "Every barrier planted in the PSY 101 sample course, for facilitators."
 ---
 

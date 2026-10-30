@@ -1,7 +1,7 @@
 ---
 title: "Step card 5: Build the office"
 lang: en
-author: "Jeff Bishop, BITS"
+author: "Jeff Bishop, University of Arizona, IT Accessibility Consultant"
 description: "A step card for the AHG 2026 Accessibility Agents workshop."
 ---
 

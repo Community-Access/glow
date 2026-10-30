@@ -1,13 +1,13 @@
 ---
 title: "Step card 3: Your agent at work"
 lang: en
-author: "Jeff Bishop, BITS"
+author: "Jeff Bishop, University of Arizona, IT Accessibility Consultant"
 description: "A step card for the AHG 2026 Accessibility Agents workshop."
 ---
 
 # Step card 3: Your agent at work
 
-Block 3 of 7, 11:40 to 12:15.
+Block 3 of 7, 11:45 to 12:15.
 
 ## Where we are
 

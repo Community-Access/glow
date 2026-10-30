@@ -1,7 +1,7 @@
 ---
 title: "Write your own accessibility agent: a tutorial"
 lang: en
-author: "Jeff Bishop, BITS"
+author: "Jeff Bishop, University of Arizona, IT Accessibility Consultant"
 description: "A start-to-finish tutorial for writing, testing, grounding and sharing an accessibility agent, in any AI assistant, after the AHG 2026 workshop."
 ---
 
@@ -360,6 +360,25 @@ in your name, and into the Accessibility Agents project with you credited.
 
 The agent answers by name where you work, and you know where its newest
 version is.
+
+## Putting it to work in your office
+
+Fit the agent into a workflow your office already runs, at one step, rather
+than building a new process around it. Name four things, and write them at
+the top of your notes:
+
+- The trigger: what starts a run. An alternate format request, a course
+  review before term, a faculty email, a vendor report.
+- The input: what the agent reads. A checker report or the document
+  itself, never a student record.
+- The handoff: where its draft goes. Your ticket, your remediation log, or
+  a reply you edit before sending.
+- The sign-off: the person in its Human review section, who decides.
+
+Use the AI assistant your campus approves, and follow its rules on what
+information may go in. Start with one step of one workflow, for one month,
+and keep the agent's drafts beside what your office would have done anyway,
+so you can show whether it helped.
 
 ## Keeping it good
 

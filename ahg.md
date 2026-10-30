@@ -765,7 +765,7 @@ The copy itself, from the repository:
 | AA-05 | Read `accessibility-agents-in-the-kit.md` against `accessibility-agents-skills.json` | The same commit; the counts add up, 72 working fully and 41 working differently, 113 in all; every "works differently" row says what to do instead | Pass, Claude, 28 Oct |
 | AA-06 | Read `accessibility-agents.md` against the Accessibility Agents README at the pinned commit | The six entry points, the install lines and the note that the VS Code extension is retired all match the project | Pass, Claude, 28 Oct, against Accessibility Agents 7.1: the install table was brought up to the current commands, and the Codespaces steps match its dev container (D-010) |
 | AA-07 | Look for Accessibility Agents' licence in the kit | The project's MIT licence and copyright line travel with the copied skills | Pass, Claude, 28 Oct: `accessibility-agents-LICENSE.txt`, written by the vendor script (D-014) |
-| AA-08 | Unzip `dist/ahg-2026-agent-kit.zip`, and the kit downloaded from letitglow.app/ahg | Both have 121 folders in `.github/skills`, 113 plus the eight commands, the four `aa-*.txt` texts, the three Accessibility Agents pages and the licence | Pass, Claude, 28 Oct: `dist/ahg-2026-agent-kit.zip`, and the letitglow.app download after deploy `b7529e7` (121 skill folders, the licence, step cards in the new order) |
+| AA-08 | Unzip `dist/ahg-2026-agent-kit.zip`, and the kit downloaded from letitglow.app/ahg | Both have 121 folders in `.github/skills`, 113 plus the eight commands, the four `aa-*.txt` texts, the three Accessibility Agents pages and the licence | Pass, Claude, 29 Oct, on the live kit after the merge of #159: letitglow.app/ahg/kit.zip is 2,633,105 bytes and 537 entries, with 121 skill folders, the glossary, the tutorial, the licence and the four `aa-*.txt` texts, and the kit's first page says /ready-check checks six things. (28 Oct: `dist/ahg-2026-agent-kit.zip`, and the letitglow.app download after deploy `b7529e7`: 121 skill folders, the licence, step cards in the new order) |
 | AA-09 | One week before the day, compare the pinned commit with Accessibility Agents main | The same; or the kit is vendored again at the new commit, AA-01 to AA-06 re-run, and the kit rebuilt and synced | Early run, Claude, 29 Oct: main had moved to `2f4fe22` (PR 273 report wording, PR 275 kb-github skills); vendored again, AA-01 to AA-05 pass, 72 and 41 unchanged, no skill renamed, added or removed. Still to do on 9 November, and the kit still to be synced to the workshop repository and deployed |
 
 On each path. The ChatGPT column uses the `aa-*.txt` texts and the review
@@ -878,7 +878,44 @@ ChatGPT included; and added the pre-workshop survey at `/ahg/survey`. Then:
   at 1280 and 320 CSS px: no violations, no sideways scroll, focus on the
   error summary when there are errors.
 
-What remains, in order:
+#### The resource library, 29 October
+
+After #159 merged, Claude built the resource library
+with `scripts/build_ahg_library.py` into `S:\ahg`, from GLOW `f5802a3` on
+branch `ahg/library` (work.md Part 5), and checked it with
+`scripts/check_ahg_library.py`:
+
+- 25 documents (3 in Start here, the deck, 8 step cards, 6 guides, 3
+  worked examples, 4 for facilitators), each in Markdown, HTML, Word,
+  PowerPoint, PDF, EPUB, and DAISY 2.02 and 3; the kit zip (537 entries)
+  and VS Code profile; 11 browser path texts; the sample course with its
+  7 evidence reports and a README that says first that the barriers are
+  planted on purpose; 29 files in `conference-upload`. 658 files in
+  `manifest.csv`, 15,912,891 bytes.
+- EPUB: Ace 1.4.6, 25 of 25 with no violations of any impact;
+  EPUBCheck 5.4.0, 0 errors and 0 warnings on all 25.
+- Talking books: the Pipeline 2 engine 1.15.5, every conversion with
+  validation set to abort; the 2.02 validator 0 errors and 0 warnings on
+  all 25; the DTBook validator 0 errors on all 25 version 3 books.
+- PDF: Word's own export, tagged, bookmarks from headings. veraPDF 1.30.3
+  PDF/UA-1: 0 of 25 pass. All 25 fail only 5-1 (Word writes no PDF/UA
+  identifier) and 15 of them, the ones with tables, also 7.5-1 (Word writes
+  no Scope on table header cells). Both are Word's export, not the
+  documents; the build stops on any other rule. Links had failed 7.18.1-2
+  and 7.18.5-2 until each link's text became its ScreenTip in the Word
+  copies. GLOW's PDF audit passes all 25 at 100.
+- `check_ahg_formats.py` 20 of 20; `audit_ahg_docs.py` 77 of 77.
+- The checker: every document has every format; 658 files match the
+  manifest by size and SHA-256; 517 links in `index.html` and `README.md`
+  resolve; the conference set is exactly 29 DOCX, PPTX and PDF files under
+  250 MB; axe-core 4.14.0 in Edge on `index.html` and the 25 HTML copies at
+  1280 and 320 CSS px, no violations, no sideways scroll (six HTML copies
+  scrolled sideways or had an unfocusable scrolling block at 320 px until
+  long paths were allowed to wrap).
+
+#### What remains
+
+In order:
 
 1. Done 28 October: deployed to letitglow.app (`b7529e7`), the workshop
    repository synced, and AA-08 checked on the live download.

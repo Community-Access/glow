@@ -1,7 +1,7 @@
 ---
 title: "AHG 2026 helpers' card"
 lang: en
-author: "Jeff Bishop, BITS"
+author: "Jeff Bishop, University of Arizona, IT Accessibility Consultant"
 description: "One page for the helpers at the AHG 2026 Accessibility Agents workshop."
 ---
 
@@ -36,6 +36,7 @@ Each row is one block of the day, what to watch for, and what to do.
 | 1. Why we are here | The ready check says "Needs a hand" | Fix that one step; the room carries on |
 | 2. Design your agent | A blank chat after five minutes | Offer the ready-made agent nearest their card, in `examples/agents/` |
 | 3. Your agent at work | Worry that the agent guessed | Say the guessing is the point: it is what block 4 fixes |
+| Lunch, 12:15 | The check-in results | Open `/ahg/check-in/results?key=...`; go first to every seat marked stuck |
 | 4. Ground it | The agent cites no criterion | Check it read the right file in `sample-course/evidence/`; run /ground-my-agent again |
 | 5. Build the office | The run stops part way | Type "continue"; on the browser path, paste their agent again |
 | 6. Share it | A "Nearly there" reply, or an issue labelled needs-a-hand | Read the reply with them: it says exactly what to fix; edit the issue and save |

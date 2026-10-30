@@ -1,7 +1,7 @@
 ---
 title: "Worked example: Maria's alternate format planner"
 lang: en
-author: "Jeff Bishop, BITS"
+author: "Jeff Bishop, University of Arizona, IT Accessibility Consultant"
 description: "Worked example: an alternate format planner agent, from problem to 30-day plan."
 ---
 

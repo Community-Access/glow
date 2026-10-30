@@ -1,13 +1,13 @@
 ---
 title: "Step card 2: Design your agent"
 lang: en
-author: "Jeff Bishop, BITS"
+author: "Jeff Bishop, University of Arizona, IT Accessibility Consultant"
 description: "A step card for the AHG 2026 Accessibility Agents workshop."
 ---
 
 # Step card 2: Design your agent
 
-Block 2 of 7, 10:50 to 11:40.
+Block 2 of 7, 11:05 to 11:45.
 
 ## Where we are
 

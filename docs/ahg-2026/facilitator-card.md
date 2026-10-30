@@ -1,7 +1,7 @@
 ---
 title: "AHG 2026 pocket card"
 lang: en
-author: "Jeff Bishop, BITS"
+author: "Jeff Bishop, University of Arizona, IT Accessibility Consultant"
 description: "The facilitator's pocket card for the AHG 2026 workshop."
 ---
 
@@ -51,9 +51,9 @@ letitglow.app/ahg/assistant.
 
 | Time | Block | Command |
 |---|---|---|
-| 10:30 | 1. Why we are here (20) | /ready-check |
-| 10:50 | 2. Design your agent (50): version 1 | /design-my-agent |
-| 11:40 | 3. Your agent at work (35), then version 2 | /try-my-agent, /review-my-agent |
+| 10:30 | 1. Why we are here (35): ready check, kit and site tour, how agents work | /ready-check |
+| 11:05 | 2. Design your agent (40): version 1 | /design-my-agent |
+| 11:45 | 3. Your agent at work (30), then version 2 | /try-my-agent, /review-my-agent |
 | 12:15 | Lunch | none |
 | 1:15 | 4. Ground it (50), then version 3 | /ground-my-agent, /review-my-agent |
 | 2:05 | Break (10) | none |

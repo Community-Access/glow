@@ -1,7 +1,7 @@
 ---
 title: "Step card 7: Take it home"
 lang: en
-author: "Jeff Bishop, BITS"
+author: "Jeff Bishop, University of Arizona, IT Accessibility Consultant"
 description: "A step card for the AHG 2026 Accessibility Agents workshop."
 ---
 
@@ -58,6 +58,22 @@ And you can now:
 4. Explain how a team of specialists and a coordinator scales the work. Your agent has a section in the team report.
 5. Contribute to an open-source project, credited in your name. Your agent is in the collection.
 6. Plan one workflow for your own campus in the next 30 days. That is this plan.
+
+## Where it fits in your office
+
+An agent helps most inside work you already do, not beside it. Before you
+try yours, answer four questions:
+
+1. What starts it? A request, a new course shell, a term deadline, a vendor
+   report.
+2. What does it read? A checker report, a syllabus, a request form, with
+   nothing private in it.
+3. Where does its draft go? Your ticket system, your remediation log, an
+   email you edit before sending.
+4. Who signs off? The person named in its Human review.
+
+Then check two things with your campus: which AI assistant is approved for
+this work, and what information may go into it.
 
 ## On Monday
 

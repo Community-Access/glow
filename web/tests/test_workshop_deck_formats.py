@@ -14,6 +14,7 @@ speaker notes in the notes slide rather than dumped on the slide itself.
 
 from __future__ import annotations
 
+import re
 from io import BytesIO
 from pathlib import Path
 
@@ -59,7 +60,8 @@ def client(app: Flask):
 
 def test_every_format_renders_the_same_slides(ctx: deck.DeckContext):
     slides = deck.build_slides(ctx)
-    assert len(slides) == 27
+    assert len(slides) == 35
+    assert len({s.id for s in slides}) == len(slides), "slide ids are anchors"
 
     markdown = deck.build_deck_markdown(ctx)
     for slide in slides:
@@ -93,9 +95,72 @@ def test_no_slide_is_a_wall_of_text(ctx: deck.DeckContext):
     for slide in deck.build_slides(ctx):
         for block in slide.blocks:
             if isinstance(block, deck.Bullets):
-                assert len(block.items) <= 7, slide.id
+                assert len(block.items) <= 6, slide.id
             if isinstance(block, deck.Table):
-                assert len(block.rows) <= 9, slide.id
+                assert len(block.rows) <= 7, slide.id
+
+
+def _visible_words(slide: deck.Slide) -> int:
+    words = 0
+    for block in slide.blocks:
+        if isinstance(block, deck.Para) and not block.small:
+            words += len(block.text.split())
+        elif isinstance(block, deck.Bullets):
+            words += sum(len(item.split()) for item in block.items)
+        elif isinstance(block, deck.Definitions):
+            words += sum(len(f"{t} {m}".split()) for t, m in block.items)
+        elif isinstance(block, deck.Panel):
+            words += sum(len(line.split()) for line in block.lines)
+        elif isinstance(block, deck.Table):
+            words += sum(len(cell.split()) for row in block.rows for cell in row)
+    return words
+
+
+def test_every_slide_can_be_read_from_the_back_of_the_room(ctx: deck.DeckContext):
+    """A projected slide is a headline, not a handout: the detail is in the notes."""
+    for slide in deck.build_slides(ctx):
+        if slide.id == "outcomes":
+            continue  # the published learning outcomes, word for word
+        assert _visible_words(slide) <= 60, (slide.id, _visible_words(slide))
+
+
+def test_every_link_on_a_slide_goes_somewhere_real(ctx: deck.DeckContext):
+    kit = Path(__file__).resolve().parents[2] / "docs" / "ahg-2026" / "kit"
+    prefix = f"{deck.SITE}/ahg/kit/"
+    for slide in deck.build_slides(ctx):
+        for label, url in slide.links:
+            assert label and url.startswith(("https://", "http://")), (slide.id, url)
+            if url.startswith(prefix):
+                assert (kit / url[len(prefix):]).is_file(), (slide.id, url)
+
+
+def test_block_slides_link_to_their_step_card(ctx: deck.DeckContext):
+    starts = re.compile(r"^Block (\d) of 7, slide 1 of \d+ - \d")
+    found = 0
+    for slide in deck.build_slides(ctx):
+        match = starts.match(slide.kicker)
+        if match:
+            found += 1
+            assert any(label == f"Step card {match.group(1)}" for label, _ in slide.links), slide.id
+    assert found == 6, "blocks 2 to 7 each open with their own slide"
+
+
+def test_every_slide_in_a_block_says_where_you_are(ctx: deck.DeckContext):
+    """Someone who stepped out finds their place from the slide alone."""
+    where = re.compile(r"^Block \d of 7, slide (\d+) of (\d+) - ")
+    for slide in deck.build_slides(ctx):
+        if slide.id in ("s1", "s14", "s18", "s26", "s27"):
+            continue
+        match = where.match(slide.kicker)
+        assert match, (slide.id, slide.kicker)
+        assert int(match.group(1)) <= int(match.group(2))
+
+
+def test_hands_on_slides_say_what_to_do_if_you_are_behind(ctx: deck.DeckContext):
+    for slide_id in ("s11", "s12", "s15", "s19", "s22", "s25"):
+        slide = next(s for s in deck.build_slides(ctx) if s.id == slide_id)
+        text = " ".join(b.text for b in slide.blocks if isinstance(b, deck.Para))
+        assert "Behind?" in text or "Stuck?" in text, slide_id
 
 
 def test_the_day_ends_with_the_session_evaluation():
@@ -254,7 +319,8 @@ def test_powerpoint_tables_carry_alt_text_and_a_header_row(ctx: deck.DeckContext
     assert found >= 1, "the three piles table"
 
 
-def test_powerpoint_has_no_text_under_18pt(ctx: deck.DeckContext):
+def test_powerpoint_has_no_text_under_24pt(ctx: deck.DeckContext):
+    """24pt is the floor for a projected room, kicker and table cells included."""
     from pptx import Presentation
 
     prs = Presentation(BytesIO(deck.build_deck_pptx_bytes(ctx)))
@@ -269,8 +335,8 @@ def test_powerpoint_has_no_text_under_18pt(ctx: deck.DeckContext):
             for frame in frames:
                 for paragraph in frame.paragraphs:
                     for run in paragraph.runs:
-                        if run.font.size is not None and run.font.size.pt < 18:
-                            small.append((number, run.text[:30], run.font.size.pt))
+                        if run.text.strip() and (run.font.size is None or run.font.size.pt < 24):
+                            small.append((number, run.text[:30], run.font.size and run.font.size.pt))
     assert not small, small
 
 
@@ -335,3 +401,56 @@ def test_the_formats_are_offered_on_the_deck_itself(client):
 def test_the_formats_read_without_a_session(client):
     for suffix in ("md", "docx", "pptx"):
         assert client.get(f"/workshop/deck.{suffix}").status_code == 200
+
+
+def test_powerpoint_links_are_real_links(ctx: deck.DeckContext):
+    from pptx import Presentation
+
+    prs = Presentation(BytesIO(deck.build_deck_pptx_bytes(ctx)))
+    addresses = set()
+    for slide in prs.slides:
+        for shape in slide.shapes:
+            if shape.has_text_frame:
+                for paragraph in shape.text_frame.paragraphs:
+                    for run in paragraph.runs:
+                        if run.hyperlink.address:
+                            addresses.add(run.hyperlink.address)
+    expected = {url for s in deck.build_slides(ctx) for _, url in s.links}
+    assert expected <= addresses, expected - addresses
+
+
+def test_html_slide_list_is_links_not_a_dropdown(client):
+    """A dropdown that jumps on change moves the slide on every arrow press."""
+    body = client.get(f"/workshop/session/{CODE}/deck").get_data(as_text=True)
+    assert "<select" not in body
+    assert 'id="slide-list"' in body
+    assert body.count('data-index="') == 35
+    assert 'href="https://letitglow.app/ahg/kit/step-cards/2-design-your-agent.md"' in body
+    assert deck.LINKS_LABEL in body
+
+
+def test_the_large_print_handout_has_slides_and_links_but_no_notes(ctx: deck.DeckContext, tmp_path):
+    from acb_large_print.auditor import audit_document
+    from docx import Document
+
+    data = deck.build_deck_handout_docx_bytes(ctx)
+    text = "\n".join(p.text for p in Document(BytesIO(data)).paragraphs)
+    assert "Let the laugh happen" not in text, "speaker notes stay out of the handout"
+    assert "Automation helps. You decide." in text
+    assert "Step card 2: letitglow.app/ahg/kit/step-cards/2-design-your-agent.md" in text
+
+    path = tmp_path / "handout.docx"
+    path.write_bytes(data)
+    serious = [
+        f for f in audit_document(path).findings
+        if str(f.severity).split(".")[-1] in {"CRITICAL", "HIGH", "MEDIUM"}
+    ]
+    assert not serious, [(f.rule_id, f.message) for f in serious]
+
+
+def test_the_handout_downloads(client):
+    resp = client.get(f"/workshop/session/{CODE}/deck-handout.docx")
+    assert resp.status_code == 200
+    assert "large-print-handout.docx" in resp.headers["Content-Disposition"]
+    body = client.get(f"/workshop/session/{CODE}/deck").get_data(as_text=True)
+    assert "Large print handout, Word" in body

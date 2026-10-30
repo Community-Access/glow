@@ -720,12 +720,16 @@ Help the participant write a 30-day plan for using their agent at work. If
 their agent is earlier in this conversation, use its name; if not, ask what
 it is called. Ask one question at a time and keep each answer short:
 
-1. One workflow you will actually try.
-2. One partner or team you will try it with.
-3. One safeguard you will use every time.
-4. One first step, small enough to do this week.
-5. Who needs to know, or approve it.
-6. What it will look like if it worked, in one sentence you could say to them.
+1. One workflow your office already runs that this agent could help with.
+2. Where it plugs in: what starts it, what the agent reads, and where its
+   draft goes next.
+3. One partner or team you will try it with.
+4. One safeguard you will use every time.
+5. Which AI assistant your campus approves for this, and what information
+   may go into it.
+6. One first step, small enough to do this week.
+7. Who needs to know, or approve it.
+8. What it will look like if it worked, in one sentence you could say to them.
 
 Give back the plan inside ONE code block, as a short Markdown table with
 their agent's name in a heading at the top. Then tell them one specific

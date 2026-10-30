@@ -1,7 +1,7 @@
 ---
 title: "Accessibility Agents at AHG 2026"
 lang: en
-author: "Jeff Bishop, BITS"
+author: "Jeff Bishop, University of Arizona, IT Accessibility Consultant"
 description: "The workshop kit and every accessibility agent built at Accessing Higher Ground 2026."
 ---
 
@@ -73,3 +73,7 @@ a co-author of that contribution.
 
 Everything here is under the MIT licence. The repository belongs to
 Community Access and is looked after by Jeff Bishop.
+
+Built in collaboration with [Blind Information Technology Solutions (BITS)](https://www.bits-acb.org)
+and [Techopolis](https://www.techopolis.app). Special thanks to Taylor Arndt, who helped dream up and
+build Accessibility Agents.

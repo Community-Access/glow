@@ -10,6 +10,58 @@ Releases are tagged in the [GitHub repository](https://github.com/Community-Acce
 
 ### Added
 
+- **AHG 2026: a deck that meets people where they are.** Block 1 grows
+  from 20 to 35 minutes (design is now 40, your agent at work 30) and seven
+  slides: what you will be able to do, a ready check, a tour of the kit, a
+  tour of the website, what makes up an agent, what automation can and
+  cannot decide, where an agent plugs into work the office already does,
+  and what you can use on Monday. 35 slides, none over 60
+  words on screen; the detail moved to the speaker notes. Every slide links
+  to its step card, guide or page in the kit, in all four formats. The
+  PowerPoint copy's smallest text is now 24 point, and nothing runs off a
+  slide. In the HTML deck, "All slides" is a list of links instead of a
+  dropdown that changed slide on every arrow press, each slide has its own
+  address, and the arrow keys turn slides only in slide view. The byline is
+  Jeff Bishop, University of Arizona, IT Accessibility Consultant, in
+  collaboration with BITS and Techopolis, with thanks to Taylor Arndt.
+  Every slide inside a block says where it is ("Block 4 of 7, slide 2 of
+  3"), and every hands-on slide says what to do if you are behind. A large
+  print handout (`slides-large-print-handout.docx`, also a download on the
+  deck page) carries the slides without notes and every link written out.
+
+- **AHG 2026: agents in the work an office already does.** The deck's
+  "Plug it into the work you already do" slide, step card 7 and the
+  tutorial's new "Putting it to work in your office" section ask the same
+  four questions -- what starts it, what it reads, where its draft goes, who
+  signs off -- and /my-30-day-plan asks them too, with which assistant the
+  campus approves and what information may go in.
+
+- **AHG 2026: a check-in on the day, and the workshop in plain language.**
+  `/ahg/check-in` asks two questions and no name before lunch (how it is
+  going, which path) with an optional seat, and lists anyone stuck first on
+  `/ahg/check-in/results` for the helpers, behind the survey's key.
+  `kit/session-in-plain-language.md` says what the workshop is, who it is
+  for and what you do in about 150 words, in four formats, linked from the
+  AHG home page and the setup message. The run of show adds captions (CART,
+  PowerPoint subtitles or Windows Live Captions) and both new pre-flight
+  checks.
+
+- **AHG 2026: the resource library, in every format.**
+  `scripts/build_ahg_library.py` builds one folder (`S:\ahg` by default)
+  holding every participant document, the deck and the facilitator
+  documents in Markdown, HTML, Word, PowerPoint, PDF, EPUB 3 and DAISY 2.02
+  and 3, with the kit, the browser path texts, the sample course, the
+  conference upload set, an `index.html` front door, `README.md`,
+  `README.docx` and a `manifest.csv` of every file with its SHA-256 and
+  check result. PDF is Word's own tagged export, checked with veraPDF
+  (PDF/UA-1); EPUB comes from Pandoc with EPUB Accessibility 1.1 metadata,
+  checked with Ace by DAISY and EPUBCheck; DAISY comes from DAISY Pipeline
+  2, checked with its own validators. `scripts/check_ahg_library.py` checks
+  the result, axe-core in Edge included. The Word copies now give each link
+  its text as a ScreenTip, which the PDF carries as the link's description;
+  the HTML copies wrap long paths at 320 px; GLOW's EPUB audit reads Ace
+  1.4's report and Pandoc's output on Windows without crashing.
+
 - **AHG 2026: every participant document in four formats, checked against
   primary sources, and a pre-workshop survey.** `scripts/ahg_formats.py`
   writes an HTML page, an ACB large print Word file and a reading deck beside

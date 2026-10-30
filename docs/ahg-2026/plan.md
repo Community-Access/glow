@@ -1,7 +1,7 @@
 ---
 title: "AHG 2026 workshop plan: Accessibility Agents for higher education"
 lang: en
-author: "Jeff Bishop, BITS"
+author: "Jeff Bishop, University of Arizona, IT Accessibility Consultant"
 description: "How the AHG 2026 Accessibility Agents workshop keeps every promise in its published session description."
 ---
 
@@ -223,9 +223,9 @@ Each role card has the same seven artifacts.
 
 | Time | Minutes | Block | What the participant has at the end |
 |---|---|---|---|
-| 10:30 | 20 | 1. Why we are here, and the finished result shown first | The journey, and the team report they are working toward |
-| 10:50 | 50 | 2. Design your agent | Six answers, and version 1 of the agent file built from them |
-| 11:40 | 35 | 3. Your agent at work | Copilot's answer, using their agent, on one course document; then /review-my-agent: version 2 |
+| 10:30 | 35 | 1. Why we are here, and the finished result shown first | The team report they are working toward, the map, a ready check, a tour of the kit and the site, what makes up an agent, and what automation cannot decide for them |
+| 11:05 | 40 | 2. Design your agent | Six answers, and version 1 of the agent file built from them |
+| 11:45 | 30 | 3. Your agent at work | Copilot's answer, using their agent, on one course document; then /review-my-agent: version 2 |
 | 12:15 | 60 | Lunch | |
 | 1:15 | 50 | 4. Ground it | A before and after: the same agent, with evidence and citations; then version 3 |
 | 2:05 | 10 | Break | |

@@ -132,6 +132,8 @@ PLACES: dict[str, Place] = {
     "pre-event-message.md": Place("01-start-here", "pre-event-message",
                                   "The message sent before the day: what to bring and how to get ready."),
     "kit/glossary.md": Place("01-start-here", "glossary", "The words used on the day, in plain English."),
+    "kit/session-in-plain-language.md": Place("01-start-here", "in-plain-language",
+                                              "The workshop in about 150 words: what it is, who it is for, what you do."),
     "slides.md": Place("02-slides", "slides", "The deck for the whole day, with speaker notes."),
     "kit/step-cards/0-before-the-day.md": Place("03-step-cards", "0-before-the-day", "Setup, before the day."),
     "kit/step-cards/1-why-we-are-here.md": Place("03-step-cards", "1-why-we-are-here", "Block 1."),
@@ -165,6 +167,11 @@ PLACES: dict[str, Place] = {
     "answer-key.md": Place("09-facilitators", "answer-key", "Every barrier planted in the sample course."),
 }
 DECK = "slides.md"
+#: The slides without speaker notes, links written out, in large print. It
+#: sits beside the deck's folder, not in it: a document folder holds one name.
+HANDOUT = "slides-large-print-handout"
+HANDOUT_TITLE = "Large print handout of the slides"
+HANDOUT_ABOUT = "Every slide without the speaker notes, each link written out, to print or read at your own size."
 FACILITATORS = ("run-of-show.md", "facilitator-card.md", "helpers-card.md", "answer-key.md")
 
 # Every format a document comes in, in the order the index lists them.
@@ -184,7 +191,9 @@ CONFERENCE_LIMIT = 250 * 1024 * 1024
 def conference_set() -> list[tuple[str, str, str]]:
     """(source rel, extension, upload name) for every file the conference gets."""
     out = [(DECK, ext, f"ahg-2026-slides.{ext}") for ext in ("pptx", "docx", "pdf")]
-    named = [("workshop-frontfacing-guide.md", "session-guide"), ("kit/glossary.md", "glossary")]
+    out += [(DECK, ext, f"ahg-2026-{HANDOUT}.{ext}") for ext in ("docx", "pdf")]
+    named = [("workshop-frontfacing-guide.md", "session-guide"), ("kit/glossary.md", "glossary"),
+             ("kit/session-in-plain-language.md", "in-plain-language")]
     named += [(rel, "step-card-" + PLACES[rel].slug) for rel in F.SOURCES if rel.startswith("kit/step-cards/")]
     named += [(rel, "example-" + PLACES[rel].slug) for rel in F.SOURCES if rel.startswith("kit/examples/")]
     for rel, name in named:
@@ -405,6 +414,16 @@ def copy_documents(lib: Library) -> None:
             if ext in ("docx", "pptx"):
                 check += "; audit_ahg_docs.py pass"
             lib.add(place.group, place.slug, ext, target, check)
+        if rel == DECK:
+            source = AHG / f"{HANDOUT}.docx"
+            if not source.is_file():
+                raise BuildError(source, "no handout; run flask workshop-deck --code ahg-2026")
+            target = lib.out / place.group / f"{HANDOUT}.docx"
+            shutil.copyfile(source, target)
+            result = "deck tests pass; " + _glow_audit(target)
+            if "FAIL" in result:
+                raise BuildError(target, result)
+            lib.add(place.group, HANDOUT, "docx", target, result)
 
 
 # ---------------------------------------------------------------------------
@@ -536,10 +555,13 @@ def build_pdfs(lib: Library) -> None:
         word.Visible = False
         word.DisplayAlerts = 0  # wdAlertsNone
         lib.tools["word"] = f"Microsoft Word {word.Version} build {word.Build}"
-        for rel, place, _title in lib.docs:
-            folder = lib.out / place.group / place.slug
-            docx = folder / f"{place.slug}.docx"
-            pdf = folder / f"{place.slug}.pdf"
+        jobs = [(place.group, place.slug, lib.out / place.group / place.slug / f"{place.slug}.docx")
+                for _rel, place, _title in lib.docs]
+        handout = lib.find(HANDOUT, "docx")
+        if handout is not None:
+            jobs.append((handout.group, HANDOUT, handout.path))
+        for group, slug, docx in jobs:
+            pdf = docx.with_suffix(".pdf")
             # Word now and then returns from the export before the file is
             # there, or not at all; wait for it, and try once more if needed.
             for _attempt in range(2):
@@ -562,12 +584,64 @@ def build_pdfs(lib: Library) -> None:
                     break
             if not pdf.is_file():
                 raise BuildError(pdf, "Word wrote no PDF")
-            lib.add(place.group, place.slug, "pdf", pdf, "", lib.tools["word"])
+            finish_pdf_ua(pdf)
+            lib.add(group, slug, "pdf", pdf, "", f"{lib.tools['word']}; PDF/UA finish by PyMuPDF")
     finally:
         if word is not None:
-            word.Quit(SaveChanges=0)
+            try:
+                word.Quit(SaveChanges=0)
+            except pythoncom.com_error:
+                # Word can drop the connection as it exits (0x800706BE); it has quit.
+                pass
         pythoncom.CoUninitialize()
-    say(f"  {len(lib.docs)} PDF files, from {lib.tools['word']}")
+    say(f"  {len(jobs)} PDF files, from {lib.tools['word']}")
+
+
+PDFUA_NS = "http://www.aiim.org/pdfua/ns/id/"
+TH_SCOPE = "<</O/Table/Scope/Column>>"
+
+
+def finish_pdf_ua(pdf: Path) -> None:
+    """Add the two things Word's export leaves out of an otherwise tagged PDF.
+
+    veraPDF fails every Word PDF on PDF/UA-1 rule 5-1, because Word writes
+    no ``pdfuaid:part`` in the XMP metadata, and every PDF with a table on
+    7.5-1, because Word writes no Scope on a table header cell. Neither is
+    about the document, and both are a few bytes: the identifier, and
+    ``/Scope /Column`` on each TH (Word marks only a table's header row as
+    TH, so every TH it writes heads a column). Nothing else is touched.
+    """
+    import pymupdf  # type: ignore
+
+    doc = pymupdf.open(pdf)
+    try:
+        for xref in range(1, doc.xref_length()):
+            try:
+                if doc.xref_get_key(xref, "S") != ("name", "/TH"):
+                    continue
+            except (RuntimeError, ValueError):
+                continue
+            kind, value = doc.xref_get_key(xref, "A")
+            if "/Scope" in value:
+                continue
+            if kind == "null":
+                doc.xref_set_key(xref, "A", TH_SCOPE)
+            elif kind == "array":
+                doc.xref_set_key(xref, "A", value.rstrip()[:-1] + " " + TH_SCOPE + "]")
+            else:  # a dictionary, or a reference to one: keep it, add ours
+                doc.xref_set_key(xref, "A", f"[{value} {TH_SCOPE}]")
+        xmp = doc.get_xml_metadata() or ""
+        if "pdfuaid" not in xmp:
+            ident = (f'<rdf:Description rdf:about="" xmlns:pdfuaid="{PDFUA_NS}">'
+                     "<pdfuaid:part>1</pdfuaid:part></rdf:Description>")
+            if "</rdf:RDF>" not in xmp:
+                raise BuildError(pdf, "Word wrote no XMP metadata to add the PDF/UA identifier to")
+            doc.set_xml_metadata(xmp.replace("</rdf:RDF>", ident + "</rdf:RDF>", 1))
+        finished = pdf.with_suffix(".finished.pdf")
+        doc.save(finished, garbage=0, deflate=True)
+    finally:
+        doc.close()
+    os.replace(finished, pdf)
 
 
 # ---------------------------------------------------------------------------
@@ -702,8 +776,8 @@ def build_daisy(lib: Library, jobs: int) -> None:
 
 
 # PDF/UA-1 rules (ISO 14289-1 clause-test, as veraPDF numbers them) that
-# Word's own export fails whatever the Word file holds. A PDF failing only
-# these is kept and marked; any other failed rule stops the build.
+# Word's own export fails whatever the Word file holds. finish_pdf_ua() adds
+# what they ask for, so every PDF must now pass: any failed rule stops the build.
 WORD_EXPORT_RULES = {
     "5-1": "Word writes no PDF/UA identification (pdfuaid) in the XMP metadata",
     "7.5-1": "Word writes no Scope on table header cells (TH), so veraPDF cannot work out a cell's headers",
@@ -734,23 +808,14 @@ def check_pdfs(lib: Library, jobs: int) -> None:
     with cf.ThreadPoolExecutor(max_workers=jobs) as pool:
         results = list(pool.map(lambda e: (e, *_verapdf(e.path, env)), pdfs))
     for entry, compliant, failed in results:
-        if compliant:
-            verdict = "veraPDF PDF/UA-1 pass"
-        else:
-            unexpected = [r for r in failed if r not in WORD_EXPORT_RULES]
-            if unexpected or not failed:
-                raise BuildError(entry.path, f"veraPDF PDF/UA-1 fails {' '.join(unexpected) or 'with no rule named'}")
-            verdict = f"PDF/UA: fails {' '.join(failed)}"
-            lib.exceptions.append(f"{entry.path.relative_to(lib.out).as_posix()}: {verdict}")
+        if not compliant:
+            raise BuildError(entry.path, f"veraPDF PDF/UA-1 fails {' '.join(failed) or 'with no rule named'}")
+        verdict = "veraPDF PDF/UA-1 pass"
         glow = _glow_audit(entry.path)
         entry.check = f"{verdict}; {glow}"
         entry.tools = f"{entry.tools}; {lib.tools['verapdf']}"
     passed = sum(1 for e in pdfs if e.check.startswith("veraPDF PDF/UA-1 pass"))
     say(f"  veraPDF PDF/UA-1: {passed} of {len(pdfs)} PDF files pass")
-    for rule, why in WORD_EXPORT_RULES.items():
-        n = sum(1 for e in pdfs if f" {rule}" in e.check.split(";")[0])
-        if n:
-            say(f"    {n} fail {rule}: {why}")
 
 
 def _ace(epub: Path) -> dict[str, int]:
@@ -882,6 +947,8 @@ def build_conference(lib: Library) -> None:
         if lib.only and place.slug not in lib.only:
             continue
         source = lib.out / place.group / place.slug / f"{place.slug}.{ext}"
+        if HANDOUT in name:
+            source = lib.out / place.group / f"{HANDOUT}.{ext}"
         if not source.is_file():
             if ext == "pdf":
                 continue  # built without PDF (--no-pdf); the checker says so
@@ -890,7 +957,7 @@ def build_conference(lib: Library) -> None:
         shutil.copyfile(source, target)
         if target.stat().st_size >= CONFERENCE_LIMIT:
             raise BuildError(target, "250 MB or more; the conference form will refuse it")
-        origin = lib.find(place.slug, ext)
+        origin = lib.find(HANDOUT if HANDOUT in name else place.slug, ext)
         lib.add("conference-upload", place.slug, ext, target,
                 f"copy of {source.relative_to(lib.out).as_posix()}" + (f"; {origin.check}" if origin and origin.check else ""),
                 origin.tools if origin else "")
@@ -984,6 +1051,10 @@ def rows_for(lib: Library, group: str) -> list[Row]:
                 target = _daisy_entry(entry.path, fmt) if fmt.startswith("daisy") else entry.path
                 links.append((FORMAT_NAMES[fmt], _href(lib, target), tree_size(entry.path)))
             rows.append(Row(title, place.about, links))
+        handout = [e for e in lib.entries if e.group == group and e.document == HANDOUT]
+        if handout:
+            links = [(FORMAT_NAMES.get(e.fmt, e.fmt.upper()), _href(lib, e.path), e.path.stat().st_size) for e in handout]
+            rows.append(Row(HANDOUT_TITLE, HANDOUT_ABOUT, links))
         return rows
     for entry in lib.entries:
         if entry.group != group:

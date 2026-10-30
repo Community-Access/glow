@@ -105,8 +105,20 @@
   .bar .spacer { flex: 1 1 auto; }
   .bar.downloads { position: static; border-bottom-width: 1px; }
   .bar .count { color: var(--muted); }
-  label.jump { display: flex; align-items: center; gap: 0.4rem; max-width: 100%; }
-  label.jump select { max-width: 100%; min-width: 0; }
+  /* The slide list: real links, so arrowing through it moves nothing. */
+  .slide-list {
+    max-width: 54rem; margin: 0 auto; padding: 1rem clamp(0.75rem, 3vw, 2.5rem);
+    background: var(--panel); border-bottom: 3px solid var(--rule);
+  }
+  .slide-list h2 { font-size: 1.6rem; margin: 0 0 0.5rem; }
+  .slide-list ol { margin: 0; padding-left: 2.2rem; columns: 2 22rem; column-gap: 2rem; }
+  .slide-list li { margin-bottom: 0.4rem; break-inside: avoid; }
+  .slide-list a { color: var(--fg); }
+  .slide-list a[aria-current="true"] { font-weight: 700; color: var(--accent); }
+  .slide-links { max-width: 42rem; margin: 1rem 0 0; }
+  .slide-links p { margin: 0 0 0.4rem; font-weight: 700; }
+  .slide-links ul { margin: 0; }
+  .slide-links a { color: var(--accent); }
 
   main { padding: 0 clamp(0.75rem, 3vw, 2.5rem) 4rem; }
 
@@ -219,9 +231,7 @@
   <button type="button" id="prev">Previous</button>
   <button type="button" id="next">Next</button>
   <span class="count" id="count">Slide 1 of {{ slides|length }}</span>
-  <label class="jump" for="jump">Go to
-    <select id="jump"></select>
-  </label>
+  <button type="button" id="listToggle" aria-expanded="false" aria-controls="slide-list">All slides</button>
   <span class="spacer"></span>
   <button type="button" id="mode" aria-pressed="false">Read as one page</button>
   <button type="button" id="notesToggle" aria-pressed="false">Speaker notes</button>
@@ -234,6 +244,15 @@
   <a class="linkbtn" href="{{ download_urls.docx }}">Word</a>
   <a class="linkbtn" href="{{ download_urls.pptx }}">PowerPoint</a>
   <a class="linkbtn" href="{{ download_urls.md }}">Markdown</a>
+  {% if download_urls.handout %}<a class="linkbtn" href="{{ download_urls.handout }}">Large print handout, Word</a>{% endif %}
+</nav>
+
+<nav class="slide-list" id="slide-list" aria-label="All slides" hidden>
+  <h2>All slides</h2>
+  <ol>
+    {% for slide in slides %}<li><a href="#{{ slide.id }}" data-index="{{ loop.index0 }}">{{ slide.title }}</a></li>
+    {% endfor %}
+  </ol>
 </nav>
 
 <p id="announcer" class="visually-hidden" role="status" aria-live="polite"></p>
@@ -279,6 +298,14 @@
   {% if slide.kicker %}<p class="kicker">{{ slide.kicker }}</p>{% endif %}
   <h2 id="{{ slide.id }}" tabindex="-1">{{ slide.title }}</h2>
   {% for b in slide.blocks %}{{ render_block(b) }}{% endfor %}
+  {% if slide.links %}
+  <div class="slide-links">
+    <p id="{{ slide.id }}-links">{{ links_label }}</p>
+    <ul aria-labelledby="{{ slide.id }}-links">
+      {% for label, url in slide.links %}<li><a href="{{ url }}">{{ label }}</a></li>{% endfor %}
+    </ul>
+  </div>
+  {% endif %}
   {% if slide.notes %}
   <div class="notes">
     <h3>Speaker notes</h3>
@@ -296,7 +323,9 @@
   var slides = Array.prototype.slice.call(document.querySelectorAll('.slide'));
   var announcer = document.getElementById('announcer');
   var count = document.getElementById('count');
-  var jump = document.getElementById('jump');
+  var listToggle = document.getElementById('listToggle');
+  var slideList = document.getElementById('slide-list');
+  var listLinks = Array.prototype.slice.call(slideList.querySelectorAll('a'));
   var prev = document.getElementById('prev');
   var next = document.getElementById('next');
   var modeBtn = document.getElementById('mode');
@@ -309,12 +338,30 @@
     return h ? h.textContent.trim() : ('Slide ' + (i + 1));
   }
 
-  slides.forEach(function (s, i) {
-    var opt = document.createElement('option');
-    opt.value = String(i);
-    opt.textContent = (i + 1) + '. ' + titleOf(i);
-    jump.appendChild(opt);
-  });
+  function indexOfId(id) {
+    for (var i = 0; i < slides.length; i++) {
+      var h = slides[i].querySelector('h2');
+      if (h && h.id === id) { return i; }
+    }
+    return -1;
+  }
+
+  function markCurrent() {
+    listLinks.forEach(function (a, i) {
+      if (i === current) { a.setAttribute('aria-current', 'true'); }
+      else { a.removeAttribute('aria-current'); }
+    });
+    // Each slide has its own address, so a link to one slide can be shared.
+    var h = slides[current].querySelector('h2');
+    if (h && window.history && history.replaceState) {
+      history.replaceState(null, '', '#' + h.id);
+    }
+  }
+
+  function closeList() {
+    slideList.hidden = true;
+    listToggle.setAttribute('aria-expanded', 'false');
+  }
 
   function isSlideMode() { return body.getAttribute('data-mode') === 'slides'; }
 
@@ -322,7 +369,7 @@
     var slideMode = isSlideMode();
     slides.forEach(function (s, i) { s.hidden = slideMode && i !== current; });
     count.textContent = 'Slide ' + (current + 1) + ' of ' + slides.length;
-    jump.value = String(current);
+    markCurrent();
     prev.disabled = slideMode && current === 0;
     next.disabled = slideMode && current === slides.length - 1;
     if (slideMode) {
@@ -342,7 +389,7 @@
       var h = slides[i].querySelector('h2');
       if (h && moveFocus) { h.focus(); }
       count.textContent = 'Slide ' + (current + 1) + ' of ' + slides.length;
-      jump.value = String(current);
+      markCurrent();
       return;
     }
     render(moveFocus);
@@ -350,7 +397,25 @@
 
   prev.addEventListener('click', function () { go(current - 1, true); });
   next.addEventListener('click', function () { go(current + 1, true); });
-  jump.addEventListener('change', function () { go(parseInt(jump.value, 10), true); });
+  listToggle.addEventListener('click', function () {
+    var open = slideList.hidden;
+    slideList.hidden = !open;
+    listToggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+    if (open && listLinks[current]) { listLinks[current].focus(); }
+  });
+
+  // A link only moves when it is pressed. Arrowing through the list reads it.
+  listLinks.forEach(function (a) {
+    a.addEventListener('click', function (e) {
+      e.preventDefault();
+      closeList();
+      go(parseInt(a.getAttribute('data-index'), 10), true);
+    });
+  });
+
+  slideList.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape') { closeList(); listToggle.focus(); }
+  });
 
   modeBtn.addEventListener('click', function () {
     var toPage = isSlideMode();
@@ -384,6 +449,9 @@
     var t = e.target;
     if (t && (t.tagName === 'INPUT' || t.tagName === 'SELECT' || t.tagName === 'TEXTAREA')) { return; }
     if (e.altKey || e.ctrlKey || e.metaKey) { return; }
+    // Keys only turn slides in slide view, and never from inside the slide
+    // list: in page view the arrows scroll, as they do on any page.
+    if (!isSlideMode() || slideList.contains(t)) { return; }
     switch (e.key) {
       case 'ArrowRight': case 'PageDown': go(current + 1, true); e.preventDefault(); break;
       case 'ArrowLeft': case 'PageUp': go(current - 1, true); e.preventDefault(); break;
@@ -394,6 +462,8 @@
     }
   });
 
+  var start = indexOfId(decodeURIComponent((location.hash || '').slice(1)));
+  if (start >= 0) { current = start; }
   render(false);
 }());
 </script>

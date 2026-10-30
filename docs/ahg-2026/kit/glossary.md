@@ -1,7 +1,7 @@
 ---
 title: "Words used today"
 lang: en
-author: "Jeff Bishop, BITS"
+author: "Jeff Bishop, University of Arizona, IT Accessibility Consultant"
 description: "A glossary of the words used in the AHG 2026 Accessibility Agents workshop."
 ---
 

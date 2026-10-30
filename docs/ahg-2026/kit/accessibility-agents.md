@@ -1,7 +1,7 @@
 ---
 title: "Accessibility Agents, after today"
 lang: en
-author: "Jeff Bishop, BITS"
+author: "Jeff Bishop, University of Arizona, IT Accessibility Consultant"
 description: "What Accessibility Agents is, how to get it, and how to use it with your own agent after the AHG 2026 workshop."
 ---
 
@@ -146,6 +146,13 @@ scanner asks for your checker's results instead.
   github.com/Community-Access/accessibility-agents.
 - The two rules still apply: nothing private goes into any AI, and a person
   reviews everything an agent writes.
+
+## Thanks
+
+This workshop is by Jeff Bishop, [University of Arizona](https://accessibility.arizona.edu), IT Accessibility
+Consultant, in collaboration with [Blind Information Technology Solutions (BITS)](https://www.bits-acb.org)
+and [Techopolis](https://www.techopolis.app). Special thanks to Taylor Arndt, who helped dream up
+and build Accessibility Agents.
 
 ## Sources
 

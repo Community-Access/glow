@@ -1,7 +1,7 @@
 ---
 title: "Worked example: Jordan's faculty coach"
 lang: en
-author: "Jeff Bishop, BITS"
+author: "Jeff Bishop, University of Arizona, IT Accessibility Consultant"
 description: "Worked example: a faculty coach agent, from problem to 30-day plan."
 ---
 

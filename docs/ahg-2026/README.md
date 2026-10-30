@@ -1,7 +1,7 @@
 ---
 title: "Accessing Higher Ground 2026 - the whole workshop, in one folder"
 lang: en
-author: "Jeff Bishop, BITS"
+author: "Jeff Bishop, University of Arizona, IT Accessibility Consultant"
 description: "Index of the AHG 2026 workshop folder."
 ---
 

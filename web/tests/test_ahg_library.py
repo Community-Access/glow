@@ -102,13 +102,16 @@ def test_the_conference_set_is_exactly_what_work_md_5_5_names():
     files = B.conference_set()
     names = [name for _rel, _ext, name in files]
     assert len(names) == len(set(names))
-    # The deck in three formats; the session guide, glossary, eight step
-    # cards and three examples in two.
-    assert len(files) == 3 + 2 * (2 + 8 + 3)
+    # The deck in three formats and its large print handout in two; the
+    # session guide, glossary, plain-language summary, eight step cards and
+    # three examples in two.
+    assert len(files) == 3 + 2 + 2 * (3 + 8 + 3)
     assert {ext for _rel, ext, _name in files} <= {"docx", "pptx", "pdf"}
     for name in names:
         assert C.CONFERENCE_NAME.fullmatch(name), name
     assert "ahg-2026-slides.pptx" in names
+    assert "ahg-2026-slides-large-print-handout.pdf" in names
+    assert "ahg-2026-in-plain-language.docx" in names
     assert "ahg-2026-session-guide.pdf" in names
 
 
@@ -298,13 +301,14 @@ def _word() -> bool:
 
 @needs_pandoc
 @pytest.mark.skipif(not (_word() and B.VERAPDF.is_file() and _java()), reason="needs Microsoft Word, Java and veraPDF")
-def test_word_pdf_fails_only_the_rules_word_cannot_meet(library, tmp_path):
+def test_word_pdf_passes_pdf_ua_once_finished(library, tmp_path):
+    """Word's export plus finish_pdf_ua is PDF/UA-1 compliant, with no exceptions."""
     root = _copy(library, tmp_path)
     lib = B.Library(out=root, built="2026-10-29", commit="test", only={"glossary"})
     lib.docs = [("kit/glossary.md", B.PLACES["kit/glossary.md"], "Words used today")]
     B.build_pdfs(lib)
     compliant, failed = B._verapdf(root / "01-start-here" / "glossary" / "glossary.pdf", B.java_env())
-    assert compliant or set(failed) <= set(B.WORD_EXPORT_RULES), failed
+    assert compliant, failed
 
 
 def _pipeline_running() -> bool:

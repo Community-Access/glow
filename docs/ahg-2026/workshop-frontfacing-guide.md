@@ -1,7 +1,7 @@
 ---
 title: "Accessibility Agents: Building Human-Centered AI Workflows for Trusted Accessibility Automation at Scale"
 lang: en
-author: "Jeff Bishop, BITS"
+author: "Jeff Bishop, University of Arizona, IT Accessibility Consultant"
 description: "The AHG 2026 Accessibility Agents session description for participants."
 ---
 
