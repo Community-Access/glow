@@ -89,6 +89,39 @@ The slide deck already comes in all four formats from its own generator,
 `web/src/acb_large_print_web/workshop_deck.py`: `slides.md`, `slides.html`,
 `slides.docx` and `slides.pptx`. See `README.md` in this folder.
 
+## The library: PDF, EPUB and DAISY as well
+
+`scripts/build_ahg_library.py` builds the AHG 2026 resource library, one
+folder (`S:\ahg` by default) holding every document above, the deck and the
+four facilitator documents in seven formats, each in its own folder under
+one base name. It copies the four formats from here and makes three more:
+
+- PDF: Word's own export of the Word file, run in the background, with
+  "Document structure tags for accessibility" and "Create bookmarks using
+  headings" both on. Never print to PDF. veraPDF checks each one against
+  PDF/UA-1, and GLOW's PDF audit runs too. Two rules fail on every Word
+  export whatever the Word file holds: 5-1 (Word writes no PDF/UA
+  identifier) and 7.5-1 (Word writes no Scope on table header cells). The
+  build records them against each PDF in `manifest.csv` and stops on any
+  other rule. Each link's text is its ScreenTip in the Word copies, which
+  Word writes as the link's description in the PDF.
+- EPUB 3: Pandoc from the Markdown, without its front matter, with the HTML
+  copies' styles and EPUB Accessibility 1.1 metadata (text only, structural
+  navigation, table of contents, reading order, no hazards, a summary, and
+  conformance to WCAG 2.2 Level AA). Ace by DAISY must find nothing serious
+  or critical, and EPUBCheck no errors.
+- DAISY 2.02 and DAISY 3: DAISY Pipeline 2 from the EPUB, text only. Each
+  conversion runs with the Pipeline's own validation set to stop on a
+  problem; then its DAISY 2.02 validator checks the NCC book and its DTBook
+  validator the DAISY 3 text.
+
+The sample course and the browser path texts are copied as they are, for
+the reasons in the next section. `scripts/check_ahg_library.py` then checks
+that every document has every format, that every file is in the manifest
+with its SHA-256, that every link in the front door resolves, that the
+conference folder holds only DOCX, PPTX and PDF under 250 MB, and runs
+axe-core in Edge over every page at 1280 and 320 pixels.
+
 ## What has no copies, and why
 
 Each row is one kind of file a participant may see, and why it stays in

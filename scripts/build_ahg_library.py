@@ -532,17 +532,26 @@ def build_pdfs(lib: Library) -> None:
             folder = lib.out / place.group / place.slug
             docx = folder / f"{place.slug}.docx"
             pdf = folder / f"{place.slug}.pdf"
-            document = word.Documents.Open(str(docx), ConfirmConversions=False, ReadOnly=True,
-                                           AddToRecentFiles=False, Visible=False)
-            try:
-                document.ExportAsFixedFormat(
-                    OutputFileName=str(pdf), ExportFormat=17,  # wdExportFormatPDF
-                    OpenAfterExport=False, OptimizeFor=0,  # wdExportOptimizeForPrint
-                    IncludeDocProps=True,  # the title, which PDF/UA requires
-                    CreateBookmarks=1,  # wdExportCreateHeadingBookmarks
-                    DocStructureTags=True, BitmapMissingFonts=True, UseISO19005_1=False)
-            finally:
-                document.Close(SaveChanges=0)
+            # Word now and then returns from the export before the file is
+            # there, or not at all; wait for it, and try once more if needed.
+            for _attempt in range(2):
+                document = word.Documents.Open(str(docx), ConfirmConversions=False, ReadOnly=True,
+                                               AddToRecentFiles=False, Visible=False)
+                try:
+                    document.ExportAsFixedFormat(
+                        OutputFileName=str(pdf), ExportFormat=17,  # wdExportFormatPDF
+                        OpenAfterExport=False, OptimizeFor=0,  # wdExportOptimizeForPrint
+                        IncludeDocProps=True,  # the title, which PDF/UA requires
+                        CreateBookmarks=1,  # wdExportCreateHeadingBookmarks
+                        DocStructureTags=True, BitmapMissingFonts=True, UseISO19005_1=False)
+                finally:
+                    document.Close(SaveChanges=0)
+                for _ in range(20):
+                    if pdf.is_file() and pdf.stat().st_size:
+                        break
+                    time.sleep(0.5)
+                if pdf.is_file() and pdf.stat().st_size:
+                    break
             if not pdf.is_file():
                 raise BuildError(pdf, "Word wrote no PDF")
             lib.add(place.group, place.slug, "pdf", pdf, "", lib.tools["word"])
