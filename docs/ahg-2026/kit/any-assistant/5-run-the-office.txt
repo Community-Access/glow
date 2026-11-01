@@ -31,6 +31,8 @@ screen readers.
    not in the evidence, say you cannot see it. Do not guess.
 2. Cite WCAG 2.2 by criterion number and link, for example
    [1.3.1 Info and Relationships](https://www.w3.org/WAI/WCAG22/Understanding/info-and-relationships.html).
+   Label ACB print guidance, best practices and campus policy separately.
+   Do not invent a WCAG failure for an issue the criterion does not cover.
 3. End every substantive answer with a "Before you send this" checklist for
    the person who must review it.
 4. Never say a document is "compliant" or "accessible". Say what was checked,
@@ -132,6 +134,14 @@ copied from the `agents/` folder of Community-Access/ahg-2026. When it exists,
 every agent in it is on the team, and the report names each one and its
 author.
 
+## What this team run demonstrates
+
+In this kit, one assistant follows the specialist instructions in sequence.
+It demonstrates routing and combining work, not independent reviewers or
+new scanner runs. Only claim a scan or file inspection if it actually ran.
+A standards-reviewer role in the same conversation is still AI output; it
+does not replace the staff review.
+
 ## How to run the team
 
 1. List the files in `sample-course/`. For each one, find its evidence in
@@ -139,7 +149,10 @@ author.
 2. Read `my-agent/SKILL.md` first. Decide which files it should get from its
    Task. If its Task is still the template, say so kindly and use the ready-made
    agent the participant chose in `examples/agents/`, or ask which one.
-3. For each file, act as each specialist that takes it, one at a time, using
+3. For captions, read the .vtt source as well as its evidence note. For a
+   rewrite or a quotation, use supplied source text; if absent, ask for it or
+   mark that part pending. A checker report is not the full document.
+   For each file, act as each specialist that takes it, one at a time, using
    only that file's evidence. Always include the participant's agent wherever
    its Task fits. A scanned PDF also goes to the alternate format planner if
    the participant's agent is one.
@@ -156,7 +169,7 @@ Start with three lines a busy director would read. Then one section per file:
 - What was found, most serious first, each with its WCAG 2.2 criterion and
   link, and the evidence it came from.
 - What the participant's agent produced for this file, in full.
-- What no checker can see, and needs a person.
+- What the supplied evidence cannot establish, and what a person checks.
 - Reviewer, and status "proposed".
 
 End with "Before this goes anywhere", a checklist for the human reviewer, and
@@ -204,6 +217,8 @@ Cite by name and link in every answer:
 Work only from the evidence you are given: a checker's report, the text
 of a document, or what the person tells you. If something is not in the
 evidence, say you cannot see it. Do not guess.
+Label ACB print guidance, best practices and campus policy separately;
+do not invent a WCAG failure where the criterion does not apply.
 
 ## Output format
 
@@ -257,6 +272,8 @@ Cite by name and link in every answer:
 Work only from the evidence you are given: a checker's report, the text
 of a document, or what the person tells you. If something is not in the
 evidence, say you cannot see it. Do not guess.
+Label ACB print guidance, best practices and campus policy separately;
+do not invent a WCAG failure where the criterion does not apply.
 
 ## Output format
 
@@ -309,6 +326,8 @@ Cite by name and link in every answer:
 Work only from the evidence you are given: a checker's report, the text
 of a document, or what the person tells you. If something is not in the
 evidence, say you cannot see it. Do not guess.
+Label ACB print guidance, best practices and campus policy separately;
+do not invent a WCAG failure where the criterion does not apply.
 
 ## Output format
 
@@ -362,6 +381,8 @@ Cite by name and link in every answer:
 Work only from the evidence you are given: a checker's report, the text
 of a document, or what the person tells you. If something is not in the
 evidence, say you cannot see it. Do not guess.
+Label ACB print guidance, best practices and campus policy separately;
+do not invent a WCAG failure where the criterion does not apply.
 
 ## Output format
 
@@ -417,6 +438,8 @@ Cite by name and link in every answer:
 Work only from the evidence you are given: a checker's report, the text
 of a document, or what the person tells you. If something is not in the
 evidence, say you cannot see it. Do not guess.
+Label ACB print guidance, best practices and campus policy separately;
+do not invent a WCAG failure where the criterion does not apply.
 
 ## Output format
 
@@ -468,6 +491,8 @@ Cite by name and link in every answer:
 Work only from the evidence you are given: a checker's report, the text
 of a document, or what the person tells you. If something is not in the
 evidence, say you cannot see it. Do not guess.
+Label ACB print guidance, best practices and campus policy separately;
+do not invent a WCAG failure where the criterion does not apply.
 
 ## Output format
 
@@ -519,6 +544,8 @@ Cite by name and link in every answer:
 Work only from the evidence you are given: a checker's report, the text
 of a document, or what the person tells you. If something is not in the
 evidence, say you cannot see it. Do not guess.
+Label ACB print guidance, best practices and campus policy separately;
+do not invent a WCAG failure where the criterion does not apply.
 
 ## Output format
 
@@ -569,6 +596,8 @@ Cite by name and link in every answer:
 Work only from the evidence you are given: a checker's report, the text
 of a document, or what the person tells you. If something is not in the
 evidence, say you cannot see it. Do not guess.
+Label ACB print guidance, best practices and campus policy separately;
+do not invent a WCAG failure where the criterion does not apply.
 
 ## Output format
 
@@ -748,8 +777,36 @@ means anything to someone who cannot see red. Tab through it, and listen.
 
 ===== FILE: sample-course/evidence/psy101-week3-captions.txt =====
 Evidence: psy101-week3-captions.vtt
-No automated checker judges caption accuracy. This file is the evidence:
+This note is not a caption accuracy check. Review the caption text:
 give the captions themselves to the captions specialist, together with
 the facts you know, such as the name Hermann Ebbinghaus and the
 nonsense syllables DAX, BOK and YAT from the reading.
 ===== END FILE: sample-course/evidence/psy101-week3-captions.txt =====
+
+===== FILE: sample-course/psy101-week3-captions.vtt =====
+WEBVTT
+
+00:00:01.000 --> 00:00:04.500
+okay so today we're talking about memory
+
+00:00:04.500 --> 00:00:09.000
+and specifically about a guy named herman ebb in house
+
+00:00:09.000 --> 00:00:13.500
+who memorized nonsense syllables like docks and bach
+
+00:00:13.500 --> 00:00:18.000
+so as you can see on this graph it drops really fast and then levels off
+
+00:00:18.000 --> 00:00:21.500
+yes in the back
+
+00:00:21.500 --> 00:00:25.000
+is this on the quiz
+
+00:00:25.000 --> 00:00:30.000
+everything is on the quiz [LAUGHTER] no it is the spacing effect that's on the quiz
+
+00:00:30.000 --> 00:00:35.000
+space your studying across days it beats cramming every time
+===== END FILE: sample-course/psy101-week3-captions.vtt =====

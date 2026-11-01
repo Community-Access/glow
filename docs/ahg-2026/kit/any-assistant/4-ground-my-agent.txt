@@ -31,6 +31,8 @@ screen readers.
    not in the evidence, say you cannot see it. Do not guess.
 2. Cite WCAG 2.2 by criterion number and link, for example
    [1.3.1 Info and Relationships](https://www.w3.org/WAI/WCAG22/Understanding/info-and-relationships.html).
+   Label ACB print guidance, best practices and campus policy separately.
+   Do not invent a WCAG failure for an issue the criterion does not cover.
 3. End every substantive answer with a "Before you send this" checklist for
    the person who must review it.
 4. Never say a document is "compliant" or "accessible". Say what was checked,
@@ -67,15 +69,23 @@ Then act as that agent, following it exactly.
    .txt in sample-course/evidence. Answer again as the agent, using only that
    evidence. Cite WCAG 2.2 criteria with links.
 3. Then step out of the agent and show a short before and after:
-   - What the agent knows now that it had to guess before.
+   - What the agent can now support that it could not verify before.
    - Which WCAG criteria it now cites.
-   - What the evidence says no checker can see, which a person must check.
+   - What this report does not establish, which a person must check.
 4. Offer one more try: if they open the syllabus in Word and run Review, then
    Check Accessibility, they can paste Word's results here as text, and the
    agent will work from those instead. The skill is the evidence, not the
    tool.
 
-End with: Your agent just stopped guessing. That is what "grounded" means. Now paste the review text from letitglow.app/ahg/assistant: what you just learned belongs in the agent file.
+For captions, also read sample-course/psy101-week3-captions.vtt and the
+terms in its evidence note. Proposed corrections need a listener to confirm
+them against the recording; no recording is supplied in this exercise.
+
+Check each claim against the supplied evidence and each citation against its
+criterion. Keep unverified observations separate from confirmed findings.
+Grounding reduces guessing; it does not guarantee correctness.
+
+End with: Your agent now has evidence you can verify. Now paste the review text from letitglow.app/ahg/assistant: what you just learned belongs in the agent file.
 
 ## The PSY 101 sample course
 
@@ -255,8 +265,36 @@ means anything to someone who cannot see red. Tab through it, and listen.
 
 ===== FILE: sample-course/evidence/psy101-week3-captions.txt =====
 Evidence: psy101-week3-captions.vtt
-No automated checker judges caption accuracy. This file is the evidence:
+This note is not a caption accuracy check. Review the caption text:
 give the captions themselves to the captions specialist, together with
 the facts you know, such as the name Hermann Ebbinghaus and the
 nonsense syllables DAX, BOK and YAT from the reading.
 ===== END FILE: sample-course/evidence/psy101-week3-captions.txt =====
+
+===== FILE: sample-course/psy101-week3-captions.vtt =====
+WEBVTT
+
+00:00:01.000 --> 00:00:04.500
+okay so today we're talking about memory
+
+00:00:04.500 --> 00:00:09.000
+and specifically about a guy named herman ebb in house
+
+00:00:09.000 --> 00:00:13.500
+who memorized nonsense syllables like docks and bach
+
+00:00:13.500 --> 00:00:18.000
+so as you can see on this graph it drops really fast and then levels off
+
+00:00:18.000 --> 00:00:21.500
+yes in the back
+
+00:00:21.500 --> 00:00:25.000
+is this on the quiz
+
+00:00:25.000 --> 00:00:30.000
+everything is on the quiz [LAUGHTER] no it is the spacing effect that's on the quiz
+
+00:00:30.000 --> 00:00:35.000
+space your studying across days it beats cramming every time
+===== END FILE: sample-course/psy101-week3-captions.vtt =====

@@ -3,19 +3,21 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="author" content="Jeff Bishop, BITS">
+<meta name="author" content="Jeff Bishop, University of Arizona, IT Accessibility Consultant">
 <meta name="description" content="Worked example: a remediation log keeper agent, from problem to 30-day plan.">
 <title>Worked example: Sam's remediation log keeper</title>
 <style>
 :root { color-scheme: light dark; --bg: #ffffff; --fg: #1a1a1a; --link: #0b57d0; --rule: #6b6b6b; --code-bg: #f2f2f2; --focus: #b3261e; }
 @media (prefers-color-scheme: dark) { :root { --bg: #121212; --fg: #f1f1f1; --link: #a8c7fa; --rule: #9a9a9a; --code-bg: #262626; --focus: #ffb4ab; } }
 html { font-size: 112.5%; }
-body { background: var(--bg); color: var(--fg); font-family: Arial, Helvetica, sans-serif; line-height: 1.5; max-width: 46rem; margin: 0 auto; padding: 1rem; }
+body { background: var(--bg); color: var(--fg); font-family: Arial, Helvetica, sans-serif; line-height: 1.5; max-width: 46rem; margin: 0 auto; padding: 1rem; overflow-wrap: break-word; }
 a { color: var(--link); text-decoration: underline; }
 a:focus-visible, [tabindex]:focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; }
 h1, h2, h3, h4 { line-height: 1.25; }
 code, pre { font-family: Consolas, "Courier New", monospace; background: var(--code-bg); }
 pre { padding: 0.75rem; overflow-x: auto; white-space: pre-wrap; }
+/* At 320px a long path or address wraps rather than widening the page (WCAG 1.4.10). */
+code, pre, a { overflow-wrap: anywhere; }
 table { border-collapse: collapse; margin: 1rem 0; }
 th, td { border: 1px solid var(--rule); padding: 0.4rem 0.6rem; text-align: left; vertical-align: top; }
 .table-scroll { overflow-x: auto; }
@@ -31,7 +33,7 @@ blockquote { border-left: 4px solid var(--rule); margin-left: 0; padding-left: 1
 <p>The answers in step 4 are examples written for the workshop. On the day, everyone's own AI writes its own.</p>
 <h2 id="1-the-problem">1. The problem</h2>
 <p>Title II asks public institutions to make web content and course materials meet WCAG 2.1 AA. Nobody fixes 40,000 files in a semester. What an institution can show is a defensible record: what was checked, what was found, what is fixed first and why, who decided, and when.</p>
-<p>PSY 101 is one course. Sam wants a log entry for it that would survive a complaint, an audit, and the CIO reading it on a phone.</p>
+<p>PSY 101 is one course. Sam wants a traceable log entry that a reviewer can verify and the CIO can read on a phone. A log supports accountability; it does not establish legal compliance or replace remediation.</p>
 <h2 id="2-sams-six-answers">2. Sam's six answers</h2>
 <p>Each row is one question, and the answer.</p>
 <div class="table-scroll" role="region" aria-label="Table 1" tabindex="0">
@@ -131,6 +133,7 @@ psy101-gradebook.xlsx  score 54
 3  MEDIUM    `XLSX-MERGED-CELLS`   Merged range A1:F1 disrupts screen reader navigation
 psy101-lab1-stroop.pdf  score 50
 1  CRITICAL  `PDF-TAGGED`          PDF is not tagged</code></pre>
+<p>The following example also uses fictional staff observations: the lab is due Friday, the lecture is already posted, and the gradebook is an instructor-facing template. These facts are not in the checker excerpt. Without that context, the agent must ask rather than invent a priority.</p>
 <blockquote>
 <p>Example answer (first rows; dated 16 November 2026):</p>
 <div class="table-scroll" role="region" aria-label="Table 2" tabindex="0">
@@ -217,7 +220,11 @@ psy101-lab1-stroop.pdf  score 50
 <tbody>
 <tr>
 <td>One workflow</td>
-<td>Every course review ends as log entries, not an email</td>
+<td>Pilot evidence-backed log drafts for one course, beside the existing review log</td>
+</tr>
+<tr>
+<td>Handoff</td>
+<td>Approved checker reports go in; draft entries return to the existing log with source/date, agent version, owner, due date and review decision</td>
 </tr>
 <tr>
 <td>One partner</td>
@@ -228,16 +235,24 @@ psy101-lab1-stroop.pdf  score 50
 <td>Nothing leaves "proposed" without my initials</td>
 </tr>
 <tr>
+<td>Approved tools and data</td>
+<td>IT and the privacy team confirm the assistant and permitted reports; approval pending in this example</td>
+</tr>
+<tr>
 <td>First step this week</td>
-<td>Log the ten highest-enrollment courses</td>
+<td>Compare up to five entries from the fictional course with a manually checked log; record review time and unsupported findings</td>
 </tr>
 <tr>
 <td>Who needs to know</td>
 <td>The CIO and general counsel</td>
 </tr>
 <tr>
-<td>What it looks like if it worked</td>
-<td>When asked "where are we", I send a link, not a spreadsheet named FINAL_final_v4</td>
+<td>Day-30 decision</td>
+<td>Coordinator checks traceable sources, correct priorities, total staff time and unresolved barriers; expand only after review</td>
+</tr>
+<tr>
+<td>Stop and fallback</td>
+<td>Missing evidence, private data or no reviewer: keep the entry proposed and return to the existing manual review</td>
 </tr>
 </tbody>
 </table>

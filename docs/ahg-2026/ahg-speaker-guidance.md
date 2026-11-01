@@ -1,7 +1,7 @@
 ---
 title: "AHG 2026 speaker guidance, checked against this workshop"
 lang: en
-author: "Jeff Bishop, BITS"
+author: "Jeff Bishop, University of Arizona, IT Accessibility Consultant"
 description: "Every AHG 2026 speaker recommendation and where the workshop meets it."
 ---
 
@@ -30,7 +30,7 @@ Each row is one recommendation from the orientation, and where the workshop meet
 
 | Recommendation | Where it is met |
 |---|---|
-| Avoid walls of text | A test fails if any slide has more than seven bullets or a table of more than nine rows. Detail lives in speaker notes and step cards |
+| Avoid walls of text | Tests limit projected slides to six bullets, seven table rows and 60 content words (except the published outcomes). Detail lives in speaker notes and step cards |
 | Chunking | Seven blocks, each with one outcome, one command and one step card |
 | Practice demos; dry run live activities | Every block starts with a live demo; pre-flight items 6 to 8 are the walkthrough, the allowance check and a timed dry run |
 | Have a backup plan | The fallback ladder in `run-of-show.md`, and a ready-made agent in the kit for every role card |
@@ -53,7 +53,7 @@ Each row is one recommendation from the orientation, and where the workshop meet
 | Recommendation | Where it is met |
 |---|---|
 | More hands-on | Six of the seven blocks are hands-on, each with its own Copilot command in VS Code and its own text on the browser path |
-| Leave with a skill, a tool or a framework | An agent, a team report, an open-source contribution in their own name, a 30-day plan, and the five-part agent formula |
+| Leave with a skill, a tool or a framework | An agent, a team report, an open-source contribution when approved, and a 30-day pilot plan with input, handoff, reviewer, baseline, measure and stop rule |
 | Fix pacing | One agenda module drives the deck and the run of show; the pacing rules say what to protect |
 | Title and content match | The deck's title is the program's title, word for word, and a test holds it there. Every promise in the session description is mapped to a block in `plan.md` section 5 |
 | Skilled demos | Every block opens with "watch me first" on the projector, with a written example to fall back on |
@@ -65,10 +65,10 @@ Each row is one recommendation from the orientation, and where the workshop meet
 
 | Recommendation | Where it is met |
 |---|---|
-| Say what you will and will not cover | Slide 6 speaker notes |
-| Address ethical and responsible use | Slide 6: never paste anything private, and a named person reviews every agent. The same rules are built into every agent's "Never" section and into the kit's instructions to Copilot |
-| Do not alienate the hesitant, or the advocates | Slide 6 notes name privacy, accuracy and jobs once, and answer each |
-| Say how this differs from the other AI sessions | Slide 6 notes: higher education accessibility work at scale, built by the people who do it, open source |
+| Say what you will and will not cover | Slide 10 speaker notes |
+| Address ethical and responsible use | Slide 10: never paste anything private, and a named person reviews every agent. The same rules are built into every agent's "Never" section and into the kit's instructions to Copilot |
+| Do not alienate the hesitant, or the advocates | Slide 10 notes name privacy, accuracy and jobs once, and answer each |
+| Say how this differs from the other AI sessions | Slide 10 notes: higher education accessibility work at scale, built by the people who do it, open source |
 | Keep the emphasis on accessibility | Every agent and every example is about a real student barrier |
 
 ## Logistics
@@ -77,11 +77,11 @@ Each row is one recommendation from the orientation, and where the workshop meet
 
 | Recommendation | Where it is met |
 |---|---|
-| Save time for the session evaluation | The last five minutes of the AHG day in the agenda module; slides 5 and 26 |
+| Save time for the session evaluation | The last five minutes of the AHG day in the agenda module; slides 6 and 35 |
 | Bring your own laptop, charger and adaptors | The pocket card checklist |
 | Visit the room ahead of time | The pocket card checklist |
 | BYOD: attendees may lack admin rights | The browser path and VS Code for the Web need nothing installed; VS Code installs without administrator rights on Windows; the setup message and setup page say so, and support is offered before the day |
-| Times are Mountain Time | The setup message, the setup page, the run of show, the pocket card and slide 5 |
+| Times are Mountain Time | The setup message, the setup page, the run of show, the pocket card and slide 6 |
 | Upload materials to Cvent (DOC, DOCX, PPTX, PDF; under 250 MB) | Run of show pre-flight item 5: `slides.pptx`, `slides.docx` and the step cards |
 
 ## Only a person can do these

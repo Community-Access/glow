@@ -1,7 +1,7 @@
 ---
 title: "Step card 4: Ground it"
 lang: en
-author: "Jeff Bishop, BITS"
+author: "Jeff Bishop, University of Arizona, IT Accessibility Consultant"
 description: "A step card for the AHG 2026 Accessibility Agents workshop."
 ---
 
@@ -53,7 +53,9 @@ Your agent giving cited answers from real evidence, a before and after you can s
 
 ## You are on track if
 
-Your agent's new answer cites at least one WCAG 2.2 criterion with a link, says what a person still needs to check, and you have version 3.
+Your agent's new answer cites at least one WCAG 2.2 criterion with a link,
+says what a person still needs to check, and you have version 3. Open the
+source and verify that it supports the claim. A citation alone is not proof.
 
 ## If you are stuck
 
@@ -63,7 +65,9 @@ Raise a hand at any time. A helper comes to you.
 
 ## Your win
 
-Your agent stopped guessing. That is what grounded means, and it is the trusted in the session title.
+Your agent has evidence a person can verify. Grounding reduces guessing; it
+does not guarantee correctness. Separate confirmed findings from suggested
+checks and unverified observations.
 
 ## On Monday
 

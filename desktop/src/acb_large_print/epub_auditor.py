@@ -447,10 +447,13 @@ def _check_html_structure(file_path: Path, result: AuditResult) -> None:
         proc = subprocess.run(
             [exe, "-f", "epub", "-t", "html", "--no-highlight", str(file_path)],
             capture_output=True,
-            text=True,
+            # Pandoc writes UTF-8. Without this, Windows decodes as cp1252,
+            # the reader thread fails on the first curly quote, and stdout is None.
+            encoding="utf-8",
+            errors="replace",
             timeout=60,
         )
-        if proc.returncode != 0:
+        if proc.returncode != 0 or proc.stdout is None:
             return
 
         html = proc.stdout

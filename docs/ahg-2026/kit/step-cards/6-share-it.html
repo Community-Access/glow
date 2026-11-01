@@ -3,19 +3,21 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="author" content="Jeff Bishop, BITS">
+<meta name="author" content="Jeff Bishop, University of Arizona, IT Accessibility Consultant">
 <meta name="description" content="A step card for the AHG 2026 Accessibility Agents workshop.">
 <title>Step card 6: Share it</title>
 <style>
 :root { color-scheme: light dark; --bg: #ffffff; --fg: #1a1a1a; --link: #0b57d0; --rule: #6b6b6b; --code-bg: #f2f2f2; --focus: #b3261e; }
 @media (prefers-color-scheme: dark) { :root { --bg: #121212; --fg: #f1f1f1; --link: #a8c7fa; --rule: #9a9a9a; --code-bg: #262626; --focus: #ffb4ab; } }
 html { font-size: 112.5%; }
-body { background: var(--bg); color: var(--fg); font-family: Arial, Helvetica, sans-serif; line-height: 1.5; max-width: 46rem; margin: 0 auto; padding: 1rem; }
+body { background: var(--bg); color: var(--fg); font-family: Arial, Helvetica, sans-serif; line-height: 1.5; max-width: 46rem; margin: 0 auto; padding: 1rem; overflow-wrap: break-word; }
 a { color: var(--link); text-decoration: underline; }
 a:focus-visible, [tabindex]:focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; }
 h1, h2, h3, h4 { line-height: 1.25; }
 code, pre { font-family: Consolas, "Courier New", monospace; background: var(--code-bg); }
 pre { padding: 0.75rem; overflow-x: auto; white-space: pre-wrap; }
+/* At 320px a long path or address wraps rather than widening the page (WCAG 1.4.10). */
+code, pre, a { overflow-wrap: anywhere; }
 table { border-collapse: collapse; margin: 1rem 0; }
 th, td { border: 1px solid var(--rule); padding: 0.4rem 0.6rem; text-align: left; vertical-align: top; }
 .table-scroll { overflow-x: auto; }
@@ -33,6 +35,7 @@ blockquote { border-left: 4px solid var(--rule); margin-left: 0; padding-left: 1
 <p>Your agent in the AHG 2026 collection on GitHub, committed in your name, and a reply that links to it.</p>
 <h2 id="steps">Steps</h2>
 <p>The same on every path. You did this once before the day, with your practice agent.</p>
+<p>Before uploading, check that you have permission to publish the instructions under the MIT licence. Remove internal procedures, private data and non-public links. The share form cannot detect every disclosure. If approval is pending, keep the file locally and arrange later sharing with a helper.</p>
 <ol type="1">
 <li>In your browser, open letitglow.app/ahg/share.</li>
 <li>Leave "My real agent" chosen.</li>
@@ -42,6 +45,7 @@ blockquote { border-left: 4px solid var(--rule); margin-left: 0; padding-left: 1
 <li>Press "Submit new issue".</li>
 <li>Wait about a minute, then read the reply that appears on the page. Press F5 to refresh if your screen reader does not announce it.</li>
 </ol>
+<p>If sharing is not approved or GitHub is unavailable, save your reviewed agent and record who can confirm permission and when you will return to sharing. This is a deferred contribution, not a completed public share.</p>
 <h2 id="you-are-on-track-if">You are on track if</h2>
 <p>The reply begins: Your agent is in. It names your agent, gives it a number in the collection, and links to it.</p>
 <h2 id="if-you-are-stuck">If you are stuck</h2>

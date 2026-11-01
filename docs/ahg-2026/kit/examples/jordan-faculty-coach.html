@@ -3,19 +3,21 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="author" content="Jeff Bishop, BITS">
+<meta name="author" content="Jeff Bishop, University of Arizona, IT Accessibility Consultant">
 <meta name="description" content="Worked example: a faculty coach agent, from problem to 30-day plan.">
 <title>Worked example: Jordan's faculty coach</title>
 <style>
 :root { color-scheme: light dark; --bg: #ffffff; --fg: #1a1a1a; --link: #0b57d0; --rule: #6b6b6b; --code-bg: #f2f2f2; --focus: #b3261e; }
 @media (prefers-color-scheme: dark) { :root { --bg: #121212; --fg: #f1f1f1; --link: #a8c7fa; --rule: #9a9a9a; --code-bg: #262626; --focus: #ffb4ab; } }
 html { font-size: 112.5%; }
-body { background: var(--bg); color: var(--fg); font-family: Arial, Helvetica, sans-serif; line-height: 1.5; max-width: 46rem; margin: 0 auto; padding: 1rem; }
+body { background: var(--bg); color: var(--fg); font-family: Arial, Helvetica, sans-serif; line-height: 1.5; max-width: 46rem; margin: 0 auto; padding: 1rem; overflow-wrap: break-word; }
 a { color: var(--link); text-decoration: underline; }
 a:focus-visible, [tabindex]:focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; }
 h1, h2, h3, h4 { line-height: 1.25; }
 code, pre { font-family: Consolas, "Courier New", monospace; background: var(--code-bg); }
 pre { padding: 0.75rem; overflow-x: auto; white-space: pre-wrap; }
+/* At 320px a long path or address wraps rather than widening the page (WCAG 1.4.10). */
+code, pre, a { overflow-wrap: anywhere; }
 table { border-collapse: collapse; margin: 1rem 0; }
 th, td { border: 1px solid var(--rule); padding: 0.4rem 0.6rem; text-align: left; vertical-align: top; }
 .table-scroll { overflow-x: auto; }
@@ -130,6 +132,7 @@ blockquote { border-left: 4px solid var(--rule); margin-left: 0; padding-left: 1
 2  HIGH      ACB-LINK-TEXT           Non-descriptive hyperlink text: &#39;click here&#39;
 1  CRITICAL  ACB-MISSING-ALT-TEXT    &#39;Picture 1&#39; has no alternative text
 1  MEDIUM    ACB-DOC-TITLE           Document has no title set in properties</code></pre>
+<p>Jordan also supplies a fictional manual-review note with the syllabus quotation, the accommodations statement's location and appearance, the contradictory exam policy and the color-coded reading list. Those observations are not established by the checker excerpt above. Without them, an agent must flag these as checks to do, not findings it has confirmed.</p>
 <blockquote>
 <p>Example answer:</p>
 <p>Subject: One small Word habit for the PSY 101 syllabus</p>
@@ -164,7 +167,11 @@ blockquote { border-left: 4px solid var(--rule); margin-left: 0; padding-left: 1
 <tbody>
 <tr>
 <td>One workflow</td>
-<td>Every syllabus review ends with a coach note, not a fixed file</td>
+<td>Pilot a reviewed coaching draft alongside the existing syllabus review</td>
+</tr>
+<tr>
+<td>Handoff</td>
+<td>Approved non-sensitive syllabus evidence goes to the agent; the draft stays in the review ticket until the designer edits and sends it</td>
 </tr>
 <tr>
 <td>One partner</td>
@@ -175,16 +182,24 @@ blockquote { border-left: 4px solid var(--rule); margin-left: 0; padding-left: 1
 <td>I read every note before it goes; nothing auto-sends</td>
 </tr>
 <tr>
+<td>Approved tools and data</td>
+<td>Center director confirms the campus-approved assistant and allowed documents; approval pending in this example</td>
+</tr>
+<tr>
 <td>First step this week</td>
-<td>Send three coach notes and count the replies</td>
+<td>Compare three practice notes with the existing process, including editing time and incorrect or missed advice</td>
 </tr>
 <tr>
 <td>Who needs to know</td>
 <td>The center director; this changes what we report as "done"</td>
 </tr>
 <tr>
-<td>What it looks like if it worked</td>
-<td>Next semester's syllabi arrive with real headings, without us touching them</td>
+<td>Day-30 decision</td>
+<td>Director and designer compare total time, accuracy and faculty follow-through; later check whether new syllabi use real headings</td>
+</tr>
+<tr>
+<td>Stop and fallback</td>
+<td>Private information, an unsupported finding or a missed review: use the normal staff-written reply</td>
 </tr>
 </tbody>
 </table>

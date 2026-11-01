@@ -2153,12 +2153,14 @@ def _deck_download_urls(code: str | None) -> dict[str, str]:
             "md": url_for("workshop.workshop_session_deck_markdown", session_code=code),
             "docx": url_for("workshop.workshop_session_deck_docx", session_code=code),
             "pptx": url_for("workshop.workshop_session_deck_pptx", session_code=code),
+            "handout": url_for("workshop.workshop_session_deck_handout", session_code=code),
         }
     return {
         "html": url_for("workshop.workshop_deck", download=1),
         "md": url_for("workshop.workshop_deck_markdown"),
         "docx": url_for("workshop.workshop_deck_docx"),
         "pptx": url_for("workshop.workshop_deck_pptx"),
+        "handout": url_for("workshop.workshop_deck_handout"),
     }
 
 
@@ -2180,6 +2182,7 @@ def _render_deck(code: str | None):
         deck_title=f"{deck.DECK_TITLE} - workshop deck",
         slides=deck.build_slides(ctx),
         download_urls=_deck_download_urls(code),
+        links_label=deck.LINKS_LABEL,
     )
     if not request.args.get("download"):
         return html
@@ -2207,6 +2210,14 @@ def _deck_file(code: str | None, fmt: str):
     elif fmt == "docx":
         payload = deck.build_deck_docx_bytes(ctx)
         mimetype = "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+    elif fmt == "handout":
+        payload = deck.build_deck_handout_docx_bytes(ctx)
+        return send_file(
+            BytesIO(payload),
+            mimetype="application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+            as_attachment=True,
+            download_name=f"{DECK_FILENAME}-large-print-handout.docx",
+        )
     else:
         payload = deck.build_deck_pptx_bytes(ctx)
         mimetype = "application/vnd.openxmlformats-officedocument.presentationml.presentation"
@@ -2248,6 +2259,13 @@ def workshop_deck_pptx():
     return _deck_file(None, "pptx")
 
 
+@workshop_bp.route("/deck-handout.docx", methods=["GET"])
+def workshop_deck_handout():
+    if not _workshop_enabled():
+        abort(404)
+    return _deck_file(None, "handout")
+
+
 @workshop_bp.route("/session/<session_code>/deck", methods=["GET"])
 def workshop_session_deck(session_code: str):
     if not _workshop_enabled():
@@ -2275,6 +2293,13 @@ def workshop_session_deck_pptx(session_code: str):
     if not _workshop_enabled():
         abort(404)
     return _deck_file(_require_session(session_code), "pptx")
+
+
+@workshop_bp.route("/session/<session_code>/deck-handout.docx", methods=["GET"])
+def workshop_session_deck_handout(session_code: str):
+    if not _workshop_enabled():
+        abort(404)
+    return _deck_file(_require_session(session_code), "handout")
 
 
 # ---------------------------------------------------------------------------

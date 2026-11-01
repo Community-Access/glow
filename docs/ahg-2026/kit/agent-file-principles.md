@@ -1,7 +1,7 @@
 ---
 title: "What makes a good agent file"
 lang: en
-author: "Jeff Bishop, BITS"
+author: "Jeff Bishop, University of Arizona, IT Accessibility Consultant"
 description: "The principles of a good accessibility agent file, and the checklist /review-my-agent uses, from the Agent Skills specification and the Accessibility Agents project."
 ---
 
@@ -96,6 +96,10 @@ Say who checks the agent's work before anything goes out, and what they
 check. End every answer with a "Before you send this" checklist for that
 person. If nobody is named, nobody reviewed it.
 
+Use the reviewer role in the agent instructions. Assign the actual staff
+member, decision and due date in your approved ticket or log, not in a public
+agent file or a prompt containing student information.
+
 ### 10. Never: the lines it does not cross
 
 Every workshop agent keeps these three:
@@ -120,7 +124,7 @@ needs it.
 
 Nobody writes a good agent in one go. Try it on a real input, read where it
 guessed or went wrong, change one thing, and try again. Each change is a new
-version. Today you make at least three.
+version. Today you make four: the draft and three reviewed revisions.
 
 ## The review checklist
 
@@ -128,7 +132,7 @@ version. Today you make at least three.
 questions of your agent. Every "no" is a revision you could make.
 
 1. Does it do one job?
-2. Is the name lowercase, with hyphens, and under 64 characters?
+2. Is the name lowercase, with hyphens, and at most 64 characters?
 3. Does the description say what it does, and start a sentence with "Use when"?
 4. Does the Role say who it works for?
 5. Does the Task name its input and its output?

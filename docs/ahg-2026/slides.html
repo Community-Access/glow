@@ -106,8 +106,20 @@
   .bar .spacer { flex: 1 1 auto; }
   .bar.downloads { position: static; border-bottom-width: 1px; }
   .bar .count { color: var(--muted); }
-  label.jump { display: flex; align-items: center; gap: 0.4rem; max-width: 100%; }
-  label.jump select { max-width: 100%; min-width: 0; }
+  /* The slide list: real links, so arrowing through it moves nothing. */
+  .slide-list {
+    max-width: 54rem; margin: 0 auto; padding: 1rem clamp(0.75rem, 3vw, 2.5rem);
+    background: var(--panel); border-bottom: 3px solid var(--rule);
+  }
+  .slide-list h2 { font-size: 1.6rem; margin: 0 0 0.5rem; }
+  .slide-list ol { margin: 0; padding-left: 2.2rem; columns: 2 22rem; column-gap: 2rem; }
+  .slide-list li { margin-bottom: 0.4rem; break-inside: avoid; }
+  .slide-list a { color: var(--fg); }
+  .slide-list a[aria-current="true"] { font-weight: 700; color: var(--accent); }
+  .slide-links { max-width: 42rem; margin: 1rem 0 0; }
+  .slide-links p { margin: 0 0 0.4rem; font-weight: 700; }
+  .slide-links ul { margin: 0; }
+  .slide-links a { color: var(--accent); }
 
   main { padding: 0 clamp(0.75rem, 3vw, 2.5rem) 4rem; }
 
@@ -219,10 +231,8 @@
 <section class="bar" aria-label="Deck controls">
   <button type="button" id="prev">Previous</button>
   <button type="button" id="next">Next</button>
-  <span class="count" id="count">Slide 1 of 27</span>
-  <label class="jump" for="jump">Go to
-    <select id="jump"></select>
-  </label>
+  <span class="count" id="count">Slide 1 of 35</span>
+  <button type="button" id="listToggle" aria-expanded="false" aria-controls="slide-list">All slides</button>
   <span class="spacer"></span>
   <button type="button" id="mode" aria-pressed="false">Read as one page</button>
   <button type="button" id="notesToggle" aria-pressed="false">Speaker notes</button>
@@ -235,6 +245,49 @@
   <a class="linkbtn" href="slides.docx">Word</a>
   <a class="linkbtn" href="slides.pptx">PowerPoint</a>
   <a class="linkbtn" href="slides.md">Markdown</a>
+  <a class="linkbtn" href="slides-large-print-handout.docx">Large print handout, Word</a>
+</nav>
+
+<nav class="slide-list" id="slide-list" aria-label="All slides" hidden>
+  <h2>All slides</h2>
+  <ol>
+    <li><a href="#s1" data-index="0">Accessibility Agents</a></li>
+    <li><a href="#s2" data-index="1">Forty thousand files and three people</a></li>
+    <li><a href="#s3" data-index="2">The finished result, first</a></li>
+    <li><a href="#s4" data-index="3">The day, in seven steps</a></li>
+    <li><a href="#outcomes" data-index="4">What you will be able to do</a></li>
+    <li><a href="#s5" data-index="5">How today runs</a></li>
+    <li><a href="#ready" data-index="6">Ready check</a></li>
+    <li><a href="#kit" data-index="7">What is in your kit</a></li>
+    <li><a href="#site" data-index="8">The website, page by page</a></li>
+    <li><a href="#s6" data-index="9">Private stays private, and people decide</a></li>
+    <li><a href="#parts" data-index="10">What makes up an agent</a></li>
+    <li><a href="#s7" data-index="11">The instructions are six answers</a></li>
+    <li><a href="#automation" data-index="12">Automation helps. You decide.</a></li>
+    <li><a href="#s8" data-index="13">Your accessibility office</a></li>
+    <li><a href="#s9" data-index="14">Design your agent</a></li>
+    <li><a href="#s10" data-index="15">Maria&#39;s six answers</a></li>
+    <li><a href="#s11" data-index="16">Your AI asks, you answer</a></li>
+    <li><a href="#s12" data-index="17">Your agent at work</a></li>
+    <li><a href="#s13" data-index="18">Maria&#39;s first answer</a></li>
+    <li><a href="#s14" data-index="19">Back at 1:15</a></li>
+    <li><a href="#s15" data-index="20">Ground it</a></li>
+    <li><a href="#s16" data-index="21">Before and after</a></li>
+    <li><a href="#s17" data-index="22">Any checker, and a person</a></li>
+    <li><a href="#s18" data-index="23">Back at 2:15</a></li>
+    <li><a href="#s19" data-index="24">Build the office</a></li>
+    <li><a href="#s20" data-index="25">One course, one report</a></li>
+    <li><a href="#s21" data-index="26">The full Accessibility Agents team</a></li>
+    <li><a href="#s22" data-index="27">Share it</a></li>
+    <li><a href="#s23" data-index="28">In the collection, with your name on it</a></li>
+    <li><a href="#s24" data-index="29">Everyone&#39;s agents, together</a></li>
+    <li><a href="#s25" data-index="30">Take it home</a></li>
+    <li><a href="#fit" data-index="31">Plug it into the work you already do</a></li>
+    <li><a href="#monday" data-index="32">On Monday</a></li>
+    <li><a href="#s26" data-index="33">The commitment wall</a></li>
+    <li><a href="#s27" data-index="34">Go make one more champion</a></li>
+    
+  </ol>
 </nav>
 
 <p id="announcer" class="visually-hidden" role="status" aria-live="polite"></p>
@@ -253,105 +306,264 @@
 <section class="slide">
   <p class="kicker">Accessing Higher Ground 2026</p>
   <h2 id="s1" tabindex="-1">Accessibility Agents</h2>
-  <p class="lead">Building Human-Centered AI Workflows for Trusted Accessibility Automation at Scale</p><p>Today you build an accessibility agent. By four o&#39;clock it is part of a team, and part of an open-source project, with your name on it.</p><p class="slide-no">Jeff Bishop - BITS, an affiliate of the American Council of the Blind</p>
+  <p class="lead">Building Human-Centered AI Workflows for Trusted Accessibility Automation at Scale</p><p>Today you build an accessibility agent. By 4:00 it works in a team, in an open-source project, with your name on it.</p><p class="slide-no">Jeff Bishop, University of Arizona, IT Accessibility Consultant</p><p class="slide-no">In collaboration with Blind Information Technology Solutions (BITS) and Techopolis, with special thanks to Taylor Arndt, who helped dream up and build Accessibility Agents.</p>
+  
+  <div class="slide-links">
+    <p id="s1-links">In the kit and on the site:</p>
+    <ul aria-labelledby="s1-links">
+      <li><a href="https://letitglow.app/ahg">Everything for today</a></li>
+    </ul>
+  </div>
+  
   
   <div class="notes">
     <h3>Speaker notes</h3>
-    <p>The proctor introduces the session. Put the microphone on before you say a word, and keep it on all day: when someone speaks from the floor, pass them a mic or repeat what they said into yours before you answer.</p><p>Say the key point before any logistics, in one sentence: accessibility in higher education does not scale by fixing, it scales by making more people who can, and agents are how one person&#39;s know-how reaches a whole course.</p><p>Describe the slide: the title, the subtitle from the program, and one sentence promising what they leave with.</p>
+    <p>The proctor introduces the session. Put the microphone on before you say a word, and keep it on all day: when someone speaks from the floor, pass them a mic or repeat what they said into yours before you answer.</p><p>Say the key point before any logistics, in one sentence: accessibility in higher education does not scale by fixing, it scales by making more people who can, and agents are how one person&#39;s know-how reaches a whole course.</p><p>Describe the slide: the title, the subtitle from the program, and one sentence promising what they leave with.</p><p>Name the collaborators out loud: BITS and Techopolis, and Taylor Arndt, who helped dream up and build Accessibility Agents.</p>
   </div>
   
 </section>
 
 <section class="slide">
-  <p class="kicker">The problem</p>
+  <p class="kicker">Block 1 of 7, slide 1 of 13 - The problem</p>
   <h2 id="s2" tabindex="-1">Forty thousand files and three people</h2>
-  <p>WCAG 2.2 is the current standard. Title II requires WCAG 2.1 AA of public colleges and universities, from April 2027 for most.</p><p>Every syllabus, slide deck, scanned reading and course page is in scope, and most of them are documents, not web pages.</p><p class="big">Nobody fixes that by working harder. The question is how to scale without losing quality, accountability or trust.</p>
+  <p>Title II requires WCAG 2.1 AA of public colleges and universities, from April 2027 for most.</p><p>Most of what is in scope is documents: syllabi, slide decks, scanned readings.</p><p class="big">Nobody fixes that by working harder.</p>
+  
   
   <div class="notes">
     <h3>Speaker notes</h3>
-    <p>Ask, warmly: who here has a backlog? Who has a spreadsheet with the word final in its name more than once? Let the laugh happen; it is recognition, not mockery.</p><p>Title II&#39;s rule points to WCAG 2.1 AA; 2.2 is the current standard and includes everything 2.1 does. The Department of Justice&#39;s interim final rule of 20 April 2026 moved the dates to 26 April 2027 for entities of 50,000 people or more and 26 April 2028 for smaller ones (ada.gov, the web rule page). Check that page the week before in case the dates move again. Say it once and move on.</p>
+    <p>Ask, warmly: who here has a backlog? Who has a spreadsheet with the word final in its name more than once? Let the laugh happen; it is recognition, not mockery.</p><p>Then the question for the day: how do we scale without losing quality, accountability or trust?</p><p>Title II&#39;s rule points to WCAG 2.1 AA; 2.2 is the current standard and includes everything 2.1 does. The Department of Justice&#39;s interim final rule of 20 April 2026 moved the dates to 26 April 2027 for entities of 50,000 people or more and 26 April 2028 for smaller ones (ada.gov, the web rule page). Check that page the week before in case the dates move again. Say it once and move on.</p>
   </div>
   
 </section>
 
 <section class="slide">
-  <p class="kicker">Where we will be at 4:00</p>
+  <p class="kicker">Block 1 of 7, slide 2 of 13 - Where we will be at 4:00</p>
   <h2 id="s3" tabindex="-1">The finished result, first</h2>
-  <p>This afternoon a team of agents works through a whole course and writes one report. Every finding has its evidence, its WCAG criterion, and a named person who checks it.</p><table>
-      <caption>One section of that report, from Maria&#39;s agent:</caption>
+  <p>A team of agents reviews a whole course and writes one report. One section, from Maria&#39;s agent:</p><table>
+      <caption>One finding in the team report</caption>
       <thead><tr><th scope="col">Part</th><th scope="col">What it says</th></tr></thead>
       <tbody>
         
         <tr><th scope="row">File</th><td>The scanned required reading</td></tr>
         
-        <tr><th scope="row">Routed to</th><td>Alternate format planner, by Maria Alvarez</td></tr>
+        <tr><th scope="row">Evidence</th><td>GLOW audit: pictures of text, untagged</td></tr>
         
-        <tr><th scope="row">Evidence</th><td>GLOW audit: pictures of text, no text layer, untagged</td></tr>
+        <tr><th scope="row">Plan</th><td>A clean source, then large print and audio</td></tr>
         
-        <tr><th scope="row">Plan</th><td>Get a clean source, then large print and audio, and post it for every student</td></tr>
-        
-        <tr><th scope="row">Reviewer</th><td>Alternate format specialist. Status: proposed</td></tr>
+        <tr><th scope="row">Reviewer</th><td>Alternate format specialist</td></tr>
         
       </tbody>
-    </table><p>You will build one of the agents that writes a section like this.</p>
+    </table>
+  
+  <div class="slide-links">
+    <p id="s3-links">In the kit and on the site:</p>
+    <ul aria-labelledby="s3-links">
+      <li><a href="https://letitglow.app/ahg/kit/examples/maria-alternate-format-planner.md">Maria&#39;s finished agent</a></li>
+    </ul>
+  </div>
+  
   
   <div class="notes">
     <h3>Speaker notes</h3>
-    <p>Read the table out loud, row by row. It is the destination; people relax when they can see it.</p><p>Maria is a colleague in a disability resource center. She is fictional, and she is one step ahead of the room all day.</p>
+    <p>Read the table out loud, row by row. It is the destination; people relax when they can see it.</p><p>Every finding in the real report has its evidence, its WCAG criterion with a link, and a named person who checks it. You will build one of the agents that writes a section like this.</p><p>Maria is a colleague in a disability resource center. She is fictional, and she is one step ahead of the room all day.</p>
   </div>
   
 </section>
 
 <section class="slide">
-  <p class="kicker">The map for today</p>
-  <h2 id="s4" tabindex="-1">The journey</h2>
-  <ol>
-    <li>The problem: a course full of barriers, and a team too small.</li><li>Your agent: six plain-English answers.</li><li>Your agent at work: your AI uses it on one course document, and you revise it.</li><li>Your agent, grounded: real evidence in, cited answers out.</li><li>Your agent in the team: the whole course, at once.</li><li>Your agent, shared: your best version, in an open-source collection, with your name on it.</li><li>Your campus: a 30-day plan.</li>
-    </ol><p>By 4:30 you will be able to:</p><ul>
+  <p class="kicker">Block 1 of 7, slide 3 of 13 - The map for today</p>
+  <h2 id="s4" tabindex="-1">The day, in seven steps</h2>
+  <table class="agenda">
+      <caption>The seven blocks, and what each one leaves you with</caption>
+      <thead><tr><th scope="col">When</th><th scope="col">Block</th><th scope="col">You leave with</th></tr></thead>
+      <tbody>
+        
+        <tr><th scope="row">10:30</th><td>Why we are here</td><td>A ready laptop</td></tr>
+        
+        <tr><th scope="row">11:05</th><td>Design your agent</td><td>Version 1</td></tr>
+        
+        <tr><th scope="row">11:45</th><td>Your agent at work</td><td>Version 2</td></tr>
+        
+        <tr><th scope="row">1:15</th><td>Ground it</td><td>Version 3, cited</td></tr>
+        
+        <tr><th scope="row">2:15</th><td>Build the office</td><td>Version 4, in a team</td></tr>
+        
+        <tr><th scope="row">3:05</th><td>Share it</td><td>Shared, in your name</td></tr>
+        
+        <tr><th scope="row">3:40</th><td>Take it home</td><td>A 30-day plan</td></tr>
+        
+      </tbody>
+    </table>
+  
+  <div class="slide-links">
+    <p id="s4-links">In the kit and on the site:</p>
+    <ul aria-labelledby="s4-links">
+      <li><a href="https://letitglow.app/ahg/kit/README.md">The kit&#39;s own map of the day</a></li>
+    </ul>
+  </div>
+  
+  
+  <div class="notes">
+    <h3>Speaker notes</h3>
+    <p>Read the seven, slowly. This map comes back at the start of every block, so nobody ever wonders where we are.</p><p>Point out the pattern: every block makes the same agent better. Version 1 before lunch, version 4 by three o&#39;clock.</p><p>Promise them out loud: every step has a finished example to fall back on. Nobody gets stuck and stays stuck.</p>
+  </div>
+  
+</section>
+
+<section class="slide">
+  <p class="kicker">Block 1 of 7, slide 4 of 13 - By 4:30</p>
+  <h2 id="outcomes" tabindex="-1">What you will be able to do</h2>
+  <ul>
     <li>Describe an accessibility task as an agent.</li><li>Ground an agent&#39;s answers in checker evidence, citing WCAG 2.2.</li><li>Name what no checker finds, and write the review step that catches it.</li><li>Explain how a team of specialists and a coordinator scales the work.</li><li>Contribute to an open-source project, credited in your name.</li><li>Plan one workflow to try on your own campus in 30 days.</li>
     </ul>
   
+  
   <div class="notes">
     <h3>Speaker notes</h3>
-    <p>Read all seven, slowly. This list comes back at the start of every block with one step marked, so nobody ever wonders where we are.</p><p>Then read the six outcomes once. They come back at 4:15, when everyone&#39;s 30-day plan reads them back with what they made today.</p><p>Promise them out loud: every step has a finished example to fall back on. Nobody gets stuck and stays stuck.</p>
+    <p>Read the six outcomes once. They come back at 4:15, when everyone&#39;s 30-day plan reads them back with what they made today.</p>
   </div>
   
 </section>
 
 <section class="slide">
-  <p class="kicker">Housekeeping</p>
+  <p class="kicker">Block 1 of 7, slide 5 of 13 - Housekeeping</p>
   <h2 id="s5" tabindex="-1">How today runs</h2>
   <ul>
-    <li>10:30 to 4:30 Mountain Time. Lunch at 12:15. A break at 2:05.</li><li>Everything is at letitglow.app/ahg. Not set up yet? A helper is coming to you.</li><li>Three paths, one day: VS Code on your laptop, VS Code at vscode.dev, or any AI assistant in your browser.</li><li>Seven blocks. Every one starts by showing you the finished result.</li><li>The last five minutes, at 4:25, are the session evaluation.</li><li>Ask for anything, any time: large print, a seat, a pause, a repeat.</li>
+    <li>10:30 to 4:30 Mountain Time. Lunch 12:15, break 2:05, evaluation 4:25.</li><li>Three paths: VS Code on your laptop, VS Code at vscode.dev, or any AI assistant in a browser.</li><li>Every block starts by showing you the finished result.</li><li>Ask for anything: large print, a seat, a pause, a repeat.</li>
     </ul>
   
+  <div class="slide-links">
+    <p id="s5-links">In the kit and on the site:</p>
+    <ul aria-labelledby="s5-links">
+      <li><a href="https://letitglow.app/ahg/paths">Choose your path</a></li>
+    </ul>
+  </div>
+  
+  
   <div class="notes">
     <h3>Speaker notes</h3>
-    <p>Name the exits and the restrooms, physically pointing.</p><p>Say the last bullet slowly, then add: that is not an interruption of this workshop - it is this workshop.</p><p>If anyone is not set up, do not wait for them. Helpers sit with them while the room carries on; the morning is designed so they catch up by lunch.</p><p>Say the three paths once: VS Code on a laptop, VS Code for the Web at vscode.dev, or the browser path with ChatGPT or another assistant at letitglow.app/ahg/assistant. Same blocks, same agent, same share. Anyone whose VS Code will not cooperate moves to the browser path and loses nothing.</p>
+    <p>Name the exits and the restrooms, physically pointing.</p><p>Say the last line slowly, then add: that is not an interruption of this workshop - it is this workshop.</p><p>Say the three paths once: VS Code on a laptop, VS Code for the Web at vscode.dev, or the browser path with ChatGPT or another assistant at letitglow.app/ahg/assistant. Same blocks, same agent, same share. Anyone whose VS Code will not cooperate moves to the browser path and loses nothing.</p><p>The last five minutes, at 4:25, belong to the session evaluation.</p>
   </div>
   
 </section>
 
 <section class="slide">
-  <p class="kicker">Two rules, all day</p>
+  <p class="kicker">Block 1 of 7, slide 6 of 13 - Before we build</p>
+  <h2 id="ready" tabindex="-1">Ready check</h2>
+  <ol>
+    <li>VS Code: open your kit folder, open Copilot Chat, type /ready-check.</li><li>Browser: copy the ready check text from letitglow.app/ahg/assistant into your assistant.</li><li>Wait for: You are ready.</li>
+    </ol><p class="big">Needs a hand? Raise it. A helper comes to you, and the room carries on.</p>
+  
+  <div class="slide-links">
+    <p id="ready-links">In the kit and on the site:</p>
+    <ul aria-labelledby="ready-links">
+      <li><a href="https://letitglow.app/ahg/kit/step-cards/0-before-the-day.md">Step card 0</a></li><li><a href="https://letitglow.app/ahg/assistant">The browser path</a></li>
+    </ul>
+  </div>
+  
+  
+  <div class="notes">
+    <h3>Speaker notes</h3>
+    <p>Give this five full minutes. Run /ready-check on the projector first, so everyone hears what ready sounds like.</p><p>Copilot Chat opens with Control+Alt+I, or Control+Command+I on a Mac. Say the keys out loud.</p><p>Helpers move now, to every raised hand and to anyone who has not typed anything. A laptop that will not cooperate goes to the browser path, which loses nothing.</p>
+  </div>
+  
+</section>
+
+<section class="slide">
+  <p class="kicker">Block 1 of 7, slide 7 of 13 - Your kit</p>
+  <h2 id="kit" tabindex="-1">What is in your kit</h2>
+  <dl class="formula">
+      <dt>Step cards</dt><dd>One per block: every key, and what you should hear.</dd><dt>Examples</dt><dd>Six finished agents. Start from one whenever you like.</dd><dt>Sample course</dt><dd>PSY 101, with barriers planted on purpose.</dd><dt>Glossary and tutorial</dt><dd>Every word we use, and how to write an agent.</dd>
+    </dl>
+  
+  <div class="slide-links">
+    <p id="kit-links">In the kit and on the site:</p>
+    <ul aria-labelledby="kit-links">
+      <li><a href="https://letitglow.app/ahg/kit">The kit, online</a></li><li><a href="https://letitglow.app/ahg/kit/glossary.md">Glossary</a></li><li><a href="https://letitglow.app/ahg/kit/write-your-own-agent.md">Write your own agent</a></li>
+    </ul>
+  </div>
+  
+  
+  <div class="notes">
+    <h3>Speaker notes</h3>
+    <p>Open the kit folder on the projector and walk it top to bottom, out loud: step-cards, examples, sample-course, glossary.md, write-your-own-agent.md, and .github/skills, which holds the commands and the Accessibility Agents team.</p><p>Everything is also online at letitglow.app/ahg/kit, readable without unzipping anything, and every slide in the HTML deck links to the part of the kit it is about.</p>
+  </div>
+  
+</section>
+
+<section class="slide">
+  <p class="kicker">Block 1 of 7, slide 8 of 13 - letitglow.app/ahg</p>
+  <h2 id="site" tabindex="-1">The website, page by page</h2>
+  <dl class="formula">
+      <dt>Paths</dt><dd>Choose VS Code, vscode.dev or a browser.</dd><dt>Assistant</dt><dd>One text per block, for the browser path.</dd><dt>Share</dt><dd>Where your agent goes public, in block 6.</dd><dt>Slides</dt><dd>This deck, with links into the kit.</dd>
+    </dl>
+  
+  <div class="slide-links">
+    <p id="site-links">In the kit and on the site:</p>
+    <ul aria-labelledby="site-links">
+      <li><a href="https://letitglow.app/ahg/paths">Paths</a></li><li><a href="https://letitglow.app/ahg/assistant">Assistant</a></li><li><a href="https://letitglow.app/ahg/share">Share</a></li><li><a href="https://letitglow.app/ahg/slides">Slides</a></li>
+    </ul>
+  </div>
+  
+  
+  <div class="notes">
+    <h3>Speaker notes</h3>
+    <p>Show the home page on the projector and press each link once. People who know where things are ask fewer questions and get stuck for less time.</p><p>Say that the slides, the kit and the website say the same things in the same words, so whichever one someone prefers, they are not missing anything.</p>
+  </div>
+  
+</section>
+
+<section class="slide">
+  <p class="kicker">Block 1 of 7, slide 9 of 13 - Two rules, all day</p>
   <h2 id="s6" tabindex="-1">Private stays private, and people decide</h2>
   <ol>
-    <li>Never paste anything private into any AI: student records, health or disability information, anyone&#39;s name. We use a sample course all day.</li><li>Every agent ends with a person checking its work. Agents draft. People decide.</li>
+    <li>Never paste anything private into any AI: student records, health or disability information, private identifying details.</li><li>Every agent ends with a person checking its work.</li>
     </ol><p class="big">If nobody is named, nobody reviewed it.</p>
+  
   
   <div class="notes">
     <h3>Speaker notes</h3>
-    <p>Set the AI context here, in under a minute. What today covers: agents that analyze course content, find barriers and draft fixes, grounded in checkers and cited standards. What it does not: replacing anyone, or trusting any answer without evidence.</p><p>Say what makes it different from the other AI sessions this week: it is about higher education accessibility work at scale, built by the people who do that work, and every agent is open source.</p><p>Name the reasons people hesitate - privacy, accuracy, other people&#39;s jobs - once, without dwelling. Rule one answers the first. Grounding answers the second. Rule two answers the third.</p>
+    <p>We use a sample course all day, so there is never a reason to paste anything real.</p><p>Set the AI context here, in under a minute. What today covers: agents that analyze course content, find barriers and draft fixes, grounded in checkers and cited standards. What it does not: replacing anyone, or trusting any answer without evidence.</p><p>Say what makes it different from the other AI sessions this week: it is about higher education accessibility work at scale, built by the people who do that work, and every agent is open source.</p><p>Name the reasons people hesitate - privacy, accuracy, other people&#39;s jobs - once, without dwelling. Rule one answers the first. Grounding answers the second. Rule two answers the third.</p>
   </div>
   
 </section>
 
 <section class="slide">
-  <p class="kicker">No code, really</p>
-  <h2 id="s7" tabindex="-1">What an agent is</h2>
+  <p class="kicker">Block 1 of 7, slide 10 of 13 - How agents work</p>
+  <h2 id="parts" tabindex="-1">What makes up an agent</h2>
   <dl class="formula">
-      <dt>Role</dt><dd>Who it is, and who it works for.</dd><dt>Task</dt><dd>The one job it does.</dd><dt>Trusted guidance</dt><dd>The standards and policies it must cite: WCAG 2.2, your own procedures.</dd><dt>Output format</dt><dd>What comes back, in a shape a busy person can use.</dd><dt>Example</dt><dd>One short, good answer, so it sees the shape you want.</dd><dt>Human review</dt><dd>Who checks it before anything goes out.</dd>
-    </dl><p class="big">An agent is those six answers, written in plain English. Writing one is writing, not coding.</p>
+      <dt>Instructions</dt><dd>A file you write, in plain English.</dd><dt>A model</dt><dd>The AI that reads the instructions and does the work.</dd><dt>Evidence</dt><dd>Checker reports and standards it must use and cite.</dd><dt>A person</dt><dd>Who reviews its work before anything goes out.</dd>
+    </dl>
+  
+  <div class="slide-links">
+    <p id="parts-links">In the kit and on the site:</p>
+    <ul aria-labelledby="parts-links">
+      <li><a href="https://letitglow.app/ahg/kit/agent-file-principles.md">What makes a good agent file</a></li>
+    </ul>
+  </div>
+  
+  
+  <div class="notes">
+    <h3>Speaker notes</h3>
+    <p>Walk it once with Maria&#39;s agent: her instructions say plan alternate formats; Copilot is the model; the GLOW audit of the scanned reading is the evidence; the alternate format specialist is the person.</p><p>Say the point plainly: the model is the same for everyone in the room. What makes an agent good is the instructions and the evidence you give it, and the person who checks it. That is the part you build today.</p><p>A team is several agents and a coordinator that routes work between them. That is block 5.</p>
+  </div>
+  
+</section>
+
+<section class="slide">
+  <p class="kicker">Block 1 of 7, slide 11 of 13 - No code, really</p>
+  <h2 id="s7" tabindex="-1">The instructions are six answers</h2>
+  <dl class="formula">
+      <dt>Role</dt><dd>Who it is, and who it works for.</dd><dt>Task</dt><dd>The one job it does.</dd><dt>Trusted guidance</dt><dd>What it must cite: WCAG 2.2, your procedures.</dd><dt>Output format</dt><dd>What comes back, in a usable shape.</dd><dt>Example</dt><dd>One short, good answer.</dd><dt>Human review</dt><dd>Who checks it.</dd>
+    </dl>
+  
+  <div class="slide-links">
+    <p id="s7-links">In the kit and on the site:</p>
+    <ul aria-labelledby="s7-links">
+      <li><a href="https://letitglow.app/ahg/kit/write-your-own-agent.md">Write your own agent</a></li>
+    </ul>
+  </div>
+  
   
   <div class="notes">
     <h3>Speaker notes</h3>
@@ -361,26 +573,56 @@
 </section>
 
 <section class="slide">
-  <p class="kicker">Agents in action</p>
+  <p class="kicker">Block 1 of 7, slide 12 of 13 - Before you trust it</p>
+  <h2 id="automation" tabindex="-1">Automation helps. You decide.</h2>
+  <table>
+      <caption>What an agent does well, and what stays with you</caption>
+      <thead><tr><th scope="col">An agent is good at</th><th scope="col">You must still</th></tr></thead>
+      <tbody>
+        
+        <tr><th scope="row">Reading a whole course quickly</th><td>Know what accessible looks like</td></tr>
+        
+        <tr><th scope="row">Explaining a checker&#39;s findings</th><td>Check its claims against the evidence</td></tr>
+        
+        <tr><th scope="row">Drafting fixes and plans</th><td>Decide what goes out, and sign it</td></tr>
+        
+        <tr><th scope="row">Citing the standard</th><td>Spot what no checker sees</td></tr>
+        
+      </tbody>
+    </table><p class="big">An agent can be confidently wrong. Your judgment is the safeguard.</p>
+  
+  <div class="slide-links">
+    <p id="automation-links">In the kit and on the site:</p>
+    <ul aria-labelledby="automation-links">
+      <li><a href="https://letitglow.app/ahg/kit/glossary.md">Glossary: human review and grounding</a></li>
+    </ul>
+  </div>
+  
+  
+  <div class="notes">
+    <h3>Speaker notes</h3>
+    <p>This is the most important slide of the morning. Automation multiplies whatever you give it: good instructions and good evidence scale good work, and a careless agent scales mistakes just as fast.</p><p>Name the critical things out loud: never paste private data; never call anything compliant on an agent&#39;s word; read every finding before it reaches a student or a faculty member; and know enough WCAG to tell when an answer is wrong.</p><p>Block 3 tests missing evidence. Catch any guesses, but celebrate an agent that asks for the evidence instead.</p>
+  </div>
+  
+</section>
+
+<section class="slide">
+  <p class="kicker">Block 1 of 7, slide 13 of 13 - Agents in action</p>
   <h2 id="s8" tabindex="-1">Your accessibility office</h2>
   <table>
-      <caption>The agent team you will join this afternoon. A coordinator routes each file to these specialists.</caption>
+      <caption>The agent team you join this afternoon</caption>
       <thead><tr><th scope="col">Specialist</th><th scope="col">Takes</th></tr></thead>
       <tbody>
         
-        <tr><th scope="row">Word documents</th><td>Syllabi, handouts</td></tr>
+        <tr><th scope="row">Word, PowerPoint, Excel</th><td>Syllabi, decks, gradebooks</td></tr>
         
-        <tr><th scope="row">PowerPoint slides</th><td>Lecture decks</td></tr>
+        <tr><th scope="row">PDF</th><td>Readings, forms, scans</td></tr>
         
-        <tr><th scope="row">Excel workbooks</th><td>Gradebooks, templates</td></tr>
-        
-        <tr><th scope="row">PDF documents</th><td>Readings, forms, scans</td></tr>
-        
-        <tr><th scope="row">Web pages</th><td>Course pages, with axe and Accessibility Insights</td></tr>
+        <tr><th scope="row">Web pages</th><td>Course pages</td></tr>
         
         <tr><th scope="row">Captions and media</th><td>Lecture captions</td></tr>
         
-        <tr><th scope="row">Plain language</th><td>Anything a student must read and act on</td></tr>
+        <tr><th scope="row">Plain language</th><td>Anything a student acts on</td></tr>
         
         <tr><th scope="row">Standards reviewer</th><td>Everyone&#39;s findings, last</td></tr>
         
@@ -389,19 +631,35 @@
       </tbody>
     </table>
   
+  <div class="slide-links">
+    <p id="s8-links">In the kit and on the site:</p>
+    <ul aria-labelledby="s8-links">
+      <li><a href="https://letitglow.app/ahg/kit#office-team">The office team</a></li>
+    </ul>
+  </div>
+  
+  
   <div class="notes">
     <h3>Speaker notes</h3>
-    <p>Read the specialists down the list. Pause on the last row: the team has an empty chair, and it is theirs.</p><p>These specialists are adapted from the open-source Accessibility Agents project. That is where their agents go this afternoon too.</p>
+    <p>A coordinator routes each file to the specialist it needs. Read the specialists down the list. Pause on the last row: the team has an empty chair, and it is theirs.</p><p>These specialists are adapted from the open-source Accessibility Agents project. That is where their agents go this afternoon too.</p>
   </div>
   
 </section>
 
 <section class="slide">
-  <p class="kicker">Block 2 of 7 - 10:50-11:40 - 50 minutes</p>
+  <p class="kicker">Block 2 of 7, slide 1 of 3 - 11:05-11:45 - 40 minutes</p>
   <h2 id="s9" tabindex="-1">Design your agent</h2>
-  <p>By the end of this block: your own agent, in a file, with your name on it.</p><dl class="formula">
-      <dt>Documents and alternate formats</dt><dd>An alternate format planner, or a document triage agent.</dd><dt>Course content and faculty coaching</dt><dd>A faculty coach, or a course page coach.</dd><dt>Compliance and procurement</dt><dd>A remediation log keeper, or a vendor report reader.</dd>
-    </dl><p>Pick one card. Bring one real problem from your job, with nothing private in it.</p>
+  <p>You leave with: version 1 of your agent.</p><dl class="formula">
+      <dt>Documents and alternate formats</dt><dd>A format planner, or a triage agent.</dd><dt>Course content and faculty</dt><dd>A faculty coach, or a course page coach.</dd><dt>Compliance and procurement</dt><dd>A remediation log, or a vendor report reader.</dd>
+    </dl><p>Pick one card, and one task your office does every week, with nothing private in it.</p>
+  
+  <div class="slide-links">
+    <p id="s9-links">In the kit and on the site:</p>
+    <ul aria-labelledby="s9-links">
+      <li><a href="https://letitglow.app/ahg/kit/step-cards/2-design-your-agent.md">Step card 2</a></li><li><a href="https://letitglow.app/ahg/kit#examples-agents">Ready-made agents</a></li>
+    </ul>
+  </div>
+  
   
   <div class="notes">
     <h3>Speaker notes</h3>
@@ -411,55 +669,79 @@
 </section>
 
 <section class="slide">
-  <p class="kicker">Watch me first</p>
+  <p class="kicker">Block 2 of 7, slide 2 of 3 - Watch me first</p>
   <h2 id="s10" tabindex="-1">Maria&#39;s six answers</h2>
   <table>
-      <caption>Maria, from the Disability Resource Center, designing her alternate format planner:</caption>
+      <caption>Maria&#39;s alternate format planner</caption>
       <thead><tr><th scope="col">Question</th><th scope="col">Maria&#39;s answer</th></tr></thead>
       <tbody>
         
-        <tr><th scope="row">Role</th><td>An alternate format planner in a disability resource center</td></tr>
+        <tr><th scope="row">Role</th><td>Alternate format planner</td></tr>
         
-        <tr><th scope="row">Task</th><td>Plan the formats a student needs from a checker&#39;s report</td></tr>
+        <tr><th scope="row">Task</th><td>Plan formats from checker reports</td></tr>
         
-        <tr><th scope="row">Trusted guidance</th><td>WCAG 2.2 1.4.5 and 1.1.1, ACB large print, our procedure</td></tr>
+        <tr><th scope="row">Trusted guidance</th><td>WCAG 2.2, ACB large print</td></tr>
         
-        <tr><th scope="row">Output format</th><td>Numbered steps with who does each, then a checklist</td></tr>
+        <tr><th scope="row">Output format</th><td>Numbered steps, who does each</td></tr>
         
-        <tr><th scope="row">Example</th><td>The scanned reading: get the text, then 18 point large print</td></tr>
+        <tr><th scope="row">Example</th><td>Scanned reading to large print</td></tr>
         
-        <tr><th scope="row">Human review</th><td>The specialist checks page by page; the student confirms</td></tr>
+        <tr><th scope="row">Human review</th><td>A specialist checks it</td></tr>
         
       </tbody>
     </table>
   
+  <div class="slide-links">
+    <p id="s10-links">In the kit and on the site:</p>
+    <ul aria-labelledby="s10-links">
+      <li><a href="https://letitglow.app/ahg/kit/examples/maria-alternate-format-planner.md">Maria&#39;s agent, in full</a></li>
+    </ul>
+  </div>
+  
+  
   <div class="notes">
     <h3>Speaker notes</h3>
-    <p>Read Maria&#39;s answers aloud. Then type /design-my-agent in Copilot Chat on the projector and answer as Maria, so they hear the whole conversation once before they have theirs.</p><p>Say that the browser path is the same conversation: the block 2 text from letitglow.app/ahg/assistant pasted into ChatGPT asks the same questions in the same order.</p><p>Joke if the room is warm: Maria&#39;s coffee machine has been out of order since August. Her agent does not drink coffee, which is its main advantage.</p>
+    <p>Read Maria&#39;s answers aloud. Then type /design-my-agent in Copilot Chat on the projector and answer as Maria, so they hear the whole conversation once before they have theirs.</p><p>Fill in what the table shortens: she works in a disability resource center; her guidance cites WCAG 2.2 1.4.5 and 1.1.1 by number and her office&#39;s own procedure; her example gets the text out of the scan first, then 18 point large print; and the student confirms the format works for them.</p><p>Say that the browser path is the same conversation: the block 2 text from letitglow.app/ahg/assistant pasted into ChatGPT asks the same questions in the same order.</p><p>Joke if the room is warm: Maria&#39;s coffee machine has been out of order since August. Her agent does not drink coffee, which is its main advantage.</p>
   </div>
   
 </section>
 
 <section class="slide">
-  <p class="kicker">Your turn</p>
+  <p class="kicker">Block 2 of 7, slide 3 of 3 - Your turn</p>
   <h2 id="s11" tabindex="-1">Your AI asks, you answer</h2>
   <ol>
-    <li>In VS Code: open Copilot Chat (Control+Alt+I, or Control+Command+I on a Mac) and type /design-my-agent.</li><li>In a browser: copy the block 2 text from letitglow.app/ahg/assistant and paste it into your assistant.</li><li>Answer the questions, one at a time. Borrow from the example whenever you like.</li><li>VS Code writes your agent into my-agent/SKILL.md. In a browser it comes back in a box with a Copy button: download it from the share page.</li>
-    </ol><p>You are on track if your AI tells you one thing your agent does well.</p><p>Stuck? Start from a ready-made agent in examples/agents. That counts. You are still in.</p>
+    <li>VS Code: in Copilot Chat, type /design-my-agent.</li><li>Browser: paste the block 2 text into your assistant.</li><li>Answer one question at a time. Borrow from the examples.</li>
+    </ol><p class="big">Stuck? Start from a ready-made agent. That counts.</p>
+  
+  <div class="slide-links">
+    <p id="s11-links">In the kit and on the site:</p>
+    <ul aria-labelledby="s11-links">
+      <li><a href="https://letitglow.app/ahg/kit/step-cards/2-design-your-agent.md">Step card 2</a></li><li><a href="https://letitglow.app/ahg/assistant">Block 2 text for a browser</a></li>
+    </ul>
+  </div>
+  
   
   <div class="notes">
     <h3>Speaker notes</h3>
-    <p>Helpers move now. Look for the person who has not typed anything yet, and sit with them quietly.</p><p>Step card 2 has every key and every expected screen in words, for screen reader users and anyone who prefers paper.</p>
+    <p>VS Code writes the agent into my-agent/SKILL.md. In a browser it comes back in a box with a Copy button; download it from the share page.</p><p>You are on track when your AI tells you one thing your agent does well.</p><p>Helpers move now. Look for the person who has not typed anything yet, and sit with them quietly.</p><p>Step card 2 has every key and every expected screen in words, for screen reader users and anyone who prefers paper.</p>
   </div>
   
 </section>
 
 <section class="slide">
-  <p class="kicker">Block 3 of 7 - 11:40-12:15 - 35 minutes</p>
+  <p class="kicker">Block 3 of 7, slide 1 of 2 - 11:45-12:15 - 30 minutes</p>
   <h2 id="s12" tabindex="-1">Your agent at work</h2>
-  <p>By the end of this block: your agent&#39;s first answer on a real course document, and version 2.</p><ol>
-    <li>In VS Code, type /try-my-agent. In a browser, paste the block 3 text.</li><li>Pick a file from the PSY 101 sample course.</li><li>Read what your agent says.</li><li>Then /review-my-agent, or the review text: one change, version 2.</li>
-    </ol><p class="big">It will guess a little. That is not a mistake. It is the setup for this afternoon.</p>
+  <ol>
+    <li>Type /try-my-agent, or paste the block 3 text.</li><li>Pick a file from the PSY 101 sample course.</li><li>Read the answer. Then /review-my-agent: version 2.</li>
+    </ol><p class="big">No evidence? A good agent asks instead of guessing.</p><p>Behind? Try a ready-made agent from examples/agents instead.</p>
+  
+  <div class="slide-links">
+    <p id="s12-links">In the kit and on the site:</p>
+    <ul aria-labelledby="s12-links">
+      <li><a href="https://letitglow.app/ahg/kit/step-cards/3-your-agent-at-work.md">Step card 3</a></li><li><a href="https://letitglow.app/ahg/kit#sample-course">The sample course</a></li>
+    </ul>
+  </div>
+  
   
   <div class="notes">
     <h3>Speaker notes</h3>
@@ -469,15 +751,16 @@
 </section>
 
 <section class="slide">
-  <p class="kicker">Watch me</p>
+  <p class="kicker">Block 3 of 7, slide 2 of 2 - Watch me</p>
   <h2 id="s13" tabindex="-1">Maria&#39;s first answer</h2>
-  <div class="panel"><p>&#34;Run Acrobat&#39;s Make Accessible action, add alternative text to all images, and increase the font size. This will make the document compliant with WCAG 2.1.&#34;</p></div><ul>
-    <li>It never saw the file, so it did not know the reading is a scan.</li><li>Alt text on pictures of text would describe the pictures, not turn them into text.</li><li>It said &#34;compliant&#34;, which her agent is told never to say.</li>
+  <div class="panel"><p>&#34;Run Acrobat&#39;s Make Accessible, add alt text to all images, and increase the font size. This will make it compliant.&#34;</p></div><ul>
+    <li>It never saw the file, so it missed that it is a scan.</li><li>Alt text cannot turn pictures of text into text.</li><li>It said &#34;compliant&#34;, which it is told never to say.</li>
     </ul>
+  
   
   <div class="notes">
     <h3>Speaker notes</h3>
-    <p>Read the quote in a confident voice, then the three problems in a normal one. The contrast is the joke, and the lesson.</p><p>This is a written example, labelled as one in the kit. On the day, show a real first answer from the room if someone offers one.</p>
+    <p>Read the quote in a confident voice, then the three problems in a normal one. The contrast is the joke, and the lesson. It is the automation slide, happening.</p><p>This is a written example, labelled as one in the kit. On the day, show a real first answer from the room if someone offers one.</p>
   </div>
   
 </section>
@@ -485,47 +768,64 @@
 <section class="slide">
   <p class="kicker">Lunch - 12:15-1:15</p>
   <h2 id="s14" tabindex="-1">Back at 1:15</h2>
-  <p>You have an agent. That was the hard part.</p><p>After lunch it stops guessing.</p>
+  <p>You have an agent. That was the hard part.</p><p>After lunch: evidence you can verify.</p><p>Before you go: two questions, no name, at letitglow.app/ahg/check-in.</p>
+  
+  <div class="slide-links">
+    <p id="s14-links">In the kit and on the site:</p>
+    <ul aria-labelledby="s14-links">
+      <li><a href="https://letitglow.app/ahg/check-in">Check in</a></li>
+    </ul>
+  </div>
+  
   
   <div class="notes">
     <h3>Speaker notes</h3>
-    <p>Say well done, and mean it. Most people in this room had never written an agent at 10:30.</p><p>Anyone still setting up: lunch is when a helper finishes it with them.</p>
+    <p>Say well done, and mean it. Most people in this room had never written an agent at 10:30.</p><p>Ask everyone to do the check-in before they leave the room. Helpers read the results over lunch at letitglow.app/ahg/check-in/results with the survey key, and go first to anyone who said they are stuck.</p><p>Anyone still setting up: lunch is when a helper finishes it with them.</p>
   </div>
   
 </section>
 
 <section class="slide">
-  <p class="kicker">Block 4 of 7 - 1:15-2:05 - 50 minutes</p>
+  <p class="kicker">Block 4 of 7, slide 1 of 3 - 1:15-2:05 - 50 minutes</p>
   <h2 id="s15" tabindex="-1">Ground it</h2>
-  <p>By the end of this block: the same agent, giving cited answers from real evidence. A before and an after.</p><ol>
-    <li>In VS Code, type /ground-my-agent. In a browser, paste the block 4 text.</li><li>Use the same file as this morning.</li><li>Your agent reads that file&#39;s checker report: GLOW for documents, axe for the web page.</li><li>Compare the two answers.</li><li>Then /review-my-agent again: version 3.</li>
-    </ol>
+  <ol>
+    <li>Type /ground-my-agent, or paste the block 4 text.</li><li>Same file as this morning, with its checker report.</li><li>Compare the two answers.</li><li>Then /review-my-agent: version 3.</li>
+    </ol><p>Behind? Ground Maria&#39;s agent instead. Same lesson.</p>
+  
+  <div class="slide-links">
+    <p id="s15-links">In the kit and on the site:</p>
+    <ul aria-labelledby="s15-links">
+      <li><a href="https://letitglow.app/ahg/kit/step-cards/4-ground-it.md">Step card 4</a></li><li><a href="https://letitglow.app/ahg/kit#sample-course">Checker reports for PSY 101</a></li>
+    </ul>
+  </div>
+  
   
   <div class="notes">
     <h3>Speaker notes</h3>
-    <p>Say where we are on the journey: step 4 of 7, &#34;Your agent, grounded: real evidence in, cited answers out.&#34; Then show what they will have at the end of this block before anyone starts.</p><p>Grounding is the trusted in the session title. The checkers find; the agent explains and plans; a person decides.</p>
+    <p>Say where we are on the journey: step 4 of 7, &#34;Your agent, grounded: real evidence in, cited answers out.&#34; Then show what they will have at the end of this block before anyone starts.</p><p>The checker report is GLOW&#39;s audit for documents and axe for the web page.</p><p>Grounding supports the trusted in the session title. It reduces guessing but does not guarantee correctness. Check the source, the citation and what the checker did not test; a person decides.</p>
   </div>
   
 </section>
 
 <section class="slide">
-  <p class="kicker">Watch me</p>
+  <p class="kicker">Block 4 of 7, slide 2 of 3 - Watch me</p>
   <h2 id="s16" tabindex="-1">Before and after</h2>
   <table>
-      <caption>Maria&#39;s agent, on the scanned reading:</caption>
+      <caption>Maria&#39;s agent, on the scanned reading</caption>
       <thead><tr><th scope="col">Before evidence</th><th scope="col">After evidence</th></tr></thead>
       <tbody>
         
-        <tr><th scope="row">Guessed the file was an ordinary PDF</th><td>Knew it was two pages of pictures of text</td></tr>
+        <tr><th scope="row">Guessed an ordinary PDF</th><td>Knew it was pictures of text</td></tr>
         
-        <tr><th scope="row">WCAG 2.1, no links</th><td>WCAG 2.2, 1.4.5 Images of Text, linked</td></tr>
+        <tr><th scope="row">WCAG 2.1, no links</th><td>WCAG 2.2, 1.4.5, linked</td></tr>
         
         <tr><th scope="row">&#34;Compliant&#34;</th><td>What was checked, and what a person must check</td></tr>
         
-        <tr><th scope="row">Fix the PDF</th><td>Get a clean source, then large print and audio for everyone</td></tr>
+        <tr><th scope="row">Fix the PDF</th><td>A clean source, then large print and audio</td></tr>
         
       </tbody>
     </table>
+  
   
   <div class="notes">
     <h3>Speaker notes</h3>
@@ -535,15 +835,16 @@
 </section>
 
 <section class="slide">
-  <p class="kicker">The skill, not the tool</p>
+  <p class="kicker">Block 4 of 7, slide 3 of 3 - The skill, not the tool</p>
   <h2 id="s17" tabindex="-1">Any checker, and a person</h2>
-  <p>The same works with Word&#39;s and PowerPoint&#39;s own Accessibility Checker, Acrobat&#39;s checker, or Accessibility Insights. The skill is giving your agent evidence.</p><p>And some barriers no checker sees:</p><ul>
-    <li>The accommodations statement, last, in 8-point gray, contradicted two sections earlier by a no-makeup-exams rule in capitals.</li><li>Alt text that says &#34;image.png&#34;.</li><li>A lab that only works if you can see color.</li><li>Captions that turn Ebbinghaus into &#34;ebb in house&#34;.</li>
+  <p>Word&#39;s, PowerPoint&#39;s or Acrobat&#39;s checker, or Accessibility Insights, work the same way.</p><p>Some barriers no checker sees:</p><ul>
+    <li>An accommodations policy contradicted elsewhere.</li><li>Alt text that says &#34;image.png&#34;.</li><li>A lab that only works if you can see color.</li><li>Captions that turn Ebbinghaus into &#34;ebb in house&#34;.</li>
     </ul>
+  
   
   <div class="notes">
     <h3>Speaker notes</h3>
-    <p>If Word is handy, show Review, then Check Accessibility on the syllabus, and paste its results into Copilot with the agent. Same skill, different tool.</p><p>Those four barriers are why every agent has a human review step. Read each one; the room will recognise every one of them from their own campus.</p>
+    <p>The skill is giving your agent evidence, whatever the tool.</p><p>If Word is handy, show Review, then Check Accessibility on the syllabus, and paste its results into Copilot with the agent. Same skill, different tool.</p><p>The accommodations statement is last in the syllabus, and contradicted two sections earlier by a no-makeup-exams rule in capitals.</p><p>Those four barriers are why every agent has a human review step. Read each one; the room will recognise every one of them from their own campus.</p>
   </div>
   
 </section>
@@ -553,6 +854,7 @@
   <h2 id="s18" tabindex="-1">Back at 2:15</h2>
   <p>Next, your agent joins a team. Then it goes public.</p>
   
+  
   <div class="notes">
     <h3>Speaker notes</h3>
     <p>Short break on purpose. The next two blocks are where the day comes together.</p>
@@ -561,77 +863,111 @@
 </section>
 
 <section class="slide">
-  <p class="kicker">Block 5 of 7 - 2:15-3:05 - 50 minutes</p>
+  <p class="kicker">Block 5 of 7, slide 1 of 3 - 2:15-3:05 - 50 minutes</p>
   <h2 id="s19" tabindex="-1">Build the office</h2>
-  <p>By the end of this block: your agent working inside a team, across the whole course, and one team report.</p><ol>
-    <li>In VS Code, type /run-the-office. In a browser, paste the block 5 text.</li><li>The coordinator sends each course file to its specialists, and yours where it fits.</li><li>The standards reviewer checks everyone&#39;s work.</li><li>You get the team report, with your agent&#39;s section in it.</li><li>Then /review-my-agent, or the review text: version 4, your best.</li>
-    </ol>
+  <ol>
+    <li>Type /run-the-office, or paste the block 5 text.</li><li>The coordinator sends each file to its specialists, and to yours.</li><li>The standards-reviewer role checks the draft; staff still review it.</li><li>Then /review-my-agent: version 4, your best.</li>
+    </ol><p>Behind? The office runs with any version of your agent.</p>
+  
+  <div class="slide-links">
+    <p id="s19-links">In the kit and on the site:</p>
+    <ul aria-labelledby="s19-links">
+      <li><a href="https://letitglow.app/ahg/kit/step-cards/5-build-the-office.md">Step card 5</a></li><li><a href="https://letitglow.app/ahg/kit#office-team">The office team</a></li>
+    </ul>
+  </div>
+  
   
   <div class="notes">
     <h3>Speaker notes</h3>
-    <p>Say where we are on the journey: step 5 of 7, &#34;Your agent in the team: the whole course, at once.&#34; Then show what they will have at the end of this block before anyone starts.</p><p>This is building an agent team: they added a specialist, and their coordinator is running it. Copilot announces each file as it finishes, so screen reader users hear progress, not silence.</p><p>On the browser path the same coordinator and specialists travel inside the block 5 text, so ChatGPT or any assistant runs the same team. If an assistant stops part way, type continue.</p>
+    <p>Say where we are on the journey: step 5 of 7, &#34;Your agent in the team: the whole course, at once.&#34; Then show what they will have at the end of this block before anyone starts.</p><p>You get one team report, with your agent&#39;s section in it.</p><p>This is building an agent team: they added a specialist, and their coordinator is running it. Copilot announces each file as it finishes, so screen reader users hear progress, not silence.</p><p>On the browser path the same coordinator and specialists travel inside the block 5 text, so ChatGPT or any assistant runs the same team. If an assistant stops part way, type continue.</p>
   </div>
   
 </section>
 
 <section class="slide">
-  <p class="kicker">What scale looks like</p>
+  <p class="kicker">Block 5 of 7, slide 2 of 3 - What scale looks like</p>
   <h2 id="s20" tabindex="-1">One course, one report</h2>
   <ul>
-    <li>Seven files, eight specialists, plus yours.</li><li>Every finding: evidence, a WCAG 2.2 criterion with its link, and a named reviewer.</li><li>A list of what no checker could see, for a person.</li><li>Three lines at the top that a director will actually read.</li>
-    </ul><p class="big">That is quality, accountability and transparency, at scale. It is also a Tuesday.</p>
+    <li>Seven files, eight specialists, plus yours.</li><li>Every finding: evidence, a WCAG 2.2 link, a named reviewer.</li><li>A list of what the supplied evidence cannot establish.</li>
+    </ul><p class="big">Quality, accountability and transparency, at scale.</p>
+  
   
   <div class="notes">
     <h3>Speaker notes</h3>
-    <p>Ask: what would it take to run this across ten courses? Let them answer. The honest answer is a person&#39;s review time, which is exactly where it should go.</p>
+    <p>The report opens with three lines a director will actually read. It is also a Tuesday.</p><p>One assistant follows specialist roles in sequence here; this is not independent validation. Seven sample files demonstrate the method, not production throughput. Review effort, errors and deadlines decide whether a campus pilot can grow.</p><p>Ask: what would it take to run this across ten courses? Let them answer. The honest answer is a person&#39;s review time, which is exactly where it should go.</p>
   </div>
   
 </section>
 
 <section class="slide">
-  <p class="kicker">The real thing</p>
+  <p class="kicker">Block 5 of 7, slide 3 of 3 - The real thing</p>
   <h2 id="s21" tabindex="-1">The full Accessibility Agents team</h2>
-  <p>The office you just ran is a small version of a real open-source project: Accessibility Agents.</p><ul>
-    <li>Six entry points, and 107 specialist, helper and reference skills behind them.</li><li>The same course, on the screen: web, Word, PowerPoint, Excel and PDF.</li><li>It is already in your kit, in .github/skills. Ask for document-accessibility-wizard by name.</li>
+  <p>The office you just ran is a small version of a real open-source project.</p><ul>
+    <li>Six entry points, and 107 skills behind them.</li><li>Already in your kit, in .github/skills.</li><li>Ask for document-accessibility-wizard by name.</li>
     </ul>
   
+  <div class="slide-links">
+    <p id="s21-links">In the kit and on the site:</p>
+    <ul aria-labelledby="s21-links">
+      <li><a href="https://letitglow.app/ahg/kit/accessibility-agents.md">Accessibility Agents</a></li><li><a href="https://letitglow.app/ahg/kit/accessibility-agents-in-the-kit.md">What is in the kit&#39;s copy</a></li>
+    </ul>
+  </div>
+  
+  
   <div class="notes">
     <h3>Speaker notes</h3>
-    <p>Fifteen minutes, on the projector, in VS Code with the kit open. Start a new chat and ask: use document-accessibility-wizard to review the PSY 101 course, using the files in sample-course/evidence.</p><p>Point out that the skills that need scanners say so and ask for checker results, as accessibility-agents-in-the-kit.md explains. Never let it claim a scan it did not run.</p><p>Close with: your agent goes into this project tonight, credited to you. That is the next block.</p>
+    <p>Fifteen minutes, on the projector, in VS Code with the kit open. Start a new chat and ask: use document-accessibility-wizard to review the PSY 101 course, using the files in sample-course/evidence. Web, Word, PowerPoint, Excel and PDF, on the screen.</p><p>Point out that the skills that need scanners say so and ask for checker results, as accessibility-agents-in-the-kit.md explains. Never let it claim a scan it did not run.</p><p>Close with: your agent goes into this project tonight, credited to you. That is the next block.</p>
   </div>
   
 </section>
 
 <section class="slide">
-  <p class="kicker">Block 6 of 7 - 3:05-3:40 - 35 minutes</p>
+  <p class="kicker">Block 6 of 7, slide 1 of 3 - 3:05-3:40 - 35 minutes</p>
   <h2 id="s22" tabindex="-1">Share it</h2>
-  <p>By the end of this block: your best version in the open-source AHG 2026 collection, committed in your name.</p><ol>
-    <li>Open letitglow.app/ahg/share, and choose your newest SKILL.md, version 4, or paste it in.</li><li>Press Open the share form on GitHub. The form opens, already filled in.</li><li>Select the privacy check box, and press Submit new issue.</li><li>Within a minute, the reply: Your agent is in.</li>
-    </ol><p>You did this once already, with your practice agent. Same again.</p>
+  <ol>
+    <li>Open letitglow.app/ahg/share, and choose your newest SKILL.md.</li><li>Press Open the share form on GitHub.</li><li>Check the privacy box, and press Submit new issue.</li><li>Within a minute: Your agent is in.</li>
+    </ol><p>Behind? Share any version. Version 1 counts.</p>
+  
+  <div class="slide-links">
+    <p id="s22-links">In the kit and on the site:</p>
+    <ul aria-labelledby="s22-links">
+      <li><a href="https://letitglow.app/ahg/kit/step-cards/6-share-it.md">Step card 6</a></li><li><a href="https://letitglow.app/ahg/share">Share your agent</a></li>
+    </ul>
+  </div>
+  
   
   <div class="notes">
     <h3>Speaker notes</h3>
-    <p>Say where we are on the journey: step 6 of 7, &#34;Your agent, shared: your best version, in an open-source collection, with your name on it.&#34; Then show what they will have at the end of this block before anyone starts.</p><p>Everyone shared a practice agent before the day, so this is the second time, not the first. Say so; it changes the room.</p><p>Helpers watch the issues labelled needs-a-hand and go to those people first. A Nearly there reply always says exactly what to fix.</p>
+    <p>Say where we are on the journey: step 6 of 7, &#34;Your agent, shared: your best version, in an open-source collection, with your name on it.&#34; Then show what they will have at the end of this block before anyone starts.</p><p>You can also paste the agent in instead of choosing the file. The form opens already filled in.</p><p>Everyone shared a practice agent before the day, so this is the second time, not the first. Say so; it changes the room.</p><p>Helpers watch the issues labelled needs-a-hand and go to those people first. A Nearly there reply always says exactly what to fix.</p><p>If sharing is not approved or GitHub is unavailable, save a reviewed draft and a next step. Do not call it published, and do not collect it without permission.</p>
   </div>
   
 </section>
 
 <section class="slide">
-  <p class="kicker">Open source, live</p>
+  <p class="kicker">Block 6 of 7, slide 2 of 3 - Open source, live</p>
   <h2 id="s23" tabindex="-1">In the collection, with your name on it</h2>
-  <p>As your agents arrive, the collection grows, here, on the screen.</p><p class="big">Tonight every one of them goes into the Accessibility Agents project, with every author credited, for anyone in higher education to use and improve.</p>
+  <p>As your agents arrive, the collection grows, here, on the screen.</p><p class="big">Tonight they all go into Accessibility Agents, every author credited.</p>
+  
+  <div class="slide-links">
+    <p id="s23-links">In the kit and on the site:</p>
+    <ul aria-labelledby="s23-links">
+      <li><a href="https://github.com/Community-Access/ahg-2026">The AHG 2026 collection</a></li>
+    </ul>
+  </div>
+  
   
   <div class="notes">
     <h3>Speaker notes</h3>
-    <p>Project agents/README.md in github.com/Community-Access/ahg-2026 and refresh it as agents arrive. Read each name and agent title out loud. Applause is allowed and encouraged.</p><p>Each agent is committed in its author&#39;s name, so it shows on their own GitHub profile. Started from a ready-made agent? It still counts. Say so: what matters is that it is yours now.</p>
+    <p>Project agents/README.md in github.com/Community-Access/ahg-2026 and refresh it as agents arrive. Read each name and agent title out loud. Applause is allowed and encouraged.</p><p>The collection is for anyone in higher education to use and improve.</p><p>Each agent is committed in its author&#39;s name, so it shows on their own GitHub profile. Started from a ready-made agent? It still counts. Say so: what matters is that it is yours now.</p>
   </div>
   
 </section>
 
 <section class="slide">
-  <p class="kicker">Agents in action</p>
+  <p class="kicker">Block 6 of 7, slide 3 of 3 - Agents in action</p>
   <h2 id="s24" tabindex="-1">Everyone&#39;s agents, together</h2>
   <p>One more run, on the screen: the office team with every agent this room shared.</p><p>Listen for yours.</p>
+  
   
   <div class="notes">
     <h3>Speaker notes</h3>
@@ -641,29 +977,91 @@
 </section>
 
 <section class="slide">
-  <p class="kicker">Block 7 of 7 - 3:40-4:15 - 35 minutes</p>
+  <p class="kicker">Block 7 of 7, slide 1 of 3 - 3:40-4:15 - 35 minutes</p>
   <h2 id="s25" tabindex="-1">Take it home</h2>
-  <p>By the end of this block: a 30-day plan for your own campus.</p><ol>
-    <li>In VS Code, type /my-30-day-plan. In a browser, paste the block 7 text.</li><li>Then add your one-sentence commitment at letitglow.app/w/ahg-2026/11 for the wall.</li>
-    </ol><table>
-      <caption>What you can do on Monday, with tools you already have:</caption>
-      <thead><tr><th scope="col">You learned</th><th scope="col">Monday, with</th></tr></thead>
+  <ol>
+    <li>Type /my-30-day-plan, or paste the block 7 text.</li><li>Add your one-sentence commitment at letitglow.app/w/ahg-2026/11.</li>
+    </ol><p class="big">Small is the point.</p><p>Behind? Adapt a worked example with a helper.</p>
+  
+  <div class="slide-links">
+    <p id="s25-links">In the kit and on the site:</p>
+    <ul aria-labelledby="s25-links">
+      <li><a href="https://letitglow.app/ahg/kit/step-cards/7-take-it-home.md">Step card 7</a></li>
+    </ul>
+  </div>
+  
+  
+  <div class="notes">
+    <h3>Speaker notes</h3>
+    <p>Say where we are on the journey: step 7 of 7, &#34;Your campus: a 30-day plan.&#34; Then show what they will have at the end of this block before anyone starts.</p><p>Try up to five fictional or approved non-sensitive examples beside the existing process. Include review time, errors and delivery time in the comparison. Never delay an accommodation for a pilot.</p><p>Reserve five minutes for a partner to check the plan: input, output destination, reviewer role, deadline, approval, day-30 measure and stop rule. If AI is not approved, a paper workflow and approval request count.</p><p>The commitment goes on the wall, with no names on it.</p>
+  </div>
+  
+</section>
+
+<section class="slide">
+  <p class="kicker">Block 7 of 7, slide 2 of 3 - Your office</p>
+  <h2 id="fit" tabindex="-1">Plug it into the work you already do</h2>
+  <table>
+      <caption>Where an agent fits in work you already do</caption>
+      <thead><tr><th scope="col">In your office</th><th scope="col">The agent drafts</th><th scope="col">A person</th></tr></thead>
       <tbody>
         
-        <tr><th scope="row">Writing an agent</th><td>Any AI assistant, including your campus Copilot</td></tr>
+        <tr><th scope="row">Alternate format request</th><td>The production plan</td><td>Approves it</td></tr>
         
-        <tr><th scope="row">Grounding it</th><td>Word&#39;s, PowerPoint&#39;s and Acrobat&#39;s checkers, Accessibility Insights, axe</td></tr>
+        <tr><th scope="row">Course review before term</th><td>Findings by course</td><td>Assigns the fixes</td></tr>
         
-        <tr><th scope="row">Human review, in writing</th><td>Your own office&#39;s process</td></tr>
+        <tr><th scope="row">A faculty question</th><td>A coaching reply</td><td>Edits and sends</td></tr>
         
-        <tr><th scope="row">Agent teams</th><td>One specialist at a time, or the Accessibility Agents project</td></tr>
+        <tr><th scope="row">A vendor&#39;s accessibility report</th><td>The gaps</td><td>Decides to buy</td></tr>
         
       </tbody>
     </table>
   
+  <div class="slide-links">
+    <p id="fit-links">In the kit and on the site:</p>
+    <ul aria-labelledby="fit-links">
+      <li><a href="https://letitglow.app/ahg/kit/step-cards/7-take-it-home.md">Step card 7</a></li><li><a href="https://letitglow.app/ahg/kit/write-your-own-agent.md">Putting it to work in your office</a></li>
+    </ul>
+  </div>
+  
+  
   <div class="notes">
     <h3>Speaker notes</h3>
-    <p>Say where we are on the journey: step 7 of 7, &#34;Your campus: a 30-day plan.&#34; Then show what they will have at the end of this block before anyone starts.</p><p>Small is the point. &#34;Run the planner on the next five requests&#34; beats &#34;transform our office&#34;.</p>
+    <p>This is the slide that turns today into Tuesday. An agent helps most at one step of a workflow the office already runs, not as a new process beside it.</p><p>Read the four questions slowly: what starts it, what it reads, where its draft goes, who signs off. Their 30-day plan asks exactly these.</p><p>Say plainly: use the AI assistant your campus approves, and follow its rules on what information may go in. Nothing private, today or on Monday.</p><p>Keep drafts beside the existing process for a month. Record evidence source/date, agent version, reviewer decision and unresolved barriers in the approved log. Stop for private data, unverifiable evidence or missing review.</p>
+  </div>
+  
+</section>
+
+<section class="slide">
+  <p class="kicker">Block 7 of 7, slide 3 of 3 - With tools you already have</p>
+  <h2 id="monday" tabindex="-1">On Monday</h2>
+  <table>
+      <caption>What you learned, and what you can use it with on Monday</caption>
+      <thead><tr><th scope="col">You learned</th><th scope="col">Monday, with</th></tr></thead>
+      <tbody>
+        
+        <tr><th scope="row">Writing an agent</th><td>Your campus-approved AI assistant</td></tr>
+        
+        <tr><th scope="row">Grounding it</th><td>Office and Acrobat checkers, Accessibility Insights, axe</td></tr>
+        
+        <tr><th scope="row">Human review</th><td>Your own office&#39;s process</td></tr>
+        
+        <tr><th scope="row">Agent teams</th><td>One specialist at a time, or Accessibility Agents</td></tr>
+        
+      </tbody>
+    </table>
+  
+  <div class="slide-links">
+    <p id="monday-links">In the kit and on the site:</p>
+    <ul aria-labelledby="monday-links">
+      <li><a href="https://letitglow.app/ahg/kit/accessibility-agents.md">Accessibility Agents</a></li>
+    </ul>
+  </div>
+  
+  
+  <div class="notes">
+    <h3>Speaker notes</h3>
+    <p>Start with tools your campus already approves. Availability, subscriptions and data rules differ; no new purchase is required to map a workflow on paper.</p><p>Point at Accessibility Agents for anyone who wants the whole team on their own laptop.</p>
   </div>
   
 </section>
@@ -672,6 +1070,7 @@
   <p class="kicker">4:15</p>
   <h2 id="s26" tabindex="-1">The commitment wall</h2>
   <p>Every commitment in this room, on one screen, with no names on it.</p>
+  
   
   <div class="notes">
     <h3>Speaker notes</h3>
@@ -683,11 +1082,19 @@
 <section class="slide">
   <p class="kicker">4:25 - Thank you</p>
   <h2 id="s27" tabindex="-1">Go make one more champion</h2>
-  <p class="lead">You came in with a problem. You are leaving with an agent, a team and a plan.</p><p>Before you go: the session evaluation. It shapes next year&#39;s conference.</p><p>Help any time, before or after today: support@community-access.org.</p><p class="slide-no">GLOW is a community project of BITS, an affiliate of the American Council of the Blind.</p>
+  <p class="lead">You came in with a problem. You leave with an agent, a team and a plan.</p><p>Now: the session evaluation. It shapes next year&#39;s conference.</p><p>Help any time: support@community-access.org</p><p class="slide-no">In collaboration with Blind Information Technology Solutions (BITS) and Techopolis, with special thanks to Taylor Arndt, who helped dream up and build Accessibility Agents.</p>
+  
+  <div class="slide-links">
+    <p id="s27-links">In the kit and on the site:</p>
+    <ul aria-labelledby="s27-links">
+      <li><a href="https://accessibility.arizona.edu">University of Arizona accessibility</a></li><li><a href="https://www.bits-acb.org">BITS</a></li><li><a href="https://www.techopolis.app">Techopolis</a></li>
+    </ul>
+  </div>
+  
   
   <div class="notes">
     <h3>Speaker notes</h3>
-    <p>Say it, thank them, and hand over to the proctor for the evaluation. Then stop talking while people fill it in.</p><p>No question block here. Answer at the tables while people pack up.</p>
+    <p>Say it, thank them, and hand over to the proctor for the evaluation. Then stop talking while people fill it in.</p><p>No question block here. Answer at the tables while people pack up.</p><p>GLOW is a community project of BITS, an affiliate of the American Council of the Blind.</p>
   </div>
   
 </section>
@@ -701,7 +1108,9 @@
   var slides = Array.prototype.slice.call(document.querySelectorAll('.slide'));
   var announcer = document.getElementById('announcer');
   var count = document.getElementById('count');
-  var jump = document.getElementById('jump');
+  var listToggle = document.getElementById('listToggle');
+  var slideList = document.getElementById('slide-list');
+  var listLinks = Array.prototype.slice.call(slideList.querySelectorAll('a'));
   var prev = document.getElementById('prev');
   var next = document.getElementById('next');
   var modeBtn = document.getElementById('mode');
@@ -714,12 +1123,30 @@
     return h ? h.textContent.trim() : ('Slide ' + (i + 1));
   }
 
-  slides.forEach(function (s, i) {
-    var opt = document.createElement('option');
-    opt.value = String(i);
-    opt.textContent = (i + 1) + '. ' + titleOf(i);
-    jump.appendChild(opt);
-  });
+  function indexOfId(id) {
+    for (var i = 0; i < slides.length; i++) {
+      var h = slides[i].querySelector('h2');
+      if (h && h.id === id) { return i; }
+    }
+    return -1;
+  }
+
+  function markCurrent() {
+    listLinks.forEach(function (a, i) {
+      if (i === current) { a.setAttribute('aria-current', 'true'); }
+      else { a.removeAttribute('aria-current'); }
+    });
+    // Each slide has its own address, so a link to one slide can be shared.
+    var h = slides[current].querySelector('h2');
+    if (h && window.history && history.replaceState) {
+      history.replaceState(null, '', '#' + h.id);
+    }
+  }
+
+  function closeList() {
+    slideList.hidden = true;
+    listToggle.setAttribute('aria-expanded', 'false');
+  }
 
   function isSlideMode() { return body.getAttribute('data-mode') === 'slides'; }
 
@@ -727,7 +1154,7 @@
     var slideMode = isSlideMode();
     slides.forEach(function (s, i) { s.hidden = slideMode && i !== current; });
     count.textContent = 'Slide ' + (current + 1) + ' of ' + slides.length;
-    jump.value = String(current);
+    markCurrent();
     prev.disabled = slideMode && current === 0;
     next.disabled = slideMode && current === slides.length - 1;
     if (slideMode) {
@@ -747,7 +1174,7 @@
       var h = slides[i].querySelector('h2');
       if (h && moveFocus) { h.focus(); }
       count.textContent = 'Slide ' + (current + 1) + ' of ' + slides.length;
-      jump.value = String(current);
+      markCurrent();
       return;
     }
     render(moveFocus);
@@ -755,7 +1182,25 @@
 
   prev.addEventListener('click', function () { go(current - 1, true); });
   next.addEventListener('click', function () { go(current + 1, true); });
-  jump.addEventListener('change', function () { go(parseInt(jump.value, 10), true); });
+  listToggle.addEventListener('click', function () {
+    var open = slideList.hidden;
+    slideList.hidden = !open;
+    listToggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+    if (open && listLinks[current]) { listLinks[current].focus(); }
+  });
+
+  // A link only moves when it is pressed. Arrowing through the list reads it.
+  listLinks.forEach(function (a) {
+    a.addEventListener('click', function (e) {
+      e.preventDefault();
+      closeList();
+      go(parseInt(a.getAttribute('data-index'), 10), true);
+    });
+  });
+
+  slideList.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape') { closeList(); listToggle.focus(); }
+  });
 
   modeBtn.addEventListener('click', function () {
     var toPage = isSlideMode();
@@ -789,6 +1234,9 @@
     var t = e.target;
     if (t && (t.tagName === 'INPUT' || t.tagName === 'SELECT' || t.tagName === 'TEXTAREA')) { return; }
     if (e.altKey || e.ctrlKey || e.metaKey) { return; }
+    // Keys only turn slides in slide view, and never from inside the slide
+    // list: in page view the arrows scroll, as they do on any page.
+    if (!isSlideMode() || slideList.contains(t)) { return; }
     switch (e.key) {
       case 'ArrowRight': case 'PageDown': go(current + 1, true); e.preventDefault(); break;
       case 'ArrowLeft': case 'PageUp': go(current - 1, true); e.preventDefault(); break;
@@ -799,6 +1247,8 @@
     }
   });
 
+  var start = indexOfId(decodeURIComponent((location.hash || '').slice(1)));
+  if (start >= 0) { current = start; }
   render(false);
 }());
 </script>

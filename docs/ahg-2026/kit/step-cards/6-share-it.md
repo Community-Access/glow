@@ -1,7 +1,7 @@
 ---
 title: "Step card 6: Share it"
 lang: en
-author: "Jeff Bishop, BITS"
+author: "Jeff Bishop, University of Arizona, IT Accessibility Consultant"
 description: "A step card for the AHG 2026 Accessibility Agents workshop."
 ---
 
@@ -21,6 +21,11 @@ Your agent in the AHG 2026 collection on GitHub, committed in your name, and a r
 
 The same on every path. You did this once before the day, with your practice agent.
 
+Before uploading, check that you have permission to publish the instructions
+under the MIT licence. Remove internal procedures, private data and
+non-public links. The share form cannot detect every disclosure. If approval
+is pending, keep the file locally and arrange later sharing with a helper.
+
 1. In your browser, open letitglow.app/ahg/share.
 2. Leave "My real agent" chosen.
 3. Give the page your agent. In VS Code: choose Your agent file, and pick my-agent/SKILL.md from the kit folder. In a browser: choose your newest SKILL.md, version 4, or paste your agent into "Your agent, as text". The page fills in your agent's short name, and says so.
@@ -28,6 +33,10 @@ The same on every path. You did this once before the day, with your practice age
 5. Move to the end of the form. Select the check box that says your agent contains nothing private.
 6. Press "Submit new issue".
 7. Wait about a minute, then read the reply that appears on the page. Press F5 to refresh if your screen reader does not announce it.
+
+If sharing is not approved or GitHub is unavailable, save your reviewed
+agent and record who can confirm permission and when you will return to
+sharing. This is a deferred contribution, not a completed public share.
 
 ## You are on track if
 

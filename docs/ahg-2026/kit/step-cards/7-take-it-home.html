@@ -3,19 +3,21 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="author" content="Jeff Bishop, BITS">
+<meta name="author" content="Jeff Bishop, University of Arizona, IT Accessibility Consultant">
 <meta name="description" content="A step card for the AHG 2026 Accessibility Agents workshop.">
 <title>Step card 7: Take it home</title>
 <style>
 :root { color-scheme: light dark; --bg: #ffffff; --fg: #1a1a1a; --link: #0b57d0; --rule: #6b6b6b; --code-bg: #f2f2f2; --focus: #b3261e; }
 @media (prefers-color-scheme: dark) { :root { --bg: #121212; --fg: #f1f1f1; --link: #a8c7fa; --rule: #9a9a9a; --code-bg: #262626; --focus: #ffb4ab; } }
 html { font-size: 112.5%; }
-body { background: var(--bg); color: var(--fg); font-family: Arial, Helvetica, sans-serif; line-height: 1.5; max-width: 46rem; margin: 0 auto; padding: 1rem; }
+body { background: var(--bg); color: var(--fg); font-family: Arial, Helvetica, sans-serif; line-height: 1.5; max-width: 46rem; margin: 0 auto; padding: 1rem; overflow-wrap: break-word; }
 a { color: var(--link); text-decoration: underline; }
 a:focus-visible, [tabindex]:focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; }
 h1, h2, h3, h4 { line-height: 1.25; }
 code, pre { font-family: Consolas, "Courier New", monospace; background: var(--code-bg); }
 pre { padding: 0.75rem; overflow-x: auto; white-space: pre-wrap; }
+/* At 320px a long path or address wraps rather than widening the page (WCAG 1.4.10). */
+code, pre, a { overflow-wrap: anywhere; }
 table { border-collapse: collapse; margin: 1rem 0; }
 th, td { border: 1px solid var(--rule); padding: 0.4rem 0.6rem; text-align: left; vertical-align: top; }
 .table-scroll { overflow-x: auto; }
@@ -35,22 +37,23 @@ blockquote { border-left: 4px solid var(--rule); margin-left: 0; padding-left: 1
 <h3 id="in-a-browser">In a browser</h3>
 <ol type="1">
 <li>In the same conversation, paste the text for "Block 7: take it home" from letitglow.app/ahg/assistant, and press Enter.</li>
-<li>Answer six short questions: one workflow, one partner, one safeguard, a first step this week, who needs to know, and what it looks like if it worked.</li>
+<li>Answer eight short questions: workflow, handoff, partner, review safeguard, approved tools and data, first step, approval, and a measurable 30-day check.</li>
 <li>Your assistant gives your plan back in a box with a Copy button. Copy it into an email to yourself or a Word document.</li>
 </ol>
 <h3 id="in-vs-code">In VS Code</h3>
 <ol type="1">
 <li>Open Copilot Chat: Control+Alt+I on Windows, or Control+Command+I on a Mac.</li>
 <li>Type /my-30-day-plan and press Enter.</li>
-<li>Answer six short questions: one workflow, one partner, one safeguard, a first step this week, who needs to know, and what it looks like if it worked.</li>
+<li>Answer eight short questions: workflow, handoff, partner, review safeguard, approved tools and data, first step, approval, and a measurable 30-day check.</li>
 <li>Copilot saves your plan as my-30-day-plan.md in the kit.</li>
 </ol>
 <h3 id="everyone">Everyone</h3>
+<p>Before saving, explain your plan to a partner in one minute: what starts it, what evidence goes in, where the draft goes, who checks it, and what would make you stop. Your partner names one unclear handoff to fix. If you work alone, check these against one worked example. Unknown measurements or approvals stay pending, with a role and next action to confirm them.</p>
 <ol type="1">
-<li>Open letitglow.app/w/ahg-2026/11 in your browser and add your one-sentence commitment for the wall. It appears with no name on it.</li>
+<li>At 4:15, open letitglow.app/w/ahg-2026/11 in your browser and add your one-sentence commitment for the wall. It appears with no name on it.</li>
 </ol>
 <h2 id="you-are-on-track-if">You are on track if</h2>
-<p>Your plan is saved, and your commitment is in.</p>
+<p>Your plan is saved, and your commitment is in. It names a reviewer, a small pilot, a review date and a way to tell whether quality and turnaround improved. An unanswered campus approval is marked "pending", not assumed.</p>
 <h2 id="if-you-are-stuck">If you are stuck</h2>
 <p>Read Maria's, Jordan's or Sam's plan in the examples folder, section 7, and adapt the one closest to yours.</p>
 <p>Raise a hand at any time. A helper comes to you.</p>
@@ -62,9 +65,28 @@ blockquote { border-left: 4px solid var(--rule); margin-left: 0; padding-left: 1
 <li>Ground an agent's answers in checker evidence, citing WCAG 2.2. That was your before and after.</li>
 <li>Name the barriers no checker finds, and write the review step that catches them. That is your agent's Human review.</li>
 <li>Explain how a team of specialists and a coordinator scales the work. Your agent has a section in the team report.</li>
-<li>Contribute to an open-source project, credited in your name. Your agent is in the collection.</li>
+<li>Contribute to an open-source project, credited in your name. Your agent is in the collection, or saved with a next step for deferred sharing.</li>
 <li>Plan one workflow for your own campus in the next 30 days. That is this plan.</li>
 </ol>
+<h2 id="where-it-fits-in-your-office">Where it fits in your office</h2>
+<p>An agent helps most inside work you already do, not beside it. Before you try yours, answer four questions:</p>
+<ol type="1">
+<li>What starts it? A request, a new course shell, a term deadline, a vendor report.</li>
+<li>What does it read? A checker report, a syllabus, a request form, with nothing private in it.</li>
+<li>Where does its draft go? Your ticket system, your remediation log, an email you edit before sending.</li>
+<li>Who signs off? The person named in its Human review.</li>
+</ol>
+<p>Then check two things with your campus: which AI assistant is approved for this work, and what information may go into it.</p>
+<h2 id="a-small-pilot-your-center-can-run">A small pilot your center can run</h2>
+<ol type="1">
+<li>Week 1: choose one task and up to five fictional or approved non-sensitive examples. Record how long the existing process takes, including review.</li>
+<li>Week 2: run the agent beside that process. A staff reviewer compares each draft with the evidence. Nothing is sent or changed automatically.</li>
+<li>Week 3: revise one instruction and repeat the same cases, including one with missing evidence. Asking for evidence is a successful result.</li>
+<li>By day 30: compare total staff time, errors, rework and on-time delivery. The process owner decides whether to continue, revise or stop. A faster draft is not a win if review takes longer or quality falls.</li>
+</ol>
+<p>Keep the agent version, evidence source and date, reviewer role, decision, due date and unresolved barriers in your existing ticket or log. Keep student records in the center's approved system, outside the AI and the public kit. Use staff roles in AI prompts; assign actual staff in the approved system.</p>
+<p>Stop the pilot if private data appears, evidence cannot be verified, or a required review or delivery deadline would be missed. Use the existing manual process and notify the responsible campus team. Do not delay an accommodation while testing. Agents do not decide eligibility, accommodations or purchases.</p>
+<p>No approved AI tool yet? Use the same eight questions and the worked examples in Word or on paper. A workflow map and an approval request are useful first steps; do not bypass campus policy to finish the exercise.</p>
 <h2 id="on-monday">On Monday</h2>
 <p>To write your next agent on your own, follow <code>write-your-own-agent.md</code> in the kit: eight steps, from a blank file to a shared agent, in any assistant. Keep the kit. Everything in it works after today, with any AI assistant and the checkers you already have. To keep using the full Accessibility Agents project on your own laptop, read accessibility-agents.md in the kit, or community-access.org/start.html for step-by-step setup in each AI app. Help is at <a href="mailto:support@community-access.org">support@community-access.org</a>.</p>
 <h2 id="sources">Sources</h2>

@@ -1,7 +1,7 @@
 ---
 title: "Accessibility Agents at AHG 2026"
 lang: en
-author: "Jeff Bishop, BITS"
+author: "Jeff Bishop, University of Arizona, IT Accessibility Consultant"
 description: "The workshop kit and every accessibility agent built at Accessing Higher Ground 2026."
 ---
 
@@ -18,9 +18,9 @@ shared here with their name on it.
 
 ## If you are taking the workshop
 
-Everything starts at the setup page: `https://letitglow.app/workshop/ahg-2026`.
+Everything starts at the [AHG workshop home](https://letitglow.app/ahg).
 
-1. Follow the four setup steps there. About 20 minutes, no code.
+1. Choose one of the three setup paths there. About 10 to 25 minutes, no code.
 2. Share your practice agent, using the share page. It takes one form and
    one button, and you get a reply here within about a minute.
 3. On the day, you will do the same with your real agent.
@@ -31,7 +31,7 @@ Stuck at any point? Write to support@community-access.org. A person answers.
 
 You do not need to know Git, and you never make a fork or a pull request.
 
-1. Open the share page: `https://letitglow.app/workshop/ahg-2026/share`.
+1. Open the [AHG agent share page](https://letitglow.app/ahg/share).
 2. Choose your agent file. The page fills in a short form here on GitHub.
 3. Check the workshop code, select the privacy check box, and press Submit new issue.
 
@@ -42,6 +42,11 @@ away.
 
 Your agent is committed in your name, so it shows on your own GitHub
 profile.
+
+Publish only instructions you are permitted to share under the MIT licence.
+Remove private data, internal procedures and non-public links yourself; the
+form's checks are not a privacy guarantee. If approval is pending, keep the
+agent locally and share later with a helper.
 
 ## What is here
 
@@ -73,3 +78,7 @@ a co-author of that contribution.
 
 Everything here is under the MIT licence. The repository belongs to
 Community Access and is looked after by Jeff Bishop.
+
+Built in collaboration with [Blind Information Technology Solutions (BITS)](https://www.bits-acb.org)
+and [Techopolis](https://www.techopolis.app). Special thanks to Taylor Arndt, who helped dream up and
+build Accessibility Agents.

@@ -3,19 +3,21 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="author" content="Jeff Bishop, BITS">
+<meta name="author" content="Jeff Bishop, University of Arizona, IT Accessibility Consultant">
 <meta name="description" content="The setup message sent to registered participants before the AHG 2026 workshop.">
 <title>Pre-event message</title>
 <style>
 :root { color-scheme: light dark; --bg: #ffffff; --fg: #1a1a1a; --link: #0b57d0; --rule: #6b6b6b; --code-bg: #f2f2f2; --focus: #b3261e; }
 @media (prefers-color-scheme: dark) { :root { --bg: #121212; --fg: #f1f1f1; --link: #a8c7fa; --rule: #9a9a9a; --code-bg: #262626; --focus: #ffb4ab; } }
 html { font-size: 112.5%; }
-body { background: var(--bg); color: var(--fg); font-family: Arial, Helvetica, sans-serif; line-height: 1.5; max-width: 46rem; margin: 0 auto; padding: 1rem; }
+body { background: var(--bg); color: var(--fg); font-family: Arial, Helvetica, sans-serif; line-height: 1.5; max-width: 46rem; margin: 0 auto; padding: 1rem; overflow-wrap: break-word; }
 a { color: var(--link); text-decoration: underline; }
 a:focus-visible, [tabindex]:focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; }
 h1, h2, h3, h4 { line-height: 1.25; }
 code, pre { font-family: Consolas, "Courier New", monospace; background: var(--code-bg); }
 pre { padding: 0.75rem; overflow-x: auto; white-space: pre-wrap; }
+/* At 320px a long path or address wraps rather than widening the page (WCAG 1.4.10). */
+code, pre, a { overflow-wrap: anywhere; }
 table { border-collapse: collapse; margin: 1rem 0; }
 th, td { border: 1px solid var(--rule); padding: 0.4rem 0.6rem; text-align: left; vertical-align: top; }
 .table-scroll { overflow-x: auto; }
@@ -49,7 +51,9 @@ blockquote { border-left: 4px solid var(--rule); margin-left: 0; padding-left: 1
 <li>Share your practice agent at letitglow.app/ahg/share: one form, one button, and a reply within a minute. On the day you do it once more, with your real agent.</li>
 <li>Answer the five-minute survey at letitglow.app/ahg/survey, so we have your path, your laptop and any access needs ready on the day.</li>
 </ol>
+<p>Want the short version to pass on to a colleague? The workshop in plain language, in about 150 words, is at letitglow.app/ahg/kit/session-in-plain-language.md.</p>
 <p>If a step does not work, write to <a href="mailto:support@community-access.org">support@community-access.org</a> before the day, or come to the setup table outside the room from 10:00 on the day. Locked-down work laptop? Take the browser path: it needs nothing installed. Or write to us; we will sort it out together, and nobody is left out on the day.</p>
+<p>Use only an assistant your campus permits. A browser does not bypass campus data or account rules. If no AI tool or public sharing is approved, bring the written examples and work in Word or on paper with a helper; keep your agent local until sharing is approved.</p>
 <h3 id="bring">Bring</h3>
 <ul>
 <li>A Windows or Mac laptop and its charger.</li>
@@ -59,14 +63,15 @@ blockquote { border-left: 4px solid var(--rule); margin-left: 0; padding-left: 1
 <h3 id="what-the-day-looks-like">What the day looks like</h3>
 <ul>
 <li>Morning: design your agent in plain English, and see it work on a course document with GitHub Copilot or the assistant you chose.</li>
-<li>After lunch: ground it in real evidence from GLOW, axe and Accessibility Insights, so it cites WCAG 2.2 instead of guessing.</li>
+<li>After lunch: ground it in real evidence from GLOW, axe and Accessibility Insights, so you can verify its claims and WCAG 2.2 citations.</li>
 <li>Afternoon: add it to an agent team and watch the team work through the whole course, then share it to the open-source AHG 2026 collection on GitHub, with one form and your name on it.</li>
 <li>The last five minutes are the session evaluation. It shapes next year's conference.</li>
 </ul>
 <h3 id="if-you-need-anything">If you need anything</h3>
 <p>Large print, a particular seat, a pause, a repeat: ask for any of it, before or during. That is not an interruption of this workshop; it is the point of it.</p>
 <p>See you in Denver,</p>
-<p>Jeff Bishop BITS, an affiliate of the American Council of the Blind</p>
+<p>Jeff Bishop <a href="https://accessibility.arizona.edu">University of Arizona</a>, IT Accessibility Consultant</p>
+<p>In collaboration with <a href="https://www.bits-acb.org">Blind Information Technology Solutions (BITS)</a> and <a href="https://www.techopolis.app">Techopolis</a>, with special thanks to Taylor Arndt, who helped dream up and build Accessibility Agents.</p>
 <hr />
 <h2 id="notes-for-whoever-sends-this">Notes for whoever sends this</h2>
 <ul>

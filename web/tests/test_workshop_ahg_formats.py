@@ -10,6 +10,7 @@ The inventory, and why some files have no copies, is docs/ahg-2026/formats.md.
 from __future__ import annotations
 
 import sys
+import re
 from pathlib import Path
 
 import pytest
@@ -56,6 +57,48 @@ def test_the_word_and_powerpoint_copies_pass_glow_s_own_audit(rel):
 def test_a_readme_s_copies_never_compete_with_it():
     assert F.output_stem("kit/README.md") == "kit/read-me"
     assert F.output_stem("kit/step-cards/6-share-it.md") == "kit/step-cards/6-share-it"
+
+
+def test_reading_tables_allocate_space_for_wrapped_text(tmp_path):
+    from pptx import Presentation
+    from pptx.util import Inches
+
+    doc = F.read("kit/step-cards/7-take-it-home.md")
+    doc.blocks = [F.Block("table", header=[[F.Run("Part")], [F.Run("Plan")]],
+                          rows=[[[F.Run("Input")], [F.Run("Approved evidence " * 12)]],
+                                [[F.Run("Owner")], [F.Run("Reviewer")]]])]
+    target = tmp_path / "wrapped.pptx"
+    F.write_pptx(doc, target)
+    prs = Presentation(target)
+    table = prs.slides[1].shapes[-1].table
+    assert table.rows[1].height > table.rows[2].height
+    assert prs.slides[1].shapes[-1].top + sum(r.height for r in table.rows) <= Inches(7.1)
+
+
+def test_wide_reading_tables_keep_every_value_as_labelled_records():
+    doc = F.read("kit/step-cards/7-take-it-home.md")
+    headers = [[F.Run(f"Column {n}")] for n in range(9)]
+    values = [[F.Run(f"Value {n}")] for n in range(9)]
+    doc.blocks = [F.Block("table", header=headers, rows=[values])]
+    slides = F.plan_slides(doc)
+    assert all(s.table is None for s in slides)
+    text = "\n".join(F.plain(line.runs) for s in slides for line in s.lines)
+    for n in range(9):
+        assert f"Column {n}: Value {n}" in text
+
+
+def test_campus_plan_questions_match_on_both_paths():
+    import build_ahg_kit as kit_builder
+
+    skill = (F.AHG / "kit" / ".github" / "skills" / "my-30-day-plan" / "SKILL.md").read_text(encoding="utf-8")
+    browser = kit_builder.ASSISTANT_TEXTS["7-my-30-day-plan"]["task"]
+    questions = re.compile(r"1\. One workflow.*?(?=\n\n)", re.S)
+    assert questions.search(skill).group() == questions.search(browser).group()
+    assert len(re.findall(r"^\d\. ", questions.search(skill).group(), re.M)) == 8
+    for text in (skill, browser):
+        for required in ("approval", "pending", "baseline", "reviewer", "manual process",
+                         "day-30", "Never delay an accommodation"):
+            assert required.lower() in text.lower()
 
 
 def test_the_kit_online_offers_the_copies_beside_the_document_not_as_files_of_their_own():

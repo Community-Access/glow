@@ -1,0 +1,13 @@
+{% extends "workshop/ahg_base.html" %}
+{% block title %}Thank you{% endblock %}
+{% block heading %}Thank you{% endblock %}
+
+{% block content %}
+{% if asked_for_help %}
+<p>A helper is on the way. Stay where you are; if you gave a seat, they will find you there.</p>
+<p>While you wait, the ready-made agents in your kit carry on from any block: <a href="{{ url_for('shortlinks.ahg_kit_short') }}#examples-agents">ready-made agents</a>.</p>
+{% else %}
+<p>Got it. Carry on, and raise a hand any time.</p>
+{% endif %}
+<p>Everything for the day is at <a href="{{ url_for('shortlinks.ahg_landing') }}">letitglow.app/ahg</a>.</p>
+{% endblock %}

@@ -1,7 +1,7 @@
 ---
 title: "Accessibility Agents: Building Human-Centered AI Workflows for Trusted Accessibility Automation at Scale"
 lang: en
-author: "Jeff Bishop - BITS, an affiliate of the American Council of the Blind"
+author: "Jeff Bishop, University of Arizona, IT Accessibility Consultant"
 description: "The Accessing Higher Ground 2026 deck, with speaker notes."
 ---
 
@@ -12,10 +12,11 @@ description: "The Accessing Higher Ground 2026 deck, with speaker notes."
 Building Human-Centered AI Workflows for Trusted Accessibility Automation at Scale
 
 - Event: Accessing Higher Ground 2026
-- Presenter: Jeff Bishop - BITS, an affiliate of the American Council of the Blind
+- Presenter: Jeff Bishop, University of Arizona, IT Accessibility Consultant
+- In collaboration with Blind Information Technology Solutions (BITS) and Techopolis, with special thanks to Taylor Arndt, who helped dream up and build Accessibility Agents.
 - Join: letitglow.app/w/ahg-2026
 
-Speaker notes are included under each slide. 27 slides.
+Speaker notes are included under each slide. 35 slides.
 
 ---
 
@@ -25,9 +26,15 @@ Accessing Higher Ground 2026
 
 Building Human-Centered AI Workflows for Trusted Accessibility Automation at Scale
 
-Today you build an accessibility agent. By four o'clock it is part of a team, and part of an open-source project, with your name on it.
+Today you build an accessibility agent. By 4:00 it works in a team, in an open-source project, with your name on it.
 
-Jeff Bishop - BITS, an affiliate of the American Council of the Blind
+Jeff Bishop, University of Arizona, IT Accessibility Consultant
+
+In collaboration with Blind Information Technology Solutions (BITS) and Techopolis, with special thanks to Taylor Arndt, who helped dream up and build Accessibility Agents.
+
+In the kit and on the site:
+
+- [Everything for today](https://letitglow.app/ahg)
 
 ### Speaker notes, slide 1
 
@@ -36,22 +43,26 @@ Jeff Bishop - BITS, an affiliate of the American Council of the Blind
 > Say the key point before any logistics, in one sentence: accessibility in higher education does not scale by fixing, it scales by making more people who can, and agents are how one person's know-how reaches a whole course.
 >
 > Describe the slide: the title, the subtitle from the program, and one sentence promising what they leave with.
+>
+> Name the collaborators out loud: BITS and Techopolis, and Taylor Arndt, who helped dream up and build Accessibility Agents.
 
 ---
 
 ## 2. Forty thousand files and three people
 
-The problem
+Block 1 of 7, slide 1 of 13 - The problem
 
-WCAG 2.2 is the current standard. Title II requires WCAG 2.1 AA of public colleges and universities, from April 2027 for most.
+Title II requires WCAG 2.1 AA of public colleges and universities, from April 2027 for most.
 
-Every syllabus, slide deck, scanned reading and course page is in scope, and most of them are documents, not web pages.
+Most of what is in scope is documents: syllabi, slide decks, scanned readings.
 
-Nobody fixes that by working harder. The question is how to scale without losing quality, accountability or trust.
+Nobody fixes that by working harder.
 
 ### Speaker notes, slide 2
 
 > Ask, warmly: who here has a backlog? Who has a spreadsheet with the word final in its name more than once? Let the laugh happen; it is recognition, not mockery.
+>
+> Then the question for the day: how do we scale without losing quality, accountability or trust?
 >
 > Title II's rule points to WCAG 2.1 AA; 2.2 is the current standard and includes everything 2.1 does. The Department of Justice's interim final rule of 20 April 2026 moved the dates to 26 April 2027 for entities of 50,000 people or more and 26 April 2028 for smaller ones (ada.gov, the web rule page). Check that page the week before in case the dates move again. Say it once and move on.
 
@@ -59,43 +70,66 @@ Nobody fixes that by working harder. The question is how to scale without losing
 
 ## 3. The finished result, first
 
-Where we will be at 4:00
+Block 1 of 7, slide 2 of 13 - Where we will be at 4:00
 
-This afternoon a team of agents works through a whole course and writes one report. Every finding has its evidence, its WCAG criterion, and a named person who checks it.
+A team of agents reviews a whole course and writes one report. One section, from Maria's agent:
 
-One section of that report, from Maria's agent:
+One finding in the team report
 
 | Part | What it says |
 |---|---|
 | File | The scanned required reading |
-| Routed to | Alternate format planner, by Maria Alvarez |
-| Evidence | GLOW audit: pictures of text, no text layer, untagged |
-| Plan | Get a clean source, then large print and audio, and post it for every student |
-| Reviewer | Alternate format specialist. Status: proposed |
+| Evidence | GLOW audit: pictures of text, untagged |
+| Plan | A clean source, then large print and audio |
+| Reviewer | Alternate format specialist |
 
-You will build one of the agents that writes a section like this.
+In the kit and on the site:
+
+- [Maria's finished agent](https://letitglow.app/ahg/kit/examples/maria-alternate-format-planner.md)
 
 ### Speaker notes, slide 3
 
 > Read the table out loud, row by row. It is the destination; people relax when they can see it.
 >
+> Every finding in the real report has its evidence, its WCAG criterion with a link, and a named person who checks it. You will build one of the agents that writes a section like this.
+>
 > Maria is a colleague in a disability resource center. She is fictional, and she is one step ahead of the room all day.
 
 ---
 
-## 4. The journey
+## 4. The day, in seven steps
 
-The map for today
+Block 1 of 7, slide 3 of 13 - The map for today
 
-1. The problem: a course full of barriers, and a team too small.
-2. Your agent: six plain-English answers.
-3. Your agent at work: your AI uses it on one course document, and you revise it.
-4. Your agent, grounded: real evidence in, cited answers out.
-5. Your agent in the team: the whole course, at once.
-6. Your agent, shared: your best version, in an open-source collection, with your name on it.
-7. Your campus: a 30-day plan.
+The seven blocks, and what each one leaves you with
 
-By 4:30 you will be able to:
+| When | Block | You leave with |
+|---|---|---|
+| 10:30 | Why we are here | A ready laptop |
+| 11:05 | Design your agent | Version 1 |
+| 11:45 | Your agent at work | Version 2 |
+| 1:15 | Ground it | Version 3, cited |
+| 2:15 | Build the office | Version 4, in a team |
+| 3:05 | Share it | Shared, in your name |
+| 3:40 | Take it home | A 30-day plan |
+
+In the kit and on the site:
+
+- [The kit's own map of the day](https://letitglow.app/ahg/kit/README.md)
+
+### Speaker notes, slide 4
+
+> Read the seven, slowly. This map comes back at the start of every block, so nobody ever wonders where we are.
+>
+> Point out the pattern: every block makes the same agent better. Version 1 before lunch, version 4 by three o'clock.
+>
+> Promise them out loud: every step has a finished example to fall back on. Nobody gets stuck and stays stuck.
+
+---
+
+## 5. What you will be able to do
+
+Block 1 of 7, slide 4 of 13 - By 4:30
 
 - Describe an accessibility task as an agent.
 - Ground an agent's answers in checker evidence, citing WCAG 2.2.
@@ -104,50 +138,122 @@ By 4:30 you will be able to:
 - Contribute to an open-source project, credited in your name.
 - Plan one workflow to try on your own campus in 30 days.
 
-### Speaker notes, slide 4
-
-> Read all seven, slowly. This list comes back at the start of every block with one step marked, so nobody ever wonders where we are.
->
-> Then read the six outcomes once. They come back at 4:15, when everyone's 30-day plan reads them back with what they made today.
->
-> Promise them out loud: every step has a finished example to fall back on. Nobody gets stuck and stays stuck.
-
----
-
-## 5. How today runs
-
-Housekeeping
-
-- 10:30 to 4:30 Mountain Time. Lunch at 12:15. A break at 2:05.
-- Everything is at letitglow.app/ahg. Not set up yet? A helper is coming to you.
-- Three paths, one day: VS Code on your laptop, VS Code at vscode.dev, or any AI assistant in your browser.
-- Seven blocks. Every one starts by showing you the finished result.
-- The last five minutes, at 4:25, are the session evaluation.
-- Ask for anything, any time: large print, a seat, a pause, a repeat.
-
 ### Speaker notes, slide 5
 
-> Name the exits and the restrooms, physically pointing.
->
-> Say the last bullet slowly, then add: that is not an interruption of this workshop - it is this workshop.
->
-> If anyone is not set up, do not wait for them. Helpers sit with them while the room carries on; the morning is designed so they catch up by lunch.
->
-> Say the three paths once: VS Code on a laptop, VS Code for the Web at vscode.dev, or the browser path with ChatGPT or another assistant at letitglow.app/ahg/assistant. Same blocks, same agent, same share. Anyone whose VS Code will not cooperate moves to the browser path and loses nothing.
+> Read the six outcomes once. They come back at 4:15, when everyone's 30-day plan reads them back with what they made today.
 
 ---
 
-## 6. Private stays private, and people decide
+## 6. How today runs
 
-Two rules, all day
+Block 1 of 7, slide 5 of 13 - Housekeeping
 
-1. Never paste anything private into any AI: student records, health or disability information, anyone's name. We use a sample course all day.
-2. Every agent ends with a person checking its work. Agents draft. People decide.
+- 10:30 to 4:30 Mountain Time. Lunch 12:15, break 2:05, evaluation 4:25.
+- Three paths: VS Code on your laptop, VS Code at vscode.dev, or any AI assistant in a browser.
+- Every block starts by showing you the finished result.
+- Ask for anything: large print, a seat, a pause, a repeat.
 
-If nobody is named, nobody reviewed it.
+In the kit and on the site:
+
+- [Choose your path](https://letitglow.app/ahg/paths)
 
 ### Speaker notes, slide 6
 
+> Name the exits and the restrooms, physically pointing.
+>
+> Say the last line slowly, then add: that is not an interruption of this workshop - it is this workshop.
+>
+> Say the three paths once: VS Code on a laptop, VS Code for the Web at vscode.dev, or the browser path with ChatGPT or another assistant at letitglow.app/ahg/assistant. Same blocks, same agent, same share. Anyone whose VS Code will not cooperate moves to the browser path and loses nothing.
+>
+> The last five minutes, at 4:25, belong to the session evaluation.
+
+---
+
+## 7. Ready check
+
+Block 1 of 7, slide 6 of 13 - Before we build
+
+1. VS Code: open your kit folder, open Copilot Chat, type /ready-check.
+2. Browser: copy the ready check text from letitglow.app/ahg/assistant into your assistant.
+3. Wait for: You are ready.
+
+Needs a hand? Raise it. A helper comes to you, and the room carries on.
+
+In the kit and on the site:
+
+- [Step card 0](https://letitglow.app/ahg/kit/step-cards/0-before-the-day.md)
+- [The browser path](https://letitglow.app/ahg/assistant)
+
+### Speaker notes, slide 7
+
+> Give this five full minutes. Run /ready-check on the projector first, so everyone hears what ready sounds like.
+>
+> Copilot Chat opens with Control+Alt+I, or Control+Command+I on a Mac. Say the keys out loud.
+>
+> Helpers move now, to every raised hand and to anyone who has not typed anything. A laptop that will not cooperate goes to the browser path, which loses nothing.
+
+---
+
+## 8. What is in your kit
+
+Block 1 of 7, slide 7 of 13 - Your kit
+
+- Step cards: One per block: every key, and what you should hear.
+- Examples: Six finished agents. Start from one whenever you like.
+- Sample course: PSY 101, with barriers planted on purpose.
+- Glossary and tutorial: Every word we use, and how to write an agent.
+
+In the kit and on the site:
+
+- [The kit, online](https://letitglow.app/ahg/kit)
+- [Glossary](https://letitglow.app/ahg/kit/glossary.md)
+- [Write your own agent](https://letitglow.app/ahg/kit/write-your-own-agent.md)
+
+### Speaker notes, slide 8
+
+> Open the kit folder on the projector and walk it top to bottom, out loud: step-cards, examples, sample-course, glossary.md, write-your-own-agent.md, and .github/skills, which holds the commands and the Accessibility Agents team.
+>
+> Everything is also online at letitglow.app/ahg/kit, readable without unzipping anything, and every slide in the HTML deck links to the part of the kit it is about.
+
+---
+
+## 9. The website, page by page
+
+Block 1 of 7, slide 8 of 13 - letitglow.app/ahg
+
+- Paths: Choose VS Code, vscode.dev or a browser.
+- Assistant: One text per block, for the browser path.
+- Share: Where your agent goes public, in block 6.
+- Slides: This deck, with links into the kit.
+
+In the kit and on the site:
+
+- [Paths](https://letitglow.app/ahg/paths)
+- [Assistant](https://letitglow.app/ahg/assistant)
+- [Share](https://letitglow.app/ahg/share)
+- [Slides](https://letitglow.app/ahg/slides)
+
+### Speaker notes, slide 9
+
+> Show the home page on the projector and press each link once. People who know where things are ask fewer questions and get stuck for less time.
+>
+> Say that the slides, the kit and the website say the same things in the same words, so whichever one someone prefers, they are not missing anything.
+
+---
+
+## 10. Private stays private, and people decide
+
+Block 1 of 7, slide 9 of 13 - Two rules, all day
+
+1. Never paste anything private into any AI: student records, health or disability information, private identifying details.
+2. Every agent ends with a person checking its work.
+
+If nobody is named, nobody reviewed it.
+
+### Speaker notes, slide 10
+
+> We use a sample course all day, so there is never a reason to paste anything real.
+>
 > Set the AI context here, in under a minute. What today covers: agents that analyze course content, find barriers and draft fixes, grounded in checkers and cited standards. What it does not: replacing anyone, or trusting any answer without evidence.
 >
 > Say what makes it different from the other AI sessions this week: it is about higher education accessibility work at scale, built by the people who do that work, and every agent is open source.
@@ -156,20 +262,45 @@ If nobody is named, nobody reviewed it.
 
 ---
 
-## 7. What an agent is
+## 11. What makes up an agent
 
-No code, really
+Block 1 of 7, slide 10 of 13 - How agents work
+
+- Instructions: A file you write, in plain English.
+- A model: The AI that reads the instructions and does the work.
+- Evidence: Checker reports and standards it must use and cite.
+- A person: Who reviews its work before anything goes out.
+
+In the kit and on the site:
+
+- [What makes a good agent file](https://letitglow.app/ahg/kit/agent-file-principles.md)
+
+### Speaker notes, slide 11
+
+> Walk it once with Maria's agent: her instructions say plan alternate formats; Copilot is the model; the GLOW audit of the scanned reading is the evidence; the alternate format specialist is the person.
+>
+> Say the point plainly: the model is the same for everyone in the room. What makes an agent good is the instructions and the evidence you give it, and the person who checks it. That is the part you build today.
+>
+> A team is several agents and a coordinator that routes work between them. That is block 5.
+
+---
+
+## 12. The instructions are six answers
+
+Block 1 of 7, slide 11 of 13 - No code, really
 
 - Role: Who it is, and who it works for.
 - Task: The one job it does.
-- Trusted guidance: The standards and policies it must cite: WCAG 2.2, your own procedures.
-- Output format: What comes back, in a shape a busy person can use.
-- Example: One short, good answer, so it sees the shape you want.
-- Human review: Who checks it before anything goes out.
+- Trusted guidance: What it must cite: WCAG 2.2, your procedures.
+- Output format: What comes back, in a usable shape.
+- Example: One short, good answer.
+- Human review: Who checks it.
 
-An agent is those six answers, written in plain English. Writing one is writing, not coding.
+In the kit and on the site:
 
-### Speaker notes, slide 7
+- [Write your own agent](https://letitglow.app/ahg/kit/write-your-own-agent.md)
+
+### Speaker notes, slide 12
 
 > This is the slide that lowers the shoulders. Say it twice: if you can write instructions for a new colleague, you can write an agent.
 >
@@ -177,45 +308,81 @@ An agent is those six answers, written in plain English. Writing one is writing,
 
 ---
 
-## 8. Your accessibility office
+## 13. Automation helps. You decide.
 
-Agents in action
+Block 1 of 7, slide 12 of 13 - Before you trust it
 
-The agent team you will join this afternoon. A coordinator routes each file to these specialists.
+What an agent does well, and what stays with you
+
+| An agent is good at | You must still |
+|---|---|
+| Reading a whole course quickly | Know what accessible looks like |
+| Explaining a checker's findings | Check its claims against the evidence |
+| Drafting fixes and plans | Decide what goes out, and sign it |
+| Citing the standard | Spot what no checker sees |
+
+An agent can be confidently wrong. Your judgment is the safeguard.
+
+In the kit and on the site:
+
+- [Glossary: human review and grounding](https://letitglow.app/ahg/kit/glossary.md)
+
+### Speaker notes, slide 13
+
+> This is the most important slide of the morning. Automation multiplies whatever you give it: good instructions and good evidence scale good work, and a careless agent scales mistakes just as fast.
+>
+> Name the critical things out loud: never paste private data; never call anything compliant on an agent's word; read every finding before it reaches a student or a faculty member; and know enough WCAG to tell when an answer is wrong.
+>
+> Block 3 tests missing evidence. Catch any guesses, but celebrate an agent that asks for the evidence instead.
+
+---
+
+## 14. Your accessibility office
+
+Block 1 of 7, slide 13 of 13 - Agents in action
+
+The agent team you join this afternoon
 
 | Specialist | Takes |
 |---|---|
-| Word documents | Syllabi, handouts |
-| PowerPoint slides | Lecture decks |
-| Excel workbooks | Gradebooks, templates |
-| PDF documents | Readings, forms, scans |
-| Web pages | Course pages, with axe and Accessibility Insights |
+| Word, PowerPoint, Excel | Syllabi, decks, gradebooks |
+| PDF | Readings, forms, scans |
+| Web pages | Course pages |
 | Captions and media | Lecture captions |
-| Plain language | Anything a student must read and act on |
+| Plain language | Anything a student acts on |
 | Standards reviewer | Everyone's findings, last |
 | Your agent | Whatever you build it to do |
 
-### Speaker notes, slide 8
+In the kit and on the site:
 
-> Read the specialists down the list. Pause on the last row: the team has an empty chair, and it is theirs.
+- [The office team](https://letitglow.app/ahg/kit#office-team)
+
+### Speaker notes, slide 14
+
+> A coordinator routes each file to the specialist it needs. Read the specialists down the list. Pause on the last row: the team has an empty chair, and it is theirs.
 >
 > These specialists are adapted from the open-source Accessibility Agents project. That is where their agents go this afternoon too.
 
 ---
 
-## 9. Design your agent
+## 15. Design your agent
 
-Block 2 of 7 - 10:50-11:40 - 50 minutes
+Block 2 of 7, slide 1 of 3 - 11:05-11:45 - 40 minutes
 
-By the end of this block: your own agent, in a file, with your name on it.
+You leave with: version 1 of your agent.
 
-- Documents and alternate formats: An alternate format planner, or a document triage agent.
-- Course content and faculty coaching: A faculty coach, or a course page coach.
-- Compliance and procurement: A remediation log keeper, or a vendor report reader.
+- Documents and alternate formats: A format planner, or a triage agent.
+- Course content and faculty: A faculty coach, or a course page coach.
+- Compliance and procurement: A remediation log, or a vendor report reader.
 
-Pick one card. Bring one real problem from your job, with nothing private in it.
+Pick one card, and one task your office does every week, with nothing private in it.
 
-### Speaker notes, slide 9
+In the kit and on the site:
+
+- [Step card 2](https://letitglow.app/ahg/kit/step-cards/2-design-your-agent.md)
+- [Ready-made agents](https://letitglow.app/ahg/kit#examples-agents)
+
+### Speaker notes, slide 15
 
 > Say where we are on the journey: step 2 of 7, "Your agent: six plain-English answers." Then show what they will have at the end of this block before anyone starts.
 >
@@ -223,24 +390,30 @@ Pick one card. Bring one real problem from your job, with nothing private in it.
 
 ---
 
-## 10. Maria's six answers
+## 16. Maria's six answers
 
-Watch me first
+Block 2 of 7, slide 2 of 3 - Watch me first
 
-Maria, from the Disability Resource Center, designing her alternate format planner:
+Maria's alternate format planner
 
 | Question | Maria's answer |
 |---|---|
-| Role | An alternate format planner in a disability resource center |
-| Task | Plan the formats a student needs from a checker's report |
-| Trusted guidance | WCAG 2.2 1.4.5 and 1.1.1, ACB large print, our procedure |
-| Output format | Numbered steps with who does each, then a checklist |
-| Example | The scanned reading: get the text, then 18 point large print |
-| Human review | The specialist checks page by page; the student confirms |
+| Role | Alternate format planner |
+| Task | Plan formats from checker reports |
+| Trusted guidance | WCAG 2.2, ACB large print |
+| Output format | Numbered steps, who does each |
+| Example | Scanned reading to large print |
+| Human review | A specialist checks it |
 
-### Speaker notes, slide 10
+In the kit and on the site:
+
+- [Maria's agent, in full](https://letitglow.app/ahg/kit/examples/maria-alternate-format-planner.md)
+
+### Speaker notes, slide 16
 
 > Read Maria's answers aloud. Then type /design-my-agent in Copilot Chat on the projector and answer as Maria, so they hear the whole conversation once before they have theirs.
+>
+> Fill in what the table shortens: she works in a disability resource center; her guidance cites WCAG 2.2 1.4.5 and 1.1.1 by number and her office's own procedure; her example gets the text out of the scan first, then 18 point large print; and the student confirms the format works for them.
 >
 > Say that the browser path is the same conversation: the block 2 text from letitglow.app/ahg/assistant pasted into ChatGPT asks the same questions in the same order.
 >
@@ -248,41 +421,51 @@ Maria, from the Disability Resource Center, designing her alternate format plann
 
 ---
 
-## 11. Your AI asks, you answer
+## 17. Your AI asks, you answer
 
-Your turn
+Block 2 of 7, slide 3 of 3 - Your turn
 
-1. In VS Code: open Copilot Chat (Control+Alt+I, or Control+Command+I on a Mac) and type /design-my-agent.
-2. In a browser: copy the block 2 text from letitglow.app/ahg/assistant and paste it into your assistant.
-3. Answer the questions, one at a time. Borrow from the example whenever you like.
-4. VS Code writes your agent into `my-agent/SKILL.md`. In a browser it comes back in a box with a Copy button: download it from the share page.
+1. VS Code: in Copilot Chat, type /design-my-agent.
+2. Browser: paste the block 2 text into your assistant.
+3. Answer one question at a time. Borrow from the examples.
 
-You are on track if your AI tells you one thing your agent does well.
+Stuck? Start from a ready-made agent. That counts.
 
-Stuck? Start from a ready-made agent in examples/agents. That counts. You are still in.
+In the kit and on the site:
 
-### Speaker notes, slide 11
+- [Step card 2](https://letitglow.app/ahg/kit/step-cards/2-design-your-agent.md)
+- [Block 2 text for a browser](https://letitglow.app/ahg/assistant)
 
+### Speaker notes, slide 17
+
+> VS Code writes the agent into my-agent/SKILL.md. In a browser it comes back in a box with a Copy button; download it from the share page.
+>
+> You are on track when your AI tells you one thing your agent does well.
+>
 > Helpers move now. Look for the person who has not typed anything yet, and sit with them quietly.
 >
 > Step card 2 has every key and every expected screen in words, for screen reader users and anyone who prefers paper.
 
 ---
 
-## 12. Your agent at work
+## 18. Your agent at work
 
-Block 3 of 7 - 11:40-12:15 - 35 minutes
+Block 3 of 7, slide 1 of 2 - 11:45-12:15 - 30 minutes
 
-By the end of this block: your agent's first answer on a real course document, and version 2.
-
-1. In VS Code, type /try-my-agent. In a browser, paste the block 3 text.
+1. Type /try-my-agent, or paste the block 3 text.
 2. Pick a file from the PSY 101 sample course.
-3. Read what your agent says.
-4. Then /review-my-agent, or the review text: one change, version 2.
+3. Read the answer. Then /review-my-agent: version 2.
 
-It will guess a little. That is not a mistake. It is the setup for this afternoon.
+No evidence? A good agent asks instead of guessing.
 
-### Speaker notes, slide 12
+Behind? Try a ready-made agent from examples/agents instead.
+
+In the kit and on the site:
+
+- [Step card 3](https://letitglow.app/ahg/kit/step-cards/3-your-agent-at-work.md)
+- [The sample course](https://letitglow.app/ahg/kit#sample-course)
+
+### Speaker notes, slide 18
 
 > Say where we are on the journey: step 3 of 7, "Your agent at work: your AI uses it on one course document, and you revise it." Then show what they will have at the end of this block before anyone starts.
 >
@@ -290,74 +473,88 @@ It will guess a little. That is not a mistake. It is the setup for this afternoo
 
 ---
 
-## 13. Maria's first answer
+## 19. Maria's first answer
 
-Watch me
+Block 3 of 7, slide 2 of 2 - Watch me
 
-> "Run Acrobat's Make Accessible action, add alternative text to all images, and increase the font size. This will make the document compliant with WCAG 2.1."
+> "Run Acrobat's Make Accessible, add alt text to all images, and increase the font size. This will make it compliant."
 
-- It never saw the file, so it did not know the reading is a scan.
-- Alt text on pictures of text would describe the pictures, not turn them into text.
-- It said "compliant", which her agent is told never to say.
+- It never saw the file, so it missed that it is a scan.
+- Alt text cannot turn pictures of text into text.
+- It said "compliant", which it is told never to say.
 
-### Speaker notes, slide 13
+### Speaker notes, slide 19
 
-> Read the quote in a confident voice, then the three problems in a normal one. The contrast is the joke, and the lesson.
+> Read the quote in a confident voice, then the three problems in a normal one. The contrast is the joke, and the lesson. It is the automation slide, happening.
 >
 > This is a written example, labelled as one in the kit. On the day, show a real first answer from the room if someone offers one.
 
 ---
 
-## 14. Back at 1:15
+## 20. Back at 1:15
 
 Lunch - 12:15-1:15
 
 You have an agent. That was the hard part.
 
-After lunch it stops guessing.
+After lunch: evidence you can verify.
 
-### Speaker notes, slide 14
+Before you go: two questions, no name, at letitglow.app/ahg/check-in.
+
+In the kit and on the site:
+
+- [Check in](https://letitglow.app/ahg/check-in)
+
+### Speaker notes, slide 20
 
 > Say well done, and mean it. Most people in this room had never written an agent at 10:30.
+>
+> Ask everyone to do the check-in before they leave the room. Helpers read the results over lunch at letitglow.app/ahg/check-in/results with the survey key, and go first to anyone who said they are stuck.
 >
 > Anyone still setting up: lunch is when a helper finishes it with them.
 
 ---
 
-## 15. Ground it
+## 21. Ground it
 
-Block 4 of 7 - 1:15-2:05 - 50 minutes
+Block 4 of 7, slide 1 of 3 - 1:15-2:05 - 50 minutes
 
-By the end of this block: the same agent, giving cited answers from real evidence. A before and an after.
+1. Type /ground-my-agent, or paste the block 4 text.
+2. Same file as this morning, with its checker report.
+3. Compare the two answers.
+4. Then /review-my-agent: version 3.
 
-1. In VS Code, type /ground-my-agent. In a browser, paste the block 4 text.
-2. Use the same file as this morning.
-3. Your agent reads that file's checker report: GLOW for documents, axe for the web page.
-4. Compare the two answers.
-5. Then /review-my-agent again: version 3.
+Behind? Ground Maria's agent instead. Same lesson.
 
-### Speaker notes, slide 15
+In the kit and on the site:
+
+- [Step card 4](https://letitglow.app/ahg/kit/step-cards/4-ground-it.md)
+- [Checker reports for PSY 101](https://letitglow.app/ahg/kit#sample-course)
+
+### Speaker notes, slide 21
 
 > Say where we are on the journey: step 4 of 7, "Your agent, grounded: real evidence in, cited answers out." Then show what they will have at the end of this block before anyone starts.
 >
-> Grounding is the trusted in the session title. The checkers find; the agent explains and plans; a person decides.
+> The checker report is GLOW's audit for documents and axe for the web page.
+>
+> Grounding supports the trusted in the session title. It reduces guessing but does not guarantee correctness. Check the source, the citation and what the checker did not test; a person decides.
 
 ---
 
-## 16. Before and after
+## 22. Before and after
 
-Watch me
+Block 4 of 7, slide 2 of 3 - Watch me
 
-Maria's agent, on the scanned reading:
+Maria's agent, on the scanned reading
 
 | Before evidence | After evidence |
 |---|---|
-| Guessed the file was an ordinary PDF | Knew it was two pages of pictures of text |
-| WCAG 2.1, no links | WCAG 2.2, 1.4.5 Images of Text, linked |
+| Guessed an ordinary PDF | Knew it was pictures of text |
+| WCAG 2.1, no links | WCAG 2.2, 1.4.5, linked |
 | "Compliant" | What was checked, and what a person must check |
-| Fix the PDF | Get a clean source, then large print and audio for everyone |
+| Fix the PDF | A clean source, then large print and audio |
 
-### Speaker notes, slide 16
+### Speaker notes, slide 22
 
 > Read both columns, row by row.
 >
@@ -365,54 +562,64 @@ Maria's agent, on the scanned reading:
 
 ---
 
-## 17. Any checker, and a person
+## 23. Any checker, and a person
 
-The skill, not the tool
+Block 4 of 7, slide 3 of 3 - The skill, not the tool
 
-The same works with Word's and PowerPoint's own Accessibility Checker, Acrobat's checker, or Accessibility Insights. The skill is giving your agent evidence.
+Word's, PowerPoint's or Acrobat's checker, or Accessibility Insights, work the same way.
 
-And some barriers no checker sees:
+Some barriers no checker sees:
 
-- The accommodations statement, last, in 8-point gray, contradicted two sections earlier by a no-makeup-exams rule in capitals.
+- An accommodations policy contradicted elsewhere.
 - Alt text that says "image.png".
 - A lab that only works if you can see color.
 - Captions that turn Ebbinghaus into "ebb in house".
 
-### Speaker notes, slide 17
+### Speaker notes, slide 23
 
+> The skill is giving your agent evidence, whatever the tool.
+>
 > If Word is handy, show Review, then Check Accessibility on the syllabus, and paste its results into Copilot with the agent. Same skill, different tool.
+>
+> The accommodations statement is last in the syllabus, and contradicted two sections earlier by a no-makeup-exams rule in capitals.
 >
 > Those four barriers are why every agent has a human review step. Read each one; the room will recognise every one of them from their own campus.
 
 ---
 
-## 18. Back at 2:15
+## 24. Back at 2:15
 
 Break - 10 minutes
 
 Next, your agent joins a team. Then it goes public.
 
-### Speaker notes, slide 18
+### Speaker notes, slide 24
 
 > Short break on purpose. The next two blocks are where the day comes together.
 
 ---
 
-## 19. Build the office
+## 25. Build the office
 
-Block 5 of 7 - 2:15-3:05 - 50 minutes
+Block 5 of 7, slide 1 of 3 - 2:15-3:05 - 50 minutes
 
-By the end of this block: your agent working inside a team, across the whole course, and one team report.
+1. Type /run-the-office, or paste the block 5 text.
+2. The coordinator sends each file to its specialists, and to yours.
+3. The standards-reviewer role checks the draft; staff still review it.
+4. Then /review-my-agent: version 4, your best.
 
-1. In VS Code, type /run-the-office. In a browser, paste the block 5 text.
-2. The coordinator sends each course file to its specialists, and yours where it fits.
-3. The standards reviewer checks everyone's work.
-4. You get the team report, with your agent's section in it.
-5. Then /review-my-agent, or the review text: version 4, your best.
+Behind? The office runs with any version of your agent.
 
-### Speaker notes, slide 19
+In the kit and on the site:
+
+- [Step card 5](https://letitglow.app/ahg/kit/step-cards/5-build-the-office.md)
+- [The office team](https://letitglow.app/ahg/kit#office-team)
+
+### Speaker notes, slide 25
 
 > Say where we are on the journey: step 5 of 7, "Your agent in the team: the whole course, at once." Then show what they will have at the end of this block before anyone starts.
+>
+> You get one team report, with your agent's section in it.
 >
 > This is building an agent team: they added a specialist, and their coordinator is running it. Copilot announces each file as it finishes, so screen reader users hear progress, not silence.
 >
@@ -420,36 +627,44 @@ By the end of this block: your agent working inside a team, across the whole cou
 
 ---
 
-## 20. One course, one report
+## 26. One course, one report
 
-What scale looks like
+Block 5 of 7, slide 2 of 3 - What scale looks like
 
 - Seven files, eight specialists, plus yours.
-- Every finding: evidence, a WCAG 2.2 criterion with its link, and a named reviewer.
-- A list of what no checker could see, for a person.
-- Three lines at the top that a director will actually read.
+- Every finding: evidence, a WCAG 2.2 link, a named reviewer.
+- A list of what the supplied evidence cannot establish.
 
-That is quality, accountability and transparency, at scale. It is also a Tuesday.
+Quality, accountability and transparency, at scale.
 
-### Speaker notes, slide 20
+### Speaker notes, slide 26
 
+> The report opens with three lines a director will actually read. It is also a Tuesday.
+>
+> One assistant follows specialist roles in sequence here; this is not independent validation. Seven sample files demonstrate the method, not production throughput. Review effort, errors and deadlines decide whether a campus pilot can grow.
+>
 > Ask: what would it take to run this across ten courses? Let them answer. The honest answer is a person's review time, which is exactly where it should go.
 
 ---
 
-## 21. The full Accessibility Agents team
+## 27. The full Accessibility Agents team
 
-The real thing
+Block 5 of 7, slide 3 of 3 - The real thing
 
-The office you just ran is a small version of a real open-source project: Accessibility Agents.
+The office you just ran is a small version of a real open-source project.
 
-- Six entry points, and 107 specialist, helper and reference skills behind them.
-- The same course, on the screen: web, Word, PowerPoint, Excel and PDF.
-- It is already in your kit, in .github/skills. Ask for document-accessibility-wizard by name.
+- Six entry points, and 107 skills behind them.
+- Already in your kit, in .github/skills.
+- Ask for document-accessibility-wizard by name.
 
-### Speaker notes, slide 21
+In the kit and on the site:
 
-> Fifteen minutes, on the projector, in VS Code with the kit open. Start a new chat and ask: use document-accessibility-wizard to review the PSY 101 course, using the files in sample-course/evidence.
+- [Accessibility Agents](https://letitglow.app/ahg/kit/accessibility-agents.md)
+- [What is in the kit's copy](https://letitglow.app/ahg/kit/accessibility-agents-in-the-kit.md)
+
+### Speaker notes, slide 27
+
+> Fifteen minutes, on the projector, in VS Code with the kit open. Start a new chat and ask: use document-accessibility-wizard to review the PSY 101 course, using the files in sample-course/evidence. Web, Word, PowerPoint, Excel and PDF, on the screen.
 >
 > Point out that the skills that need scanners say so and ask for checker results, as accessibility-agents-in-the-kit.md explains. Never let it claim a scan it did not run.
 >
@@ -457,54 +672,67 @@ The office you just ran is a small version of a real open-source project: Access
 
 ---
 
-## 22. Share it
+## 28. Share it
 
-Block 6 of 7 - 3:05-3:40 - 35 minutes
+Block 6 of 7, slide 1 of 3 - 3:05-3:40 - 35 minutes
 
-By the end of this block: your best version in the open-source AHG 2026 collection, committed in your name.
+1. Open letitglow.app/ahg/share, and choose your newest SKILL.md.
+2. Press Open the share form on GitHub.
+3. Check the privacy box, and press Submit new issue.
+4. Within a minute: Your agent is in.
 
-1. Open letitglow.app/ahg/share, and choose your newest SKILL.md, version 4, or paste it in.
-2. Press Open the share form on GitHub. The form opens, already filled in.
-3. Select the privacy check box, and press Submit new issue.
-4. Within a minute, the reply: Your agent is in.
+Behind? Share any version. Version 1 counts.
 
-You did this once already, with your practice agent. Same again.
+In the kit and on the site:
 
-### Speaker notes, slide 22
+- [Step card 6](https://letitglow.app/ahg/kit/step-cards/6-share-it.md)
+- [Share your agent](https://letitglow.app/ahg/share)
+
+### Speaker notes, slide 28
 
 > Say where we are on the journey: step 6 of 7, "Your agent, shared: your best version, in an open-source collection, with your name on it." Then show what they will have at the end of this block before anyone starts.
+>
+> You can also paste the agent in instead of choosing the file. The form opens already filled in.
 >
 > Everyone shared a practice agent before the day, so this is the second time, not the first. Say so; it changes the room.
 >
 > Helpers watch the issues labelled needs-a-hand and go to those people first. A Nearly there reply always says exactly what to fix.
+>
+> If sharing is not approved or GitHub is unavailable, save a reviewed draft and a next step. Do not call it published, and do not collect it without permission.
 
 ---
 
-## 23. In the collection, with your name on it
+## 29. In the collection, with your name on it
 
-Open source, live
+Block 6 of 7, slide 2 of 3 - Open source, live
 
 As your agents arrive, the collection grows, here, on the screen.
 
-Tonight every one of them goes into the Accessibility Agents project, with every author credited, for anyone in higher education to use and improve.
+Tonight they all go into Accessibility Agents, every author credited.
 
-### Speaker notes, slide 23
+In the kit and on the site:
+
+- [The AHG 2026 collection](https://github.com/Community-Access/ahg-2026)
+
+### Speaker notes, slide 29
 
 > Project agents/README.md in github.com/Community-Access/ahg-2026 and refresh it as agents arrive. Read each name and agent title out loud. Applause is allowed and encouraged.
+>
+> The collection is for anyone in higher education to use and improve.
 >
 > Each agent is committed in its author's name, so it shows on their own GitHub profile. Started from a ready-made agent? It still counts. Say so: what matters is that it is yours now.
 
 ---
 
-## 24. Everyone's agents, together
+## 30. Everyone's agents, together
 
-Agents in action
+Block 6 of 7, slide 3 of 3 - Agents in action
 
 One more run, on the screen: the office team with every agent this room shared.
 
 Listen for yours.
 
-### Speaker notes, slide 24
+### Speaker notes, slide 30
 
 > Last thing in this block. Copy every agents/<login>/<name>/ folder from the ahg-2026 repository into a room/ folder in your kit, then run /run-the-office on the projector. Read out each agent's name as the coordinator calls it.
 >
@@ -512,39 +740,95 @@ Listen for yours.
 
 ---
 
-## 25. Take it home
+## 31. Take it home
 
-Block 7 of 7 - 3:40-4:15 - 35 minutes
+Block 7 of 7, slide 1 of 3 - 3:40-4:15 - 35 minutes
 
-By the end of this block: a 30-day plan for your own campus.
+1. Type /my-30-day-plan, or paste the block 7 text.
+2. Add your one-sentence commitment at letitglow.app/w/ahg-2026/11.
 
-1. In VS Code, type /my-30-day-plan. In a browser, paste the block 7 text.
-2. Then add your one-sentence commitment at letitglow.app/w/ahg-2026/11 for the wall.
+Small is the point.
 
-What you can do on Monday, with tools you already have:
+Behind? Adapt a worked example with a helper.
 
-| You learned | Monday, with |
-|---|---|
-| Writing an agent | Any AI assistant, including your campus Copilot |
-| Grounding it | Word's, PowerPoint's and Acrobat's checkers, Accessibility Insights, axe |
-| Human review, in writing | Your own office's process |
-| Agent teams | One specialist at a time, or the Accessibility Agents project |
+In the kit and on the site:
 
-### Speaker notes, slide 25
+- [Step card 7](https://letitglow.app/ahg/kit/step-cards/7-take-it-home.md)
+
+### Speaker notes, slide 31
 
 > Say where we are on the journey: step 7 of 7, "Your campus: a 30-day plan." Then show what they will have at the end of this block before anyone starts.
 >
-> Small is the point. "Run the planner on the next five requests" beats "transform our office".
+> Try up to five fictional or approved non-sensitive examples beside the existing process. Include review time, errors and delivery time in the comparison. Never delay an accommodation for a pilot.
+>
+> Reserve five minutes for a partner to check the plan: input, output destination, reviewer role, deadline, approval, day-30 measure and stop rule. If AI is not approved, a paper workflow and approval request count.
+>
+> The commitment goes on the wall, with no names on it.
 
 ---
 
-## 26. The commitment wall
+## 32. Plug it into the work you already do
+
+Block 7 of 7, slide 2 of 3 - Your office
+
+Where an agent fits in work you already do
+
+| In your office | The agent drafts | A person |
+|---|---|---|
+| Alternate format request | The production plan | Approves it |
+| Course review before term | Findings by course | Assigns the fixes |
+| A faculty question | A coaching reply | Edits and sends |
+| A vendor's accessibility report | The gaps | Decides to buy |
+
+In the kit and on the site:
+
+- [Step card 7](https://letitglow.app/ahg/kit/step-cards/7-take-it-home.md)
+- [Putting it to work in your office](https://letitglow.app/ahg/kit/write-your-own-agent.md)
+
+### Speaker notes, slide 32
+
+> This is the slide that turns today into Tuesday. An agent helps most at one step of a workflow the office already runs, not as a new process beside it.
+>
+> Read the four questions slowly: what starts it, what it reads, where its draft goes, who signs off. Their 30-day plan asks exactly these.
+>
+> Say plainly: use the AI assistant your campus approves, and follow its rules on what information may go in. Nothing private, today or on Monday.
+>
+> Keep drafts beside the existing process for a month. Record evidence source/date, agent version, reviewer decision and unresolved barriers in the approved log. Stop for private data, unverifiable evidence or missing review.
+
+---
+
+## 33. On Monday
+
+Block 7 of 7, slide 3 of 3 - With tools you already have
+
+What you learned, and what you can use it with on Monday
+
+| You learned | Monday, with |
+|---|---|
+| Writing an agent | Your campus-approved AI assistant |
+| Grounding it | Office and Acrobat checkers, Accessibility Insights, axe |
+| Human review | Your own office's process |
+| Agent teams | One specialist at a time, or Accessibility Agents |
+
+In the kit and on the site:
+
+- [Accessibility Agents](https://letitglow.app/ahg/kit/accessibility-agents.md)
+
+### Speaker notes, slide 33
+
+> Start with tools your campus already approves. Availability, subscriptions and data rules differ; no new purchase is required to map a workflow on paper.
+>
+> Point at Accessibility Agents for anyone who wants the whole team on their own laptop.
+
+---
+
+## 34. The commitment wall
 
 4:15
 
 Every commitment in this room, on one screen, with no names on it.
 
-### Speaker notes, slide 26
+### Speaker notes, slide 34
 
 > Project the wall from GLOW. Read three aloud. Do not comment on them, do not rank them.
 >
@@ -552,22 +836,30 @@ Every commitment in this room, on one screen, with no names on it.
 
 ---
 
-## 27. Go make one more champion
+## 35. Go make one more champion
 
 4:25 - Thank you
 
-You came in with a problem. You are leaving with an agent, a team and a plan.
+You came in with a problem. You leave with an agent, a team and a plan.
 
-Before you go: the session evaluation. It shapes next year's conference.
+Now: the session evaluation. It shapes next year's conference.
 
-Help any time, before or after today: support@community-access.org.
+Help any time: support@community-access.org
 
-GLOW is a community project of BITS, an affiliate of the American Council of the Blind.
+In collaboration with Blind Information Technology Solutions (BITS) and Techopolis, with special thanks to Taylor Arndt, who helped dream up and build Accessibility Agents.
 
-### Speaker notes, slide 27
+In the kit and on the site:
+
+- [University of Arizona accessibility](https://accessibility.arizona.edu)
+- [BITS](https://www.bits-acb.org)
+- [Techopolis](https://www.techopolis.app)
+
+### Speaker notes, slide 35
 
 > Say it, thank them, and hand over to the proctor for the evaluation. Then stop talking while people fill it in.
 >
 > No question block here. Answer at the tables while people pack up.
+>
+> GLOW is a community project of BITS, an affiliate of the American Council of the Blind.
 
 ---

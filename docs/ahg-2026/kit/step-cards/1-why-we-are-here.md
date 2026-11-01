@@ -1,13 +1,13 @@
 ---
 title: "Step card 1: Why we are here"
 lang: en
-author: "Jeff Bishop, BITS"
+author: "Jeff Bishop, University of Arizona, IT Accessibility Consultant"
 description: "A step card for the AHG 2026 Accessibility Agents workshop."
 ---
 
 # Step card 1: Why we are here
 
-Block 1 of 7, 10:30 to 10:50.
+Block 1 of 7, 10:30 to 11:05.
 
 ## Where we are
 
@@ -16,6 +16,17 @@ Step 1 of 7: the problem. A course full of barriers, and a team too small.
 ## What you will have at the end
 
 A picture of where the day ends: a team report on a whole course, with one section written by an agent you build.
+
+A laptop that is ready, a map of the kit and the website, and the four parts
+of an agent: your instructions, the AI model, the evidence it cites, and the
+person who checks its work.
+
+## Where things are
+
+- The whole kit, online: [letitglow.app/ahg/kit](https://letitglow.app/ahg/kit)
+- Every word we use: [the glossary](https://letitglow.app/ahg/kit/glossary.md)
+- How to write an agent, step by step: [write your own agent](https://letitglow.app/ahg/kit/write-your-own-agent.md)
+- The three paths: [choose your workshop path](https://letitglow.app/ahg/paths)
 
 ## Steps
 

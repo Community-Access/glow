@@ -1,7 +1,7 @@
 ---
 title: "Step card 0: Before the day"
 lang: en
-author: "Jeff Bishop, BITS"
+author: "Jeff Bishop, University of Arizona, IT Accessibility Consultant"
 description: "A step card for the AHG 2026 Accessibility Agents workshop."
 ---
 
@@ -32,6 +32,11 @@ letitglow.app/ahg/paths compares them.
   or Edge, with nothing to install.
 
 ## Steps
+
+Use only tools and accounts your campus permits. Turning off model training
+does not authorize uploading private data. No approved AI or sharing option?
+Work through the written examples with a helper in Word or on paper and
+keep your agent local until approval is confirmed.
 
 ### Everyone
 

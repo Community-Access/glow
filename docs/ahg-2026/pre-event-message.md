@@ -1,7 +1,7 @@
 ---
 title: "Pre-event message"
 lang: en
-author: "Jeff Bishop, BITS"
+author: "Jeff Bishop, University of Arizona, IT Accessibility Consultant"
 description: "The setup message sent to registered participants before the AHG 2026 workshop."
 ---
 
@@ -58,11 +58,20 @@ Then, on any path:
 4. Answer the five-minute survey at letitglow.app/ahg/survey, so we have
    your path, your laptop and any access needs ready on the day.
 
+Want the short version to pass on to a colleague? The workshop in plain
+language, in about 150 words, is at
+letitglow.app/ahg/kit/session-in-plain-language.md.
+
 If a step does not work, write to support@community-access.org before the
 day, or come to the setup table outside the room from 10:00 on the day.
 Locked-down work laptop? Take the browser path: it needs nothing
 installed. Or write to us; we will sort it out together, and nobody is left
 out on the day.
+
+Use only an assistant your campus permits. A browser does not bypass campus
+data or account rules. If no AI tool or public sharing is approved, bring
+the written examples and work in Word or on paper with a helper; keep your
+agent local until sharing is approved.
 
 ### Bring
 
@@ -78,7 +87,7 @@ out on the day.
 - Morning: design your agent in plain English, and see it work on a course
   document with GitHub Copilot or the assistant you chose.
 - After lunch: ground it in real evidence from GLOW, axe and Accessibility
-  Insights, so it cites WCAG 2.2 instead of guessing.
+  Insights, so you can verify its claims and WCAG 2.2 citations.
 - Afternoon: add it to an agent team and watch the team work through the
   whole course, then share it to the open-source AHG 2026 collection on
   GitHub, with one form and your name on it.
@@ -94,7 +103,9 @@ it.
 See you in Denver,
 
 Jeff Bishop
-BITS, an affiliate of the American Council of the Blind
+[University of Arizona](https://accessibility.arizona.edu), IT Accessibility Consultant
+
+In collaboration with [Blind Information Technology Solutions (BITS)](https://www.bits-acb.org) and [Techopolis](https://www.techopolis.app), with special thanks to Taylor Arndt, who helped dream up and build Accessibility Agents.
 
 ---
 

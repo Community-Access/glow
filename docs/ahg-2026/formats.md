@@ -1,7 +1,7 @@
 ---
 title: "AHG 2026 participant documents, in every format"
 lang: en
-author: "Jeff Bishop, BITS"
+author: "Jeff Bishop, University of Arizona, IT Accessibility Consultant"
 description: "Every document a participant receives, the formats each comes in, how they are built and checked, and why some files have no copies."
 ---
 
@@ -38,6 +38,9 @@ GitHub and VS Code each show one README and an HTML one can win.
   long for one slide continues as "(2 of 3)", so no two slides share a
   title. Each table gets its own slide, with alt text and a marked header
   row. The language is set on the file and on every run of text.
+  Wrapped cells receive individual row heights. Wide or overlong tables
+  become labelled records over multiple reading slides, preserving every
+  column's label and value instead of shrinking text.
 
 Office files carry a fixed date rather than the build time, so a rebuild
 with the same libraries changes nothing.
@@ -69,6 +72,7 @@ its four formats. Slide counts include the title slide.
 | `kit/accessibility-agents.md` | Keeping Accessibility Agents after the day | md, html, docx, pptx |
 | `kit/accessibility-agents-in-the-kit.md` | Which skills work fully in the kit | md, html, docx, pptx |
 | `kit/glossary.md` | The words used today, read before the day | md, html, docx, pptx |
+| `kit/session-in-plain-language.md` | The workshop in about 150 words, to decide or pass on | md, html, docx, pptx |
 | `kit/write-your-own-agent.md` | The full tutorial, for writing agents after the day | md, html, docx, pptx |
 | `kit/step-cards/0-before-the-day.md` | Setup, before the day | md, html, docx, pptx |
 | `kit/step-cards/1-why-we-are-here.md` | Block 1 | md, html, docx, pptx |
@@ -88,6 +92,38 @@ its four formats. Slide counts include the title slide.
 The slide deck already comes in all four formats from its own generator,
 `web/src/acb_large_print_web/workshop_deck.py`: `slides.md`, `slides.html`,
 `slides.docx` and `slides.pptx`. See `README.md` in this folder.
+
+## The library: PDF, EPUB and DAISY as well
+
+`scripts/build_ahg_library.py` builds the AHG 2026 resource library, one
+folder (`S:\ahg` by default) holding every document above, the deck and the
+four facilitator documents in seven formats, each in its own folder under
+one base name. It copies the four formats from here and makes three more:
+
+- PDF: Word's own export of the Word file, run in the background, with
+  "Document structure tags for accessibility" and "Create bookmarks using
+  headings" both on. Never print to PDF. The build adds the PDF/UA
+  identifier and table header scope omitted by Word, then veraPDF checks
+  each one against PDF/UA-1 and GLOW's PDF audit runs too. Failures stop the
+  build; passing machine checks does not replace manual reading review.
+  Each link's text is its ScreenTip in the Word copies, which
+  Word writes as the link's description in the PDF.
+- EPUB 3: Pandoc from the Markdown, without its front matter, with the HTML
+  copies' styles and EPUB Accessibility 1.1 metadata (text only, structural
+  navigation, table of contents, reading order, no hazards, a summary, and
+  conformance to WCAG 2.2 Level AA). Ace by DAISY must find nothing serious
+  or critical, and EPUBCheck no errors.
+- DAISY 2.02 and DAISY 3: DAISY Pipeline 2 from the EPUB, text only. Each
+  conversion runs with the Pipeline's own validation set to stop on a
+  problem; then its DAISY 2.02 validator checks the NCC book and its DTBook
+  validator the DAISY 3 text.
+
+The sample course and the browser path texts are copied as they are, for
+the reasons in the next section. `scripts/check_ahg_library.py` then checks
+that every document has every format, that every file is in the manifest
+with its SHA-256, that every link in the front door resolves, that the
+conference folder holds only DOCX, PPTX and PDF under 250 MB, and runs
+axe-core in Edge over every page at 1280 and 320 pixels.
 
 ## What has no copies, and why
 

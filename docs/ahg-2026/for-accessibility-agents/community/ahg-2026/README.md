@@ -1,7 +1,7 @@
 ---
 title: "AHG 2026 workshop agents"
 lang: en
-author: "Jeff Bishop, BITS"
+author: "Jeff Bishop, University of Arizona, IT Accessibility Consultant"
 description: "Landing folder for agents contributed at AHG 2026."
 ---
 

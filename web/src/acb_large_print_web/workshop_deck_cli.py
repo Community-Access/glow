@@ -72,11 +72,13 @@ def register_cli(app: Flask) -> None:
             "workshop/deck.html",
             deck_title=f"{deck.DECK_TITLE} - workshop deck",
             slides=deck.build_slides(ctx),
+            links_label=deck.LINKS_LABEL,
             download_urls={
                 "html": f"{BASENAME}.html",
                 "md": f"{BASENAME}.md",
                 "docx": f"{BASENAME}.docx",
                 "pptx": f"{BASENAME}.pptx",
+                "handout": f"{BASENAME}-large-print-handout.docx",
             },
             csp_nonce="",
         )
@@ -112,6 +114,10 @@ def register_cli(app: Flask) -> None:
         pptx_path = out_dir / f"{BASENAME}.pptx"
         pptx_path.write_bytes(deck.build_deck_pptx_bytes(ctx))
         written.append((pptx_path, pptx_path.stat().st_size))
+
+        handout_path = out_dir / f"{BASENAME}-large-print-handout.docx"
+        handout_path.write_bytes(deck.build_deck_handout_docx_bytes(ctx))
+        written.append((handout_path, handout_path.stat().st_size))
 
         slide_count = len(deck.build_slides(ctx))
         click.echo(f"{slide_count} slides, join address {ctx.join_display}")

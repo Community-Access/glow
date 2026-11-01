@@ -3,19 +3,21 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="author" content="Jeff Bishop, BITS">
+<meta name="author" content="Jeff Bishop, University of Arizona, IT Accessibility Consultant">
 <meta name="description" content="A step card for the AHG 2026 Accessibility Agents workshop.">
 <title>Step card 4: Ground it</title>
 <style>
 :root { color-scheme: light dark; --bg: #ffffff; --fg: #1a1a1a; --link: #0b57d0; --rule: #6b6b6b; --code-bg: #f2f2f2; --focus: #b3261e; }
 @media (prefers-color-scheme: dark) { :root { --bg: #121212; --fg: #f1f1f1; --link: #a8c7fa; --rule: #9a9a9a; --code-bg: #262626; --focus: #ffb4ab; } }
 html { font-size: 112.5%; }
-body { background: var(--bg); color: var(--fg); font-family: Arial, Helvetica, sans-serif; line-height: 1.5; max-width: 46rem; margin: 0 auto; padding: 1rem; }
+body { background: var(--bg); color: var(--fg); font-family: Arial, Helvetica, sans-serif; line-height: 1.5; max-width: 46rem; margin: 0 auto; padding: 1rem; overflow-wrap: break-word; }
 a { color: var(--link); text-decoration: underline; }
 a:focus-visible, [tabindex]:focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; }
 h1, h2, h3, h4 { line-height: 1.25; }
 code, pre { font-family: Consolas, "Courier New", monospace; background: var(--code-bg); }
 pre { padding: 0.75rem; overflow-x: auto; white-space: pre-wrap; }
+/* At 320px a long path or address wraps rather than widening the page (WCAG 1.4.10). */
+code, pre, a { overflow-wrap: anywhere; }
 table { border-collapse: collapse; margin: 1rem 0; }
 th, td { border: 1px solid var(--rule); padding: 0.4rem 0.6rem; text-align: left; vertical-align: top; }
 .table-scroll { overflow-x: auto; }
@@ -65,12 +67,12 @@ blockquote { border-left: 4px solid var(--rule); margin-left: 0; padding-left: 1
 <li>Say yes, or reword the change. Copilot saves version 3 of your agent and installs it.</li>
 </ol>
 <h2 id="you-are-on-track-if">You are on track if</h2>
-<p>Your agent's new answer cites at least one WCAG 2.2 criterion with a link, says what a person still needs to check, and you have version 3.</p>
+<p>Your agent's new answer cites at least one WCAG 2.2 criterion with a link, says what a person still needs to check, and you have version 3. Open the source and verify that it supports the claim. A citation alone is not proof.</p>
 <h2 id="if-you-are-stuck">If you are stuck</h2>
 <p>Read the before and after in examples/maria-alternate-format-planner.md, section 4, and run this block with a ready-made agent. It works the same way.</p>
 <p>Raise a hand at any time. A helper comes to you.</p>
 <h2 id="your-win">Your win</h2>
-<p>Your agent stopped guessing. That is what grounded means, and it is the trusted in the session title.</p>
+<p>Your agent has evidence a person can verify. Grounding reduces guessing; it does not guarantee correctness. Separate confirmed findings from suggested checks and unverified observations.</p>
 <h2 id="on-monday">On Monday</h2>
 <p>Before you ask any AI about a document, run a checker and give it the results: Word's, PowerPoint's or Acrobat's own checker, Accessibility Insights, or axe.</p>
 <h2 id="sources">Sources</h2>

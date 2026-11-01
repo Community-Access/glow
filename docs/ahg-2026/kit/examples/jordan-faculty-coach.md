@@ -1,7 +1,7 @@
 ---
 title: "Worked example: Jordan's faculty coach"
 lang: en
-author: "Jeff Bishop, BITS"
+author: "Jeff Bishop, University of Arizona, IT Accessibility Consultant"
 description: "Worked example: a faculty coach agent, from problem to 30-day plan."
 ---
 
@@ -117,6 +117,12 @@ psy101-syllabus.docx  score 0
 1  MEDIUM    ACB-DOC-TITLE           Document has no title set in properties
 ```
 
+Jordan also supplies a fictional manual-review note with the syllabus
+quotation, the accommodations statement's location and appearance, the
+contradictory exam policy and the color-coded reading list. Those observations
+are not established by the checker excerpt above. Without them, an agent
+must flag these as checks to do, not findings it has confirmed.
+
 > Example answer:
 >
 > Subject: One small Word habit for the PSY 101 syllabus
@@ -170,12 +176,15 @@ Each row is one part of the plan, and the answer.
 
 | Question | Jordan's answer |
 |---|---|
-| One workflow | Every syllabus review ends with a coach note, not a fixed file |
+| One workflow | Pilot a reviewed coaching draft alongside the existing syllabus review |
+| Handoff | Approved non-sensitive syllabus evidence goes to the agent; the draft stays in the review ticket until the designer edits and sends it |
 | One partner | The psychology department, because Dana said yes first |
 | One safeguard | I read every note before it goes; nothing auto-sends |
-| First step this week | Send three coach notes and count the replies |
+| Approved tools and data | Center director confirms the campus-approved assistant and allowed documents; approval pending in this example |
+| First step this week | Compare three practice notes with the existing process, including editing time and incorrect or missed advice |
 | Who needs to know | The center director; this changes what we report as "done" |
-| What it looks like if it worked | Next semester's syllabi arrive with real headings, without us touching them |
+| Day-30 decision | Director and designer compare total time, accuracy and faculty follow-through; later check whether new syllabi use real headings |
+| Stop and fallback | Private information, an unsupported finding or a missed review: use the normal staff-written reply |
 
 ## Sources
 

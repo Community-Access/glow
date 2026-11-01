@@ -1,13 +1,13 @@
 ---
 title: "Step card 3: Your agent at work"
 lang: en
-author: "Jeff Bishop, BITS"
+author: "Jeff Bishop, University of Arizona, IT Accessibility Consultant"
 description: "A step card for the AHG 2026 Accessibility Agents workshop."
 ---
 
 # Step card 3: Your agent at work
 
-Block 3 of 7, 11:40 to 12:15.
+Block 3 of 7, 11:45 to 12:15.
 
 ## Where we are
 
@@ -24,14 +24,14 @@ Your agent's first answer on a real course document, and version 2 of your agent
 1. In the same conversation as block 2, paste the text for "Block 3: your agent at work" from letitglow.app/ahg/assistant, and press Enter.
 2. Your assistant uses your agent from block 2. If it asks for your agent, paste it, or open your downloaded SKILL.md and copy it from there.
 3. Choose a file from the PSY 101 sample course. Your assistant suggests the one that best fits your agent.
-4. Read your agent's answer. Then read the short note: one thing it did well, and where it guessed.
+4. Read your agent's answer. Then read the short note: one thing it did well, and whether it guessed or asked for missing evidence.
 
 ### In VS Code
 
 1. Open Copilot Chat: Control+Alt+I on Windows, or Control+Command+I on a Mac.
 2. Type /try-my-agent and press Enter.
 3. Choose a file from the PSY 101 sample course. Copilot suggests the one that best fits your agent.
-4. Read your agent's answer. Then read Copilot's short note: one thing it did well, and where it guessed. To read a long answer as plain text, press Alt+F2 on Windows or Option+F2 on a Mac.
+4. Read your agent's answer. Then read Copilot's short note: one thing it did well, and whether it guessed or asked for missing evidence. To read a long answer as plain text, press Alt+F2 on Windows or Option+F2 on a Mac.
 
 ### Then make the next version, in a browser
 
@@ -47,7 +47,9 @@ Your agent's first answer on a real course document, and version 2 of your agent
 
 ## You are on track if
 
-You have an answer, you can name one thing your agent had to guess, and you have version 2.
+You have an answer, you can identify a guess or an appropriate request for
+evidence, and you have version 2. Asking for the missing report is a success;
+do not make the agent invent findings to finish this block.
 
 ## If you are stuck
 
@@ -57,7 +59,8 @@ Raise a hand at any time. A helper comes to you.
 
 ## Your win
 
-Your agent has done real work on a real course document, and you made it better. The guessing that is left is the setup for after lunch.
+You tested how your agent handles missing evidence, and made its instructions
+clearer. After lunch you give it the report and verify its answer.
 
 ## On Monday
 

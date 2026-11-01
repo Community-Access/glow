@@ -1,13 +1,13 @@
 ---
 title: "Step card 2: Design your agent"
 lang: en
-author: "Jeff Bishop, BITS"
+author: "Jeff Bishop, University of Arizona, IT Accessibility Consultant"
 description: "A step card for the AHG 2026 Accessibility Agents workshop."
 ---
 
 # Step card 2: Design your agent
 
-Block 2 of 7, 10:50 to 11:40.
+Block 2 of 7, 11:05 to 11:45.
 
 ## Where we are
 
@@ -40,7 +40,8 @@ Your own agent, with your answers in it and your name on it: the file SKILL.md.
 
 ## You are on track if
 
-Your assistant or Copilot tells you one specific thing your agent does well.
+Your saved agent names one task, its input, its output and a reviewer role.
+You can find the file and explain that task in one sentence.
 
 To see a finished example first, open examples/maria-alternate-format-planner.md, or the same file at letitglow.app/ahg/kit.
 

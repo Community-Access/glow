@@ -3,19 +3,21 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="author" content="Jeff Bishop, BITS">
+<meta name="author" content="Jeff Bishop, University of Arizona, IT Accessibility Consultant">
 <meta name="description" content="Worked example: an alternate format planner agent, from problem to 30-day plan.">
 <title>Worked example: Maria's alternate format planner</title>
 <style>
 :root { color-scheme: light dark; --bg: #ffffff; --fg: #1a1a1a; --link: #0b57d0; --rule: #6b6b6b; --code-bg: #f2f2f2; --focus: #b3261e; }
 @media (prefers-color-scheme: dark) { :root { --bg: #121212; --fg: #f1f1f1; --link: #a8c7fa; --rule: #9a9a9a; --code-bg: #262626; --focus: #ffb4ab; } }
 html { font-size: 112.5%; }
-body { background: var(--bg); color: var(--fg); font-family: Arial, Helvetica, sans-serif; line-height: 1.5; max-width: 46rem; margin: 0 auto; padding: 1rem; }
+body { background: var(--bg); color: var(--fg); font-family: Arial, Helvetica, sans-serif; line-height: 1.5; max-width: 46rem; margin: 0 auto; padding: 1rem; overflow-wrap: break-word; }
 a { color: var(--link); text-decoration: underline; }
 a:focus-visible, [tabindex]:focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; }
 h1, h2, h3, h4 { line-height: 1.25; }
 code, pre { font-family: Consolas, "Courier New", monospace; background: var(--code-bg); }
 pre { padding: 0.75rem; overflow-x: auto; white-space: pre-wrap; }
+/* At 320px a long path or address wraps rather than widening the page (WCAG 1.4.10). */
+code, pre, a { overflow-wrap: anywhere; }
 table { border-collapse: collapse; margin: 1rem 0; }
 th, td { border: 1px solid var(--rule); padding: 0.4rem 0.6rem; text-align: left; vertical-align: top; }
 .table-scroll { overflow-x: auto; }
@@ -131,6 +133,7 @@ blockquote { border-left: 4px solid var(--rule); margin-left: 0; padding-left: 1
 <blockquote>
 <p>Example answer: To make this PDF accessible, run Adobe Acrobat's "Make Accessible" action, add alternative text to all images, ensure a logical reading order, and increase the font size to at least 18pt. Then export to Word for large print and use a text-to-speech tool for audio. This will make the document compliant with WCAG 2.1.</p>
 </blockquote>
+<p>This is an intentionally flawed example for discussion, not an answer participants must reproduce. A good first response asks for evidence.</p>
 <p>Sounds confident. It is mostly wrong for this file:</p>
 <ul>
 <li>It guessed. It never saw the document and does not know it is scanned.</li>
@@ -147,6 +150,7 @@ CRITICAL  PDF-TAGGED     PDF is not tagged; screen readers cannot determine
           document structure
 HIGH      PDF-TITLE      PDF has no title set in document metadata
 HIGH      PDF-LANGUAGE   PDF has no language set in document metadata</code></pre>
+<p>Maria also supplies fictional staff context: the requested formats are large print and audio, and the reading contains the terms DAX, BOK and YAT and three discussion questions. These details are not established by the checker excerpt. Without source text or staff confirmation, ask for them.</p>
 <blockquote>
 <p>Example answer:</p>
 <p>Problem: the reading is two pages of pictures of text, with no text layer, so it cannot be enlarged cleanly, searched or read aloud (<a href="https://www.w3.org/WAI/WCAG22/Understanding/images-of-text.html">WCAG 2.2, 1.4.5 Images of Text</a>).</p>
@@ -167,7 +171,7 @@ HIGH      PDF-LANGUAGE   PDF has no language set in document metadata</code></pr
 </ul>
 <p>Sources: <a href="https://www.w3.org/TR/WCAG22/">WCAG 2.2</a>, <a href="https://www.w3.org/WAI/WCAG22/Understanding/images-of-text.html">Understanding 1.4.5</a>, <a href="https://acb.org/large-print-guidelines">ACB Large Print Guidelines</a>.</p>
 </blockquote>
-<p>What changed: the agent stopped guessing, because it had evidence. It cited the right criterion, knew what it could not see, and handed the decisions to a person.</p>
+<p>What changed: the answer now uses the supplied evidence, cites a relevant criterion and names what still needs checking. A person must verify those claims; giving an agent evidence does not guarantee it used it correctly.</p>
 <h2 id="5-her-agent-in-the-team">5. Her agent in the team</h2>
 <p>At 2:15 the office team works the whole PSY 101 course. The coordinator sends the scanned reading to Maria's agent, because that is the job it describes. Her section of the team report:</p>
 <blockquote>
@@ -188,7 +192,11 @@ HIGH      PDF-LANGUAGE   PDF has no language set in document metadata</code></pr
 <tbody>
 <tr>
 <td>One workflow</td>
-<td>Every scanned-reading request goes through the planner before I touch it</td>
+<td>Pilot production-plan drafts for up to five approved non-sensitive scanned readings, beside our existing process</td>
+</tr>
+<tr>
+<td>Handoff</td>
+<td>Staff keep student details in the case system; the agent reads approved document evidence and a generic format requirement; its draft returns to the specialist's ticket</td>
 </tr>
 <tr>
 <td>One partner</td>
@@ -199,16 +207,24 @@ HIGH      PDF-LANGUAGE   PDF has no language set in document metadata</code></pr
 <td>Nothing goes to a student until the page-by-page check box is checked</td>
 </tr>
 <tr>
+<td>Approved tools and data</td>
+<td>Director and campus privacy team confirm the assistant and permitted inputs before use; approval pending in this example</td>
+</tr>
+<tr>
 <td>First step this week</td>
-<td>Run the planner on the next five requests and compare with what I would have done</td>
+<td>Rehearse on the fictional reading, then record baseline staff and review time before an approved pilot</td>
 </tr>
 <tr>
 <td>Who needs to know</td>
 <td>My director, because this changes our intake form</td>
 </tr>
 <tr>
-<td>What it looks like if it worked</td>
-<td>Requests out in three days instead of eight, and no "the syllables were wrong" emails</td>
+<td>Day-30 decision</td>
+<td>Specialist and director compare total staff time, corrections and on-time delivery; continue only if quality is no worse and the workflow helps</td>
+</tr>
+<tr>
+<td>Stop and fallback</td>
+<td>Uncertain source, private data or a deadline at risk: stop the agent and use the existing production process; never delay an accommodation</td>
 </tr>
 </tbody>
 </table>

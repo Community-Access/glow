@@ -32,6 +32,14 @@ copied from the `agents/` folder of Community-Access/ahg-2026. When it exists,
 every agent in it is on the team, and the report names each one and its
 author.
 
+## What this team run demonstrates
+
+In this kit, one assistant follows the specialist instructions in sequence.
+It demonstrates routing and combining work, not independent reviewers or
+new scanner runs. Only claim a scan or file inspection if it actually ran.
+A standards-reviewer role in the same conversation is still AI output; it
+does not replace the staff review.
+
 ## How to run the team
 
 1. List the files in `sample-course/`. For each one, find its evidence in
@@ -39,7 +47,10 @@ author.
 2. Read `my-agent/SKILL.md` first. Decide which files it should get from its
    Task. If its Task is still the template, say so kindly and use the ready-made
    agent the participant chose in `examples/agents/`, or ask which one.
-3. For each file, act as each specialist that takes it, one at a time, using
+3. For captions, read the .vtt source as well as its evidence note. For a
+   rewrite or a quotation, use supplied source text; if absent, ask for it or
+   mark that part pending. A checker report is not the full document.
+   For each file, act as each specialist that takes it, one at a time, using
    only that file's evidence. Always include the participant's agent wherever
    its Task fits. A scanned PDF also goes to the alternate format planner if
    the participant's agent is one.
@@ -56,7 +67,7 @@ Start with three lines a busy director would read. Then one section per file:
 - What was found, most serious first, each with its WCAG 2.2 criterion and
   link, and the evidence it came from.
 - What the participant's agent produced for this file, in full.
-- What no checker can see, and needs a person.
+- What the supplied evidence cannot establish, and what a person checks.
 - Reviewer, and status "proposed".
 
 End with "Before this goes anywhere", a checklist for the human reviewer, and

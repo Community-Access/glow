@@ -1,7 +1,7 @@
 ---
 title: "Worked example: Maria's alternate format planner"
 lang: en
-author: "Jeff Bishop, BITS"
+author: "Jeff Bishop, University of Arizona, IT Accessibility Consultant"
 description: "Worked example: an alternate format planner agent, from problem to 30-day plan."
 ---
 
@@ -113,6 +113,9 @@ The same agent, asked the same question twice.
 > Word for large print and use a text-to-speech tool for audio. This will make
 > the document compliant with WCAG 2.1.
 
+This is an intentionally flawed example for discussion, not an answer
+participants must reproduce. A good first response asks for evidence.
+
 Sounds confident. It is mostly wrong for this file:
 
 - It guessed. It never saw the document and does not know it is scanned.
@@ -134,6 +137,11 @@ CRITICAL  PDF-TAGGED     PDF is not tagged; screen readers cannot determine
 HIGH      PDF-TITLE      PDF has no title set in document metadata
 HIGH      PDF-LANGUAGE   PDF has no language set in document metadata
 ```
+
+Maria also supplies fictional staff context: the requested formats are
+large print and audio, and the reading contains the terms DAX, BOK and YAT
+and three discussion questions. These details are not established by the
+checker excerpt. Without source text or staff confirmation, ask for them.
 
 > Example answer:
 >
@@ -167,9 +175,9 @@ HIGH      PDF-LANGUAGE   PDF has no language set in document metadata
 > [Understanding 1.4.5](https://www.w3.org/WAI/WCAG22/Understanding/images-of-text.html),
 > [ACB Large Print Guidelines](https://acb.org/large-print-guidelines).
 
-What changed: the agent stopped guessing, because it had evidence. It cited
-the right criterion, knew what it could not see, and handed the decisions to
-a person.
+What changed: the answer now uses the supplied evidence, cites a relevant
+criterion and names what still needs checking. A person must verify those
+claims; giving an agent evidence does not guarantee it used it correctly.
 
 ## 5. Her agent in the team
 
@@ -199,12 +207,15 @@ Each row is one part of the plan, and the answer.
 
 | Question | Maria's answer |
 |---|---|
-| One workflow | Every scanned-reading request goes through the planner before I touch it |
+| One workflow | Pilot production-plan drafts for up to five approved non-sensitive scanned readings, beside our existing process |
+| Handoff | Staff keep student details in the case system; the agent reads approved document evidence and a generic format requirement; its draft returns to the specialist's ticket |
 | One partner | Our two student workers, who do the text recognition |
 | One safeguard | Nothing goes to a student until the page-by-page check box is checked |
-| First step this week | Run the planner on the next five requests and compare with what I would have done |
+| Approved tools and data | Director and campus privacy team confirm the assistant and permitted inputs before use; approval pending in this example |
+| First step this week | Rehearse on the fictional reading, then record baseline staff and review time before an approved pilot |
 | Who needs to know | My director, because this changes our intake form |
-| What it looks like if it worked | Requests out in three days instead of eight, and no "the syllables were wrong" emails |
+| Day-30 decision | Specialist and director compare total staff time, corrections and on-time delivery; continue only if quality is no worse and the workflow helps |
+| Stop and fallback | Uncertain source, private data or a deadline at risk: stop the agent and use the existing production process; never delay an accommodation |
 
 ## Sources
 

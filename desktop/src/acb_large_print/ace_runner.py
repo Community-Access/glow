@@ -148,22 +148,17 @@ def ace_report_to_findings(report: dict) -> list[Finding]:
     seen_rules: set[str] = set()
 
     # Process assertions (EPUB-level checks: metadata, title, lang, etc.)
-    for assertion in report.get("assertions", {}).get("assertions", []):
-        _process_ace_assertion(assertion, findings, seen_rules)
-
-    # Process per-document violations (axe-core HTML checks)
-    for item in report.get("assertions", []):
-        if isinstance(item, dict) and "assertions" in item:
-            for assertion in item["assertions"]:
-                _process_ace_assertion(assertion, findings, seen_rules)
-
-    # Alternate structure: flat list at top level
-    if isinstance(report.get("assertions"), list):
-        for doc in report["assertions"]:
-            if not isinstance(doc, dict):
-                continue
-            for assertion in doc.get("assertions", []):
-                _process_ace_assertion(assertion, findings, seen_rules)
+    # Ace 1.4 writes "assertions" as a list, one entry per content document;
+    # an older shape wrapped them in a dict. Read whichever is there, once.
+    top = report.get("assertions", [])
+    if isinstance(top, dict):
+        for assertion in top.get("assertions", []):
+            _process_ace_assertion(assertion, findings, seen_rules)
+    elif isinstance(top, list):
+        for doc in top:
+            if isinstance(doc, dict):
+                for assertion in doc.get("assertions", []):
+                    _process_ace_assertion(assertion, findings, seen_rules)
 
     # Earl assertions at top level
     for earl in (

@@ -1,7 +1,7 @@
 ---
 title: "Worked example: Sam's remediation log keeper"
 lang: en
-author: "Jeff Bishop, BITS"
+author: "Jeff Bishop, University of Arizona, IT Accessibility Consultant"
 description: "Worked example: a remediation log keeper agent, from problem to 30-day plan."
 ---
 
@@ -24,8 +24,9 @@ meet WCAG 2.1 AA. Nobody fixes 40,000 files in a semester. What an
 institution can show is a defensible record: what was checked, what was
 found, what is fixed first and why, who decided, and when.
 
-PSY 101 is one course. Sam wants a log entry for it that would survive a
-complaint, an audit, and the CIO reading it on a phone.
+PSY 101 is one course. Sam wants a traceable log entry that a reviewer can
+verify and the CIO can read on a phone. A log supports accountability; it
+does not establish legal compliance or replace remediation.
 
 ## 2. Sam's six answers
 
@@ -118,6 +119,11 @@ psy101-lab1-stroop.pdf  score 50
 1  CRITICAL  `PDF-TAGGED`          PDF is not tagged
 ```
 
+The following example also uses fictional staff observations: the lab is due
+Friday, the lecture is already posted, and the gradebook is an
+instructor-facing template. These facts are not in the checker excerpt.
+Without that context, the agent must ask rather than invent a priority.
+
 > Example answer (first rows; dated 16 November 2026):
 >
 > | File | Barrier | WCAG | Severity | Priority | Reason | Evidence | Reviewer | Status |
@@ -157,12 +163,15 @@ Each row is one part of the plan, and the answer.
 
 | Question | Sam's answer |
 |---|---|
-| One workflow | Every course review ends as log entries, not an email |
+| One workflow | Pilot evidence-backed log drafts for one course, beside the existing review log |
+| Handoff | Approved checker reports go in; draft entries return to the existing log with source/date, agent version, owner, due date and review decision |
 | One partner | The registrar's office, who can tell us which courses have the most students |
 | One safeguard | Nothing leaves "proposed" without my initials |
-| First step this week | Log the ten highest-enrollment courses |
+| Approved tools and data | IT and the privacy team confirm the assistant and permitted reports; approval pending in this example |
+| First step this week | Compare up to five entries from the fictional course with a manually checked log; record review time and unsupported findings |
 | Who needs to know | The CIO and general counsel |
-| What it looks like if it worked | When asked "where are we", I send a link, not a spreadsheet named FINAL_final_v4 |
+| Day-30 decision | Coordinator checks traceable sources, correct priorities, total staff time and unresolved barriers; expand only after review |
+| Stop and fallback | Missing evidence, private data or no reviewer: keep the entry proposed and return to the existing manual review |
 
 ## Sources
 

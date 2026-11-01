@@ -1,7 +1,7 @@
 ---
 title: "Words used today"
 lang: en
-author: "Jeff Bishop, BITS"
+author: "Jeff Bishop, University of Arizona, IT Accessibility Consultant"
 description: "A glossary of the words used in the AHG 2026 Accessibility Agents workshop."
 ---
 
@@ -22,7 +22,7 @@ day if any of these is new. Nothing here needs code.
 | Accessible View | A plain-text copy of Copilot's last answer that a screen reader reads line by line. Alt+F2 on Windows, Option+F2 on a Mac |
 | Checker | A tool that finds barriers in a file: GLOW, axe, Accessibility Insights, or Word's, PowerPoint's and Acrobat's own checkers |
 | Evidence | A checker's report, the text of a document, or what you tell the agent. An agent works only from evidence |
-| Grounded | An agent that answers from evidence and cites WCAG 2.2, rather than guessing |
+| Grounded | An agent given evidence it can cite and a person can verify; this reduces guessing but does not guarantee correctness |
 | WCAG 2.2 | The Web Content Accessibility Guidelines, the W3C standard every workshop agent cites by criterion number |
 | Human review | The section of every agent that names who checks its work before anything goes out, and what they check |
 | Version | Each time you change your agent by one thing, it gets the next number. You make versions 1 to 4 today |
@@ -36,6 +36,6 @@ day if any of these is new. Nothing here needs code.
 ## The two rules
 
 1. Never paste anything private into any AI: student records, health or
-   disability information, or anyone's name.
+   disability information, or private identifying details.
 2. Agents draft. People decide. Every agent ends with a named person
    checking its work.

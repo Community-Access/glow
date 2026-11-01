@@ -1,7 +1,7 @@
 ---
 title: "Accessibility Agents, after today"
 lang: en
-author: "Jeff Bishop, BITS"
+author: "Jeff Bishop, University of Arizona, IT Accessibility Consultant"
 description: "What Accessibility Agents is, how to get it, and how to use it with your own agent after the AHG 2026 workshop."
 ---
 
@@ -120,8 +120,10 @@ Each row is one place you might use it, whether it works there today, and how.
 | ChatGPT's plugin directory | Not yet | Being prepared. When it is listed, you will install it once from Plugins in ChatGPT's sidebar instead of pasting a text |
 | Claude, Gemini, Copilot on github.com, a campus assistant | Yes, by pasting | The same texts |
 
-ChatGPT itself: a free account works for the whole day. Sign in before you
-start, because ChatGPT without an account stops after a message or two.
+Sign in to your campus-approved assistant before you start. Free accounts
+have usage and message-length limits that can change. Save your latest agent
+after each revision. If a limit interrupts you, ask a helper to continue
+with a written example or another approved assistant.
 On the web and on a phone, ChatGPT reads skills only when they come in a
 plugin from its directory; until Accessibility Agents is listed there, the
 pasted texts are the way in. In every assistant, a skill that needs a
@@ -146,6 +148,13 @@ scanner asks for your checker's results instead.
   github.com/Community-Access/accessibility-agents.
 - The two rules still apply: nothing private goes into any AI, and a person
   reviews everything an agent writes.
+
+## Thanks
+
+This workshop is by Jeff Bishop, [University of Arizona](https://accessibility.arizona.edu), IT Accessibility
+Consultant, in collaboration with [Blind Information Technology Solutions (BITS)](https://www.bits-acb.org)
+and [Techopolis](https://www.techopolis.app). Special thanks to Taylor Arndt, who helped dream up
+and build Accessibility Agents.
 
 ## Sources
 

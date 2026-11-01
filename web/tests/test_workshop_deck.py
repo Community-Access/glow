@@ -51,7 +51,7 @@ def test_the_deck_agenda_comes_from_the_agenda_module(client):
 def test_block_lengths_on_the_deck_match_the_agenda(client):
     body = client.get(f"/workshop/session/{CODE}/deck").get_data(as_text=True)
     ground = agenda.ahg_blocks()[3]
-    assert f"Block 4 of 7 - {ground.clock} - {ground.minutes} minutes" in body
+    assert f"Block 4 of 7, slide 1 of 3 - {ground.clock} - {ground.minutes} minutes" in body
 
 
 def test_break_slides_say_when_the_room_comes_back(client):

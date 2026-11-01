@@ -1,19 +1,24 @@
 ---
 title: "Welcome to the AHG 2026 agent kit"
 lang: en
-author: "Jeff Bishop, BITS"
+author: "Jeff Bishop, University of Arizona, IT Accessibility Consultant"
 description: "Welcome page for the AHG 2026 agent kit."
 ---
 
 # Welcome to the AHG 2026 agent kit
 
 You are in the right place. This page opens by itself when you open the kit
-in VS Code. Nothing here needs code, and nothing here can break.
+in VS Code. The exercises need no coding. Keep a copy of your agent after
+each revision so you can recover if a step fails.
 
 ## Three paths into the same day
 
 Every path gives you the same agent, the same team report and the same
 share on GitHub. letitglow.app/ahg/paths compares them.
+
+Use only campus-approved tools and data. If AI use or public sharing is not
+approved, use the worked examples in Word or on paper with a helper and keep
+your work local. A browser is not a way around campus policy.
 
 - In a browser: no kit needed. Open letitglow.app/ahg/assistant, copy each
   block's text, and paste it into ChatGPT, Copilot on github.com, Claude,
@@ -45,9 +50,9 @@ block has every key and every expected result in words.
 
 | Block | Time | Command | What you get |
 |---|---|---|---|
-| 1. Why we are here | 10:30 | /ready-check | A ready laptop |
-| 2. Design your agent | 10:50 | /design-my-agent | Your own agent, in `my-agent/SKILL.md`: version 1 |
-| 3. Your agent at work | 11:40 | /try-my-agent, then /review-my-agent | Its first answer on a course document, and version 2 |
+| 1. Why we are here | 10:30 | /ready-check | A ready laptop, a tour of the kit and the site, and how agents work |
+| 2. Design your agent | 11:05 | /design-my-agent | Your own agent, in `my-agent/SKILL.md`: version 1 |
+| 3. Your agent at work | 11:45 | /try-my-agent, then /review-my-agent | Its first answer on a course document, and version 2 |
 | 4. Ground it | 1:15 | /ground-my-agent, then /review-my-agent | Cited answers from real evidence, and version 3 |
 | 5. Build the office | 2:15 | /run-the-office, then /review-my-agent | Your agent in a team, across the whole course, and version 4 |
 | 6. Share it | 3:05 | letitglow.app/ahg/share | Your best version in the collection, in your name |
@@ -74,6 +79,7 @@ This list follows the folders in the Explorer, top to bottom.
 | `accessibility-agents-LICENSE.txt` | Accessibility Agents' MIT licence, which travels with its skills |
 | `agent-file-principles.md` | What makes a good agent file, and the twelve review questions /review-my-agent uses |
 | `glossary.md` | The words used today, one line each |
+| `session-in-plain-language.md` | The workshop in about 150 words, to pass on |
 | `write-your-own-agent.md` | The full tutorial: write, test, ground, revise and share an agent on your own, in any assistant |
 
 ## You cannot fall behind
@@ -86,7 +92,10 @@ switch to the browser path and carry on from the same block.
 
 ## If you use a screen reader
 
-Everything today works with NVDA, JAWS and VoiceOver, on every path.
+The kit includes keyboard and screen reader instructions. Test your chosen
+path with your own setup during the ready check; tell a helper if a step
+does not work. Final NVDA, JAWS and VoiceOver walkthroughs are still required
+before the workshop is declared ready.
 
 - In VS Code, Copilot's answers are long. Move to the answer and press
   Alt+F2 (Option+F2 on a Mac) to read it as plain text in the Accessible
@@ -123,15 +132,27 @@ arrives and another when Copilot needs you to approve something. The
 settings are `accessibility.signals.chatResponseReceived` and
 `accessibility.signals.chatUserActionRequired`. While Copilot works, it
 says what it is doing; `accessibility.verboseChatProgressUpdates` turns
-that off. The kit sets chat text to 18 point with `chat.fontSize`.
+that off. The kit enlarges chat text with `chat.fontSize`; adjust it for your own
+reading comfort.
+
+Your own author credit is optional in the AI conversation. Use a public
+professional name only if you choose; a helper can add the credit locally.
+Never put student or case details in an author line.
 
 ## The two rules
 
 1. Never paste anything private into any AI: student records, health or
-   disability information, or anyone's name. Use the sample course.
+   disability information, or private identifying details. Use the sample course.
 2. Every agent ends with a person checking its work.
 
 Help, before or after the day: support@community-access.org.
+
+## Thanks
+
+This workshop is by Jeff Bishop, [University of Arizona](https://accessibility.arizona.edu), IT Accessibility
+Consultant, in collaboration with [Blind Information Technology Solutions (BITS)](https://www.bits-acb.org)
+and [Techopolis](https://www.techopolis.app). Special thanks to Taylor Arndt, who helped dream up
+and build Accessibility Agents.
 
 ## Sources
 

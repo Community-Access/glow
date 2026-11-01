@@ -3,19 +3,21 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="author" content="Jeff Bishop, BITS">
+<meta name="author" content="Jeff Bishop, University of Arizona, IT Accessibility Consultant">
 <meta name="description" content="The AHG 2026 Accessibility Agents session description for participants.">
 <title>Accessibility Agents: Building Human-Centered AI Workflows for Trusted Accessibility Automation at Scale</title>
 <style>
 :root { color-scheme: light dark; --bg: #ffffff; --fg: #1a1a1a; --link: #0b57d0; --rule: #6b6b6b; --code-bg: #f2f2f2; --focus: #b3261e; }
 @media (prefers-color-scheme: dark) { :root { --bg: #121212; --fg: #f1f1f1; --link: #a8c7fa; --rule: #9a9a9a; --code-bg: #262626; --focus: #ffb4ab; } }
 html { font-size: 112.5%; }
-body { background: var(--bg); color: var(--fg); font-family: Arial, Helvetica, sans-serif; line-height: 1.5; max-width: 46rem; margin: 0 auto; padding: 1rem; }
+body { background: var(--bg); color: var(--fg); font-family: Arial, Helvetica, sans-serif; line-height: 1.5; max-width: 46rem; margin: 0 auto; padding: 1rem; overflow-wrap: break-word; }
 a { color: var(--link); text-decoration: underline; }
 a:focus-visible, [tabindex]:focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; }
 h1, h2, h3, h4 { line-height: 1.25; }
 code, pre { font-family: Consolas, "Courier New", monospace; background: var(--code-bg); }
 pre { padding: 0.75rem; overflow-x: auto; white-space: pre-wrap; }
+/* At 320px a long path or address wraps rather than widening the page (WCAG 1.4.10). */
+code, pre, a { overflow-wrap: anywhere; }
 table { border-collapse: collapse; margin: 1rem 0; }
 th, td { border: 1px solid var(--rule); padding: 0.4rem 0.6rem; text-align: left; vertical-align: top; }
 .table-scroll { overflow-x: auto; }
@@ -33,11 +35,12 @@ blockquote { border-left: 4px solid var(--rule); margin-left: 0; padding-left: 1
 <ul>
 <li>Design your own accessibility agent: six plain-English answers about its role, its task, the standards it must cite, what it produces, and who reviews it. No code.</li>
 <li>Put it to work on a realistic sample course full of planted barriers, with GitHub Copilot in VS Code or with the AI assistant you already use.</li>
-<li>Ground it in real evidence from GLOW, axe-core and Accessibility Insights, so it cites WCAG 2.2 instead of guessing.</li>
+<li>Ground it in real evidence from GLOW, axe-core and Accessibility Insights, so you can verify its claims and WCAG 2.2 citations.</li>
 <li>Build the office: add your agent to an agent team of coordinated specialists and run the team across the whole course.</li>
 <li>Share it: add your agent to the open-source AHG 2026 collection on GitHub with one form and one button, committed in your name. At the end of the day every agent goes into the Accessibility Agents project, with its author credited.</li>
 <li>Leave with a 30-day plan for your own campus.</li>
 </ul>
+<p>The plan fits one step of an existing disability resource center workflow: approved inputs, a draft destination, a staff reviewer and a deadline. You will choose a small pilot and measure total staff time, quality and delivery before expanding it. Eligibility and accommodation decisions remain with authorized people, never the agent.</p>
 <h2 id="who-it-is-for">Who it is for</h2>
 <p>Accessibility professionals, disability resource staff, alternate format producers, instructional designers, faculty developers, IT accessibility staff, and the people who lead them. You do not need to be a developer, and you do not need to have used VS Code or GitHub before.</p>
 <h2 id="what-you-need">What you need</h2>
@@ -48,6 +51,7 @@ blockquote { border-left: 4px solid var(--rule); margin-left: 0; padding-left: 1
 <li>VS Code for the Web: the same VS Code and Copilot at vscode.dev, in Chrome or Edge, with the kit opened from your laptop. About 15 minutes.</li>
 </ol>
 <p>Not sure? Take the browser path. There is a setup table outside the room from 10:00 on the day.</p>
+<p>Campus approval comes first. If AI tools or public sharing are not approved, use the written examples in Word or on paper and keep your work local.</p>
 <h2 id="learning-outcomes">Learning outcomes</h2>
 <p>By the end of the day you will be able to:</p>
 <ol type="1">
@@ -60,7 +64,7 @@ blockquote { border-left: 4px solid var(--rule); margin-left: 0; padding-left: 1
 </ol>
 <h2 id="two-rules-all-day">Two rules, all day</h2>
 <ol type="1">
-<li>Never paste anything private into any AI: student records, health or disability information, or anyone's name. We use a sample course.</li>
+<li>Never paste anything private into any AI: student records, health or disability information, or private identifying details. We use a sample course.</li>
 <li>Agents draft. People decide. Every agent ends with a named person checking its work.</li>
 </ol>
 <h2 id="support">Support</h2>

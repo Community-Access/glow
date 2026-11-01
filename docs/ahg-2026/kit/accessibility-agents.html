@@ -3,19 +3,21 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="author" content="Jeff Bishop, BITS">
+<meta name="author" content="Jeff Bishop, University of Arizona, IT Accessibility Consultant">
 <meta name="description" content="What Accessibility Agents is, how to get it, and how to use it with your own agent after the AHG 2026 workshop.">
 <title>Accessibility Agents, after today</title>
 <style>
 :root { color-scheme: light dark; --bg: #ffffff; --fg: #1a1a1a; --link: #0b57d0; --rule: #6b6b6b; --code-bg: #f2f2f2; --focus: #b3261e; }
 @media (prefers-color-scheme: dark) { :root { --bg: #121212; --fg: #f1f1f1; --link: #a8c7fa; --rule: #9a9a9a; --code-bg: #262626; --focus: #ffb4ab; } }
 html { font-size: 112.5%; }
-body { background: var(--bg); color: var(--fg); font-family: Arial, Helvetica, sans-serif; line-height: 1.5; max-width: 46rem; margin: 0 auto; padding: 1rem; }
+body { background: var(--bg); color: var(--fg); font-family: Arial, Helvetica, sans-serif; line-height: 1.5; max-width: 46rem; margin: 0 auto; padding: 1rem; overflow-wrap: break-word; }
 a { color: var(--link); text-decoration: underline; }
 a:focus-visible, [tabindex]:focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; }
 h1, h2, h3, h4 { line-height: 1.25; }
 code, pre { font-family: Consolas, "Courier New", monospace; background: var(--code-bg); }
 pre { padding: 0.75rem; overflow-x: auto; white-space: pre-wrap; }
+/* At 320px a long path or address wraps rather than widening the page (WCAG 1.4.10). */
+code, pre, a { overflow-wrap: anywhere; }
 table { border-collapse: collapse; margin: 1rem 0; }
 th, td { border: 1px solid var(--rule); padding: 0.4rem 0.6rem; text-align: left; vertical-align: top; }
 .table-scroll { overflow-x: auto; }
@@ -174,7 +176,7 @@ blockquote { border-left: 4px solid var(--rule); margin-left: 0; padding-left: 1
 </tbody>
 </table>
 </div>
-<p>ChatGPT itself: a free account works for the whole day. Sign in before you start, because ChatGPT without an account stops after a message or two. On the web and on a phone, ChatGPT reads skills only when they come in a plugin from its directory; until Accessibility Agents is listed there, the pasted texts are the way in. In every assistant, a skill that needs a scanner asks for your checker's results instead.</p>
+<p>Sign in to your campus-approved assistant before you start. Free accounts have usage and message-length limits that can change. Save your latest agent after each revision. If a limit interrupts you, ask a helper to continue with a written example or another approved assistant. On the web and on a phone, ChatGPT reads skills only when they come in a plugin from its directory; until Accessibility Agents is listed there, the pasted texts are the way in. In every assistant, a skill that needs a scanner asks for your checker's results instead.</p>
 <h2 id="using-it-with-your-own-agent">Using it with your own agent</h2>
 <ul>
 <li>Keep your agent beside the others: put it in <code>.github/skills/&lt;name&gt;/</code>, next to the Accessibility Agents folders. It is the same format, so it works the same way.</li>
@@ -187,6 +189,8 @@ blockquote { border-left: 4px solid var(--rule); margin-left: 0; padding-left: 1
 <li>A rule an agent gets wrong, or a pattern it should catch: open an issue on github.com/Community-Access/accessibility-agents.</li>
 <li>The two rules still apply: nothing private goes into any AI, and a person reviews everything an agent writes.</li>
 </ul>
+<h2 id="thanks">Thanks</h2>
+<p>This workshop is by Jeff Bishop, <a href="https://accessibility.arizona.edu">University of Arizona</a>, IT Accessibility Consultant, in collaboration with <a href="https://www.bits-acb.org">Blind Information Technology Solutions (BITS)</a> and <a href="https://www.techopolis.app">Techopolis</a>. Special thanks to Taylor Arndt, who helped dream up and build Accessibility Agents.</p>
 <h2 id="sources">Sources</h2>
 <p>Checked on 29 October 2026.</p>
 <ul>

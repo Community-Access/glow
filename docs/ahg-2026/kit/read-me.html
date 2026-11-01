@@ -3,19 +3,21 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="author" content="Jeff Bishop, BITS">
+<meta name="author" content="Jeff Bishop, University of Arizona, IT Accessibility Consultant">
 <meta name="description" content="Welcome page for the AHG 2026 agent kit.">
 <title>Welcome to the AHG 2026 agent kit</title>
 <style>
 :root { color-scheme: light dark; --bg: #ffffff; --fg: #1a1a1a; --link: #0b57d0; --rule: #6b6b6b; --code-bg: #f2f2f2; --focus: #b3261e; }
 @media (prefers-color-scheme: dark) { :root { --bg: #121212; --fg: #f1f1f1; --link: #a8c7fa; --rule: #9a9a9a; --code-bg: #262626; --focus: #ffb4ab; } }
 html { font-size: 112.5%; }
-body { background: var(--bg); color: var(--fg); font-family: Arial, Helvetica, sans-serif; line-height: 1.5; max-width: 46rem; margin: 0 auto; padding: 1rem; }
+body { background: var(--bg); color: var(--fg); font-family: Arial, Helvetica, sans-serif; line-height: 1.5; max-width: 46rem; margin: 0 auto; padding: 1rem; overflow-wrap: break-word; }
 a { color: var(--link); text-decoration: underline; }
 a:focus-visible, [tabindex]:focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; }
 h1, h2, h3, h4 { line-height: 1.25; }
 code, pre { font-family: Consolas, "Courier New", monospace; background: var(--code-bg); }
 pre { padding: 0.75rem; overflow-x: auto; white-space: pre-wrap; }
+/* At 320px a long path or address wraps rather than widening the page (WCAG 1.4.10). */
+code, pre, a { overflow-wrap: anywhere; }
 table { border-collapse: collapse; margin: 1rem 0; }
 th, td { border: 1px solid var(--rule); padding: 0.4rem 0.6rem; text-align: left; vertical-align: top; }
 .table-scroll { overflow-x: auto; }
@@ -26,9 +28,10 @@ blockquote { border-left: 4px solid var(--rule); margin-left: 0; padding-left: 1
 <body>
 <main>
 <h1 id="welcome-to-the-ahg-2026-agent-kit">Welcome to the AHG 2026 agent kit</h1>
-<p>You are in the right place. This page opens by itself when you open the kit in VS Code. Nothing here needs code, and nothing here can break.</p>
+<p>You are in the right place. This page opens by itself when you open the kit in VS Code. The exercises need no coding. Keep a copy of your agent after each revision so you can recover if a step fails.</p>
 <h2 id="three-paths-into-the-same-day">Three paths into the same day</h2>
 <p>Every path gives you the same agent, the same team report and the same share on GitHub. letitglow.app/ahg/paths compares them.</p>
+<p>Use only campus-approved tools and data. If AI use or public sharing is not approved, use the worked examples in Word or on paper with a helper and keep your work local. A browser is not a way around campus policy.</p>
 <ul>
 <li>In a browser: no kit needed. Open letitglow.app/ahg/assistant, copy each block's text, and paste it into ChatGPT, Copilot on github.com, Claude, Gemini or your campus assistant. The same texts are in this kit, in <code>any-assistant/</code>.</li>
 <li>In VS Code on your computer: you are probably reading this there. Each block is one command in Copilot Chat.</li>
@@ -58,17 +61,17 @@ blockquote { border-left: 4px solid var(--rule); margin-left: 0; padding-left: 1
 <td>1. Why we are here</td>
 <td>10:30</td>
 <td>/ready-check</td>
-<td>A ready laptop</td>
+<td>A ready laptop, a tour of the kit and the site, and how agents work</td>
 </tr>
 <tr>
 <td>2. Design your agent</td>
-<td>10:50</td>
+<td>11:05</td>
 <td>/design-my-agent</td>
 <td>Your own agent, in <code>my-agent/SKILL.md</code>: version 1</td>
 </tr>
 <tr>
 <td>3. Your agent at work</td>
-<td>11:40</td>
+<td>11:45</td>
 <td>/try-my-agent, then /review-my-agent</td>
 <td>Its first answer on a course document, and version 2</td>
 </tr>
@@ -171,6 +174,10 @@ blockquote { border-left: 4px solid var(--rule); margin-left: 0; padding-left: 1
 <td>The words used today, one line each</td>
 </tr>
 <tr>
+<td><code>session-in-plain-language.md</code></td>
+<td>The workshop in about 150 words, to pass on</td>
+</tr>
+<tr>
 <td><code>write-your-own-agent.md</code></td>
 <td>The full tutorial: write, test, ground, revise and share an agent on your own, in any assistant</td>
 </tr>
@@ -180,7 +187,7 @@ blockquote { border-left: 4px solid var(--rule); margin-left: 0; padding-left: 1
 <h2 id="you-cannot-fall-behind">You cannot fall behind</h2>
 <p>Every step has a finished version in <code>examples/</code>. If anything goes wrong, start from one of the six ready-made agents in <code>examples/agents/</code>, put your name on it, and carry on. That is still your agent, and it still goes into the open-source project with your name on it. If VS Code gives you trouble, switch to the browser path and carry on from the same block.</p>
 <h2 id="if-you-use-a-screen-reader">If you use a screen reader</h2>
-<p>Everything today works with NVDA, JAWS and VoiceOver, on every path.</p>
+<p>The kit includes keyboard and screen reader instructions. Test your chosen path with your own setup during the ready check; tell a helper if a step does not work. Final NVDA, JAWS and VoiceOver walkthroughs are still required before the workshop is declared ready.</p>
 <ul>
 <li>In VS Code, Copilot's answers are long. Move to the answer and press Alt+F2 (Option+F2 on a Mac) to read it as plain text in the Accessible View. Inside it, Control+Alt+Page Down and Control+Alt+Page Up move between code blocks.</li>
 <li>VS Code plays a sound when an answer arrives, and another when Copilot needs you to approve something, such as saving your agent file. Help: List Signal Sounds turns them on or off.</li>
@@ -234,13 +241,16 @@ blockquote { border-left: 4px solid var(--rule); margin-left: 0; padding-left: 1
 </tbody>
 </table>
 </div>
-<p>With a screen reader running, VS Code plays a sound when Copilot's answer arrives and another when Copilot needs you to approve something. The settings are <code>accessibility.signals.chatResponseReceived</code> and <code>accessibility.signals.chatUserActionRequired</code>. While Copilot works, it says what it is doing; <code>accessibility.verboseChatProgressUpdates</code> turns that off. The kit sets chat text to 18 point with <code>chat.fontSize</code>.</p>
+<p>With a screen reader running, VS Code plays a sound when Copilot's answer arrives and another when Copilot needs you to approve something. The settings are <code>accessibility.signals.chatResponseReceived</code> and <code>accessibility.signals.chatUserActionRequired</code>. While Copilot works, it says what it is doing; <code>accessibility.verboseChatProgressUpdates</code> turns that off. The kit enlarges chat text with <code>chat.fontSize</code>; adjust it for your own reading comfort.</p>
+<p>Your own author credit is optional in the AI conversation. Use a public professional name only if you choose; a helper can add the credit locally. Never put student or case details in an author line.</p>
 <h2 id="the-two-rules">The two rules</h2>
 <ol type="1">
-<li>Never paste anything private into any AI: student records, health or disability information, or anyone's name. Use the sample course.</li>
+<li>Never paste anything private into any AI: student records, health or disability information, or private identifying details. Use the sample course.</li>
 <li>Every agent ends with a person checking its work.</li>
 </ol>
 <p>Help, before or after the day: <a href="mailto:support@community-access.org">support@community-access.org</a>.</p>
+<h2 id="thanks">Thanks</h2>
+<p>This workshop is by Jeff Bishop, <a href="https://accessibility.arizona.edu">University of Arizona</a>, IT Accessibility Consultant, in collaboration with <a href="https://www.bits-acb.org">Blind Information Technology Solutions (BITS)</a> and <a href="https://www.techopolis.app">Techopolis</a>. Special thanks to Taylor Arndt, who helped dream up and build Accessibility Agents.</p>
 <h2 id="sources">Sources</h2>
 <p>Checked on 29 October 2026.</p>
 <ul>

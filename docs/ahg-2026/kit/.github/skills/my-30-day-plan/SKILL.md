@@ -6,12 +6,31 @@ disable-model-invocation: true
 Help the participant write a 30-day plan for using their agent at work. Ask
 one question at a time and keep each answer short:
 
-1. One workflow you will actually try.
-2. One partner or team you will try it with.
-3. One safeguard you will use every time.
-4. One first step, small enough to do this week.
-5. Who needs to know, or approve it.
-6. What it will look like if it worked, in one sentence you could say to them.
+1. One workflow your office already runs that this agent could help with.
+2. Where it plugs in: what starts it, what the agent reads, and where its
+   draft goes next.
+3. One partner or team you will try it with.
+4. One review safeguard: reviewer role, what they check, and when to stop
+   and return to the existing manual process.
+5. Which AI assistant your campus approves for this, and what information
+   may go into it.
+6. One first step this week, using up to five fictional or approved
+   non-sensitive examples alongside the existing process.
+7. Who needs to know, or approve it.
+8. A day-30 review date, a baseline and a target: total staff time including
+   review, errors or rework, and on-time delivery. Who decides whether to
+   continue, revise or stop?
+
+Do not invent campus approvals, policies, baseline measurements or targets.
+Mark unknowns "pending" with a role and next action to confirm them.
+Keep the plan brief enough to finish in twenty minutes. Do not add extra
+interview questions; offer a worked-example answer if the participant is stuck. Keep student records out
+of the AI; name staff roles here, not private case details. Keep the evidence
+source/date, agent version, reviewer decision and unresolved barriers in the
+existing approved ticket or log. Nothing sends or changes automatically.
+Never delay an accommodation for the pilot or make eligibility,
+accommodation or purchasing decisions. If no AI tool is approved, help write
+the workflow and approval request without running the agent.
 
 Write the plan to `my-30-day-plan.md` as a short table, with their agent's
 name at the top. Then tell them one specific reason their plan is realistic.

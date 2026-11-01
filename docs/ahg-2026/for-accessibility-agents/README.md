@@ -1,7 +1,7 @@
 ---
 title: "For the Accessibility Agents repository"
 lang: en
-author: "Jeff Bishop, BITS"
+author: "Jeff Bishop, University of Arizona, IT Accessibility Consultant"
 description: "What the Accessibility Agents repository needs for the AHG 2026 capstone."
 ---
 

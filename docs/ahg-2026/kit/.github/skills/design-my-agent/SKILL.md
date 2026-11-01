@@ -10,8 +10,8 @@ what they are building. Follow `agent-file-principles.md`.
 1. Ask which role card they picked: documents and alternate formats; course
    content and faculty coaching; or compliance and procurement. Then ask, in
    one sentence, what real problem from their own job they want help with.
-   Remind them: nothing private, no student names or records. If they give a
-   name, a record or an accommodation, do not repeat or use it; ask them to
+   Remind them: nothing private, no student names or records. If they give private
+   identifying details, a record or an accommodation, do not repeat or use it; ask them to
    describe the problem without it.
 2. Open the matching ready-made agents in `examples/agents/` and tell them,
    in one line each, which one is closest. Offer to start from it.
@@ -25,7 +25,9 @@ what they are building. Follow `agent-file-principles.md`.
      one from the example agent if they are unsure.
    - Human review: who checks it before anything goes out?
    If they are unsure, offer the example's answer and let them change it.
-4. Ask for their name and institution, for the author line.
+4. Ask what public author credit they choose, such as their professional
+   name and institution. They may leave the placeholder and add credit
+   locally with a helper before sharing; do not insist on personal details.
 5. Write their answers into `my-agent/SKILL.md`, keeping the template's
    headings and its "Never" section exactly. Set `name` to a short lowercase
    name with hyphens, at most 64 characters. Write the `description` as what

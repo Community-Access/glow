@@ -1,7 +1,7 @@
 ---
 title: "AHG 2026 workshop plan: Accessibility Agents for higher education"
 lang: en
-author: "Jeff Bishop, BITS"
+author: "Jeff Bishop, University of Arizona, IT Accessibility Consultant"
 description: "How the AHG 2026 Accessibility Agents workshop keeps every promise in its published session description."
 ---
 
@@ -96,6 +96,14 @@ Anyone whose VS Code will not cooperate, or whose Copilot allowance runs
 out, moves to the browser path and loses nothing.
 
 ## 4. Decisions
+
+Current delivery note, 31 October 2026: D18 and D20 supersede D3 and D8
+where those earlier decisions required every participant to use Copilot.
+Text messages also have limits; D4 is a text-first teaching choice, not an
+unlimited-use promise. The sample now has seven files: five Office/PDF
+documents, one web page and one caption file, superseding D11's old count.
+Public sharing requires permission; a saved draft remains deferred until
+published. The run of show protects planning and partner-review time.
 
 These replace L1 to L14 in the September plan.
 
@@ -211,8 +219,8 @@ Her finished work is shown before anyone starts theirs.
 2. Her six answers.
 3. Her agent, and her AI's first answer.
 4. Her agent's answer before grounding and after, side by side.
-5. Her agent in the repository.
-6. Her agent's section of the team report.
+5. Her agent's section of the team report.
+6. Her agent in the repository.
 7. Her 30-day plan.
 
 Each role card has the same seven artifacts.
@@ -223,9 +231,9 @@ Each role card has the same seven artifacts.
 
 | Time | Minutes | Block | What the participant has at the end |
 |---|---|---|---|
-| 10:30 | 20 | 1. Why we are here, and the finished result shown first | The journey, and the team report they are working toward |
-| 10:50 | 50 | 2. Design your agent | Six answers, and version 1 of the agent file built from them |
-| 11:40 | 35 | 3. Your agent at work | Copilot's answer, using their agent, on one course document; then /review-my-agent: version 2 |
+| 10:30 | 35 | 1. Why we are here, and the finished result shown first | The team report they are working toward, the map, a ready check, a tour of the kit and the site, what makes up an agent, and what automation cannot decide for them |
+| 11:05 | 40 | 2. Design your agent | Six answers, and version 1 of the agent file built from them |
+| 11:45 | 30 | 3. Your agent at work | Copilot's answer, using their agent, on one course document; then /review-my-agent: version 2 |
 | 12:15 | 60 | Lunch | |
 | 1:15 | 50 | 4. Ground it | A before and after: the same agent, with evidence and citations; then version 3 |
 | 2:05 | 10 | Break | |

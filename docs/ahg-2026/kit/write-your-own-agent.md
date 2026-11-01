@@ -1,7 +1,7 @@
 ---
 title: "Write your own accessibility agent: a tutorial"
 lang: en
-author: "Jeff Bishop, BITS"
+author: "Jeff Bishop, University of Arizona, IT Accessibility Consultant"
 description: "A start-to-finish tutorial for writing, testing, grounding and sharing an accessibility agent, in any AI assistant, after the AHG 2026 workshop."
 ---
 
@@ -32,7 +32,7 @@ Each row is one step, what you do in it, and what you have at the end.
 | 2 | Write the header | A name and a description that says when to use it |
 | 3 | Write the six sections | Role, Task, Trusted guidance, Output format, Example, Human review |
 | 4 | Keep the Never rules | The three lines every agent keeps |
-| 5 | Try it, with no evidence | A first answer, and a list of where it guessed |
+| 5 | Try it, with no evidence | A first answer, and a note of guesses or missing evidence |
 | 6 | Ground it | A second answer that cites evidence and WCAG 2.2 |
 | 7 | Revise, one change at a time | Versions 2, 3 and 4 |
 | 8 | Install it and share it | Your agent where you work, and in the open-source collection |
@@ -44,7 +44,7 @@ Each row is one step, what you do in it, and what you have at the end.
 - Open `agent-file-principles.md` beside it. This tutorial refers to its
   twelve principles by number.
 - Read the two rules again. Never paste anything private into any AI:
-  student records, health or disability information, or anyone's name.
+  student records, health or disability information, or private identifying details.
   Every agent ends with a named person checking its work.
 
 ## Step 1: choose one job
@@ -217,15 +217,17 @@ The three rules are there, unchanged. Your own rule is one line.
 
 ## Step 5: try it, with no evidence
 
-Now see what the agent does when it has to guess. This first answer is
-supposed to be weak; it shows you what to fix.
+Now see how the agent handles missing evidence. A good answer asks for the
+file or checker report and does not invent findings. A weak answer gives
+you something to fix; do not make the agent guess to complete this step.
 
 1. Start a new conversation in your assistant.
 2. Paste the whole agent file as your first message. In VS Code with the
    agent installed (step 8), type `/` and its name instead.
 3. Ask it to do its job, giving it only a file name. Dev asked: "Write the
    correction request for psy101-week3-captions.vtt."
-4. Read the answer, and write down every place it guessed.
+4. Read the answer. Note any guesses, or its appropriate request for the
+   missing evidence.
 
 Dev's first answer apologised for not seeing the file, then listed "common
 caption errors" from nowhere and called the captions "not ADA compliant".
@@ -242,13 +244,15 @@ Read the answer for these, every time:
 
 ### Step 5 check
 
-You have the first answer, and a written list of what was wrong with it.
+You have the first answer, and a note of any guesses or its appropriate
+request for evidence.
 
 ## Step 6: ground it in evidence
 
-Grounding means giving the agent the evidence it needs, so it stops
-guessing. Evidence is a checker's report, the text of a document, or what
-you tell it.
+Grounding means giving the agent evidence it can cite and a person can
+verify. It reduces guessing; it does not guarantee a correct answer.
+Evidence is a checker's report, the text of a document, or a clearly
+labelled observation you supply.
 
 1. In the same conversation, give it the evidence. Dev pasted the caption
    file from `sample-course/psy101-week3-captions.vtt`, then the course's
@@ -262,10 +266,11 @@ Dev's grounded answer found "herman ebb in house" at 00:00:04.500 and
 question from the room at 00:00:21.500 as a speaker change with no label,
 and ended with the checklist.
 
-Some barriers no checker sees. Captions are the clearest case: no automated
-tool judges whether "ebb in house" is right. That is why the evidence here
-is the caption file and your list of terms, and why the reviewer listens to
-the recording. For a Word file, a PDF or a web page, the evidence is a
+A checker report alone does not establish caption accuracy. The caption
+file and the confirmed list of terms support proposed corrections; a
+reviewer still listens to the recording to confirm words, timing, speakers
+and meaningful sounds. The sample provides no recording, so that listening
+check remains pending. For a Word file, a PDF or a web page, the evidence is a
 checker's report: Word's, PowerPoint's or Acrobat's own Accessibility
 Checker, Accessibility Insights, axe or GLOW. Paste its results.
 
@@ -360,6 +365,59 @@ in your name, and into the Accessibility Agents project with you credited.
 
 The agent answers by name where you work, and you know where its newest
 version is.
+
+## Putting it to work in your office
+
+Fit the agent into a workflow your office already runs, at one step, rather
+than building a new process around it. Name four things, and write them at
+the top of your notes:
+
+- The trigger: what starts a run. An alternate format request, a course
+  review before term, a faculty email, a vendor report.
+- The input: what the agent reads. A checker report or the document
+  itself, never a student record.
+- The handoff: where its draft goes. Your ticket, your remediation log, or
+  a reply you edit before sending.
+- The sign-off: the person in its Human review section, who decides.
+
+Use the AI assistant your campus approves, and follow its rules on what
+information may go in. Start with one step of one workflow, for one month,
+and keep the agent's drafts beside what your office would have done anyway,
+so you can show whether it helped.
+
+### A disability resource center handoff
+
+For an alternate format request, staff keep the request and any student
+information in the center's approved case system. The AI receives only an
+approved non-sensitive document or checker report and a generic output
+requirement, such as a practice large-print edition, with no student link.
+Removing a name alone does not make a case safe to upload.
+
+The agent drafts a production plan. The alternate format specialist checks
+the source, text accuracy, structure and requested format, then assigns the
+work and due date in the existing ticket. The specialist, not the agent,
+handles student communication and confirms usability through the center's
+normal process. An overdue or uncertain case goes back to staff immediately.
+
+Use the same handoff for a faculty-coaching draft or remediation log: input,
+draft, reviewer, destination and deadline. The disability resource center
+does not inherit every remediation task; identify faculty, library, media,
+IT and procurement partners and their responsibilities.
+
+### Decide whether to keep it
+
+Follow the [small pilot on step card 7](https://letitglow.app/ahg/kit/step-cards/7-take-it-home.md#a-small-pilot-your-center-can-run).
+Compare up to five fictional or approved non-sensitive cases with the
+existing process. Record total staff time including review, errors, rework
+and delivery time. Keep agent version, source/date, reviewer decision and
+unresolved barriers in the approved log.
+
+Set a day-30 review with the process owner. Continue only if the evidence
+shows useful work without worse quality or missed deadlines. Stop for
+private data, unverifiable evidence or missing review, and use the manual
+process. Do not delay accommodations or automate eligibility, accommodation
+or purchasing decisions. Campus approval still pending? Map the workflow and
+request approval; use the worked examples without AI in the meantime.
 
 ## Keeping it good
 

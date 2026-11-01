@@ -1,7 +1,7 @@
 ---
 title: "Accessing Higher Ground 2026 - the whole workshop, in one folder"
 lang: en
-author: "Jeff Bishop, BITS"
+author: "Jeff Bishop, University of Arizona, IT Accessibility Consultant"
 description: "Index of the AHG 2026 workshop folder."
 ---
 
@@ -25,6 +25,7 @@ program's promises.
 | 3a | `helpers-card.md` | One page for the helpers: how to help, what to watch for in each block, the fallbacks, the needs-a-hand label |
 | 4 | `kit/` | What every VS Code participant opens: the commands as skills in `.github/skills/`, the browser path texts in `any-assistant/`, office team, examples, ready-made agents, the sample course and its evidence, step cards, and `glossary.md`. Start with `kit/README.md` |
 | 4a | `formats.md` | Every document a participant receives, in Markdown, HTML, Word and PowerPoint: the inventory, how the copies are built and checked, and why some files have only one format |
+| 4b | `scripts/build_ahg_library.py` | Builds the resource library, `S:\ahg` by default: every document above, the deck and the facilitator documents in Word, HTML, Markdown, PowerPoint, PDF, EPUB and DAISY, with the kit, the browser path texts, the sample course, the conference upload set, an `index.html` front door and a manifest. `scripts/check_ahg_library.py` checks it. See `formats.md` |
 | 5 | `slides.*` | The deck, generated from `workshop_deck.py`, in four formats |
 | 6 | `pre-event-message.md` | The setup message participants are sent three times |
 | 7 | `answer-key.md` | Every barrier planted in the sample course. Facilitators only; not in the kit |
@@ -82,8 +83,7 @@ because it carries the room's real join address:
   are announced as headers and repeat across pages, and a declared document
   language.
 - PowerPoint - every slide has a real title placeholder and a real body
-  placeholder, filled in that order, because placeholder order is the reading
-  order a screen reader announces. Nothing is a floating text box. Tables
+  placeholder, filled in that order, and reading order still needs a screen reader check. Table slides use text boxes in reading order around the table. Tables
   carry alt text and a marked header row. Speaker notes are in the notes
   slide, not dumped onto the slide. Title and language are set on the file.
 - Markdown - headings, lists and pipe tables only. No layout tricks, so it
