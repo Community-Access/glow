@@ -156,8 +156,9 @@ def test_small_library_has_the_layout_manifest_links_and_conference_set(library)
     assert problems == [] and links > 20
     problems, files = C.check_conference(library, notes)
     assert problems == []
-    # The glossary and card 7 as DOCX, the deck as PPTX and DOCX; no PDF in this build.
-    assert files == 4
+    # The glossary and card 7 as DOCX, the deck as PPTX and DOCX, and the deck's
+    # large print handout as DOCX; no PDF in this build.
+    assert files == 5
 
 
 @needs_pandoc
