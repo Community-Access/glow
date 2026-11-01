@@ -59,7 +59,7 @@ letitglow.app/ahg/assistant.
 | 2:05 | Break (10) | none |
 | 2:15 | 5. Build the office (50), then version 4; Accessibility Agents on the projector last | /run-the-office, /review-my-agent |
 | 3:05 | 6. Share it (35), read names as agents arrive; everyone's agents on the projector last | share page |
-| 3:40 | 7. Take it home (35) | /my-30-day-plan |
+| 3:40 | 7. Take it home (35): demo 5, plan 20, partner check 5, save 5 | /my-30-day-plan |
 | 4:15 | Commitments (10) | the wall |
 | 4:25 | Session evaluation (5) | proctor |
 
@@ -77,9 +77,9 @@ letitglow.app/ahg/assistant.
 ## If something breaks
 
 1. One person stuck: a helper sits with them; a ready-made agent keeps them moving.
-2. Copilot limit reached, or VS Code will not cooperate: the browser path, same block.
+2. Copilot limit reached, or VS Code will not cooperate: save the agent; use an approved browser assistant or a written example, same block.
 3. Wifi slow: one block at a time, demo each step on the projector.
-4. GitHub down: collect agent files on a USB stick; share them for people after, credited to them.
+4. GitHub down: participants keep a reviewed agent and share later; collect files only with permission using an approved transfer method.
 
 ## Before the room fills
 

@@ -86,6 +86,7 @@ blockquote { border-left: 4px solid var(--rule); margin-left: 0; padding-left: 1
 <p>Show one short example of what good looks like. An example teaches the shape, the tone and the length faster than any description. Keep it short, and use the fictional course, never a real student.</p>
 <h3 id="9-human-review-with-a-name-on-it">9. Human review, with a name on it</h3>
 <p>Say who checks the agent's work before anything goes out, and what they check. End every answer with a "Before you send this" checklist for that person. If nobody is named, nobody reviewed it.</p>
+<p>Use the reviewer role in the agent instructions. Assign the actual staff member, decision and due date in your approved ticket or log, not in a public agent file or a prompt containing student information.</p>
 <h3 id="10-never-the-lines-it-does-not-cross">10. Never: the lines it does not cross</h3>
 <p>Every workshop agent keeps these three:</p>
 <ul>
@@ -97,12 +98,12 @@ blockquote { border-left: 4px solid var(--rule); margin-left: 0; padding-left: 1
 <h3 id="11-short-enough-to-read">11. Short enough to read</h3>
 <p>Keep the file short enough to read in five minutes. The Agent Skills format asks for under 500 lines; Accessibility Agents keeps every agent under 6 KB, about two pages. Long reference material goes in a separate file, in a <code>references</code> folder beside <code>SKILL.md</code>, which the agent opens only when it needs it.</p>
 <h3 id="12-tested-and-revised-one-change-at-a-time">12. Tested, and revised one change at a time</h3>
-<p>Nobody writes a good agent in one go. Try it on a real input, read where it guessed or went wrong, change one thing, and try again. Each change is a new version. Today you make at least three.</p>
+<p>Nobody writes a good agent in one go. Try it on a real input, read where it guessed or went wrong, change one thing, and try again. Each change is a new version. Today you make four: the draft and three reviewed revisions.</p>
 <h2 id="the-review-checklist">The review checklist</h2>
 <p><code>/review-my-agent</code>, and the same step on the browser path, asks these questions of your agent. Every "no" is a revision you could make.</p>
 <ol type="1">
 <li>Does it do one job?</li>
-<li>Is the name lowercase, with hyphens, and under 64 characters?</li>
+<li>Is the name lowercase, with hyphens, and at most 64 characters?</li>
 <li>Does the description say what it does, and start a sentence with "Use when"?</li>
 <li>Does the Role say who it works for?</li>
 <li>Does the Task name its input and its output?</li>

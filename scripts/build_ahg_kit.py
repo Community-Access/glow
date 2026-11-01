@@ -139,6 +139,8 @@ def skill(
         "Work only from the evidence you are given: a checker's report, the text",
         "of a document, or what the person tells you. If something is not in the",
         "evidence, say you cannot see it. Do not guess.",
+        "Label ACB print guidance, best practices and campus policy separately;",
+        "do not invent a WCAG failure where the criterion does not apply.",
         "",
         "## Output format",
         "",
@@ -464,7 +466,7 @@ def captions_evidence() -> Path:
     path = COURSE / "evidence" / "psy101-week3-captions.txt"
     path.write_text(
         "Evidence: psy101-week3-captions.vtt\n"
-        "No automated checker judges caption accuracy. This file is the evidence:\n"
+        "This note is not a caption accuracy check. Review the caption text:\n"
         "give the captions themselves to the captions specialist, together with\n"
         "the facts you know, such as the name Hermann Ebbinghaus and the\n"
         "nonsense syllables DAX, BOK and YAT from the reading.\n",
@@ -520,7 +522,7 @@ They are using you in a web browser, not in VS Code. Be warm and brief.
 Check these three things, in order, and report each as "Ready" or "Needs a
 hand", with one plain sentence:
 
-1. You received the agent template below: name its six headings.
+1. You received the agent template below: name its seven headings.
 2. You can follow the workshop's rules: say the two rules in one line each,
    in your own words. They are: nothing private goes into any AI, and a
    person reviews everything an agent writes.
@@ -554,8 +556,8 @@ what they are building. Follow agent-file-principles.md, below.
 1. Ask which role card they picked: documents and alternate formats; course
    content and faculty coaching; or compliance and procurement. Then ask, in
    one sentence, what real problem from their own job they want help with.
-   Remind them: nothing private, no student names or records. If they give a
-   name, a record or an accommodation, do not repeat or use it; ask them to
+   Remind them: nothing private, no student names or records. If they give private
+   identifying details, a record or an accommodation, do not repeat or use it; ask them to
    describe the problem without it.
 2. From the six ready-made agents below, tell them, in one line each, which
    two are closest. Offer to start from one.
@@ -569,7 +571,9 @@ what they are building. Follow agent-file-principles.md, below.
      one from the example agent if they are unsure.
    - Human review: who checks it before anything goes out?
    If they are unsure, offer the example's answer and let them change it.
-4. Ask for their name and institution, for the author line.
+4. Ask what public author credit they choose, such as their professional
+   name and institution. They may leave the placeholder and add credit
+   locally with a helper before sharing; do not insist on personal details.
 5. Write their agent from the template below (my-agent/SKILL.md), keeping its
    headings and its "Never" section exactly. Set name to a short lowercase
    name with hyphens, at most 64 characters. Write the description as what it
@@ -609,6 +613,9 @@ Task. For this first try, use only the file's name and whatever the
 participant tells you about it. You have no checker report yet, and that is
 on purpose.
 
+If evidence is missing, ask for it. Do not invent findings to demonstrate a
+bad answer. An appropriate request for evidence is a successful first try.
+
 Answer as the agent would. Then step out of the agent and add a short note to
 the participant:
 
@@ -620,7 +627,8 @@ End with: That is your agent's first answer. Now paste the review text from leti
     ),
     "4-ground-my-agent": dict(
         title="Block 4: ground it",
-        files=[f"sample-course/evidence/{n.rsplit('.', 1)[0]}.txt" for n, _ in COURSE_FILES],
+        files=[*[f"sample-course/evidence/{n.rsplit('.', 1)[0]}.txt" for n, _ in COURSE_FILES],
+               "sample-course/psy101-week3-captions.vtt"],
         course_list=True,
         task="""\
 Give the participant's agent real evidence, and compare before and after.
@@ -635,15 +643,23 @@ Then act as that agent, following it exactly.
    .txt in sample-course/evidence. Answer again as the agent, using only that
    evidence. Cite WCAG 2.2 criteria with links.
 3. Then step out of the agent and show a short before and after:
-   - What the agent knows now that it had to guess before.
+   - What the agent can now support that it could not verify before.
    - Which WCAG criteria it now cites.
-   - What the evidence says no checker can see, which a person must check.
+   - What this report does not establish, which a person must check.
 4. Offer one more try: if they open the syllabus in Word and run Review, then
    Check Accessibility, they can paste Word's results here as text, and the
    agent will work from those instead. The skill is the evidence, not the
    tool.
 
-End with: Your agent just stopped guessing. That is what "grounded" means. Now paste the review text from letitglow.app/ahg/assistant: what you just learned belongs in the agent file.""",
+For captions, also read sample-course/psy101-week3-captions.vtt and the
+terms in its evidence note. Proposed corrections need a listener to confirm
+them against the recording; no recording is supplied in this exercise.
+
+Check each claim against the supplied evidence and each citation against its
+criterion. Keep unverified observations separate from confirmed findings.
+Grounding reduces guessing; it does not guarantee correctness.
+
+End with: Your agent now has evidence you can verify. Now paste the review text from letitglow.app/ahg/assistant: what you just learned belongs in the agent file.""",
     ),
     "5-run-the-office": dict(
         title="Block 5: build the office",
@@ -651,6 +667,7 @@ End with: Your agent just stopped guessing. That is what "grounded" means. Now p
             ".github/agents/office-coordinator.agent.md",
             *[f"office-team/{s['name']}/SKILL.md" for s in OFFICE],
             *[f"sample-course/evidence/{n.rsplit('.', 1)[0]}.txt" for n, _ in COURSE_FILES],
+            "sample-course/psy101-week3-captions.vtt",
         ],
         course_list=True,
         task="""\
@@ -724,12 +741,27 @@ it is called. Ask one question at a time and keep each answer short:
 2. Where it plugs in: what starts it, what the agent reads, and where its
    draft goes next.
 3. One partner or team you will try it with.
-4. One safeguard you will use every time.
+4. One review safeguard: reviewer role, what they check, and when to stop
+   and return to the existing manual process.
 5. Which AI assistant your campus approves for this, and what information
    may go into it.
-6. One first step, small enough to do this week.
+6. One first step this week, using up to five fictional or approved
+   non-sensitive examples alongside the existing process.
 7. Who needs to know, or approve it.
-8. What it will look like if it worked, in one sentence you could say to them.
+8. A day-30 review date, a baseline and a target: total staff time including
+   review, errors or rework, and on-time delivery. Who decides whether to
+   continue, revise or stop?
+
+Do not invent campus approvals, policies, baseline measurements or targets.
+Mark unknowns "pending" with a role and next action to confirm them.
+Keep the plan brief enough to finish in twenty minutes. Do not add extra
+interview questions; offer a worked-example answer if the participant is stuck. Keep student records out
+of the AI; name staff roles here, not private case details. Keep the evidence
+source/date, agent version, reviewer decision and unresolved barriers in the
+existing approved ticket or log. Nothing sends or changes automatically.
+Never delay an accommodation for the pilot or make eligibility,
+accommodation or purchasing decisions. If no AI tool is approved, help write
+the workflow and approval request without running the agent.
 
 Give back the plan inside ONE code block, as a short Markdown table with
 their agent's name in a heading at the top. Then tell them one specific

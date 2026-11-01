@@ -97,6 +97,14 @@ out, moves to the browser path and loses nothing.
 
 ## 4. Decisions
 
+Current delivery note, 31 October 2026: D18 and D20 supersede D3 and D8
+where those earlier decisions required every participant to use Copilot.
+Text messages also have limits; D4 is a text-first teaching choice, not an
+unlimited-use promise. The sample now has seven files: five Office/PDF
+documents, one web page and one caption file, superseding D11's old count.
+Public sharing requires permission; a saved draft remains deferred until
+published. The run of show protects planning and partner-review time.
+
 These replace L1 to L14 in the September plan.
 
 | # | Decision |
@@ -211,8 +219,8 @@ Her finished work is shown before anyone starts theirs.
 2. Her six answers.
 3. Her agent, and her AI's first answer.
 4. Her agent's answer before grounding and after, side by side.
-5. Her agent in the repository.
-6. Her agent's section of the team report.
+5. Her agent's section of the team report.
+6. Her agent in the repository.
 7. Her 30-day plan.
 
 Each role card has the same seven artifacts.

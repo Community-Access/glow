@@ -28,7 +28,7 @@ scale without losing quality, accountability or transparency.
 - Put it to work on a realistic sample course full of planted barriers,
   with GitHub Copilot in VS Code or with the AI assistant you already use.
 - Ground it in real evidence from GLOW, axe-core and Accessibility Insights,
-  so it cites WCAG 2.2 instead of guessing.
+  so you can verify its claims and WCAG 2.2 citations.
 - Build the office: add your agent to an agent team of coordinated
   specialists and run the team across the whole course.
 - Share it: add your agent to the open-source AHG 2026 collection on
@@ -36,6 +36,12 @@ scale without losing quality, accountability or transparency.
   the day every agent goes into the Accessibility Agents project, with its
   author credited.
 - Leave with a 30-day plan for your own campus.
+
+The plan fits one step of an existing disability resource center workflow:
+approved inputs, a draft destination, a staff reviewer and a deadline. You
+will choose a small pilot and measure total staff time, quality and delivery
+before expanding it. Eligibility and accommodation decisions remain with
+authorized people, never the agent.
 
 ## Who it is for
 
@@ -62,6 +68,9 @@ and has every setup step.
 Not sure? Take the browser path. There is a setup table outside the room
 from 10:00 on the day.
 
+Campus approval comes first. If AI tools or public sharing are not approved,
+use the written examples in Word or on paper and keep your work local.
+
 ## Learning outcomes
 
 By the end of the day you will be able to:
@@ -79,7 +88,7 @@ By the end of the day you will be able to:
 ## Two rules, all day
 
 1. Never paste anything private into any AI: student records, health or
-   disability information, or anyone's name. We use a sample course.
+   disability information, or private identifying details. We use a sample course.
 2. Agents draft. People decide. Every agent ends with a named person
    checking its work.
 

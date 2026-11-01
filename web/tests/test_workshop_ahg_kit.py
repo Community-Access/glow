@@ -361,6 +361,12 @@ def test_each_browser_path_text_carries_the_files_its_block_needs():
     for name in evidence:
         assert f"===== FILE: sample-course/evidence/{name} =====" in texts["4-ground-my-agent"], name
         assert f"===== FILE: sample-course/evidence/{name} =====" in texts["5-run-the-office"], name
+    # A note telling the media specialist to read captions is insufficient:
+    # browser assistants also need the actual timestamped source text.
+    captions = (KIT / "sample-course" / "psy101-week3-captions.vtt").read_text(encoding="utf-8").rstrip()
+    for key in ("4-ground-my-agent", "5-run-the-office"):
+        assert "===== FILE: sample-course/psy101-week3-captions.vtt =====" in texts[key]
+        assert captions in texts[key]
     office = texts["5-run-the-office"]
     assert "===== FILE: .github/agents/office-coordinator.agent.md =====" in office
     assert len(_agent_files("office-team")) == office.count("===== FILE: office-team/")

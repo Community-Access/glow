@@ -21,9 +21,9 @@ under the same base name:
 
 Then every copy is checked, and the build stops, naming the file, on any
 failure: veraPDF (PDF/UA-1), Ace by DAISY, EPUBCheck, the Pipeline's own
-validators, GLOW's ``check_ahg_formats.py`` and ``audit_ahg_docs.py``. A PDF
-that fails a PDF/UA rule Word's export cannot be made to pass is kept and
-marked in the manifest with the rule numbers, never hidden.
+validators, GLOW's ``check_ahg_formats.py`` and ``audit_ahg_docs.py``. Word's
+PDF exports receive the missing identifier and table header scope before
+validation; any remaining PDF/UA failure stops the build.
 
 The kit, the browser path texts and the sample course are copied as they
 are: they are not converted (``formats.md`` says why).
@@ -43,6 +43,7 @@ import csv
 import datetime as _dt
 import hashlib
 import html as _html
+import io
 import json
 import os
 import re
@@ -51,6 +52,7 @@ import subprocess
 import sys
 import tempfile
 import time
+import urllib.error
 import urllib.request
 import uuid
 import zipfile
@@ -77,7 +79,9 @@ VERAPDF = Path(os.environ.get("VERAPDF", LOCAL / "Programs" / "verapdf" / "verap
 PIPELINE_HOME = Path(os.environ.get(
     "DAISY_PIPELINE_HOME",
     LOCAL / "Programs" / "pipeline-ui" / "resources" / "app.asar.unpacked" / "resources" / "daisy-pipeline"))
-PIPELINE_WS = "http://localhost:8181/ws"
+# Use the same IPv4 loopback address for health checks and CLI requests;
+# resolving localhost can probe a different address than the engine binds.
+PIPELINE_WS = "http://127.0.0.1:8181/ws"
 JAVA_HOMES = (Path(r"C:\Program Files\Eclipse Adoptium\jdk-21.0.12.101-hotspot\bin"),)
 
 # ---------------------------------------------------------------------------
@@ -680,10 +684,64 @@ def ensure_pipeline() -> str:
     raise BuildError(PIPELINE_WS, "the DAISY Pipeline 2 engine did not start within three minutes")
 
 
-def _dp2(*args: str) -> subprocess.CompletedProcess:
-    cli = PIPELINE_HOME / "cli" / "dp2.exe"
-    return run([str(cli), "--host", "http://localhost", "--port", "8181", "--ws_path", "ws",
-                "--starting", "false", *args, "-q"], timeout=1800)
+_WS_NS = "http://www.daisy.org/ns/pipeline/data"
+
+
+def _pipeline_job(script: str, source: Path, out: Path, **options: str) -> tuple[str, str]:
+    """Run one Pipeline 2 script through the engine's web service.
+
+    Results land under *out*, one folder per output port, as ``dp2 -o`` laid
+    them out. Returns the job's status (``SUCCESS`` when it worked) and the
+    tail of its log. The dp2 2.4.0 command line is not used: it leaves some of
+    the engine's scripts out of its command list (``epub3-to-daisy3`` and
+    ``daisy202-validator`` among them), answering "--source is not a valid
+    flag", while the engine itself runs them.
+    """
+    opts = "".join(
+        f'<option name="{_html.escape(name)}">{_html.escape(value)}</option>' for name, value in options.items()
+    )
+    body = (
+        f'<?xml version="1.0" encoding="UTF-8"?><jobRequest xmlns="{_WS_NS}">'
+        f'<script href="{PIPELINE_WS}/scripts/{script}"/>'
+        f'<input name="source"><item value="{_html.escape(source.resolve().as_uri())}"/></input>'
+        f"{opts}</jobRequest>"
+    )
+    request = urllib.request.Request(
+        f"{PIPELINE_WS}/jobs", data=body.encode("utf-8"), method="POST", headers={"Content-Type": "application/xml"}
+    )
+    with urllib.request.urlopen(request, timeout=60) as answer:
+        found = re.search(r'<job\b[^>]*\bid="([^"]+)"', answer.read().decode("utf-8", "replace"))
+    if not found:
+        raise BuildError(source, f"the DAISY Pipeline did not accept a {script} job")
+    job = found.group(1)
+    status, deadline = "IDLE", time.monotonic() + 1800
+    try:
+        while status in ("IDLE", "RUNNING"):
+            if time.monotonic() > deadline:
+                raise BuildError(source, f"DAISY Pipeline {script} did not finish within 30 minutes")
+            time.sleep(1)
+            with urllib.request.urlopen(f"{PIPELINE_WS}/jobs/{job}", timeout=60) as answer:
+                found = re.search(r'<job\b[^>]*\bstatus="([^"]+)"', answer.read().decode("utf-8", "replace"))
+            status = found.group(1) if found else "UNKNOWN"
+        log = ""
+        try:
+            with urllib.request.urlopen(f"{PIPELINE_WS}/jobs/{job}/log", timeout=60) as answer:
+                log = answer.read().decode("utf-8", "replace")[-600:]
+        except urllib.error.URLError:
+            pass
+        try:
+            with urllib.request.urlopen(f"{PIPELINE_WS}/jobs/{job}/result", timeout=300) as answer:
+                data = answer.read()
+            out.mkdir(parents=True, exist_ok=True)
+            zipfile.ZipFile(io.BytesIO(data)).extractall(out)
+        except (urllib.error.URLError, zipfile.BadZipFile):
+            pass  # a job that failed may have no results; the caller says so
+        return status, log
+    finally:
+        try:
+            urllib.request.urlopen(urllib.request.Request(f"{PIPELINE_WS}/jobs/{job}", method="DELETE"), timeout=60)
+        except urllib.error.URLError:
+            pass
 
 
 def _validation_errors_202(report_dir: Path) -> tuple[int, int, list[str]]:
@@ -711,9 +769,9 @@ def _daisy_one(epub: Path, folder: Path, work: Path) -> dict[str, str]:
     for script, name in (("epub3-to-daisy202", "daisy-202"), ("epub3-to-daisy3", "daisy-3")):
         out = work / name
         shutil.rmtree(out, ignore_errors=True)
-        done = _dp2(script, "--source", str(source), "-o", str(out), "--validation", "abort")
-        if "status: SUCCESS" not in done.stdout:
-            raise BuildError(epub, f"DAISY Pipeline {script} did not succeed: {done.stdout.strip()[-600:]}")
+        status, log = _pipeline_job(script, source, out, validation="abort")
+        if status != "SUCCESS":
+            raise BuildError(epub, f"DAISY Pipeline {script} ended {status}: {log.strip()}")
         result_dir = out / "result"
         # DAISY 2.02 lands in a folder named after the identifier; DAISY 3 does not.
         inner = [p for p in result_dir.iterdir() if p.is_dir()]
@@ -723,7 +781,10 @@ def _daisy_one(epub: Path, folder: Path, work: Path) -> dict[str, str]:
         if name == "daisy-202":
             report = work / "validate-202"
             shutil.rmtree(report, ignore_errors=True)
-            _dp2("daisy202-validator", "--source", str(source_dir / "ncc.html"), "-o", str(report))
+            _pipeline_job("daisy202-validator", source_dir / "ncc.html", report)
+            if not any(report.rglob("*.html")):
+                # An empty report used to read as "0 errors"; it means the validator never ran.
+                raise BuildError(target / "ncc.html", "the DAISY 2.02 validator wrote no report")
             errors, warnings, messages = _validation_errors_202(report)
             if errors:
                 raise BuildError(target / "ncc.html",
@@ -733,7 +794,7 @@ def _daisy_one(epub: Path, folder: Path, work: Path) -> dict[str, str]:
             dtbook = next(source_dir.glob("*.xml"))
             report = work / "validate-3"
             shutil.rmtree(report, ignore_errors=True)
-            _dp2("dtbook-validator", "--source", str(dtbook), "-o", str(report))
+            _pipeline_job("dtbook-validator", dtbook, report)
             xml = next(report.rglob("dtbook-validation-report.xml"), None)
             if xml is None:
                 raise BuildError(target / dtbook.name, "the DTBook validator wrote no report")

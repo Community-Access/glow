@@ -46,6 +46,10 @@ Your agent working inside a team of agents across the whole PSY 101 course, one 
 2. Read the twelve Yes or Not yet lines, then the one change it suggests and why.
 3. Say yes, or reword the change. Copilot saves version 4 of your agent and installs it.
 
+The workshop team follows specialist instructions in sequence in one
+conversation. That shows how work is routed and combined; it is not an
+independent second review or a fresh scan of every file.
+
 ## You are on track if
 
 The report names your agent and you as its author, in at least one file's section, and you have version 4.

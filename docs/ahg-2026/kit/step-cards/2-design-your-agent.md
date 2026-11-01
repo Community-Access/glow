@@ -40,7 +40,8 @@ Your own agent, with your answers in it and your name on it: the file SKILL.md.
 
 ## You are on track if
 
-Your assistant or Copilot tells you one specific thing your agent does well.
+Your saved agent names one task, its input, its output and a reviewer role.
+You can find the file and explain that task in one sentence.
 
 To see a finished example first, open examples/maria-alternate-format-planner.md, or the same file at letitglow.app/ahg/kit.
 

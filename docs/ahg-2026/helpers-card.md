@@ -35,12 +35,12 @@ Each row is one block of the day, what to watch for, and what to do.
 | Setup, from 10:00 | No kit open, no sign-in, Restricted Mode banner | Manage, then Trust; sign in from the Accounts menu; if VS Code will not cooperate, move them to the browser path |
 | 1. Why we are here | The ready check says "Needs a hand" | Fix that one step; the room carries on |
 | 2. Design your agent | A blank chat after five minutes | Offer the ready-made agent nearest their card, in `examples/agents/` |
-| 3. Your agent at work | Worry that the agent guessed | Say the guessing is the point: it is what block 4 fixes |
+| 3. Your agent at work | Guesses, or a request for evidence | Flag guesses; a request for missing evidence is a success |
 | Lunch, 12:15 | The check-in results | Open `/ahg/check-in/results?key=...`; go first to every seat marked stuck |
 | 4. Ground it | The agent cites no criterion | Check it read the right file in `sample-course/evidence/`; run /ground-my-agent again |
 | 5. Build the office | The run stops part way | Type "continue"; on the browser path, paste their agent again |
 | 6. Share it | A "Nearly there" reply, or an issue labelled needs-a-hand | Read the reply with them: it says exactly what to fix; edit the issue and save |
-| 7. Take it home | Plans that are too big | "Run it on the next five requests" beats "transform our office" |
+| 7. Take it home | Plans that are too big | Up to five safe examples, a reviewer, a baseline, a day-30 check and a stop rule |
 
 ## The three fallbacks
 
@@ -53,6 +53,10 @@ Each row is one block of the day, what to watch for, and what to do.
    the front. It is shared for them after the session, credited to them.
 
 ## Needs a hand
+
+If no AI tool or public sharing is approved, use the written examples and
+make the plan in Word or on paper. Keep work local pending approval.
+Do not suggest a personal account as a way around campus policy.
 
 Shares that fail get the label needs-a-hand on
 github.com/Community-Access/ahg-2026/issues. Check it at the start of block

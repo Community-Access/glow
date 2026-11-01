@@ -33,7 +33,9 @@ not need to know AI.
 
 ## What you need
 
-A laptop and a free GitHub account. The setup page walks you through it:
+A laptop and an approved AI assistant; a free GitHub account if you share.
+You can use the written examples without AI and share later if approval is
+pending. The setup page walks you through it:
 [letitglow.app/ahg](https://letitglow.app/ahg).
 
 ## Two rules all day

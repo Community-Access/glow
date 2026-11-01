@@ -44,9 +44,9 @@ for both.
 | 10:00 | 30 | Setup table open, outside the room | /ready-check | "Let's get you ready before we start." |
 | 10:30 | 35 | 1. Why we are here | /ready-check | "Forty thousand files and three people. Here is where we will be at four o'clock." |
 | 11:05 | 40 | 2. Design your agent | /design-my-agent | "Pick a card. Bring one real problem, nothing private. Copilot asks, you answer." |
-| 11:45 | 30 | 3. Your agent at work | /try-my-agent, then /review-my-agent | "It will guess a little. Then you change one thing: version 2." |
+| 11:45 | 30 | 3. Your agent at work | /try-my-agent, then /review-my-agent | "Catch guesses; asking for evidence is a success. Then version 2." |
 | 12:15 | 60 | Lunch | none | "You have an agent, and you have already improved it." |
-| 1:15 | 50 | 4. Ground it | /ground-my-agent, then /review-my-agent | "Real evidence in, cited answers out. Watch it stop guessing. Version 3." |
+| 1:15 | 50 | 4. Ground it | /ground-my-agent, then /review-my-agent | "Real evidence in, claims you can verify out. Version 3." |
 | 2:05 | 10 | Break | none | "Next, your agent joins a team." |
 | 2:15 | 50 | 5. Build the office | /run-the-office, then /review-my-agent | "Your specialist joins the team. The team works the whole course. Version 4 is the one you share." |
 | 3:05 | 35 | 6. Share it | letitglow.app/ahg/share | "One form, one button. You did this before the day; same again, with your best version." |
@@ -60,8 +60,9 @@ Working time is 300 minutes, plus the hour for lunch.
 
 - Move on the room, not on the fastest person. When most of the room has
   their "on track" sign, move on; helpers carry the rest.
-- Block 2 is the one that runs long. If it does, take five minutes from
-  block 7, never from blocks 5 or 6.
+- Block 2 is the one that runs long. If it does, use the ready-made agent
+  to catch up. If five minutes must come from block 7, shorten its demo,
+  never the plan-writing, partner review or saving time.
 - Never cut the session evaluation, and never cut block 6: the shared agent
   is the capstone the program promised.
 - In block 6, project the collection, `agents/README.md` in
@@ -111,6 +112,23 @@ The conference's own guidance, applied to this room. The full mapping is
   lunch and go first to anyone stuck.
 - The last five minutes are the session evaluation. The proctor runs it.
 
+### Block 7: check that the plan can leave the room
+
+Use the 35 minutes as follows: five to show a finished plan, twenty to
+answer the eight questions, five for partner review and five to save the
+plan. Take commitments at 4:15. A pending baseline or approval gets an owner
+and next action, not a made-up answer. If time is short, adapt one worked
+example rather than adding tool demonstrations. Each participant explains the trigger, safe input,
+draft destination, reviewer role, deadline and campus approval. The partner
+checks that a small pilot has a baseline, a day-30 measure and a stop rule.
+Use step card 7 and the three worked examples. One approved workflow is
+enough; the center does not have to own every campus remediation task.
+
+No approved AI tool, no account or a blocked network: use Word or paper and
+the written examples. Do not ask someone to bypass campus policy. Keep
+drafts local if sharing approval is pending; arrange later sharing with
+their permission. Do not collect student data with the plan or commitment.
+
 ## 5. Fallback ladder
 
 Run down this ladder. Do not jump to the bottom.
@@ -118,13 +136,13 @@ Run down this ladder. Do not jump to the bottom.
 | What broke | What you do | What the room hears |
 |---|---|---|
 | One person's setup | A helper fixes it with them; they use a ready-made agent until it works | Nothing. Handle it at the table |
-| Copilot Free limit reached | Move to the browser path with another assistant, from the same block; their agent goes with them | Nothing |
+| Copilot Free limit reached | Save the latest agent; use another campus-approved assistant, or the written example with a helper | Nothing |
 | VS Code will not install, sign in or open the kit | Move to the browser path; nothing to install | Nothing |
-| An assistant asks the participant to log in, or refuses the paste | Sign in or make a free account; if it still refuses, another assistant | Nothing |
+| An assistant asks the participant to log in, or refuses the paste | Use an approved account; if blocked, save the agent and use the written example with a helper | Nothing |
 | A browser path participant's assistant forgets their agent | Paste the agent as its own message, then the block's text again | Nothing |
 | The profile did not import | Open the kit; VS Code offers the recommended extensions; a helper installs them | Nothing |
 | Conference wifi degrades | Everything except Copilot and GitHub is in the kit already; slow the room to one block at a time and demo each step on the projector | "We will do this one together on the screen." |
-| GitHub is unreachable in block 6 | Collect agent files from the kit on a USB stick; share them for people after the session, credited to them | "Your agent still goes in with your name on it." |
+| GitHub is unreachable in block 6 | With permission, collect only reviewed public agent instructions using an approved transfer method; otherwise participants keep them and share later | "Your agent still goes in with your name on it." |
 | Projector fails | Read the slide aloud; everyone has the step cards in the kit | Nothing |
 
 ## 6. Pre-flight
@@ -156,6 +174,11 @@ The second table is the rehearsal; the day works badly without it.
 
 ## 6a. After the session: into Accessibility Agents
 
+Before promoting the collection, a facilitator reviews each contribution
+for private information, licensing permission and instructions that could
+change the intended team behavior. Keep unreviewed contributions out of the
+live team run; publication is not an endorsement of an agent's findings.
+
 The program promises every participant commits their agent to the
 open-source Accessibility Agents repository. On the day they commit it to the
 workshop collection; this step carries every one of them into Accessibility
@@ -171,6 +194,20 @@ Agents with its author credited.
    ahg-2026 repository so everyone can find their name.
 
 ## 7. Success measures
+
+Check the six outcomes from work participants already made; no extra test:
+
+| Outcome | Evidence to check |
+|---|---|
+| Describe an agent task | Saved agent names its input, output and reviewer |
+| Ground and cite | One finding traced to supplied evidence and a relevant criterion |
+| Recognize checking limits | One manual check with a responsible reviewer |
+| Explain the team | Participant can name the handoff to their specialist |
+| Contribute | A verified collection link, or a saved draft with a sharing next step |
+| Plan campus use | A saved plan with review, measure, owner and stop rule |
+
+Record completed, needs help or deferred with permission. Do not count a
+saved sharing draft as a completed public contribution.
 
 Collect these. They are the next proposal's evidence.
 

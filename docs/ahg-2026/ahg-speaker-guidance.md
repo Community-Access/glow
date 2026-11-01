@@ -30,7 +30,7 @@ Each row is one recommendation from the orientation, and where the workshop meet
 
 | Recommendation | Where it is met |
 |---|---|
-| Avoid walls of text | A test fails if any slide has more than seven bullets or a table of more than nine rows. Detail lives in speaker notes and step cards |
+| Avoid walls of text | Tests limit projected slides to six bullets, seven table rows and 60 content words (except the published outcomes). Detail lives in speaker notes and step cards |
 | Chunking | Seven blocks, each with one outcome, one command and one step card |
 | Practice demos; dry run live activities | Every block starts with a live demo; pre-flight items 6 to 8 are the walkthrough, the allowance check and a timed dry run |
 | Have a backup plan | The fallback ladder in `run-of-show.md`, and a ready-made agent in the kit for every role card |
@@ -53,7 +53,7 @@ Each row is one recommendation from the orientation, and where the workshop meet
 | Recommendation | Where it is met |
 |---|---|
 | More hands-on | Six of the seven blocks are hands-on, each with its own Copilot command in VS Code and its own text on the browser path |
-| Leave with a skill, a tool or a framework | An agent, a team report, an open-source contribution in their own name, a 30-day plan, and the five-part agent formula |
+| Leave with a skill, a tool or a framework | An agent, a team report, an open-source contribution when approved, and a 30-day pilot plan with input, handoff, reviewer, baseline, measure and stop rule |
 | Fix pacing | One agenda module drives the deck and the run of show; the pacing rules say what to protect |
 | Title and content match | The deck's title is the program's title, word for word, and a test holds it there. Every promise in the session description is mapped to a block in `plan.md` section 5 |
 | Skilled demos | Every block opens with "watch me first" on the projector, with a written example to fall back on |

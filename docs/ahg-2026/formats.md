@@ -38,6 +38,9 @@ GitHub and VS Code each show one README and an HTML one can win.
   long for one slide continues as "(2 of 3)", so no two slides share a
   title. Each table gets its own slide, with alt text and a marked header
   row. The language is set on the file and on every run of text.
+  Wrapped cells receive individual row heights. Wide or overlong tables
+  become labelled records over multiple reading slides, preserving every
+  column's label and value instead of shrinking text.
 
 Office files carry a fixed date rather than the build time, so a rebuild
 with the same libraries changes nothing.
@@ -99,12 +102,11 @@ one base name. It copies the four formats from here and makes three more:
 
 - PDF: Word's own export of the Word file, run in the background, with
   "Document structure tags for accessibility" and "Create bookmarks using
-  headings" both on. Never print to PDF. veraPDF checks each one against
-  PDF/UA-1, and GLOW's PDF audit runs too. Two rules fail on every Word
-  export whatever the Word file holds: 5-1 (Word writes no PDF/UA
-  identifier) and 7.5-1 (Word writes no Scope on table header cells). The
-  build records them against each PDF in `manifest.csv` and stops on any
-  other rule. Each link's text is its ScreenTip in the Word copies, which
+  headings" both on. Never print to PDF. The build adds the PDF/UA
+  identifier and table header scope omitted by Word, then veraPDF checks
+  each one against PDF/UA-1 and GLOW's PDF audit runs too. Failures stop the
+  build; passing machine checks does not replace manual reading review.
+  Each link's text is its ScreenTip in the Word copies, which
   Word writes as the link's description in the PDF.
 - EPUB 3: Pandoc from the Markdown, without its front matter, with the HTML
   copies' styles and EPUB Accessibility 1.1 metadata (text only, structural

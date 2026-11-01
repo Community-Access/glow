@@ -149,7 +149,7 @@ Block 1 of 7, slide 4 of 13 - By 4:30
 Block 1 of 7, slide 5 of 13 - Housekeeping
 
 - 10:30 to 4:30 Mountain Time. Lunch 12:15, break 2:05, evaluation 4:25.
-- Three ways in: VS Code on your laptop, VS Code at vscode.dev, or any AI assistant in a browser.
+- Three paths: VS Code on your laptop, VS Code at vscode.dev, or any AI assistant in a browser.
 - Every block starts by showing you the finished result.
 - Ask for anything: large print, a seat, a pause, a repeat.
 
@@ -245,7 +245,7 @@ In the kit and on the site:
 
 Block 1 of 7, slide 9 of 13 - Two rules, all day
 
-1. Never paste anything private into any AI: student records, health or disability information, anyone's name.
+1. Never paste anything private into any AI: student records, health or disability information, private identifying details.
 2. Every agent ends with a person checking its work.
 
 If nobody is named, nobody reviewed it.
@@ -333,7 +333,7 @@ In the kit and on the site:
 >
 > Name the critical things out loud: never paste private data; never call anything compliant on an agent's word; read every finding before it reaches a student or a faculty member; and know enough WCAG to tell when an answer is wrong.
 >
-> Tell them block 3 will show this on purpose: the first answer guesses, and they will catch it.
+> Block 3 tests missing evidence. Catch any guesses, but celebrate an agent that asks for the evidence instead.
 
 ---
 
@@ -456,7 +456,7 @@ Block 3 of 7, slide 1 of 2 - 11:45-12:15 - 30 minutes
 2. Pick a file from the PSY 101 sample course.
 3. Read the answer. Then /review-my-agent: version 2.
 
-It will guess a little. That is the setup for this afternoon.
+No evidence? A good agent asks instead of guessing.
 
 Behind? Try a ready-made agent from examples/agents instead.
 
@@ -497,7 +497,7 @@ Lunch - 12:15-1:15
 
 You have an agent. That was the hard part.
 
-After lunch it stops guessing.
+After lunch: evidence you can verify.
 
 Before you go: two questions, no name, at letitglow.app/ahg/check-in.
 
@@ -537,7 +537,7 @@ In the kit and on the site:
 >
 > The checker report is GLOW's audit for documents and axe for the web page.
 >
-> Grounding is the trusted in the session title. The checkers find; the agent explains and plans; a person decides.
+> Grounding supports the trusted in the session title. It reduces guessing but does not guarantee correctness. Check the source, the citation and what the checker did not test; a person decides.
 
 ---
 
@@ -570,7 +570,7 @@ Word's, PowerPoint's or Acrobat's checker, or Accessibility Insights, work the s
 
 Some barriers no checker sees:
 
-- An accommodations statement in 8-point gray.
+- An accommodations policy contradicted elsewhere.
 - Alt text that says "image.png".
 - A lab that only works if you can see color.
 - Captions that turn Ebbinghaus into "ebb in house".
@@ -605,7 +605,7 @@ Block 5 of 7, slide 1 of 3 - 2:15-3:05 - 50 minutes
 
 1. Type /run-the-office, or paste the block 5 text.
 2. The coordinator sends each file to its specialists, and to yours.
-3. The standards reviewer checks everyone's work.
+3. The standards-reviewer role checks the draft; staff still review it.
 4. Then /review-my-agent: version 4, your best.
 
 Behind? The office runs with any version of your agent.
@@ -633,13 +633,15 @@ Block 5 of 7, slide 2 of 3 - What scale looks like
 
 - Seven files, eight specialists, plus yours.
 - Every finding: evidence, a WCAG 2.2 link, a named reviewer.
-- A list of what no checker could see.
+- A list of what the supplied evidence cannot establish.
 
 Quality, accountability and transparency, at scale.
 
 ### Speaker notes, slide 26
 
 > The report opens with three lines a director will actually read. It is also a Tuesday.
+>
+> One assistant follows specialist roles in sequence here; this is not independent validation. Seven sample files demonstrate the method, not production throughput. Review effort, errors and deadlines decide whether a campus pilot can grow.
 >
 > Ask: what would it take to run this across ten courses? Let them answer. The honest answer is a person's review time, which is exactly where it should go.
 
@@ -695,6 +697,8 @@ In the kit and on the site:
 > Everyone shared a practice agent before the day, so this is the second time, not the first. Say so; it changes the room.
 >
 > Helpers watch the issues labelled needs-a-hand and go to those people first. A Nearly there reply always says exactly what to fix.
+>
+> If sharing is not approved or GitHub is unavailable, save a reviewed draft and a next step. Do not call it published, and do not collect it without permission.
 
 ---
 
@@ -745,7 +749,7 @@ Block 7 of 7, slide 1 of 3 - 3:40-4:15 - 35 minutes
 
 Small is the point.
 
-Behind? One sentence is a plan.
+Behind? Adapt a worked example with a helper.
 
 In the kit and on the site:
 
@@ -755,7 +759,9 @@ In the kit and on the site:
 
 > Say where we are on the journey: step 7 of 7, "Your campus: a 30-day plan." Then show what they will have at the end of this block before anyone starts.
 >
-> "Run the planner on the next five requests" beats "transform our office".
+> Try up to five fictional or approved non-sensitive examples beside the existing process. Include review time, errors and delivery time in the comparison. Never delay an accommodation for a pilot.
+>
+> Reserve five minutes for a partner to check the plan: input, output destination, reviewer role, deadline, approval, day-30 measure and stop rule. If AI is not approved, a paper workflow and approval request count.
 >
 > The commitment goes on the wall, with no names on it.
 
@@ -787,7 +793,7 @@ In the kit and on the site:
 >
 > Say plainly: use the AI assistant your campus approves, and follow its rules on what information may go in. Nothing private, today or on Monday.
 >
-> Suggest they keep the agent's drafts beside what the office would have done anyway for a month, so they can show whether it helped.
+> Keep drafts beside the existing process for a month. Record evidence source/date, agent version, reviewer decision and unresolved barriers in the approved log. Stop for private data, unverifiable evidence or missing review.
 
 ---
 
@@ -799,7 +805,7 @@ What you learned, and what you can use it with on Monday
 
 | You learned | Monday, with |
 |---|---|
-| Writing an agent | Any AI assistant, including your campus Copilot |
+| Writing an agent | Your campus-approved AI assistant |
 | Grounding it | Office and Acrobat checkers, Accessibility Insights, axe |
 | Human review | Your own office's process |
 | Agent teams | One specialist at a time, or Accessibility Agents |
@@ -810,7 +816,7 @@ In the kit and on the site:
 
 ### Speaker notes, slide 33
 
-> Read it as permission: nothing here needs a purchase or a new tool.
+> Start with tools your campus already approves. Availability, subscriptions and data rules differ; no new purchase is required to map a workflow on paper.
 >
 > Point at Accessibility Agents for anyone who wants the whole team on their own laptop.
 

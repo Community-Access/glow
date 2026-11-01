@@ -10,6 +10,9 @@ work on, and suggest the one that best fits its Task. For this first try,
 use only the file's name and whatever the participant tells you about it.
 Do not open the evidence folder yet.
 
+If evidence is missing, ask for it. Do not invent findings to demonstrate a
+bad answer. An appropriate request for evidence is a successful first try.
+
 Answer as the agent would. Then step out of the agent and add a short note to
 the participant:
 

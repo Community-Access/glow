@@ -83,8 +83,7 @@ because it carries the room's real join address:
   are announced as headers and repeat across pages, and a declared document
   language.
 - PowerPoint - every slide has a real title placeholder and a real body
-  placeholder, filled in that order, because placeholder order is the reading
-  order a screen reader announces. Nothing is a floating text box. Tables
+  placeholder, filled in that order, and reading order still needs a screen reader check. Table slides use text boxes in reading order around the table. Tables
   carry alt text and a marked header row. Speaker notes are in the notes
   slide, not dumped onto the slide. Title and language are set on the file.
 - Markdown - headings, lists and pipe tables only. No layout tricks, so it

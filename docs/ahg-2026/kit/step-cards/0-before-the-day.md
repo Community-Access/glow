@@ -33,6 +33,11 @@ letitglow.app/ahg/paths compares them.
 
 ## Steps
 
+Use only tools and accounts your campus permits. Turning off model training
+does not authorize uploading private data. No approved AI or sharing option?
+Work through the written examples with a helper in Word or on paper and
+keep your agent local until approval is confirmed.
+
 ### Everyone
 
 1. Make a free GitHub account at github.com, if you do not have one. Use

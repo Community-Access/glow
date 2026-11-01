@@ -120,8 +120,10 @@ Each row is one place you might use it, whether it works there today, and how.
 | ChatGPT's plugin directory | Not yet | Being prepared. When it is listed, you will install it once from Plugins in ChatGPT's sidebar instead of pasting a text |
 | Claude, Gemini, Copilot on github.com, a campus assistant | Yes, by pasting | The same texts |
 
-ChatGPT itself: a free account works for the whole day. Sign in before you
-start, because ChatGPT without an account stops after a message or two.
+Sign in to your campus-approved assistant before you start. Free accounts
+have usage and message-length limits that can change. Save your latest agent
+after each revision. If a limit interrupts you, ask a helper to continue
+with a written example or another approved assistant.
 On the web and on a phone, ChatGPT reads skills only when they come in a
 plugin from its directory; until Accessibility Agents is listed there, the
 pasted texts are the way in. In every assistant, a skill that needs a

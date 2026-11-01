@@ -8,6 +8,29 @@ Releases are tagged in the [GitHub repository](https://github.com/Community-Acce
 
 ## [Unreleased]
 
+### Fixed
+
+- AHG library DAISY requests and health checks use the same explicit IPv4
+  loopback address, avoiding localhost address-resolution mismatches.
+
+- Complete the AHG content consistency pass: seven-heading ready check,
+  caption source text on both assistant paths, evidence limits, voluntary
+  author credit, approved fallbacks and deferred sharing, a timed block-7
+  plan with partner review, and observable learning-outcome checks.
+
+- AHG PowerPoint tables now allocate each row's wrapped-text height instead
+  of equal rows that expand over the links below them in PowerPoint. This
+  preserves the layout correction identified on the supplied "On Monday"
+  slide. Reading decks turn wide tables into labelled records without
+  reducing type size.
+- AHG step card 7 now matches the eight-question browser and VS Code
+  planning flows. Both include campus approval, safe pilot inputs, reviewer
+  roles, baseline and day-30 measures, and stop/manual-fallback rules.
+  The tutorial, three worked examples and facilitator guidance use the same
+  disability resource center handoff. Missing-evidence exercises now accept
+  an appropriate request for evidence rather than requiring guesses;
+  grounding is not presented as a guarantee of correctness.
+
 ### Added
 
 - **AHG 2026: a deck that meets people where they are.** Block 1 grows
@@ -185,6 +208,11 @@ Releases are tagged in the [GitHub repository](https://github.com/Community-Acce
 
 ### Fixed
 
+- Complete the AHG content consistency pass: seven-heading ready check,
+  caption source text on both assistant paths, evidence limits, voluntary
+  author credit, approved fallbacks and deferred sharing, a timed block-7
+  plan with partner review, and observable learning-outcome checks.
+
 - **Readable next-step cards in dark mode.** The "What's Next?" card on the
   audit report, fix results and conversion complete pages kept its light fill
   in dark mode, leaving its text at 1.21:1 and the focus ring at 1.98:1. It now
@@ -319,6 +347,11 @@ Releases are tagged in the [GitHub repository](https://github.com/Community-Acce
 
 ### Fixed
 
+- Complete the AHG content consistency pass: seven-heading ready check,
+  caption source text on both assistant paths, evidence limits, voluntary
+  author credit, approved fallbacks and deferred sharing, a timed block-7
+  plan with partner review, and observable learning-outcome checks.
+
 - **Accessibility improvements from main branch**: Contrast review noise fix, ARIA compliance enhancements, heading order corrections, landmark guardrails, and web app color contrast improvements.
 - **Version consistency validation**: Updated `scripts/check-version-consistency.py` to validate VERSION file as authoritative source.
 - **Feature flag defaults expanded**: Added `GLOW_ENABLE_USER_LOGIN` and `GLOW_ENABLE_ADMIN_LOGIN` flags (both disabled for 7.0.0) to support future user and admin authentication modes.
@@ -328,6 +361,11 @@ Releases are tagged in the [GitHub repository](https://github.com/Community-Acce
 ## [Unreleased]
 
 ### Fixed
+
+- Complete the AHG content consistency pass: seven-heading ready check,
+  caption source text on both assistant paths, evidence limits, voluntary
+  author credit, approved fallbacks and deferred sharing, a timed block-7
+  plan with partner review, and observable learning-outcome checks.
 
 - **Celery worker tasks crashing with "Working outside of application context"**: The previous fix (`celeryd_init` signal calling `create_app()`) was insufficient because the `@celery_app.task` decorators in `convert_tasks.py` execute at module-import time and bake in whatever `celery_app.Task` was at that moment (the default `celery.Task`). Reassigning `celery_app.Task` later did not retroactively rebind already-registered task classes. Rebuilt `web/src/acb_large_print_web/tasks/__init__.py` so `ContextTask` is a module-level class passed to `Celery(..., task_cls=ContextTask)` at app construction. Every `@celery_app.task`-decorated task (`glow.convert`, `glow.pageflow_extract`, `glow.speech`, `glow.template`, `glow.export`, `glow.audit`, `glow.fix`, `glow.speech_prepare`) now inherits the Flask-app-context wrapper regardless of import order. `ContextTask` also lazily bootstraps `create_app()` on first invocation as a safety net.
 
@@ -351,6 +389,11 @@ Releases are tagged in the [GitHub repository](https://github.com/Community-Acce
 - **OpenRouter referer and email sender defaults aligned to migration plan**: OpenRouter `HTTP-Referer` defaults now use `https://letitglow.app`, and Postmark default sender moved to `no-reply@notify.letitglow.app`.
 
 ### Fixed
+
+- Complete the AHG content consistency pass: seven-heading ready check,
+  caption source text on both assistant paths, evidence limits, voluntary
+  author credit, approved fallbacks and deferred sharing, a timed block-7
+  plan with partner review, and observable learning-outcome checks.
 
 - **Accessibility Regression Gate `/guide/` contrast stability**: strengthened code-block contrast for syntax-classed fenced code (`pre > code.language-*`) in `web/src/acb_large_print_web/static/forms.css` to prevent intermittent `color-contrast` serious violations in scheduled axe runs.
 - **Accessibility Regression SARIF workflow reliability**: updated `.github/workflows/accessibility-regression.yml` to run the local locked `axe` binary (`npx --no-install axe`) instead of dynamically fetching `@axe-core/cli`, reducing Chrome/ChromeDriver version drift failures in CI.
@@ -449,6 +492,11 @@ Releases are tagged in the [GitHub repository](https://github.com/Community-Acce
 - (pending) Integrate GLOW audit/fix/convert/report logic into MCP server
 
 #### Fixed
+
+- Complete the AHG content consistency pass: seven-heading ready check,
+  caption source text on both assistant paths, evidence limits, voluntary
+  author credit, approved fallbacks and deferred sharing, a timed block-7
+  plan with partner review, and observable learning-outcome checks.
 - N/A
 
 #### Removed
@@ -475,6 +523,11 @@ Releases are tagged in the [GitHub repository](https://github.com/Community-Acce
 - **Quick Start audio routing** now offers both Convert and BITS Whisperer for `.mp3` and `.wav` files, while keeping longer or broader audio workflows on Whisperer.
 
 ### Fixed
+
+- Complete the AHG content consistency pass: seven-heading ready check,
+  caption source text on both assistant paths, evidence limits, voluntary
+  author credit, approved fallbacks and deferred sharing, a timed block-7
+  plan with partner review, and observable learning-outcome checks.
 
 - **Convert pipeline false-negative failure in CI**: Updated `web/src/acb_large_print_web/routes/convert.py` so WCAG language text extraction fails open when MarkItDown cannot parse a generated output artifact (for example, mocked or malformed EPUB bytes), preventing successful conversions from returning HTTP 500.
 - **Rules Reference accessibility filters:** Removed a stale duplicate Type filter on `/rules/` that reused `id="filter-type"`, resolving axe `duplicate-id-aria` and `form-field-multiple-labels` findings.
@@ -581,6 +634,11 @@ Releases are tagged in the [GitHub repository](https://github.com/Community-Acce
 - **About page and user guide.** Both now explain AI capabilities in short form and show the active feature set when enabled.
 
 ### Fixed
+
+- Complete the AHG content consistency pass: seven-heading ready check,
+  caption source text on both assistant paths, evidence limits, voluntary
+  author credit, approved fallbacks and deferred sharing, a timed block-7
+  plan with partner review, and observable learning-outcome checks.
 
 - **Pre-commit checker compliance.** Fixed `check-config-consistency.py` to handle new `GLOW_ENABLE_AI` and per-feature toggles correctly.
 
@@ -700,6 +758,11 @@ Releases are tagged in the [GitHub repository](https://github.com/Community-Acce
 
 ### Fixed
 
+- Complete the AHG content consistency pass: seven-heading ready check,
+  caption source text on both assistant paths, evidence limits, voluntary
+  author credit, approved fallbacks and deferred sharing, a timed block-7
+  plan with partner review, and observable learning-outcome checks.
+
 - **Web: fix-result page no longer renders download helper JavaScript as
   visible text.** `web/src/acb_large_print_web/templates/fix_result.html`
   now wraps the download-status behavior in a proper `<script>` element so
@@ -747,6 +810,11 @@ Releases are tagged in the [GitHub repository](https://github.com/Community-Acce
   and tracks them under a dedicated completed section.
 
 ### Fixed
+
+- Complete the AHG content consistency pass: seven-heading ready check,
+  caption source text on both assistant paths, evidence limits, voluntary
+  author credit, approved fallbacks and deferred sharing, a timed block-7
+  plan with partner review, and observable learning-outcome checks.
 
 - **Markdown to PDF styling cascade now preserves ACB formatting.**
   `desktop/src/acb_large_print/pandoc_converter.py` now embeds PDF CSS using
@@ -903,6 +971,11 @@ Releases are tagged in the [GitHub repository](https://github.com/Community-Acce
 
 ### Fixed
 
+- Complete the AHG content consistency pass: seven-heading ready check,
+  caption source text on both assistant paths, evidence limits, voluntary
+  author credit, approved fallbacks and deferred sharing, a timed block-7
+  plan with partner review, and observable learning-outcome checks.
+
 - **`/status` is now reachable without consent redirect.** Added `/status`
   to consent-gate exemptions so operational diagnostics are publicly
   accessible like `/health`.
@@ -1005,6 +1078,11 @@ Releases are tagged in the [GitHub repository](https://github.com/Community-Acce
 
 ### Fixed
 
+- Complete the AHG content consistency pass: seven-heading ready check,
+  caption source text on both assistant paths, evidence limits, voluntary
+  author credit, approved fallbacks and deferred sharing, a timed block-7
+  plan with partner review, and observable learning-outcome checks.
+
 - **Speech Studio preparation now enforces Pandoc-first text rendering for document narration.** Non-plain-text inputs are rendered through a Pandoc plain-text stage before narration checks and conversion, and the rendered intermediate text is persisted for diagnostics (`speech_rendered.txt`) alongside normalized source text (`speech_source.txt`). Changes in `web/src/acb_large_print_web/routes/speech.py`.
 
 - **Announcement page cleanup.** Removed stray rendered `>` paragraphs in the announcement body content that appeared between quote blocks. Changes in `web/src/acb_large_print_web/templates/partials/announcement_body.html`.
@@ -1035,6 +1113,11 @@ Releases are tagged in the [GitHub repository](https://github.com/Community-Acce
 - **Speech first-class navigation.** Added dedicated Speech tab and Quick Start Speech action routing.
 
 ### Fixed
+
+- Complete the AHG content consistency pass: seven-heading ready check,
+  caption source text on both assistant paths, evidence limits, voluntary
+  author credit, approved fallbacks and deferred sharing, a timed block-7
+  plan with partner review, and observable learning-outcome checks.
 
 - **Speech preview feedback for slower synthesis.** Added stronger live in-progress status messaging for longer preview waits.
 
@@ -1153,6 +1236,11 @@ Releases are tagged in the [GitHub repository](https://github.com/Community-Acce
 
 ### Fixed
 
+- Complete the AHG content consistency pass: seven-heading ready check,
+  caption source text on both assistant paths, evidence limits, voluntary
+  author credit, approved fallbacks and deferred sharing, a timed block-7
+  plan with partner review, and observable learning-outcome checks.
+
 - **Production deploy now forces Caddy to apply config changes and validates from a disposable container.** Updated `scripts/deploy-app.sh` to validate `web/Caddyfile` without depending on a running `caddy` container, then force-recreate the proxy so bind-mounted config changes actually reach production. Updated `scripts/post-deploy-check.sh` to verify that the live MP3 response includes `media-src 'self'` in the Content Security Policy so stale proxy config is caught during deployment instead of after release.
 
 - **Web changelog page no longer crashes under Jinja parsing.** `web/src/acb_large_print_web/templates/partials/changelog_body.html` is now wrapped in a Jinja `{% raw %}...{% endraw %}` block so literal documentation examples like `{{.Name}}`, `{% if %}`, and `{{ }}` are treated as text instead of template syntax. This resolves `/changelog/` HTTP 500 errors and unblocks the Playwright static reference page regression test in Accessibility Regression Gate.
@@ -1267,6 +1355,11 @@ Releases are tagged in the [GitHub repository](https://github.com/Community-Acce
 - **Web: Default AI model switched from free Llama/Mistral pool to GPT-4o-mini.** `_DEFAULT_MODEL` in `web/src/acb_large_print_web/ai_gateway.py` now defaults to `openai/gpt-4o-mini` (primary) and `openai/gpt-4o` (fallback/escalation), replacing the previously unavailable `meta-llama/llama-3-8b-instruct:free,mistralai/mistral-7b-instruct:free` free-model pool. The legacy free model entries are retained in the cost table for accounts that override via `AI_DEFAULT_MODEL`. Admin reset-to-defaults and the admin AI settings dropdown updated to match. Probe path 01 and integration test fixtures updated to the new primary model. All 84/84 probe paths now pass.
 
 ### Fixed
+
+- Complete the AHG content consistency pass: seven-heading ready check,
+  caption source text on both assistant paths, evidence limits, voluntary
+  author credit, approved fallbacks and deferred sharing, a timed block-7
+  plan with partner review, and observable learning-outcome checks.
 
 - **Post-deploy verification no longer hangs/fails on removed Ollama service.** `scripts/post-deploy-check.sh` now gates required service checks dynamically from Compose service definitions and skips `ollama` when it is not present in `docker-compose.prod.yml`. Readiness parsing now treats `not-configured` as OK for feature-gated AI checks, preventing false deployment failures when AI/Ollama are intentionally disabled.
 

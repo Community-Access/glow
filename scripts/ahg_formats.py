@@ -43,6 +43,7 @@ import shutil
 import subprocess
 import sys
 import tempfile
+import textwrap
 import zipfile
 from dataclasses import dataclass, field
 from pathlib import Path
@@ -602,6 +603,25 @@ def plan_slides(doc: Doc) -> list[SlideSpec]:
                     group.append(page)
                 page = SlideSpec(title)
                 used = 0
+                # Wide tables become labelled records, not unreadably narrow cells.
+                if len(item.header) > 4 or any(
+                    _row_lines(item.header, len(item.header)) + _row_lines(row, len(item.header))
+                    > TABLE_LINES_PER_SLIDE for row in item.rows
+                ):
+                    for row in item.rows:
+                        for column, header in enumerate(item.header):
+                            value = row[column] if column < len(row) else []
+                            line = Line([Run(plain(header) + ": "), *value])
+                            need = _lines_needed(line)
+                            if page.lines and used + need > LINES_PER_SLIDE:
+                                group.append(page)
+                                page, used = SlideSpec(title), 0
+                            page.lines.append(line)
+                            used += need
+                        if page.lines:
+                            group.append(page)
+                            page, used = SlideSpec(title), 0
+                    continue
                 chunk: list[list[list[Run]]] = []
                 chunk_lines = 1 + _row_lines(item.header, len(item.header))
                 for row in item.rows:
@@ -638,8 +658,8 @@ def plan_slides(doc: Doc) -> list[SlideSpec]:
 
 
 def _row_lines(row: list[list[Run]], cols: int) -> int:
-    width = max(10, (CHARS_PER_LINE + 10) // max(1, cols))
-    return max((max(1, math.ceil(len(plain(cell)) / width)) for cell in row), default=1)
+    width = max(10, (CHARS_PER_LINE + 10) // max(1, cols) - 2)
+    return max((max(1, len(textwrap.wrap(plain(cell), width=width))) for cell in row), default=1)
 
 
 def _set_lang(run, lang: str) -> None:
@@ -690,9 +710,10 @@ def _place(slide, Inches) -> None:
         placeholder.height = Inches(1.2) if is_title else Inches(5.4)
 
 
-def _title(slide, text: str, lang: str, size: int = 36) -> None:
+def _title(slide, text: str, lang: str, size: int = 28) -> None:
     frame = slide.shapes.title.text_frame
     frame.word_wrap = True
+    frame.margin_top = frame.margin_bottom = 0
     paragraph = frame.paragraphs[0]
     _pptx_runs(paragraph, [Run(text)], size=size, lang=lang, bold=True)
 
@@ -736,9 +757,18 @@ def write_pptx(doc: Doc, target: Path) -> None:
             block = spec.table
             cols = len(block.header)
             rows = 1 + len(block.rows)
-            frame = slide.shapes.add_table(rows, cols, Inches(0.6), Inches(1.7), Inches(12.1), Inches(min(5.4, 0.5 * rows)))
+            row_heights = [
+                Inches(0.1 + 0.32 * _row_lines(row, cols))
+                for row in [block.header, *block.rows]
+            ]
+            frame = slide.shapes.add_table(rows, cols, Inches(0.6), Inches(1.7), Inches(12.1), sum(row_heights))
             table = frame.table
             table.first_row = True
+            for row, height in zip(table.rows, row_heights):
+                row.height = height
+                for cell in row.cells:
+                    cell.margin_top = cell.margin_bottom = Inches(0.05)
+                    cell.text_frame.word_wrap = True
             for c, runs in enumerate(block.header):
                 cell = table.cell(0, c)
                 _pptx_runs(cell.text_frame.paragraphs[0], runs, size=18, lang=lang, bold=True)

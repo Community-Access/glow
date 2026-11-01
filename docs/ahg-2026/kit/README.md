@@ -8,12 +8,17 @@ description: "Welcome page for the AHG 2026 agent kit."
 # Welcome to the AHG 2026 agent kit
 
 You are in the right place. This page opens by itself when you open the kit
-in VS Code. Nothing here needs code, and nothing here can break.
+in VS Code. The exercises need no coding. Keep a copy of your agent after
+each revision so you can recover if a step fails.
 
 ## Three paths into the same day
 
 Every path gives you the same agent, the same team report and the same
 share on GitHub. letitglow.app/ahg/paths compares them.
+
+Use only campus-approved tools and data. If AI use or public sharing is not
+approved, use the worked examples in Word or on paper with a helper and keep
+your work local. A browser is not a way around campus policy.
 
 - In a browser: no kit needed. Open letitglow.app/ahg/assistant, copy each
   block's text, and paste it into ChatGPT, Copilot on github.com, Claude,
@@ -87,7 +92,10 @@ switch to the browser path and carry on from the same block.
 
 ## If you use a screen reader
 
-Everything today works with NVDA, JAWS and VoiceOver, on every path.
+The kit includes keyboard and screen reader instructions. Test your chosen
+path with your own setup during the ready check; tell a helper if a step
+does not work. Final NVDA, JAWS and VoiceOver walkthroughs are still required
+before the workshop is declared ready.
 
 - In VS Code, Copilot's answers are long. Move to the answer and press
   Alt+F2 (Option+F2 on a Mac) to read it as plain text in the Accessible
@@ -124,12 +132,17 @@ arrives and another when Copilot needs you to approve something. The
 settings are `accessibility.signals.chatResponseReceived` and
 `accessibility.signals.chatUserActionRequired`. While Copilot works, it
 says what it is doing; `accessibility.verboseChatProgressUpdates` turns
-that off. The kit sets chat text to 18 point with `chat.fontSize`.
+that off. The kit enlarges chat text with `chat.fontSize`; adjust it for your own
+reading comfort.
+
+Your own author credit is optional in the AI conversation. Use a public
+professional name only if you choose; a helper can add the credit locally.
+Never put student or case details in an author line.
 
 ## The two rules
 
 1. Never paste anything private into any AI: student records, health or
-   disability information, or anyone's name. Use the sample course.
+   disability information, or private identifying details. Use the sample course.
 2. Every agent ends with a person checking its work.
 
 Help, before or after the day: support@community-access.org.

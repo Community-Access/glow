@@ -314,7 +314,7 @@ def build_slides(ctx: DeckContext) -> list[Slide]:
             blocks=(
                 Bullets(items=(
                     f"10:30 to 4:30 Mountain Time. Lunch {lunch.starts_at}, break {rest.starts_at}, evaluation {evaluation.starts_at}.",
-                    "Three ways in: VS Code on your laptop, VS Code at vscode.dev, or any AI assistant in a browser.",
+                    "Three paths: VS Code on your laptop, VS Code at vscode.dev, or any AI assistant in a browser.",
                     "Every block starts by showing you the finished result.",
                     "Ask for anything: large print, a seat, a pause, a repeat.",
                 )),
@@ -389,7 +389,7 @@ def build_slides(ctx: DeckContext) -> list[Slide]:
             id="s6", section="Opening", kicker="Two rules, all day", title="Private stays private, and people decide",
             blocks=(
                 Bullets(ordered=True, items=(
-                    "Never paste anything private into any AI: student records, health or disability information, anyone's name.",
+                    "Never paste anything private into any AI: student records, health or disability information, private identifying details.",
                     "Every agent ends with a person checking its work.",
                 )),
                 Para("If nobody is named, nobody reviewed it.", big=True),
@@ -454,7 +454,7 @@ def build_slides(ctx: DeckContext) -> list[Slide]:
             notes=(
                 "This is the most important slide of the morning. Automation multiplies whatever you give it: good instructions and good evidence scale good work, and a careless agent scales mistakes just as fast.",
                 "Name the critical things out loud: never paste private data; never call anything compliant on an agent's word; read every finding before it reaches a student or a faculty member; and know enough WCAG to tell when an answer is wrong.",
-                "Tell them block 3 will show this on purpose: the first answer guesses, and they will catch it.",
+                "Block 3 tests missing evidence. Catch any guesses, but celebrate an agent that asks for the evidence instead.",
             ),
             links=(("Glossary: human review and grounding", _kit("glossary.md")),),
         ),
@@ -550,7 +550,7 @@ def build_slides(ctx: DeckContext) -> list[Slide]:
                     "Pick a file from the PSY 101 sample course.",
                     "Read the answer. Then /review-my-agent: version 2.",
                 )),
-                Para("It will guess a little. That is the setup for this afternoon.", big=True),
+                Para("No evidence? A good agent asks instead of guessing.", big=True),
                 Para("Behind? Try a ready-made agent from examples/agents instead."),
             ),
             notes=(
@@ -580,7 +580,7 @@ def build_slides(ctx: DeckContext) -> list[Slide]:
             id="s14", section="Lunch", kicker=f"Lunch - {lunch.clock}", title=f"Back at {lunch.resume}",
             blocks=(
                 Para("You have an agent. That was the hard part."),
-                Para("After lunch it stops guessing."),
+                Para("After lunch: evidence you can verify."),
                 Para("Before you go: two questions, no name, at letitglow.app/ahg/check-in."),
             ),
             notes=(
@@ -605,7 +605,7 @@ def build_slides(ctx: DeckContext) -> list[Slide]:
             notes=(
                 _journey_note(4),
                 "The checker report is GLOW's audit for documents and axe for the web page.",
-                "Grounding is the trusted in the session title. The checkers find; the agent explains and plans; a person decides.",
+                "Grounding supports the trusted in the session title. It reduces guessing but does not guarantee correctness. Check the source, the citation and what the checker did not test; a person decides.",
             ),
             links=(_card(4), ("Checker reports for PSY 101", f"{SITE}/ahg/kit#sample-course")),
         ),
@@ -634,7 +634,7 @@ def build_slides(ctx: DeckContext) -> list[Slide]:
                 Para("Word's, PowerPoint's or Acrobat's checker, or Accessibility Insights, work the same way."),
                 Para("Some barriers no checker sees:"),
                 Bullets(items=(
-                    "An accommodations statement in 8-point gray.",
+                    "An accommodations policy contradicted elsewhere.",
                     "Alt text that says \"image.png\".",
                     "A lab that only works if you can see color.",
                     "Captions that turn Ebbinghaus into \"ebb in house\".",
@@ -659,7 +659,7 @@ def build_slides(ctx: DeckContext) -> list[Slide]:
                 Bullets(ordered=True, items=(
                     "Type /run-the-office, or paste the block 5 text.",
                     "The coordinator sends each file to its specialists, and to yours.",
-                    "The standards reviewer checks everyone's work.",
+                    "The standards-reviewer role checks the draft; staff still review it.",
                     "Then /review-my-agent: version 4, your best.",
                 )),
                 Para("Behind? The office runs with any version of your agent."),
@@ -678,12 +678,13 @@ def build_slides(ctx: DeckContext) -> list[Slide]:
                 Bullets(items=(
                     "Seven files, eight specialists, plus yours.",
                     "Every finding: evidence, a WCAG 2.2 link, a named reviewer.",
-                    "A list of what no checker could see.",
+                    "A list of what the supplied evidence cannot establish.",
                 )),
                 Para("Quality, accountability and transparency, at scale.", big=True),
             ),
             notes=(
                 "The report opens with three lines a director will actually read. It is also a Tuesday.",
+                "One assistant follows specialist roles in sequence here; this is not independent validation. Seven sample files demonstrate the method, not production throughput. Review effort, errors and deadlines decide whether a campus pilot can grow.",
                 "Ask: what would it take to run this across ten courses? Let them answer. The honest answer is a person's review time, which is exactly where it should go.",
             ),
         ),
@@ -724,6 +725,7 @@ def build_slides(ctx: DeckContext) -> list[Slide]:
                 "You can also paste the agent in instead of choosing the file. The form opens already filled in.",
                 "Everyone shared a practice agent before the day, so this is the second time, not the first. Say so; it changes the room.",
                 "Helpers watch the issues labelled needs-a-hand and go to those people first. A Nearly there reply always says exactly what to fix.",
+                "If sharing is not approved or GitHub is unavailable, save a reviewed draft and a next step. Do not call it published, and do not collect it without permission.",
             ),
             links=(_card(6), ("Share your agent", f"{SITE}/ahg/share")),
         ),
@@ -760,11 +762,12 @@ def build_slides(ctx: DeckContext) -> list[Slide]:
                     f"Add your one-sentence commitment at {ctx.join_display}/11.",
                 )),
                 Para("Small is the point.", big=True),
-                Para("Behind? One sentence is a plan."),
+                Para("Behind? Adapt a worked example with a helper."),
             ),
             notes=(
                 _journey_note(7),
-                "\"Run the planner on the next five requests\" beats \"transform our office\".",
+                "Try up to five fictional or approved non-sensitive examples beside the existing process. Include review time, errors and delivery time in the comparison. Never delay an accommodation for a pilot.",
+                "Reserve five minutes for a partner to check the plan: input, output destination, reviewer role, deadline, approval, day-30 measure and stop rule. If AI is not approved, a paper workflow and approval request count.",
                 "The commitment goes on the wall, with no names on it.",
             ),
             links=(_card(7),),
@@ -787,7 +790,7 @@ def build_slides(ctx: DeckContext) -> list[Slide]:
                 "This is the slide that turns today into Tuesday. An agent helps most at one step of a workflow the office already runs, not as a new process beside it.",
                 "Read the four questions slowly: what starts it, what it reads, where its draft goes, who signs off. Their 30-day plan asks exactly these.",
                 "Say plainly: use the AI assistant your campus approves, and follow its rules on what information may go in. Nothing private, today or on Monday.",
-                "Suggest they keep the agent's drafts beside what the office would have done anyway for a month, so they can show whether it helped.",
+                "Keep drafts beside the existing process for a month. Record evidence source/date, agent version, reviewer decision and unresolved barriers in the approved log. Stop for private data, unverifiable evidence or missing review.",
             ),
             links=(_card(7), ("Putting it to work in your office", _kit("write-your-own-agent.md"))),
         ),
@@ -798,7 +801,7 @@ def build_slides(ctx: DeckContext) -> list[Slide]:
                     caption="What you learned, and what you can use it with on Monday",
                     headers=("You learned", "Monday, with"),
                     rows=(
-                        ("Writing an agent", "Any AI assistant, including your campus Copilot"),
+                        ("Writing an agent", "Your campus-approved AI assistant"),
                         ("Grounding it", "Office and Acrobat checkers, Accessibility Insights, axe"),
                         ("Human review", "Your own office's process"),
                         ("Agent teams", "One specialist at a time, or Accessibility Agents"),
@@ -806,7 +809,7 @@ def build_slides(ctx: DeckContext) -> list[Slide]:
                 ),
             ),
             notes=(
-                "Read it as permission: nothing here needs a purchase or a new tool.",
+                "Start with tools your campus already approves. Availability, subscriptions and data rules differ; no new purchase is required to map a workflow on paper.",
                 "Point at Accessibility Agents for anyone who wants the whole team on their own laptop.",
             ),
             links=(("Accessibility Agents", _kit("accessibility-agents.md")),),
@@ -1211,7 +1214,7 @@ def build_deck_pptx_bytes(ctx: DeckContext) -> bytes:
             placeholder.left = Inches(0.6)
             placeholder.width = Inches(12.1)
             placeholder.top = Inches(0.4) if is_title else Inches(1.7)
-            placeholder.height = Inches(1.2) if is_title else Inches(5.4)
+            placeholder.height = Inches(1.0) if is_title else Inches(5.4)
         slide.shapes.title.text = slide_data.title
         for paragraph in slide.shapes.title.text_frame.paragraphs:
             for run in paragraph.runs:
@@ -1362,6 +1365,7 @@ def _pptx_table_slide(slide, slide_data: Slide, Inches, Pt) -> None:
         box = slide.shapes.add_textbox(Inches(0.6), Inches(top), Inches(12.1), Inches(height))
         frame = box.text_frame
         frame.word_wrap = True
+        frame.margin_top = frame.margin_bottom = 0
         frame.text = lines[0]
         for line in lines[1:]:
             frame.add_paragraph().text = line
@@ -1381,10 +1385,17 @@ def _pptx_table_slide(slide, slide_data: Slide, Inches, Pt) -> None:
     row_lines = [max(_pptx_lines(cell, per_col) for cell in table_block.headers)] + [
         max(_pptx_lines(cell, per_col) for cell in row) for row in table_block.rows
     ]
-    height = sum(0.1 + line_height * n for n in row_lines)
-    graphic_frame = slide.shapes.add_table(rows, cols, Inches(0.6), Inches(top), Inches(12.1), Inches(height))
+    row_heights = [Inches(0.1 + line_height * n) for n in row_lines]
+    height = sum(row_heights)
+    graphic_frame = slide.shapes.add_table(rows, cols, Inches(0.6), Inches(top), Inches(12.1), height)
     table = graphic_frame.table
     table.first_row = True  # header row, announced as one
+    # Equal rows make PowerPoint expand wrapped cells on open, over the footer.
+    for row, row_height in zip(table.rows, row_heights):
+        row.height = row_height
+        for cell in row.cells:
+            cell.margin_top = cell.margin_bottom = Inches(0.05)
+            cell.text_frame.word_wrap = True
 
     for position, heading in enumerate(table_block.headers):
         cell = table.cell(0, position)
@@ -1405,15 +1416,18 @@ def _pptx_table_slide(slide, slide_data: Slide, Inches, Pt) -> None:
                     run.font.name = "Arial"
 
     _set_alt_text(graphic_frame, caption or f"Table: {slide_data.title}")
-    top += height + 0.15
+    top += graphic_frame.height / Inches(1) + 0.15
 
     # Anything after the table, and the links, go below it, in reading order.
     if after or slide_data.links:
         link_text = LINKS_LABEL + " " + ", ".join(label for label, _ in slide_data.links)
-        tail = sum(_pptx_lines(line, 45) for line in after) + (_pptx_lines(link_text) if slide_data.links else 0)
-        box = slide.shapes.add_textbox(Inches(0.6), Inches(top), Inches(12.1), Inches(line_height * tail))
+        tail_height = sum(0.56 * _pptx_lines(line, 45) for line in after)
+        if slide_data.links:
+            tail_height += line_height * _pptx_lines(link_text)
+        box = slide.shapes.add_textbox(Inches(0.6), Inches(top), Inches(12.1), Inches(tail_height))
         frame = box.text_frame
         frame.word_wrap = True
+        frame.margin_top = frame.margin_bottom = 0
         first = True
         for line in after:
             paragraph = frame.paragraphs[0] if first else frame.add_paragraph()

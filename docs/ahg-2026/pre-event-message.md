@@ -68,6 +68,11 @@ Locked-down work laptop? Take the browser path: it needs nothing
 installed. Or write to us; we will sort it out together, and nobody is left
 out on the day.
 
+Use only an assistant your campus permits. A browser does not bypass campus
+data or account rules. If no AI tool or public sharing is approved, bring
+the written examples and work in Word or on paper with a helper; keep your
+agent local until sharing is approved.
+
 ### Bring
 
 - A Windows or Mac laptop and its charger.
@@ -82,7 +87,7 @@ out on the day.
 - Morning: design your agent in plain English, and see it work on a course
   document with GitHub Copilot or the assistant you chose.
 - After lunch: ground it in real evidence from GLOW, axe and Accessibility
-  Insights, so it cites WCAG 2.2 instead of guessing.
+  Insights, so you can verify its claims and WCAG 2.2 citations.
 - Afternoon: add it to an agent team and watch the team work through the
   whole course, then share it to the open-source AHG 2026 collection on
   GitHub, with one form and your name on it.

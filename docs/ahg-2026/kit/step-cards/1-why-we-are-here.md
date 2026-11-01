@@ -26,7 +26,7 @@ person who checks its work.
 - The whole kit, online: [letitglow.app/ahg/kit](https://letitglow.app/ahg/kit)
 - Every word we use: [the glossary](https://letitglow.app/ahg/kit/glossary.md)
 - How to write an agent, step by step: [write your own agent](https://letitglow.app/ahg/kit/write-your-own-agent.md)
-- The three ways in: [letitglow.app/ahg/paths](https://letitglow.app/ahg/paths)
+- The three paths: [choose your workshop path](https://letitglow.app/ahg/paths)
 
 ## Steps
 

@@ -340,6 +340,25 @@ def test_powerpoint_has_no_text_under_24pt(ctx: deck.DeckContext):
     assert not small, small
 
 
+def test_powerpoint_wrapped_rows_have_individual_heights_and_clear_footers(ctx):
+    from pptx import Presentation
+    from pptx.util import Inches
+
+    prs = Presentation(BytesIO(deck.build_deck_pptx_bytes(ctx)))
+    for data, slide in zip(deck.build_slides(ctx), prs.slides):
+        for index, shape in enumerate(slide.shapes):
+            if not shape.has_table:
+                continue
+            block = next(b for b in data.blocks if isinstance(b, deck.Table))
+            width = 70 // len(block.headers) - 2
+            for row, texts in zip(shape.table.rows, [block.headers, *block.rows]):
+                expected = Inches(0.1 + 0.42 * max(deck._pptx_lines(t, width) for t in texts))
+                assert row.height == expected, (data.id, texts)
+            for following in list(slide.shapes)[index + 1:]:
+                assert following.top >= shape.top + shape.height + Inches(0.14), data.id
+                assert following.top + following.height <= prs.slide_height, data.id
+
+
 def test_word_passes_glow_s_own_audit(ctx: deck.DeckContext, tmp_path):
     """Use a checker, fix what it finds - the deck is held to GLOW's own bar."""
     from acb_large_print.auditor import audit_document
