@@ -374,6 +374,7 @@
           <ul class="footer-links">
             <li><a href="{{ url_for('about.about_page') }}"{% if request.blueprint == 'about' %} aria-current="page"{% endif %}>About</a></li>
             <li><a href="{{ url_for('changelog.changelog_page') }}"{% if request.blueprint == 'changelog' %} aria-current="page"{% endif %}>Changelog</a></li>
+            <li><a href="https://github.com/Community-Access/glow">Source code</a></li>
             <li><a href="{{ url_for('feedback.feedback_form') }}"{% if request.blueprint == 'feedback' %} aria-current="page"{% endif %}>Feedback</a></li>
             <li><a href="{{ url_for('status_page') }}"{% if request.endpoint == 'status_page' %} aria-current="page"{% endif %}>Server Status</a></li>
             <li><a href="{{ url_for('prd.prd_page') }}"{% if request.blueprint == 'prd' %} aria-current="page"{% endif %}>PRD</a></li>

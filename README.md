@@ -542,7 +542,9 @@ tracked in public in [GLOW, issue 54](https://github.com/open-source-accessibili
 
 ## License
 
-GLOW implements the ACB Large Print Guidelines, a public specification from the American Council of the Blind. GLOW code and configuration files are provided for organizational use.
+GLOW is released under the MIT License (see [LICENSE](LICENSE)), copyright Jeff Bishop. It implements the ACB Large Print Guidelines, a public specification from the American Council of the Blind.
+
+GLOW uses PyMuPDF, which is licensed under the GNU Affero General Public License 3.0. Because the web application runs PyMuPDF for its users over a network, the complete source of the version that is running is offered to them: every page links to this repository under "Source code".
 
 ## Web Application
 
