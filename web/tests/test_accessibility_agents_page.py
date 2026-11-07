@@ -488,3 +488,10 @@ def test_the_file_chooser_takes_images(client):
     assert ".png,.jpg,.jpeg,.gif,.webp" in body and 'id="aa-image-help"' in body
     script = (STATIC / "accessibility-agents-ask.js").read_text(encoding="utf-8")
     assert "readAsDataURL" in script and "image: fileImage" in script
+
+
+def test_answers_are_rendered_without_parsing_model_html():
+    script = (STATIC / "accessibility-agents-ask.js").read_text(encoding="utf-8")
+    assert "renderAnswer(answerBody, data.answer)" in script
+    # The renderer builds nodes; it never hands model text to the HTML parser.
+    assert "innerHTML" not in script and "insertAdjacentHTML" not in script

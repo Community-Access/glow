@@ -4258,6 +4258,9 @@ html[data-theme="dark"] .theme-toggle select {
 /* Accessibility Agents check tool (/accessibility-agents) */
 .aa-check { margin-block: 1.5rem; }
 .aa-result-text { white-space: pre-wrap; overflow-wrap: anywhere; font-size: 1rem; }
+.aa-answer-body { overflow-wrap: anywhere; font-size: 1rem; }
+.aa-answer-body h4, .aa-answer-body h5, .aa-answer-body h6 { margin: 1rem 0 0.25rem; }
+.aa-answer-body pre { white-space: pre-wrap; }
 .aa-summary-heading { display: inline; font-size: 1.15rem; margin: 0; }
 .aa-connect > *:not(summary) { margin-inline: 1rem; }
 .aa-address code, .aa-command code { font-size: 1rem; }

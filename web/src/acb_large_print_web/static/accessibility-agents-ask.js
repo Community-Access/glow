@@ -264,6 +264,86 @@
     });
   });
 
+  // ---- Showing an answer ----
+  // Models answer in Markdown. Read as plain text, a screen reader speaks
+  // every asterisk and hash, so the common parts (headings, lists, bold,
+  // code) become real elements. Built with createElement and textContent
+  // only: nothing from the model is ever parsed as HTML.
+  function inline(parent, text) {
+    var re = /(\*\*([^*]+)\*\*|__([^_]+)__|`([^`]+)`|\*([^*\s][^*]*)\*)/g;
+    var last = 0, m;
+    while ((m = re.exec(text)) !== null) {
+      if (m.index > last) parent.appendChild(document.createTextNode(text.slice(last, m.index)));
+      var el;
+      if (m[2] || m[3]) { el = document.createElement("strong"); el.textContent = m[2] || m[3]; }
+      else if (m[4]) { el = document.createElement("code"); el.textContent = m[4]; }
+      else { el = document.createElement("em"); el.textContent = m[5]; }
+      parent.appendChild(el);
+      last = re.lastIndex;
+    }
+    if (last < text.length) parent.appendChild(document.createTextNode(text.slice(last)));
+  }
+
+  function renderAnswer(target, markdown) {
+    target.textContent = "";
+    var list = null, listType = "", para = null, fence = null;
+    function close() { list = null; listType = ""; para = null; }
+    var lines = String(markdown || "").split(/\r?\n/);
+    // Whatever heading levels the model used, the biggest becomes h4 and the
+    // next h5, so the outline never skips a level under the answer's h3.
+    var levels = [];
+    lines.forEach(function (l) {
+      var m = /^\s{0,3}(#{1,6})\s+/.exec(l);
+      if (m && levels.indexOf(m[1].length) === -1) levels.push(m[1].length);
+    });
+    levels.sort();
+    lines.forEach(function (line) {
+      if (/^\s*```/.test(line)) {
+        if (fence) { fence = null; } else { close(); fence = document.createElement("pre"); target.appendChild(fence); }
+        return;
+      }
+      if (fence) { fence.textContent += (fence.textContent ? "\n" : "") + line; return; }
+      var h = /^\s{0,3}(#{1,6})\s+(.*)$/.exec(line);
+      var ul = /^\s*[-*+]\s+(.*)$/.exec(line);
+      var ol = /^\s*\d+[.)]\s+(.*)$/.exec(line);
+      if (!line.trim()) { close(); return; }
+      if (h) {
+        close();
+        var level = Math.min(6, 4 + levels.indexOf(h[1].length));
+        var el = document.createElement("h" + level);
+        inline(el, h[2].replace(/\s*#+\s*$/, ""));
+        target.appendChild(el);
+        return;
+      }
+      if (ul || ol) {
+        var type = ul ? "ul" : "ol";
+        // An indented bullet under a numbered item stays with that item.
+        if (ul && listType === "ol" && /^\s{2,}/.test(line) && list.lastChild) {
+          var sub = list.lastChild.querySelector("ul");
+          if (!sub) { sub = document.createElement("ul"); list.lastChild.appendChild(sub); }
+          var subItem = document.createElement("li");
+          inline(subItem, ul[1]);
+          sub.appendChild(subItem);
+          return;
+        }
+        if (listType !== type) { para = null; list = document.createElement(type); listType = type; target.appendChild(list); }
+        var li = document.createElement("li");
+        inline(li, (ul || ol)[1]);
+        list.appendChild(li);
+        return;
+      }
+      if (list && /^\s{2,}/.test(line) && list.lastChild) {
+        list.lastChild.appendChild(document.createTextNode(" "));
+        inline(list.lastChild, line.trim());
+        return;
+      }
+      list = null; listType = "";
+      if (!para) { para = document.createElement("p"); target.appendChild(para); }
+      else { para.appendChild(document.createTextNode(" ")); }
+      inline(para, line.trim());
+    });
+  }
+
   // ---- Asking ----
   form.addEventListener("submit", function (event) {
     event.preventDefault();
@@ -293,7 +373,7 @@
       scan: material.value.trim() ? fileScan : "",
       specialist: material.value.trim() ? fileSpecialist : ""
     }).then(function (data) {
-      answerBody.textContent = data.answer;
+      renderAnswer(answerBody, data.answer);
       answerMeta.textContent = "Answered by " + data.provider + ", " + data.model + "." +
         (data.specialist ? " Specialist: " + data.specialist + "." : "") +
         (data.tools_used && data.tools_used.length
