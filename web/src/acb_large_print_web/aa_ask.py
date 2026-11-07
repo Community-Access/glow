@@ -354,7 +354,14 @@ def ask(provider_id: str, key: str, model: str, question: str, material: str = "
         system += (
             f"\n\nFor this review you are the {specialist} specialist. Follow its "
             "instructions below. Where they mention tools or files you do not have, "
-            "use the scan report and the text you were given instead.\n\n" + instructions
+            "use the scan report and the text you were given instead.\n\n" + instructions +
+            "\n\nHow to answer, which overrides any output format above: a person "
+            "reads this on a web page, often with a screen reader. Write plain "
+            "language, never JSON, YAML or code blocks. Start with one sentence on "
+            "how the file does overall, then list each problem with its WCAG "
+            "criterion, severity, where it is, and how to fix it in the program the "
+            "file came from, most severe first. End with what needs a person to "
+            "check in the original."
         )
 
     tools = list_tools()
