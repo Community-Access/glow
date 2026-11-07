@@ -140,10 +140,20 @@ ways to use it, and a place to run its checks right now.</p>
            rel="noopener" target="_blank">Get a key from your provider (opens in a new tab)</a>.</p>
       </div>
       <div class="form-group">
-        <label for="aa-model">Model (optional)</label>
+        <label for="aa-model-pick">Model</label>
+        <select id="aa-model-pick" name="model_pick" aria-describedby="aa-model-pick-help">
+          <option value="">The default for this service</option>
+        </select>
+        <p id="aa-model-pick-help" class="form-help">Choose Show my models to list
+        every model your key can use. The list stays in this tab only.</p>
+        <button type="button" id="aa-models-button" class="btn-secondary">Show my models</button>
+      </div>
+      <div class="form-group">
+        <label for="aa-model">Or type a model name (optional)</label>
         <input type="text" id="aa-model" name="model" autocomplete="off"
                spellcheck="false" aria-describedby="aa-model-help">
-        <p id="aa-model-help" class="form-help">Leave empty for the default:
+        <p id="aa-model-help" class="form-help">A name typed here is used instead
+        of the list. The default for this service is
         <span id="aa-model-default">gpt-4o-mini</span>.</p>
       </div>
       <button type="button" id="aa-forget" class="btn-secondary">Forget my key now</button>
