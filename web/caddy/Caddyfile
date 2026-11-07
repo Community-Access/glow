@@ -83,6 +83,22 @@ lp.csedesigns.com, glow.bits-acb.org, www.letitglow.app {
         file_server
     }
 
+    # QUILL WordPress regression-test site (2026-11-04): a real WordPress for
+    # testing every QUILL and QUILL Lite WordPress feature. Containers in
+    # ~/app/wordpress-test; guide in its README.md. The site lives at
+    # /wordpress/ and knows it (WP_HOME), so the prefix is NOT stripped.
+    # ABOVE the redir below, or every request would 301 to letitglow.app.
+    # Pinned to lp.csedesigns.com like the blocks above.
+    @wordpress_test {
+        host lp.csedesigns.com
+        path /wordpress /wordpress/*
+    }
+    handle @wordpress_test {
+        reverse_proxy wordpress-test:80 {
+            header_up X-Forwarded-Proto https
+        }
+    }
+
     handle {
         redir https://letitglow.app{uri} 301
     }
@@ -90,6 +106,11 @@ lp.csedesigns.com, glow.bits-acb.org, www.letitglow.app {
 
 # ACB Large Print web application -- canonical reverse proxy to Flask/Gunicorn
 letitglow.app {
+    # Accessibility Agents hosted MCP server (~/app/a11y-mcp). /a11y/mcp -> a11y-mcp:3100/mcp
+    handle_path /a11y/* {
+        reverse_proxy a11y-mcp:3100
+    }
+
     handle /auth* {
         reverse_proxy keycloak:8080
     }
