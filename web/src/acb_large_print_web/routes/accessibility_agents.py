@@ -19,6 +19,7 @@ from flask import Blueprint, jsonify, render_template, request
 
 from .. import aa_ask
 from ..app import limiter
+from ..upload import ALLOWED_EXTENSIONS, UploadError, cleanup_token, validate_upload
 
 accessibility_agents_bp = Blueprint("accessibility_agents", __name__)
 
@@ -66,6 +67,7 @@ def ask():
             model=str(data.get("model") or ""),
             question=str(data.get("question") or ""),
             material=str(data.get("material") or ""),
+            source=str(data.get("source") or ""),
         )
     except aa_ask.AskError as exc:
         return _no_store(jsonify({"error": str(exc)})), 400
@@ -85,6 +87,50 @@ def models():
     except Exception:  # noqa: BLE001 - never let a key reach a traceback page
         return _no_store(jsonify({"error": "Something went wrong. Try again."})), 502
     return _no_store(jsonify({"models": found}))
+
+
+#: Files Ask can read: GLOW's document formats plus plain web and text files.
+EXTRACT_EXTENSIONS = ALLOWED_EXTENSIONS | {".html", ".htm", ".txt", ".css", ".csv"}
+#: Text and web files are read as they are; documents go through MarkItDown.
+PLAIN_EXTENSIONS = {".html", ".htm", ".txt", ".css", ".csv", ".md"}
+MAX_EXTRACT_BYTES = 20 * 1024 * 1024
+
+
+@accessibility_agents_bp.route("/extract", methods=["POST"])
+@limiter.limit("10 per minute")
+def extract():
+    """Turn one uploaded file into text for the Ask form. The file is not kept."""
+    if (request.content_length or 0) > MAX_EXTRACT_BYTES + 64 * 1024:
+        return _no_store(jsonify({"error": "Choose a file under 20 MB."})), 400
+    token = None
+    try:
+        token, path = validate_upload(request.files.get("file"), EXTRACT_EXTENSIONS)
+        ext = path.suffix.lower()
+        if ext in PLAIN_EXTENSIONS:
+            text = path.read_text(encoding="utf-8", errors="replace")
+        else:
+            from ..magic_features import extract_text_for_compare
+
+            text = extract_text_for_compare(path)
+        text = text.strip()
+        if not text:
+            return _no_store(jsonify({"error": "No text was found in that file. "
+                                      "A scanned PDF needs GLOW's OCR first."})), 400
+        limit = aa_ask.MAX_MATERIAL_CHARS
+        return _no_store(jsonify({
+            "filename": path.name,
+            "kind": "HTML" if ext in {".html", ".htm"} else ext.lstrip(".").upper(),
+            "text": text[:limit],
+            "truncated": len(text) > limit,
+            "characters": len(text),
+        }))
+    except UploadError as exc:
+        return _no_store(jsonify({"error": str(exc)})), 400
+    except Exception:  # noqa: BLE001
+        return _no_store(jsonify({"error": "That file could not be read. Try another."})), 502
+    finally:
+        if token:
+            cleanup_token(token)
 
 
 @accessibility_agents_bp.route("/openrouter/exchange", methods=["POST"])

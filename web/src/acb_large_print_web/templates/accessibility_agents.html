@@ -167,9 +167,18 @@ ways to use it, and a place to run its checks right now.</p>
       <label for="aa-material">HTML, text or colors to look at (optional)</label>
       <textarea id="aa-material" name="material" rows="8" maxlength="50000"
                 spellcheck="false" aria-describedby="aa-material-help"></textarea>
-      <p id="aa-material-help" class="form-help">Up to 50,000 characters. For a
-      whole document, use <a href="{{ url_for('audit.audit_form') }}">GLOW's
-      audit</a> instead.</p>
+      <p id="aa-material-help" class="form-help">Up to 50,000 characters. Paste
+      it here, or choose a file below and its text is put here for you.</p>
+    </div>
+    <div class="form-group">
+      <label for="aa-file">Or choose a file to review (optional)</label>
+      <input type="file" id="aa-file" name="file" aria-describedby="aa-file-help"
+             accept=".docx,.xlsx,.pptx,.pdf,.epub,.md,.html,.htm,.txt,.css,.csv">
+      <p id="aa-file-help" class="form-help">Word, Excel, PowerPoint, PDF, ePub,
+      Markdown, HTML or text, up to 20 MB. GLOW turns it into text and deletes
+      it straight away; only the text goes to your AI. Fonts, colors and PDF tags
+      do not survive that, so for those use
+      <a href="{{ url_for('audit.audit_form') }}">GLOW's audit</a>.</p>
     </div>
     <button type="submit" class="btn-primary">Ask</button>
   </form>
