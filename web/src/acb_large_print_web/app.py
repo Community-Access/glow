@@ -536,6 +536,7 @@ def create_app(config: dict | None = None) -> Flask:
 
     # Register blueprints
     from .routes.main import main_bp
+    from .routes.accessibility_agents import accessibility_agents_bp
     from .routes.audit import audit_bp
     from .routes.fix import fix_bp
     from .routes.template import template_bp
@@ -588,6 +589,7 @@ def create_app(config: dict | None = None) -> Flask:
     app.register_blueprint(ai_bp, url_prefix="/ai")
     app.register_blueprint(feedback_bp, url_prefix="/feedback")
     app.register_blueprint(about_bp, url_prefix="/about")
+    app.register_blueprint(accessibility_agents_bp, url_prefix="/accessibility-agents")
     app.register_blueprint(privacy_bp, url_prefix="/privacy")
     app.register_blueprint(chat_bp, url_prefix="/chat")
     app.register_blueprint(playground_bp, url_prefix="/beta/chat")

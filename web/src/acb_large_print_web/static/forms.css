@@ -4255,3 +4255,10 @@ html[data-theme="dark"] .theme-toggle select {
 .ai-meter__link {
   align-self: flex-start;
 }
+/* Accessibility Agents check tool (/accessibility-agents) */
+.aa-check { margin-block: 1.5rem; }
+.aa-result-text { white-space: pre-wrap; overflow-wrap: anywhere; font-size: 1rem; }
+.aa-summary-heading { display: inline; font-size: 1.15rem; margin: 0; }
+.aa-connect > *:not(summary) { margin-inline: 1rem; }
+.aa-address code, .aa-command code { font-size: 1rem; }
+.aa-command { white-space: pre-wrap; overflow-wrap: anywhere; }

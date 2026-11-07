@@ -107,7 +107,27 @@ assistant", copy the text for the entry point you want and paste it as your
 first message. Each text carries the entry point and the specialists it
 calls. Then give it your checker's results.
 
-### Where Accessibility Agents is available, as of 29 October 2026
+### Connect your assistant to the Accessibility Agents server
+
+Accessibility Agents runs a public server at
+`https://letitglow.app/a11y/mcp`. Add it to your assistant once and the
+assistant can run real checks instead of estimating: color contrast (WCAG and
+APCA), how colors look with color blindness, reading level, guidelines for a
+component such as a modal or tabs, and heading, link-text and form-label
+checks on HTML you paste. It needs no account on our side and reads no
+files: it only sees the colors, text or HTML your assistant sends it.
+
+- ChatGPT, on a paid plan: Settings, Apps and Connectors, Advanced settings,
+  turn on Developer mode, then Create a connector with that address and no
+  authentication. On a campus plan, an administrator may have to allow it.
+- Claude: Settings, Connectors, Add custom connector, with that address.
+
+This is optional on the day. A free account and the pasted texts are enough
+for everything in the workshop. Step-by-step instructions for each assistant,
+and a place to run the same checks without any AI, are at
+letitglow.app/accessibility-agents.
+
+### Where Accessibility Agents is available, as of 6 November 2026
 
 Each row is one place you might use it, whether it works there today, and how.
 
@@ -117,7 +137,9 @@ Each row is one place you might use it, whether it works there today, and how.
 | GitHub Codespaces | Yes, with the scanners | codespaces.new/Community-Access/accessibility-agents |
 | GitHub Copilot CLI, Claude Code, Codex, Gemini CLI | Yes, with the scanners and review hooks | The install lines above |
 | ChatGPT, on a free or paid account | Yes, by pasting | The texts on letitglow.app/ahg/assistant, as above |
+| ChatGPT or Claude, with the server connected | Yes, on plans that allow custom connectors | Connect `https://letitglow.app/a11y/mcp`, as above. Adds the real checks; the texts still carry the specialists |
 | ChatGPT's plugin directory | Not yet | Being prepared. When it is listed, you will install it once from Plugins in ChatGPT's sidebar instead of pasting a text |
+| Claude's plugin directory | In review | Submitted. When it is listed, Claude can install the skills and the server connection in one step |
 | Claude, Gemini, Copilot on github.com, a campus assistant | Yes, by pasting | The same texts |
 
 Sign in to your campus-approved assistant before you start. Free accounts

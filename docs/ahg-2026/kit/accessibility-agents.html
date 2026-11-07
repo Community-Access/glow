@@ -131,7 +131,14 @@ blockquote { border-left: 4px solid var(--rule); margin-left: 0; padding-left: 1
 <p>Step-by-step setup for each app, written for people new to all of this, is at community-access.org/start.html. The VS Code extension in the repository is retired; use one of the ways above instead.</p>
 <h3 id="in-chatgpt-claude-or-another-assistant-in-a-browser">In ChatGPT, Claude or another assistant in a browser</h3>
 <p>On letitglow.app/ahg/assistant, under "Accessibility Agents in any assistant", copy the text for the entry point you want and paste it as your first message. Each text carries the entry point and the specialists it calls. Then give it your checker's results.</p>
-<h3 id="where-accessibility-agents-is-available-as-of-29-october-2026">Where Accessibility Agents is available, as of 29 October 2026</h3>
+<h3 id="connect-your-assistant-to-the-accessibility-agents-server">Connect your assistant to the Accessibility Agents server</h3>
+<p>Accessibility Agents runs a public server at <code>https://letitglow.app/a11y/mcp</code>. Add it to your assistant once and the assistant can run real checks instead of estimating: color contrast (WCAG and APCA), how colors look with color blindness, reading level, guidelines for a component such as a modal or tabs, and heading, link-text and form-label checks on HTML you paste. It needs no account on our side and reads no files: it only sees the colors, text or HTML your assistant sends it.</p>
+<ul>
+<li>ChatGPT, on a paid plan: Settings, Apps and Connectors, Advanced settings, turn on Developer mode, then Create a connector with that address and no authentication. On a campus plan, an administrator may have to allow it.</li>
+<li>Claude: Settings, Connectors, Add custom connector, with that address.</li>
+</ul>
+<p>This is optional on the day. A free account and the pasted texts are enough for everything in the workshop. Step-by-step instructions for each assistant, and a place to run the same checks without any AI, are at letitglow.app/accessibility-agents.</p>
+<h3 id="where-accessibility-agents-is-available-as-of-6-november-2026">Where Accessibility Agents is available, as of 6 November 2026</h3>
 <p>Each row is one place you might use it, whether it works there today, and how.</p>
 <div class="table-scroll" role="region" aria-label="Table 3" tabindex="0">
 <table>
@@ -164,9 +171,19 @@ blockquote { border-left: 4px solid var(--rule); margin-left: 0; padding-left: 1
 <td>The texts on letitglow.app/ahg/assistant, as above</td>
 </tr>
 <tr>
+<td>ChatGPT or Claude, with the server connected</td>
+<td>Yes, on plans that allow custom connectors</td>
+<td>Connect <code>https://letitglow.app/a11y/mcp</code>, as above. Adds the real checks; the texts still carry the specialists</td>
+</tr>
+<tr>
 <td>ChatGPT's plugin directory</td>
 <td>Not yet</td>
 <td>Being prepared. When it is listed, you will install it once from Plugins in ChatGPT's sidebar instead of pasting a text</td>
+</tr>
+<tr>
+<td>Claude's plugin directory</td>
+<td>In review</td>
+<td>Submitted. When it is listed, Claude can install the skills and the server connection in one step</td>
 </tr>
 <tr>
 <td>Claude, Gemini, Copilot on github.com, a campus assistant</td>

@@ -1,0 +1,337 @@
+{% extends "base.html" %}
+
+{% block title %}Accessibility Agents{% endblock %}
+{% block heading %}Accessibility Agents{% endblock %}
+
+{% block content %}
+<p>Accessibility Agents is an open-source team of accessibility specialists for
+AI assistants. Each one checks work against WCAG 2.2 AA and names the success
+criterion, the severity and the fix for every problem it finds. Here are the
+ways to use it, and a place to run its checks right now.</p>
+
+<nav aria-labelledby="aa-on-this-page">
+  <h2 id="aa-on-this-page">On this page</h2>
+  <ul>
+    <li><a href="#aa-check">Check something now</a></li>
+    <li><a href="#aa-ask">Ask a question with your own AI</a></li>
+    <li><a href="#aa-ways">Ways to use Accessibility Agents</a></li>
+    <li><a href="#aa-connect">Connect your AI assistant</a></li>
+    <li><a href="#aa-privacy">What the checks send</a></li>
+  </ul>
+</nav>
+
+<section>
+  <h2 id="aa-check">Check something now</h2>
+  <p>These checks run on the Accessibility Agents server. No account and no
+  AI are needed, and the answer is the same every time.</p>
+
+  <p id="aa-status" class="aa-status" role="status" aria-live="polite"></p>
+
+  <form class="aa-check" data-aa-tool="contrast" novalidate>
+    <h3 id="aa-contrast-heading">Color contrast</h3>
+    <p id="aa-contrast-help">Enter colors as hex, such as #1a1a1a or #fff.</p>
+    <div class="form-group">
+      <label for="aa-foreground">Text color</label>
+      <input type="text" id="aa-foreground" name="foreground" value="#767676"
+             required maxlength="7" autocomplete="off" spellcheck="false"
+             aria-describedby="aa-contrast-help">
+    </div>
+    <div class="form-group">
+      <label for="aa-background">Background color</label>
+      <input type="text" id="aa-background" name="background" value="#ffffff"
+             required maxlength="7" autocomplete="off" spellcheck="false"
+             aria-describedby="aa-contrast-help">
+    </div>
+    <div class="form-group">
+      <input type="checkbox" id="aa-apca" name="apca">
+      <label for="aa-apca">Also check APCA contrast (WCAG 3 draft)</label>
+    </div>
+    <button type="submit" class="btn-primary">Check contrast</button>
+  </form>
+
+  <form class="aa-check" data-aa-tool="reading" novalidate>
+    <h3>Reading level</h3>
+    <div class="form-group">
+      <label for="aa-text">Text to check</label>
+      <textarea id="aa-text" name="text" rows="6" required maxlength="50000"
+                aria-describedby="aa-text-help"></textarea>
+      <p id="aa-text-help" class="form-help">A paragraph or more works best. Up to 50,000 characters.</p>
+    </div>
+    <button type="submit" class="btn-primary">Check reading level</button>
+  </form>
+
+  <form class="aa-check" data-aa-tool="html" novalidate>
+    <h3>HTML checks</h3>
+    <div class="form-group">
+      <label for="aa-html">HTML to check</label>
+      <textarea id="aa-html" name="html" rows="8" required maxlength="50000"
+                spellcheck="false" aria-describedby="aa-html-help"></textarea>
+      <p id="aa-html-help" class="form-help">Paste part of a page or a whole one. Up to 50,000 characters.</p>
+    </div>
+    <div class="form-group">
+      <label for="aa-html-check">Check</label>
+      <select id="aa-html-check" name="check">
+        <option value="check_heading_structure">Heading structure</option>
+        <option value="check_link_text">Link text</option>
+        <option value="check_form_labels">Form labels</option>
+      </select>
+    </div>
+    <button type="submit" class="btn-primary">Check HTML</button>
+  </form>
+
+  <form class="aa-check" data-aa-tool="guidelines" novalidate>
+    <h3>Guidelines for a component</h3>
+    <div class="form-group">
+      <label for="aa-component">Component</label>
+      <select id="aa-component" name="component">
+        {% for value, label in guideline_components %}
+        <option value="{{ value }}">{{ label }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <button type="submit" class="btn-primary">Show guidelines</button>
+  </form>
+
+  <section id="aa-result" class="aa-result" hidden>
+    <h3 id="aa-result-heading" tabindex="-1">Result</h3>
+    <div id="aa-result-body" class="aa-result-body"></div>
+  </section>
+</section>
+
+<section>
+  <h2 id="aa-ask">Ask a question with your own AI</h2>
+  <p>Ask Accessibility Agents anything, such as <q>Is this form accessible?</q>
+  or <q>Explain 1.4.3 for my button</q>, and paste the HTML, text or colors it
+  should look at. The answer comes from your own AI account, which can run the
+  same checks as above while it works.</p>
+  <ul>
+    <li><strong>You pay your provider, not us.</strong> Each question uses your
+      key's credit. Google Gemini and OpenRouter both offer free models.</li>
+    <li><strong>Your key stays in this tab.</strong> It is kept only until you
+      close this tab or your browser, and it goes away then. GLOW passes it to
+      your provider with each question and never stores it.</li>
+  </ul>
+
+  <p id="aa-ask-status" class="aa-status" role="status" aria-live="polite"></p>
+
+  <form id="aa-ask-form" novalidate>
+    <fieldset>
+      <legend>Your AI</legend>
+      <div class="form-group">
+        <label for="aa-provider">Service</label>
+        <select id="aa-provider" name="provider">
+          {% for pid, label, default_model, key_url in ask_providers %}
+          <option value="{{ pid }}" data-default-model="{{ default_model }}" data-key-url="{{ key_url }}">{{ label }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div id="aa-openrouter-signin" class="form-group" hidden>
+        <p id="aa-openrouter-help">Sign in with your OpenRouter account and it
+        hands this tab a key, with no copying and pasting.</p>
+        <button type="button" id="aa-openrouter-button" class="btn-secondary"
+                aria-describedby="aa-openrouter-help">Sign in with OpenRouter</button>
+      </div>
+      <div class="form-group">
+        <label for="aa-key">API key</label>
+        <input type="password" id="aa-key" name="key" autocomplete="off"
+               spellcheck="false" aria-describedby="aa-key-help">
+        <p id="aa-key-help" class="form-help">Kept in this tab only.
+        <a id="aa-key-link" href="https://platform.openai.com/api-keys"
+           rel="noopener" target="_blank">Get a key from your provider (opens in a new tab)</a>.</p>
+      </div>
+      <div class="form-group">
+        <label for="aa-model">Model (optional)</label>
+        <input type="text" id="aa-model" name="model" autocomplete="off"
+               spellcheck="false" aria-describedby="aa-model-help">
+        <p id="aa-model-help" class="form-help">Leave empty for the default:
+        <span id="aa-model-default">gpt-4o-mini</span>.</p>
+      </div>
+      <button type="button" id="aa-forget" class="btn-secondary">Forget my key now</button>
+    </fieldset>
+
+    <div class="form-group">
+      <label for="aa-question">Your question</label>
+      <textarea id="aa-question" name="question" rows="4" maxlength="8000" required></textarea>
+    </div>
+    <div class="form-group">
+      <label for="aa-material">HTML, text or colors to look at (optional)</label>
+      <textarea id="aa-material" name="material" rows="8" maxlength="50000"
+                spellcheck="false" aria-describedby="aa-material-help"></textarea>
+      <p id="aa-material-help" class="form-help">Up to 50,000 characters. For a
+      whole document, use <a href="{{ url_for('audit.audit_form') }}">GLOW's
+      audit</a> instead.</p>
+    </div>
+    <button type="submit" class="btn-primary">Ask</button>
+  </form>
+
+  <section id="aa-answer" class="aa-result" hidden>
+    <h3 id="aa-answer-heading" tabindex="-1">Answer</h3>
+    <div id="aa-answer-body" class="aa-result-text"></div>
+    <p id="aa-answer-meta" class="form-help"></p>
+  </section>
+</section>
+
+<section>
+  <h2 id="aa-ways">Ways to use Accessibility Agents</h2>
+  <ul>
+    <li><strong>In your AI assistant, with real checks.</strong> Connect ChatGPT,
+      Claude or VS Code to the Accessibility Agents server, as described
+      <a href="#aa-connect">below</a>. Your own AI account does the thinking;
+      the server runs the checks.</li>
+    <li><strong>In any assistant, by pasting.</strong> The texts on
+      <a href="/ahg/assistant">the AHG assistant page</a> carry an entry point and
+      its specialists. Paste one as your first message, then give it your
+      checker's results. A free account is enough.</li>
+    <li><strong>For documents.</strong> Upload a Word, Excel, PowerPoint,
+      Markdown, PDF or ePub file to <a href="{{ url_for('audit.audit_form') }}">GLOW's
+      audit</a> for a full report, then <a href="{{ url_for('fix.fix_form') }}">fix it</a>
+      with GLOW.</li>
+    <li><strong>Installed in full.</strong> The full plugin adds review hooks
+      that stop an AI from changing a page before the accessibility review
+      runs, and scanners that check files on your own computer. It installs
+      in Claude Code, GitHub Copilot, Codex and Gemini CLI; see
+      <a href="https://github.com/Community-Access/accessibility-agents#readme">the
+      Accessibility Agents README</a>.</li>
+  </ul>
+</section>
+
+<section>
+  <h2 id="aa-connect">Connect your AI assistant</h2>
+  <p>Connecting your own assistant is the richest way to use Accessibility
+  Agents: your assistant does the thinking on your own account, and it calls
+  the Accessibility Agents server whenever it needs a real measurement instead
+  of a guess. Nothing is paid for by you on our side, and nothing needs a
+  sign-in.</p>
+  <p>The server's address, for every assistant below:</p>
+  <p class="aa-address"><code>{{ hosted_mcp_url }}</code></p>
+  <p>Choose your assistant to see its steps. Each section opens and closes
+  with Enter or Space.</p>
+
+  <details class="aa-connect">
+    <summary><h3 class="aa-summary-heading">ChatGPT, as a connector</h3></summary>
+    <p><strong>You need:</strong> a paid ChatGPT plan (Plus, Pro, Business,
+    Enterprise or Edu). On Business, Enterprise and Edu plans an administrator
+    may have to allow custom connectors first. OpenAI moves these settings now
+    and then, so the names may differ slightly.</p>
+    <h4>Turn on Developer mode</h4>
+    <ol>
+      <li>Open ChatGPT and go to Settings.</li>
+      <li>Open Apps and Connectors. It may be called Connectors or Apps.</li>
+      <li>Open Advanced settings and turn on Developer mode. If it is not
+        there, look under Settings, Security.</li>
+    </ol>
+    <h4>Add Accessibility Agents</h4>
+    <ol>
+      <li>Back in Apps and Connectors, choose Create. It may say Add custom
+        connector.</li>
+      <li>For Name, type <code>Accessibility Agents</code>.</li>
+      <li>For Description, type <code>WCAG 2.2 AA checks for contrast,
+        reading level and HTML</code>.</li>
+      <li>For MCP server URL, enter <code>{{ hosted_mcp_url }}</code>.</li>
+      <li>For Authentication, choose No authentication.</li>
+      <li>Check the box saying you trust this application, then choose
+        Create.</li>
+    </ol>
+    <h4>Use it in a chat</h4>
+    <ol>
+      <li>Start a new chat and open the tools menu: the plus button beside the
+        message box.</li>
+      <li>Choose Developer mode or the list of connectors, and turn on
+        Accessibility Agents.</li>
+      <li>Ask something that needs a check, such as <q>Does #767676 text on a
+        white background pass WCAG AA?</q></li>
+      <li>The first time, ChatGPT asks before calling the tool. Allow it.</li>
+    </ol>
+    <h4>If it does not work</h4>
+    <ul>
+      <li>No Developer mode: your plan may not include it, or an administrator
+        has turned it off.</li>
+      <li>ChatGPT answers without calling the tool: say <q>use the
+        Accessibility Agents connector</q> in your request.</li>
+      <li>An error about the server: check that
+        <a href="/a11y/health">the server's health page</a> says
+        <code>"status":"ok"</code>.</li>
+    </ul>
+  </details>
+
+  <details class="aa-connect">
+    <summary><h3 class="aa-summary-heading">Claude, on the web, desktop or phone</h3></summary>
+    <p><strong>You need:</strong> a Claude account. On Team and Enterprise
+    plans an owner may need to add the connector for the organization
+    first.</p>
+    <ol>
+      <li>Open Claude and go to Settings, then Connectors.</li>
+      <li>Choose Add custom connector.</li>
+      <li>For Name, type <code>Accessibility Agents</code>.</li>
+      <li>For URL, enter <code>{{ hosted_mcp_url }}</code>, then choose
+        Add.</li>
+      <li>In a chat, open the tools menu and check that Accessibility Agents is
+        turned on.</li>
+      <li>Ask something that needs a check, such as <q>Check the headings in
+        this HTML</q>, and paste the HTML.</li>
+    </ol>
+    <p>The full Accessibility Agents plugin is in review for Claude's plugin
+    directory. When it is listed, Claude will be able to install the skills and
+    this connection in one step.</p>
+  </details>
+
+  <details class="aa-connect">
+    <summary><h3 class="aa-summary-heading">Claude Code</h3></summary>
+    <p>Most Claude Code users want the full plugin, which includes these
+    checks and the scanners that read files on your own computer:</p>
+    <pre class="aa-command"><code>/plugin marketplace add Community-Access/accessibility-agents
+/plugin install accessibility-agents@community-access</code></pre>
+    <p>To add only the hosted checks, run this in a terminal:</p>
+    <pre class="aa-command"><code>claude mcp add --transport http accessibility-agents {{ hosted_mcp_url }}</code></pre>
+  </details>
+
+  <details class="aa-connect">
+    <summary><h3 class="aa-summary-heading">VS Code with GitHub Copilot</h3></summary>
+    <p>Add this to <code>.vscode/mcp.json</code> in your project, or to your
+    user MCP configuration from the command palette with MCP: Open User
+    Configuration:</p>
+    <pre class="aa-command"><code>{
+  "servers": {
+    "accessibility-agents": {
+      "type": "http",
+      "url": "{{ hosted_mcp_url }}"
+    }
+  }
+}</code></pre>
+    <p>Then open Copilot Chat in agent mode and choose the tools button to
+    check that the Accessibility Agents tools are on.</p>
+  </details>
+
+  <details class="aa-connect">
+    <summary><h3 class="aa-summary-heading">Any other assistant</h3></summary>
+    <p>Any assistant that can add a remote MCP server over HTTPS can use
+    Accessibility Agents. Look for a setting called connectors, MCP servers or
+    tools, and give it <code>{{ hosted_mcp_url }}</code> with no
+    authentication.</p>
+    <p>If your assistant cannot add a server, paste one of the texts from
+    <a href="/ahg/assistant">the AHG assistant page</a> instead. You get the
+    specialists without the measurements.</p>
+  </details>
+
+  <p>The <a href="https://github.com/Community-Access/accessibility-agents/blob/main/docs/guides/hosted-mcp-server.md">hosted
+  server guide</a> on GitHub has the same steps.</p>
+</section>
+
+<section>
+  <h2 id="aa-privacy">What the checks send</h2>
+  <p>A check sends only what you typed into it: two colors, a passage of text,
+  some HTML or a component name. It goes to the Accessibility Agents server on
+  this site, which reads no files, fetches no web addresses and keeps no
+  history.</p>
+  <p>A question you ask, with what you pasted and your key, goes to GLOW, which
+  sends it to the service you chose and passes the checks it asks for to the
+  Accessibility Agents server. GLOW keeps none of it. Your provider's own
+  terms cover what it does with your question. GLOW's own <a href="{{ url_for('privacy.privacy_page') }}">privacy
+  policy</a> covers the rest of this site.</p>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('static', filename='accessibility-agents-check.js') }}" nonce="{{ csp_nonce }}" defer></script>
+<script src="{{ url_for('static', filename='accessibility-agents-ask.js') }}" nonce="{{ csp_nonce }}" defer></script>
+{% endblock %}

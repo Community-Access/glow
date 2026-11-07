@@ -294,6 +294,9 @@ const STATIC_PAGES = [
   { label: 'template form', path: '/template/' },
   { label: 'speech studio', path: '/speech/' },
   { label: 'braille studio', path: '/braille/' },
+  // Accessibility Agents: ways to use it, its check tool, and the connector
+  // steps in expandable sections.
+  { label: 'accessibility agents', path: '/accessibility-agents/' },
   // GLOW's own accessibility scanner. Its results are read by the people least
   // able to work around a broken page, yet these routes were the last tool
   // surface absent from this suite. The results and job pages need a run to
