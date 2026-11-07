@@ -131,14 +131,23 @@ blockquote { border-left: 4px solid var(--rule); margin-left: 0; padding-left: 1
 <p>Step-by-step setup for each app, written for people new to all of this, is at community-access.org/start.html. The VS Code extension in the repository is retired; use one of the ways above instead.</p>
 <h3 id="in-chatgpt-claude-or-another-assistant-in-a-browser">In ChatGPT, Claude or another assistant in a browser</h3>
 <p>On letitglow.app/ahg/assistant, under "Accessibility Agents in any assistant", copy the text for the entry point you want and paste it as your first message. Each text carries the entry point and the specialists it calls. Then give it your checker's results.</p>
+<h3 id="on-the-web-at-letitglowappaccessibility-agents">On the web, at letitglow.app/accessibility-agents</h3>
+<p>The Accessibility Agents page on GLOW works in any browser, with nothing to install.</p>
+<ul>
+<li>Check something now, with no AI and no account: color contrast (WCAG and APCA), reading level, the headings, links and form labels in some HTML, and the guidelines for a component such as a modal or tabs.</li>
+<li>Ask a question with your own AI. Choose OpenAI, Google Gemini, Claude or OpenRouter, paste your key (or sign in with OpenRouter), and choose Show my models to pick a model. Your key stays in that browser tab and is gone when you close it. Gemini and OpenRouter both have free models.</li>
+<li>Review a document. Choose a Word, Excel, PowerPoint, PDF, ePub, Markdown or HTML file. The Accessibility Agents scanner checks the original file, then your AI reviews it as the matching specialist, such as the Word specialist for a .docx. The file is deleted as soon as it is scanned.</li>
+<li>Get alt text for an image. Choose a PNG, JPEG, GIF or WebP image, and the alt text specialist writes its alt text, a long description when it needs one, and any text in the image. Your AI must be one that can see images; most current models can.</li>
+</ul>
+<p>The answers come from your own AI, so they are a first draft: a person still reviews everything an agent writes.</p>
 <h3 id="connect-your-assistant-to-the-accessibility-agents-server">Connect your assistant to the Accessibility Agents server</h3>
-<p>Accessibility Agents runs a public server at <code>https://letitglow.app/a11y/mcp</code>. Add it to your assistant once and the assistant can run real checks instead of estimating: color contrast (WCAG and APCA), how colors look with color blindness, reading level, guidelines for a component such as a modal or tabs, and heading, link-text and form-label checks on HTML you paste. It needs no account on our side and reads no files: it only sees the colors, text or HTML your assistant sends it.</p>
+<p>Accessibility Agents runs a public server at <code>https://letitglow.app/a11y/mcp</code>. Add it to your assistant once and the assistant can run real checks instead of estimating: color contrast (WCAG and APCA), how colors look with color blindness, reading level, guidelines for a component such as a modal or tabs, and heading, link-text and form-label checks on HTML. It can also scan a Word, Excel, PowerPoint, PDF, ePub or Markdown file you attach, and it hands your assistant the instructions of any of the 113 specialists. It needs no account on our side, and it deletes a file as soon as it has scanned it.</p>
 <ul>
 <li>ChatGPT, on a paid plan: Settings, Apps and Connectors, Advanced settings, turn on Developer mode, then Create a connector with that address and no authentication. On a campus plan, an administrator may have to allow it.</li>
 <li>Claude: Settings, Connectors, Add custom connector, with that address.</li>
 </ul>
-<p>This is optional on the day. A free account and the pasted texts are enough for everything in the workshop. Step-by-step instructions for each assistant, and a place to run the same checks without any AI, are at letitglow.app/accessibility-agents.</p>
-<h3 id="where-accessibility-agents-is-available-as-of-6-november-2026">Where Accessibility Agents is available, as of 6 November 2026</h3>
+<p>This is optional on the day. A free account and the pasted texts are enough for everything in the workshop. Step-by-step instructions for each assistant are on letitglow.app/accessibility-agents, under "Connect your AI assistant".</p>
+<h3 id="where-accessibility-agents-is-available-as-of-7-november-2026">Where Accessibility Agents is available, as of 7 November 2026</h3>
 <p>Each row is one place you might use it, whether it works there today, and how.</p>
 <div class="table-scroll" role="region" aria-label="Table 3" tabindex="0">
 <table>
@@ -171,9 +180,14 @@ blockquote { border-left: 4px solid var(--rule); margin-left: 0; padding-left: 1
 <td>The texts on letitglow.app/ahg/assistant, as above</td>
 </tr>
 <tr>
+<td>Any browser, with your own AI key</td>
+<td>Yes</td>
+<td>letitglow.app/accessibility-agents: checks, questions, document review and image alt text</td>
+</tr>
+<tr>
 <td>ChatGPT or Claude, with the server connected</td>
 <td>Yes, on plans that allow custom connectors</td>
-<td>Connect <code>https://letitglow.app/a11y/mcp</code>, as above. Adds the real checks; the texts still carry the specialists</td>
+<td>Connect <code>https://letitglow.app/a11y/mcp</code>, as above. Adds the real checks, document scans and every specialist's instructions</td>
 </tr>
 <tr>
 <td>ChatGPT's plugin directory</td>
