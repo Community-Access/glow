@@ -19,8 +19,11 @@ Providers:
 
 from __future__ import annotations
 
+import base64
 import json
 import os
+import re
+from pathlib import Path
 from typing import Any
 
 import requests
@@ -114,8 +117,50 @@ def _mcp(method: str, params: dict[str, Any] | None = None) -> dict[str, Any]:
     return message.get("result") or {}
 
 
+#: Tools the model is not offered: it only ever has the file's text, and
+#: GLOW has already sent the file itself to the scanner (scan_file).
+_NOT_FOR_THE_MODEL = {"scan_uploaded_document"}
+
+#: Specialist names look like skill folder names.
+_SPECIALIST_RE = re.compile(r"^[a-z0-9][a-z0-9-]{1,60}$")
+MAX_SPECIALIST_CHARS = 24_000
+MAX_SCAN_CHARS = 30_000
+
+
 def list_tools() -> list[dict[str, Any]]:
-    return list(_mcp("tools/list").get("tools") or [])
+    return [t for t in _mcp("tools/list").get("tools") or []
+            if t.get("name") not in _NOT_FOR_THE_MODEL]
+
+
+def scan_file(path: Path) -> dict[str, str]:
+    """Scan a file with the server's own scanner. Returns {"report", "specialist"}.
+
+    The bytes go to scan_uploaded_document, which writes them to a private
+    folder, runs the Office, PDF, ePub, Markdown or HTML checks a local
+    install runs, and deletes them before answering.
+    """
+    content = base64.b64encode(path.read_bytes()).decode("ascii")
+    result = _mcp("tools/call", {"name": "scan_uploaded_document",
+                                 "arguments": {"filename": path.name, "content_base64": content}})
+    report = "\n".join(part.get("text", "") for part in result.get("content") or []).strip()
+    if result.get("isError"):
+        raise AskError(report or "The scanner could not read that file.")
+    found = re.search(r"Specialist for this file: ([a-z0-9-]+)", report)
+    return {"report": report[:MAX_SCAN_CHARS], "specialist": found.group(1) if found else ""}
+
+
+def get_specialist(name: str) -> str:
+    """One specialist's instructions (its SKILL.md), or "" when there is none."""
+    if not _SPECIALIST_RE.match(name or ""):
+        return ""
+    try:
+        result = _mcp("tools/call", {"name": "get_specialist", "arguments": {"name": name}})
+    except AskError:
+        return ""
+    if result.get("isError"):
+        return ""
+    text = "\n".join(part.get("text", "") for part in result.get("content") or [])
+    return text[:MAX_SPECIALIST_CHARS]
 
 
 def call_tool(name: str, arguments: dict[str, Any]) -> str:
@@ -171,7 +216,8 @@ def _post(url: str, headers: dict[str, str], body: dict[str, Any], label: str) -
 
 
 def _ask_openai_style(provider: dict[str, str], key: str, model: str,
-                      user_text: str, tools: list[dict[str, Any]]) -> tuple[str, list[str]]:
+                      user_text: str, tools: list[dict[str, Any]],
+                      system: str = SYSTEM_PROMPT) -> tuple[str, list[str]]:
     headers = {"Authorization": f"Bearer {key}", "Content-Type": "application/json"}
     if provider["label"] == "OpenRouter":
         headers["HTTP-Referer"] = "https://letitglow.app/accessibility-agents"
@@ -188,7 +234,7 @@ def _ask_openai_style(provider: dict[str, str], key: str, model: str,
         for t in tools
     ]
     messages: list[dict[str, Any]] = [
-        {"role": "system", "content": SYSTEM_PROMPT},
+        {"role": "system", "content": system},
         {"role": "user", "content": user_text},
     ]
     used: list[str] = []
@@ -217,7 +263,8 @@ def _ask_openai_style(provider: dict[str, str], key: str, model: str,
 
 
 def _ask_anthropic(provider: dict[str, str], key: str, model: str,
-                   user_text: str, tools: list[dict[str, Any]]) -> tuple[str, list[str]]:
+                   user_text: str, tools: list[dict[str, Any]],
+                   system: str = SYSTEM_PROMPT) -> tuple[str, list[str]]:
     headers = {
         "x-api-key": key,
         "anthropic-version": "2023-06-01",
@@ -235,7 +282,7 @@ def _ask_anthropic(provider: dict[str, str], key: str, model: str,
     used: list[str] = []
     for _ in range(MAX_ROUNDS):
         data = _post(provider["url"], headers,
-                     {"model": model, "max_tokens": 2048, "system": SYSTEM_PROMPT,
+                     {"model": model, "max_tokens": 4096, "system": system,
                       "messages": messages, "tools": tool_defs},
                      provider["label"])
         blocks = data.get("content") or []
@@ -255,8 +302,13 @@ def _ask_anthropic(provider: dict[str, str], key: str, model: str,
 
 
 def ask(provider_id: str, key: str, model: str, question: str, material: str = "",
-        source: str = "") -> dict[str, Any]:
-    """Answer one question. Returns {"answer", "tools_used", "provider", "model"}."""
+        source: str = "", scan: str = "", specialist: str = "") -> dict[str, Any]:
+    """Answer one question. Returns {"answer", "tools_used", "provider", "model", "specialist"}.
+
+    ``scan`` is the scanner's report on the file the text came from, and
+    ``specialist`` the Accessibility Agents specialist whose instructions the
+    model follows for that kind of file (word-accessibility for .docx, and so on).
+    """
     provider = PROVIDERS.get(provider_id)
     if provider is None:
         raise AskError("Choose a provider.")
@@ -276,7 +328,17 @@ def ask(provider_id: str, key: str, model: str, question: str, material: str = "
     user_text = question
     if material:
         source = (source or "").strip()[:200]
-        if source:
+        scan = (scan or "").strip()[:MAX_SCAN_CHARS]
+        if source and scan:
+            user_text += (
+                f"\n\nThe file {source} was scanned with the Accessibility Agents "
+                "document scanner, which read the original file (properties, styles, "
+                "alt text, table headers, tags). Its report:\n\n" + scan +
+                "\n\nThe file's text, converted to Markdown, follows. Base your review on "
+                "the scan first and the text second, and say when something needs a "
+                "person to check the original:\n\n" + material
+            )
+        elif source:
             user_text += (
                 f"\n\nMaterial to review: the file {source}, converted to text. Headings, "
                 "lists, tables, links and image alt text survive the conversion as "
@@ -286,16 +348,26 @@ def ask(provider_id: str, key: str, model: str, question: str, material: str = "
         else:
             user_text += "\n\nMaterial to review (text, HTML or colors):\n\n" + material
 
+    system = SYSTEM_PROMPT
+    instructions = get_specialist((specialist or "").strip()) if specialist else ""
+    if instructions:
+        system += (
+            f"\n\nFor this review you are the {specialist} specialist. Follow its "
+            "instructions below. Where they mention tools or files you do not have, "
+            "use the scan report and the text you were given instead.\n\n" + instructions
+        )
+
     tools = list_tools()
     if provider["style"] == "anthropic":
-        answer, used = _ask_anthropic(provider, key, model, user_text, tools)
+        answer, used = _ask_anthropic(provider, key, model, user_text, tools, system)
     else:
-        answer, used = _ask_openai_style(provider, key, model, user_text, tools)
+        answer, used = _ask_openai_style(provider, key, model, user_text, tools, system)
     return {
         "answer": answer or "The model returned no answer.",
         "tools_used": sorted(set(used)),
         "provider": provider["label"],
         "model": model,
+        "specialist": specialist if instructions else "",
     }
 
 

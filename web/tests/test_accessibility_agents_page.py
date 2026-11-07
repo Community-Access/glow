@@ -313,3 +313,107 @@ def test_an_empty_account_says_so(client, monkeypatch, status, payload):
     error = resp.get_json()["error"]
     assert "out of credit" in error
     assert "sk-test" not in error
+
+
+_REAL_SCAN_FILE = aa_ask.scan_file
+
+
+@pytest.fixture(autouse=True)
+def _no_live_scanner(monkeypatch):
+    """Extract tests never reach the real MCP server."""
+    monkeypatch.setattr(aa_ask, "scan_file", lambda path: {"report": "", "specialist": ""})
+
+
+def test_extract_returns_the_scanners_report_and_specialist(client, monkeypatch):
+    import io
+
+    seen = {}
+
+    def fake_scan(path):
+        seen["name"] = path.name
+        seen["bytes"] = path.read_bytes()
+        return {"report": "Scan complete: syllabus.docx\nIssues: 2\n[ERROR] doc-alt-text: no alt text",
+                "specialist": "word-accessibility"}
+
+    monkeypatch.setattr(aa_ask, "scan_file", fake_scan)
+    import docx
+
+    doc = docx.Document()
+    doc.add_paragraph("Hello")
+    buf = io.BytesIO()
+    doc.save(buf)
+    buf.seek(0)
+    resp = client.post("/accessibility-agents/extract", content_type="multipart/form-data",
+                       data={"file": (buf, "syllabus.docx")})
+    data = resp.get_json()
+    assert resp.status_code == 200, data
+    assert data["specialist"] == "word-accessibility"
+    assert data["issues"] == 2
+    assert "doc-alt-text" in data["scan"]
+    assert seen["name"] == "syllabus.docx" and seen["bytes"][:2] == b"PK"
+
+
+def test_scan_file_sends_the_bytes_and_reads_the_specialist(tmp_path, monkeypatch):
+    import base64
+
+    calls = []
+
+    def fake(url, json=None, headers=None, timeout=None):
+        calls.append(json)
+        text = "Scan complete: a.pdf\nIssues: 1\n\nSpecialist for this file: pdf-accessibility (load it with get_specialist)."
+        return _Resp(200, {"jsonrpc": "2.0", "id": 1, "result": {"content": [{"type": "text", "text": text}]}})
+
+    monkeypatch.setattr(aa_ask.requests, "post", fake)
+    f = tmp_path / "a.pdf"
+    f.write_bytes(b"%PDF-1.4 test")
+    result = _REAL_SCAN_FILE(f)
+    assert result["specialist"] == "pdf-accessibility"
+    args = calls[0]["params"]["arguments"]
+    assert calls[0]["params"]["name"] == "scan_uploaded_document"
+    assert base64.b64decode(args["content_base64"]) == b"%PDF-1.4 test"
+
+
+def test_ask_follows_the_specialist_and_gives_the_model_the_scan(client, monkeypatch):
+    calls = []
+
+    def fake(url, json=None, headers=None, timeout=None):
+        calls.append({"url": url, "json": json})
+        if url == aa_ask.MCP_URL:
+            if json["method"] == "tools/list":
+                return _Resp(200, {"jsonrpc": "2.0", "id": 1, "result": {"tools": TOOLS + [
+                    {"name": "scan_uploaded_document", "inputSchema": {"type": "object"}}]}})
+            return _Resp(200, {"jsonrpc": "2.0", "id": 1, "result": {"content": [
+                {"type": "text", "text": "# Word specialist\nCheck heading styles."}]}})
+        return _Resp(200, {"choices": [{"message": {"content": "Image 1 needs alt text (1.1.1)."}}]})
+
+    monkeypatch.setattr(aa_ask.requests, "post", fake)
+    resp = client.post("/accessibility-agents/ask", json={
+        "provider": "openrouter", "key": "sk-or-test", "question": "Review it.",
+        "material": "# Syllabus", "source": "syllabus.docx (DOCX)",
+        "scan": "[ERROR] doc-alt-text: Image 1 has no alt text", "specialist": "word-accessibility"})
+    data = resp.get_json()
+    assert resp.status_code == 200, data
+    assert data["specialist"] == "word-accessibility"
+    model_call = [c for c in calls if c["url"] == aa_ask.PROVIDERS["openrouter"]["url"]][0]
+    system = model_call["json"]["messages"][0]["content"]
+    user = model_call["json"]["messages"][1]["content"]
+    assert "word-accessibility specialist" in system and "Check heading styles." in system
+    assert "doc-alt-text" in user and "scanned with the Accessibility Agents" in user
+    # The model only has the text, so it is not offered the upload scanner.
+    assert [t["function"]["name"] for t in model_call["json"]["tools"]] == ["check_contrast"]
+
+
+def test_a_bad_specialist_name_is_never_fetched(client, monkeypatch):
+    calls = []
+    replies = [_Resp(200, {"choices": [{"message": {"content": "OK"}}]})]
+    monkeypatch.setattr(aa_ask.requests, "post", _fake_post(calls, replies))
+    resp = client.post("/accessibility-agents/ask", json={
+        "provider": "openai", "key": "sk-test", "question": "Hi", "specialist": "../../etc"})
+    assert resp.get_json()["specialist"] == ""
+    assert not any(c["json"].get("params", {}).get("name") == "get_specialist"
+                   for c in calls if c["url"] == aa_ask.MCP_URL)
+
+
+def test_scanner_report_region_is_on_the_page(client):
+    body = client.get("/accessibility-agents/").get_data(as_text=True)
+    assert 'id="aa-scan"' in body and "<summary>Scanner report</summary>" in body

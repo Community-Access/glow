@@ -187,9 +187,16 @@
   var fileInput = document.getElementById("aa-file");
   var materialBox = document.getElementById("aa-material");
   var fileSource = "";
+  var fileScan = "";
+  var fileSpecialist = "";
+  var scanBox = document.getElementById("aa-scan");
+  var scanText = document.getElementById("aa-scan-text");
   fileInput.addEventListener("change", function () {
     var file = fileInput.files && fileInput.files[0];
     fileSource = "";
+    fileScan = "";
+    fileSpecialist = "";
+    scanBox.hidden = true;
     if (!file) return;
     if (file.size > 20 * 1024 * 1024) {
       status.textContent = "Choose a file under 20 MB.";
@@ -199,7 +206,7 @@
     var data = new FormData();
     data.append("file", file);
     fileInput.disabled = true;
-    status.textContent = "Reading " + file.name + ".";
+    status.textContent = "Reading and scanning " + file.name + ".";
     fetch(PAGE + "extract", {
       method: "POST",
       credentials: "same-origin",
@@ -213,9 +220,18 @@
     }).then(function (d) {
       materialBox.value = d.text;
       fileSource = d.filename + " (" + d.kind + ")";
+      fileScan = d.scan || "";
+      fileSpecialist = d.specialist || "";
+      scanText.textContent = fileScan;
+      scanBox.hidden = !fileScan;
+      var scanned = fileScan
+        ? " The scanner found " + (d.issues === null || d.issues === undefined ? "its results" :
+            d.issues + (d.issues === 1 ? " issue" : " issues")) + ", shown under Scanner report." +
+          (fileSpecialist ? " The " + fileSpecialist + " specialist will review it." : "")
+        : "";
       status.textContent = "Read " + d.filename + ": " + d.characters.toLocaleString() + " characters" +
-        (d.truncated ? ", cut to the first 50,000" : "") +
-        ". The text is in the material box. Type your question, then Ask.";
+        (d.truncated ? ", cut to the first 50,000" : "") + "." + scanned +
+        " Type your question, then Ask.";
     }).catch(function (err) {
       fileInput.value = "";
       status.textContent = err.message;
@@ -248,10 +264,13 @@
       model: model.value.trim() || pick.value,
       question: question.value,
       material: material.value,
-      source: material.value.trim() ? fileSource : ""
+      source: material.value.trim() ? fileSource : "",
+      scan: material.value.trim() ? fileScan : "",
+      specialist: material.value.trim() ? fileSpecialist : ""
     }).then(function (data) {
       answerBody.textContent = data.answer;
       answerMeta.textContent = "Answered by " + data.provider + ", " + data.model + "." +
+        (data.specialist ? " Specialist: " + data.specialist + "." : "") +
         (data.tools_used && data.tools_used.length
           ? " Checks it ran: " + data.tools_used.join(", ") + "."
           : " It ran no checks.");
