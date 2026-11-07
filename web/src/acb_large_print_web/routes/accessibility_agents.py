@@ -72,6 +72,7 @@ def ask():
             source=str(data.get("source") or ""),
             scan=str(data.get("scan") or ""),
             specialist=str(data.get("specialist") or ""),
+            image=str(data.get("image") or ""),
         )
     except aa_ask.AskError as exc:
         return _no_store(jsonify({"error": str(exc)})), 400

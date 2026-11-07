@@ -418,3 +418,73 @@ def test_a_bad_specialist_name_is_never_fetched(client, monkeypatch):
 def test_scanner_report_region_is_on_the_page(client):
     body = client.get("/accessibility-agents/").get_data(as_text=True)
     assert 'id="aa-scan"' in body and "<summary>Scanner report</summary>" in body
+
+
+_PNG = ("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAIAAACQd1PeAAAADElEQVR4nGP4"
+        "z8AAAAMBAQDJ/pLvAAAAAElFTkSuQmCC")
+
+
+def _image_fake(calls, answer):
+    def fake(url, json=None, headers=None, timeout=None):
+        calls.append({"url": url, "json": json})
+        if url == aa_ask.MCP_URL:
+            if json["method"] == "tools/list":
+                return _Resp(200, {"jsonrpc": "2.0", "id": 1, "result": {"tools": TOOLS}})
+            return _Resp(200, {"jsonrpc": "2.0", "id": 1, "result": {"content": [
+                {"type": "text", "text": "# Alt text specialist"}]}})
+        return answer
+    return fake
+
+
+def test_an_image_goes_to_the_model_with_the_alt_text_specialist(client, monkeypatch):
+    calls = []
+    answer = _Resp(200, {"choices": [{"message": {"content": "Alt text: A red dot."}}]})
+    monkeypatch.setattr(aa_ask.requests, "post", _image_fake(calls, answer))
+    resp = client.post("/accessibility-agents/ask", json={
+        "provider": "gemini", "key": "k", "question": "Write alt text.",
+        "image": _PNG, "source": "dot.png"})
+    data = resp.get_json()
+    assert resp.status_code == 200, data
+    assert data["specialist"] == "alt-text-headings"
+    model = [c for c in calls if c["url"] == aa_ask.PROVIDERS["gemini"]["url"]][0]["json"]
+    parts = model["messages"][1]["content"]
+    assert parts[1]["image_url"]["url"] == _PNG
+    assert "dot.png" in parts[0]["text"]
+    assert "Alt text: one line" in model["messages"][0]["content"]
+    assert [c["json"]["params"]["arguments"] for c in calls
+            if c["url"] == aa_ask.MCP_URL and c["json"]["method"] == "tools/call"] == [
+        {"name": "alt-text-headings"}]
+
+
+def test_an_image_to_claude_uses_an_image_block(client, monkeypatch):
+    calls = []
+    answer = _Resp(200, {"content": [{"type": "text", "text": "Alt text: A red dot."}]})
+    monkeypatch.setattr(aa_ask.requests, "post", _image_fake(calls, answer))
+    resp = client.post("/accessibility-agents/ask", json={
+        "provider": "anthropic", "key": "k", "question": "Alt text?", "image": _PNG})
+    assert resp.status_code == 200
+    model = [c for c in calls if c["url"] == aa_ask.PROVIDERS["anthropic"]["url"]][0]["json"]
+    block = model["messages"][0]["content"][0]
+    assert block["type"] == "image" and block["source"]["media_type"] == "image/png"
+
+
+def test_bad_images_are_refused_before_any_call(client, monkeypatch):
+    calls = []
+    monkeypatch.setattr(aa_ask.requests, "post", _image_fake(calls, None))
+    for bad in ("data:image/svg+xml;base64,PHN2Zz4=", "data:text/html;base64,PGI+",
+                "https://example.com/a.png", "data:image/png;base64,!!!"):
+        resp = client.post("/accessibility-agents/ask", json={
+            "provider": "openai", "key": "k", "question": "Alt?", "image": bad})
+        assert resp.status_code == 400, bad
+    big = "data:image/png;base64," + "A" * (7 * 1024 * 1024)
+    resp = client.post("/accessibility-agents/ask", json={
+        "provider": "openai", "key": "k", "question": "Alt?", "image": big})
+    assert "under 5 MB" in resp.get_json()["error"]
+    assert calls == []
+
+
+def test_the_file_chooser_takes_images(client):
+    body = client.get("/accessibility-agents/").get_data(as_text=True)
+    assert ".png,.jpg,.jpeg,.gif,.webp" in body and 'id="aa-image-help"' in body
+    script = (STATIC / "accessibility-agents-ask.js").read_text(encoding="utf-8")
+    assert "readAsDataURL" in script and "image: fileImage" in script

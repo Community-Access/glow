@@ -124,6 +124,43 @@ _NOT_FOR_THE_MODEL = {"scan_uploaded_document"}
 #: Specialist names look like skill folder names.
 _SPECIALIST_RE = re.compile(r"^[a-z0-9][a-z0-9-]{1,60}$")
 MAX_SPECIALIST_CHARS = 24_000
+
+#: Images the visitor can ask about: what every provider here accepts.
+IMAGE_TYPES = {"image/png", "image/jpeg", "image/gif", "image/webp"}
+#: Anthropic's per-image ceiling, the lowest of the four.
+MAX_IMAGE_BYTES = 5 * 1024 * 1024
+_DATA_URL_RE = re.compile(r"^data:(image/[a-z]+);base64,([A-Za-z0-9+/=]+)$")
+
+IMAGE_ANSWER = (
+    "\n\nHow to answer, which overrides any output format above: a person reads "
+    "this on a web page, often with a screen reader. Write plain language, never "
+    "JSON or code blocks. Give, in this order: Alt text: one line, at most 150 "
+    "characters, saying what the image means in its context, not starting with "
+    "'image of'. Long description: only when the image carries more than a line "
+    "can say (a chart, diagram, map, infographic or screenshot), in short "
+    "paragraphs or a list, with every number, label and relationship it shows; "
+    "for a chart, the data as a short list. Text in the image: any words it "
+    "contains, exactly. Notes: whether it could be decorative, and anything a "
+    "person should check, such as what the image is for on their page."
+)
+
+
+def parse_image(data_url: str) -> tuple[str, str] | None:
+    """Validate an image sent as a data URL. Returns (media_type, base64) or None."""
+    data_url = (data_url or "").strip()
+    if not data_url:
+        return None
+    found = _DATA_URL_RE.match(data_url)
+    if not found or found.group(1) not in IMAGE_TYPES:
+        raise AskError("Choose a PNG, JPEG, GIF or WebP image.")
+    b64 = found.group(2)
+    try:
+        size = len(base64.b64decode(b64, validate=True))
+    except ValueError as exc:  # binascii.Error is a ValueError
+        raise AskError("That image could not be read. Try another.") from exc
+    if size > MAX_IMAGE_BYTES:
+        raise AskError("Choose an image under 5 MB.")
+    return found.group(1), b64
 MAX_SCAN_CHARS = 30_000
 
 
@@ -217,7 +254,8 @@ def _post(url: str, headers: dict[str, str], body: dict[str, Any], label: str) -
 
 def _ask_openai_style(provider: dict[str, str], key: str, model: str,
                       user_text: str, tools: list[dict[str, Any]],
-                      system: str = SYSTEM_PROMPT) -> tuple[str, list[str]]:
+                      system: str = SYSTEM_PROMPT,
+                      image: tuple[str, str] | None = None) -> tuple[str, list[str]]:
     headers = {"Authorization": f"Bearer {key}", "Content-Type": "application/json"}
     if provider["label"] == "OpenRouter":
         headers["HTTP-Referer"] = "https://letitglow.app/accessibility-agents"
@@ -235,7 +273,10 @@ def _ask_openai_style(provider: dict[str, str], key: str, model: str,
     ]
     messages: list[dict[str, Any]] = [
         {"role": "system", "content": system},
-        {"role": "user", "content": user_text},
+        {"role": "user", "content": user_text if image is None else [
+            {"type": "text", "text": user_text},
+            {"type": "image_url", "image_url": {"url": f"data:{image[0]};base64,{image[1]}"}},
+        ]},
     ]
     used: list[str] = []
     for _ in range(MAX_ROUNDS):
@@ -264,7 +305,8 @@ def _ask_openai_style(provider: dict[str, str], key: str, model: str,
 
 def _ask_anthropic(provider: dict[str, str], key: str, model: str,
                    user_text: str, tools: list[dict[str, Any]],
-                   system: str = SYSTEM_PROMPT) -> tuple[str, list[str]]:
+                   system: str = SYSTEM_PROMPT,
+                   image: tuple[str, str] | None = None) -> tuple[str, list[str]]:
     headers = {
         "x-api-key": key,
         "anthropic-version": "2023-06-01",
@@ -278,7 +320,11 @@ def _ask_anthropic(provider: dict[str, str], key: str, model: str,
         }
         for t in tools
     ]
-    messages: list[dict[str, Any]] = [{"role": "user", "content": user_text}]
+    content: Any = user_text if image is None else [
+        {"type": "image", "source": {"type": "base64", "media_type": image[0], "data": image[1]}},
+        {"type": "text", "text": user_text},
+    ]
+    messages: list[dict[str, Any]] = [{"role": "user", "content": content}]
     used: list[str] = []
     for _ in range(MAX_ROUNDS):
         data = _post(provider["url"], headers,
@@ -302,7 +348,8 @@ def _ask_anthropic(provider: dict[str, str], key: str, model: str,
 
 
 def ask(provider_id: str, key: str, model: str, question: str, material: str = "",
-        source: str = "", scan: str = "", specialist: str = "") -> dict[str, Any]:
+        source: str = "", scan: str = "", specialist: str = "",
+        image: str = "") -> dict[str, Any]:
     """Answer one question. Returns {"answer", "tools_used", "provider", "model", "specialist"}.
 
     ``scan`` is the scanner's report on the file the text came from, and
@@ -324,6 +371,12 @@ def ask(provider_id: str, key: str, model: str, question: str, material: str = "
     if len(material) > MAX_MATERIAL_CHARS:
         raise AskError(f"Keep the pasted material under {MAX_MATERIAL_CHARS:,} characters.")
     model = (model or "").strip() or provider["default_model"]
+    picture = parse_image(image)
+    if picture is not None:
+        specialist = specialist or "alt-text-headings"
+        source = (source or "").strip()[:200]
+        question += (f"\n\nThe image is attached: {source}." if source else
+                     "\n\nThe image is attached.")
 
     user_text = question
     if material:
@@ -350,7 +403,13 @@ def ask(provider_id: str, key: str, model: str, question: str, material: str = "
 
     system = SYSTEM_PROMPT
     instructions = get_specialist((specialist or "").strip()) if specialist else ""
-    if instructions:
+    if instructions and picture is not None:
+        system += (
+            f"\n\nFor this request you are the {specialist} specialist. Follow its "
+            "instructions below for the attached image. Where they mention tools or "
+            "files you do not have, use the image itself.\n\n" + instructions + IMAGE_ANSWER
+        )
+    elif instructions:
         system += (
             f"\n\nFor this review you are the {specialist} specialist. Follow its "
             "instructions below. Where they mention tools or files you do not have, "
@@ -366,9 +425,9 @@ def ask(provider_id: str, key: str, model: str, question: str, material: str = "
 
     tools = list_tools()
     if provider["style"] == "anthropic":
-        answer, used = _ask_anthropic(provider, key, model, user_text, tools, system)
+        answer, used = _ask_anthropic(provider, key, model, user_text, tools, system, picture)
     else:
-        answer, used = _ask_openai_style(provider, key, model, user_text, tools, system)
+        answer, used = _ask_openai_style(provider, key, model, user_text, tools, system, picture)
     return {
         "answer": answer or "The model returned no answer.",
         "tools_used": sorted(set(used)),

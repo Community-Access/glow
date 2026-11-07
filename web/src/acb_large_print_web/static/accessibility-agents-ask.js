@@ -189,6 +189,8 @@
   var fileSource = "";
   var fileScan = "";
   var fileSpecialist = "";
+  var fileImage = "";
+  var IMAGE_TYPES = ["image/png", "image/jpeg", "image/gif", "image/webp"];
   var scanBox = document.getElementById("aa-scan");
   var scanText = document.getElementById("aa-scan-text");
   fileInput.addEventListener("change", function () {
@@ -196,8 +198,30 @@
     fileSource = "";
     fileScan = "";
     fileSpecialist = "";
+    fileImage = "";
     scanBox.hidden = true;
     if (!file) return;
+    if (IMAGE_TYPES.indexOf(file.type) !== -1) {
+      if (file.size > 5 * 1024 * 1024) {
+        status.textContent = "Choose an image under 5 MB.";
+        fileInput.value = "";
+        return;
+      }
+      var reader = new FileReader();
+      reader.onload = function () {
+        fileImage = String(reader.result || "");
+        fileSource = file.name;
+        var q = document.getElementById("aa-question");
+        if (!q.value.trim()) q.value = "Write alt text for this image, and a long description if it needs one.";
+        status.textContent = "Image ready: " + file.name + ". The question is filled in; change it if you like, then Ask.";
+      };
+      reader.onerror = function () {
+        fileInput.value = "";
+        status.textContent = "That image could not be read. Try another.";
+      };
+      reader.readAsDataURL(file);
+      return;
+    }
     if (file.size > 20 * 1024 * 1024) {
       status.textContent = "Choose a file under 20 MB.";
       fileInput.value = "";
@@ -264,7 +288,8 @@
       model: model.value.trim() || pick.value,
       question: question.value,
       material: material.value,
-      source: material.value.trim() ? fileSource : "",
+      source: fileImage || material.value.trim() ? fileSource : "",
+      image: fileImage,
       scan: material.value.trim() ? fileScan : "",
       specialist: material.value.trim() ? fileSpecialist : ""
     }).then(function (data) {
