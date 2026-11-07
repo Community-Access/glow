@@ -234,3 +234,82 @@ def test_model_pick_list_is_labelled_and_wired(client):
     script = (STATIC / "accessibility-agents-ask.js").read_text(encoding="utf-8")
     assert '"models"' in script and "aa.models." in script
     assert "model.value.trim() || pick.value" in script
+
+
+def test_extract_reads_an_html_file_and_keeps_nothing(client):
+    import io
+
+    from acb_large_print_web.upload import UPLOAD_TEMP_BASE
+
+    before = set(UPLOAD_TEMP_BASE.iterdir()) if UPLOAD_TEMP_BASE.exists() else set()
+    resp = client.post("/accessibility-agents/extract", content_type="multipart/form-data",
+                       data={"file": (io.BytesIO(b"<h1>Title</h1><h3>Skipped</h3>"), "page.html")})
+    assert resp.status_code == 200
+    data = resp.get_json()
+    assert data["text"] == "<h1>Title</h1><h3>Skipped</h3>"
+    assert data["kind"] == "HTML" and data["truncated"] is False
+    assert resp.headers["Cache-Control"] == "no-store"
+    after = set(UPLOAD_TEMP_BASE.iterdir()) if UPLOAD_TEMP_BASE.exists() else set()
+    assert after <= before, "the uploaded file was kept"
+
+
+def test_extract_converts_a_word_file(client):
+    import io
+
+    import docx
+
+    doc = docx.Document()
+    doc.add_heading("Syllabus", level=1)
+    doc.add_paragraph("Click here for the reading list.")
+    buf = io.BytesIO()
+    doc.save(buf)
+    buf.seek(0)
+    resp = client.post("/accessibility-agents/extract", content_type="multipart/form-data",
+                       data={"file": (buf, "syllabus.docx")})
+    assert resp.status_code == 200, resp.get_json()
+    data = resp.get_json()
+    assert data["kind"] == "DOCX"
+    assert "Syllabus" in data["text"] and "reading list" in data["text"]
+
+
+def test_extract_refuses_other_files(client):
+    import io
+
+    resp = client.post("/accessibility-agents/extract", content_type="multipart/form-data",
+                       data={"file": (io.BytesIO(b"MZ"), "tool.exe")})
+    assert resp.status_code == 400
+    assert "not supported" in resp.get_json()["error"]
+    resp = client.post("/accessibility-agents/extract", content_type="multipart/form-data",
+                       data={"file": (io.BytesIO(b"not a zip"), "fake.docx")})
+    assert resp.status_code == 400
+
+
+def test_ask_names_the_file_it_reviews(client, monkeypatch):
+    calls = []
+    replies = [_Resp(200, {"choices": [{"message": {"content": "Heading 3 skips a level."}}]})]
+    monkeypatch.setattr(aa_ask.requests, "post", _fake_post(calls, replies))
+    resp = client.post("/accessibility-agents/ask", json={
+        "provider": "openai", "key": "sk-test", "question": "Review this.",
+        "material": "# Title", "source": "syllabus.docx (DOCX)"})
+    assert resp.status_code == 200
+    sent = [c for c in calls if c["url"] == aa_ask.PROVIDERS["openai"]["url"]][0]
+    assert "the file syllabus.docx (DOCX), converted to text" in sent["json"]["messages"][1]["content"]
+
+
+def test_file_chooser_is_labelled(client):
+    body = client.get("/accessibility-agents/").get_data(as_text=True)
+    assert 'for="aa-file"' in body and 'type="file" id="aa-file"' in body
+
+
+@pytest.mark.parametrize("status, payload", [
+    (429, {"error": {"message": "You have no credits remaining.", "code": "credit_balance_exhausted"}}),
+    (402, [{"error": {"code": 402, "message": "Your prepayment credits are depleted."}}]),
+    (400, {"type": "error", "error": {"message": "Your credit balance is too low."}}),
+])
+def test_an_empty_account_says_so(client, monkeypatch, status, payload):
+    monkeypatch.setattr(aa_ask.requests, "post", _fake_post([], [_Resp(status, payload)]))
+    resp = client.post("/accessibility-agents/ask", json={
+        "provider": "openai", "key": "sk-test", "question": "Hi"})
+    error = resp.get_json()["error"]
+    assert "out of credit" in error
+    assert "sk-test" not in error

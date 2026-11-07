@@ -128,14 +128,36 @@ def call_tool(name: str, arguments: dict[str, Any]) -> str:
 # The model
 # ---------------------------------------------------------------------------
 
+_CREDIT_WORDS = ("credit", "quota", "billing", "prepay", "balance", "insufficient")
+
+
+def _provider_message(resp: requests.Response) -> str:
+    """The provider's own error sentence, if it sent one (never contains the key)."""
+    try:
+        data = resp.json()
+    except ValueError:
+        return ""
+    if isinstance(data, list) and data:
+        data = data[0]
+    err = data.get("error") if isinstance(data, dict) else None
+    message = err.get("message") if isinstance(err, dict) else err if isinstance(err, str) else ""
+    message = " ".join(str(message or "").split())
+    return message[:300]
+
+
 def _provider_error(resp: requests.Response, label: str) -> AskError:
-    if resp.status_code in (401, 403):
+    said = _provider_message(resp)
+    if resp.status_code in (401, 403) and not any(w in said.lower() for w in _CREDIT_WORDS):
         return AskError(f"{label} did not accept the key. Check it and try again.")
+    if resp.status_code == 402 or any(w in said.lower() for w in _CREDIT_WORDS):
+        return AskError(f"{label} says this account is out of credit. Add credit with "
+                        f"{label}, or choose OpenRouter or a free Gemini key." +
+                        (f" {label} said: {said}" if said else ""))
     if resp.status_code == 429:
-        return AskError(f"{label} says the key is over its limit or out of credit.")
+        return AskError(f"{label} says the key is over its rate limit. Wait a minute and try again.")
     if resp.status_code == 404:
-        return AskError(f"{label} does not offer that model to this key.")
-    return AskError(f"{label} answered {resp.status_code}.")
+        return AskError(f"{label} does not offer that model to this key. Choose Show my models.")
+    return AskError(f"{label} answered {resp.status_code}." + (f" It said: {said}" if said else ""))
 
 
 def _post(url: str, headers: dict[str, str], body: dict[str, Any], label: str) -> dict[str, Any]:
@@ -232,7 +254,8 @@ def _ask_anthropic(provider: dict[str, str], key: str, model: str,
     raise AskError("The answer needed too many checks. Try a narrower question.")
 
 
-def ask(provider_id: str, key: str, model: str, question: str, material: str = "") -> dict[str, Any]:
+def ask(provider_id: str, key: str, model: str, question: str, material: str = "",
+        source: str = "") -> dict[str, Any]:
     """Answer one question. Returns {"answer", "tools_used", "provider", "model"}."""
     provider = PROVIDERS.get(provider_id)
     if provider is None:
@@ -252,7 +275,16 @@ def ask(provider_id: str, key: str, model: str, question: str, material: str = "
 
     user_text = question
     if material:
-        user_text += "\n\nMaterial to review (text, HTML or colors):\n\n" + material
+        source = (source or "").strip()[:200]
+        if source:
+            user_text += (
+                f"\n\nMaterial to review: the file {source}, converted to text. Headings, "
+                "lists, tables, links and image alt text survive the conversion as "
+                "Markdown; fonts, colors, reading order tags and document properties do "
+                "not, so say which checks need the original file:\n\n" + material
+            )
+        else:
+            user_text += "\n\nMaterial to review (text, HTML or colors):\n\n" + material
 
     tools = list_tools()
     if provider["style"] == "anthropic":

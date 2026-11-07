@@ -181,6 +181,49 @@
     });
   }
 
+  // ---- A file to review ----
+  // GLOW turns the file into text (and deletes it); the text goes into the
+  // material box, where the visitor can read or trim it before asking.
+  var fileInput = document.getElementById("aa-file");
+  var materialBox = document.getElementById("aa-material");
+  var fileSource = "";
+  fileInput.addEventListener("change", function () {
+    var file = fileInput.files && fileInput.files[0];
+    fileSource = "";
+    if (!file) return;
+    if (file.size > 20 * 1024 * 1024) {
+      status.textContent = "Choose a file under 20 MB.";
+      fileInput.value = "";
+      return;
+    }
+    var data = new FormData();
+    data.append("file", file);
+    fileInput.disabled = true;
+    status.textContent = "Reading " + file.name + ".";
+    fetch(PAGE + "extract", {
+      method: "POST",
+      credentials: "same-origin",
+      headers: { "X-CSRFToken": csrf() },
+      body: data
+    }).then(function (r) {
+      return r.json().catch(function () { return {}; }).then(function (d) {
+        if (!r.ok) throw new Error(d.error || ("The file could not be read (" + r.status + ")."));
+        return d;
+      });
+    }).then(function (d) {
+      materialBox.value = d.text;
+      fileSource = d.filename + " (" + d.kind + ")";
+      status.textContent = "Read " + d.filename + ": " + d.characters.toLocaleString() + " characters" +
+        (d.truncated ? ", cut to the first 50,000" : "") +
+        ". The text is in the material box. Type your question, then Ask.";
+    }).catch(function (err) {
+      fileInput.value = "";
+      status.textContent = err.message;
+    }).then(function () {
+      fileInput.disabled = false;
+    });
+  });
+
   // ---- Asking ----
   form.addEventListener("submit", function (event) {
     event.preventDefault();
@@ -204,7 +247,8 @@
       key: keyField.value.trim(),
       model: model.value.trim() || pick.value,
       question: question.value,
-      material: material.value
+      material: material.value,
+      source: material.value.trim() ? fileSource : ""
     }).then(function (data) {
       answerBody.textContent = data.answer;
       answerMeta.textContent = "Answered by " + data.provider + ", " + data.model + "." +
