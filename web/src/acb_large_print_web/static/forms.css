@@ -4259,6 +4259,11 @@ html[data-theme="dark"] .theme-toggle select {
 .aa-check { margin-block: 1.5rem; }
 .aa-result-text { white-space: pre-wrap; overflow-wrap: anywhere; font-size: 1rem; }
 .aa-answer-body { overflow-wrap: anywhere; font-size: 1rem; }
+.aa-alt-list { padding-left: 1.5rem; }
+.aa-alt-item { margin-bottom: 1.5rem; }
+.aa-alt-item textarea { width: 100%; }
+.aa-alt-preview { display: block; max-width: min(100%, 320px); max-height: 240px; margin: 0.5rem 0; border: 1px solid currentColor; }
+.aa-alt-note { font-style: italic; }
 .aa-answer-body h4, .aa-answer-body h5, .aa-answer-body h6 { margin: 1rem 0 0.25rem; }
 .aa-answer-body pre { white-space: pre-wrap; }
 .aa-summary-heading { display: inline; font-size: 1.15rem; margin: 0; }

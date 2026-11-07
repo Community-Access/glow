@@ -15,11 +15,13 @@ see aa_ask.py.
 
 from __future__ import annotations
 
+import io
+import json
 import re
 
-from flask import Blueprint, jsonify, render_template, request
+from flask import Blueprint, jsonify, render_template, request, send_file
 
-from .. import aa_ask
+from .. import aa_alt, aa_ask
 from ..app import limiter
 from ..upload import ALLOWED_EXTENSIONS, UploadError, cleanup_token, validate_upload
 
@@ -153,6 +155,88 @@ def extract():
         return _no_store(jsonify({"error": str(exc)})), 400
     except Exception:  # noqa: BLE001
         return _no_store(jsonify({"error": "That file could not be read. Try another."})), 502
+    finally:
+        if token:
+            cleanup_token(token)
+
+
+# ---------------------------------------------------------------------------
+# Alt text for every image in a document (aa_alt.py). Nothing is kept: the
+# file is read and deleted on each request, and the browser holds the rest.
+# ---------------------------------------------------------------------------
+
+@accessibility_agents_bp.route("/images", methods=["POST"])
+@limiter.limit("10 per minute")
+def images():
+    """The images and charts in an uploaded document."""
+    if (request.content_length or 0) > MAX_EXTRACT_BYTES + 64 * 1024:
+        return _no_store(jsonify({"error": "Choose a file under 20 MB."})), 400
+    token = None
+    try:
+        token, path = validate_upload(request.files.get("file"), aa_alt.IMAGE_SOURCE_EXTENSIONS)
+        found = aa_alt.list_images(path)
+        return _no_store(jsonify({
+            "filename": path.name,
+            "images": found,
+            "writable": path.suffix.lower() in aa_alt.WRITABLE_EXTENSIONS,
+        }))
+    except UploadError as exc:
+        return _no_store(jsonify({"error": str(exc)})), 400
+    except Exception:  # noqa: BLE001
+        return _no_store(jsonify({"error": "The images in that file could not be read."})), 502
+    finally:
+        if token:
+            cleanup_token(token)
+
+
+@accessibility_agents_bp.route("/describe", methods=["POST"])
+@limiter.limit("40 per minute")
+def describe():
+    """Alt text for one image, from the visitor's own AI."""
+    data = request.get_json(silent=True) or {}
+    context = data.get("context") if isinstance(data.get("context"), list) else []
+    try:
+        result = aa_alt.describe(
+            str(data.get("provider") or ""), str(data.get("key") or ""), str(data.get("model") or ""),
+            image=str(data.get("image") or ""), label=str(data.get("label") or "")[:200],
+            location=str(data.get("location") or "")[:200],
+            current_alt=str(data.get("current_alt") or ""),
+            context=[str(c) for c in context],
+        )
+    except aa_ask.AskError as exc:
+        return _no_store(jsonify({"error": str(exc)})), 400
+    except Exception:  # noqa: BLE001 - never let a key reach a traceback page
+        return _no_store(jsonify({"error": "Something went wrong. Try again."})), 502
+    return _no_store(jsonify(result))
+
+
+@accessibility_agents_bp.route("/write-alt", methods=["POST"])
+@limiter.limit("10 per minute")
+def write_alt():
+    """The visitor's file again, with the alt text they accepted written in."""
+    if (request.content_length or 0) > MAX_EXTRACT_BYTES + 256 * 1024:
+        return _no_store(jsonify({"error": "Choose a file under 20 MB."})), 400
+    token = None
+    try:
+        alts = json.loads(request.form.get("alts") or "{}")
+        if not isinstance(alts, dict):
+            raise ValueError
+    except ValueError:
+        return _no_store(jsonify({"error": "The alt text did not arrive. Try again."})), 400
+    try:
+        token, path = validate_upload(request.files.get("file"), aa_alt.WRITABLE_EXTENSIONS)
+        content, written = aa_alt.write_alt_text(path, alts)
+        mimetype = ("application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+                    if path.suffix.lower() == ".docx" else
+                    "application/vnd.openxmlformats-officedocument.presentationml.presentation")
+        response = send_file(io.BytesIO(content), mimetype=mimetype, as_attachment=True,
+                             download_name=f"{path.stem}-with-alt-text{path.suffix.lower()}")
+        response.headers["X-Alt-Text-Written"] = str(written)
+        return _no_store(response)
+    except (UploadError, aa_ask.AskError) as exc:
+        return _no_store(jsonify({"error": str(exc)})), 400
+    except Exception:  # noqa: BLE001
+        return _no_store(jsonify({"error": "The alt text could not be written into that file."})), 502
     finally:
         if token:
             cleanup_token(token)
