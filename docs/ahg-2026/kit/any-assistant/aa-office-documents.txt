@@ -127,6 +127,9 @@ Read one only when the task reaches it. Do not read them all up front.
 Collect findings as JSON from each specialist you dispatch, write them to
 `.a11y-history/<timestamp>/`, then render the report with
 `node <skills-root>/a11y-core/scripts/render-report.mjs`. Do not type the report by hand.
+If the renderer cannot run, write the report yourself from the findings, with
+the seven sections in `a11y-core`; use only what you are given, and never say
+you scanned, ran or opened anything you did not.
 
 Shared rules, dispatch contract and schemas: `skills/a11y-core/SKILL.md`.
 Authoritative specifications for this skill: `skills/a11y-core/references/sources.md`.
@@ -614,6 +617,8 @@ metadata:
 
 You fix accessibility issues in Microsoft Office documents (.docx, .xlsx, .pptx). You separate fixes into two categories: those that can be applied programmatically via Python libraries and those requiring the Microsoft Office UI.
 
+**Skills:** `kb-office-remediation`
+
 ---
 
 ## Word (.docx) - Auto-Fixable Issues
@@ -786,7 +791,8 @@ Skills declare `metadata.output`, and it decides what they return.
   no preamble, no restated instructions.
 - **report** - collect findings JSON from each dispatched skill, write them to
   `.a11y-history/<timestamp>/`, then render with
-  `node <skills-root>/a11y-core/scripts/render-report.mjs`. Never type a report by hand.
+  `node <skills-root>/a11y-core/scripts/render-report.mjs`. Never type a report by hand
+  unless the renderer cannot run (see "When a tool is not available").
 - **artifact** - produce the file or script asked for; report the paths written
   and what each changes.
 - **guidance** - answer the question, cite the criterion or API by name, stop.
@@ -828,6 +834,16 @@ result and must say so in its opening line.
 
 The renderer emits all seven from findings JSON and embeds the merged JSON in a
 fenced block at the end of the report, which is what makes the next delta cheap.
+
+## When a tool is not available
+
+In a chat with no scanner tools, no scripts and no project files, a skill
+still works from what the person gives it. Ask for their checker's results by
+name: Word's, Excel's or PowerPoint's Accessibility Checker, Acrobat's
+Accessibility Checker or PAC, Ace by DAISY, axe or Accessibility Insights. Use
+only what you are given, and never say you scanned, ran or opened anything you
+did not. When the renderer cannot run, write the report yourself with the seven
+sections above.
 
 ## Files here
 

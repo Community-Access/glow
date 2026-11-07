@@ -8,7 +8,7 @@ description: "Which Accessibility Agents skills work fully in the AHG 2026 kit, 
 # Accessibility Agents in this kit
 
 This kit carries all 113 Accessibility Agents skills, from
-commit `2f4fe22` of [Accessibility Agents](https://github.com/Community-Access/accessibility-agents), in `.github/skills`. Open the
+commit `a538edc` of [Accessibility Agents](https://github.com/Community-Access/accessibility-agents), in `.github/skills`. Open the
 kit in VS Code, on a computer or at vscode.dev, and they are there:
 start a new chat and ask for one by name. Nothing to install.
 
@@ -96,7 +96,7 @@ and what it does instead.
 | `github-hub` | Its report scripts are not in the kit. It writes its findings directly instead. |
 | `kb-ci-integration` | Its scanner tools are not in the kit. Give it your checker's results instead, or use the full version in Codespaces. |
 | `kb-design-system` | Its scanner tools are not in the kit. Give it your checker's results instead, or use the full version in Codespaces. |
-| `kb-github-a11y-scanner` | Its scanner tools are not in the kit. Give it your checker's results instead, or use the full version in Codespaces. Its report scripts are not in the kit. It writes its findings directly instead. |
+| `kb-github-a11y-scanner` | Its scanner tools are not in the kit. Give it your checker's results instead, or use the full version in Codespaces. Needs the GitHub command-line tool. Use the full version in Codespaces. Its report scripts are not in the kit. It writes its findings directly instead. |
 | `kb-github-shared-instructions` | Its scanner tools are not in the kit. Give it your checker's results instead, or use the full version in Codespaces. |
 | `kb-lighthouse-scanner` | Its report scripts are not in the kit. It writes its findings directly instead. |
 | `kb-markdown-accessibility` | Its report scripts are not in the kit. It writes its findings directly instead. |

@@ -58,14 +58,14 @@
     },
     "kit/accessibility-agents-in-the-kit.md": {
       "title": "Accessibility Agents in this kit",
-      "sha256": "625d25037cda26e1a9f99925805797aaa65bb219b8ccc23f638a4b899bcaf3b4",
+      "sha256": "7f4fbc3a35193aca3babb876626d36cf4da546a2d2c4447d90153b2456a9d62e",
       "formats": [
         "accessibility-agents-in-the-kit.md",
         "accessibility-agents-in-the-kit.html",
         "accessibility-agents-in-the-kit.docx",
         "accessibility-agents-in-the-kit.pptx"
       ],
-      "slides": 32
+      "slides": 33
     },
     "kit/glossary.md": {
       "title": "Words used today",
