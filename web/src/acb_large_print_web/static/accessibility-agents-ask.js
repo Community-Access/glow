@@ -23,6 +23,8 @@
   var keyField = document.getElementById("aa-key");
   var model = document.getElementById("aa-model");
   var modelDefault = document.getElementById("aa-model-default");
+  var pick = document.getElementById("aa-model-pick");
+  var modelsButton = document.getElementById("aa-models-button");
   var keyLink = document.getElementById("aa-key-link");
   var signin = document.getElementById("aa-openrouter-signin");
   var signinButton = document.getElementById("aa-openrouter-button");
@@ -58,9 +60,32 @@
     });
   }
 
+  // The model list for the chosen service. Model names are not secret, but
+  // they live in sessionStorage too, so they go when the tab does.
+  function fillPick(models, chosen) {
+    var def = provider.options[provider.selectedIndex].getAttribute("data-default-model");
+    pick.textContent = "";
+    var first = document.createElement("option");
+    first.value = "";
+    first.textContent = "The default, " + def;
+    pick.appendChild(first);
+    models.forEach(function (m) {
+      var o = document.createElement("option");
+      o.value = m.id;
+      o.textContent = m.name === m.id ? m.id : m.name + " (" + m.id + ")";
+      pick.appendChild(o);
+    });
+    pick.value = chosen && pick.querySelector('option[value="' + CSS.escape(chosen) + '"]') ? chosen : "";
+  }
+
+  function savedModels() {
+    try { return JSON.parse(store.get("aa.models." + provider.value) || "[]"); } catch (e) { return []; }
+  }
+
   function syncProvider() {
     var opt = provider.options[provider.selectedIndex];
     modelDefault.textContent = opt.getAttribute("data-default-model");
+    fillPick(savedModels(), store.get("aa.pick." + provider.value));
     keyLink.href = opt.getAttribute("data-key-url");
     signin.hidden = provider.value !== "openrouter";
     keyField.value = store.get(keyName());
@@ -79,6 +104,34 @@
     else store.del(keyName());
   });
   model.addEventListener("input", function () { store.set("aa.model", model.value.trim()); });
+  pick.addEventListener("change", function () { store.set("aa.pick." + provider.value, pick.value); });
+
+  modelsButton.addEventListener("click", function () {
+    var key = keyField.value.trim();
+    if (!key && provider.value !== "openrouter") {
+      status.textContent = "Enter your API key first, so the list shows the models it can use.";
+      keyField.focus();
+      return;
+    }
+    modelsButton.disabled = true;
+    status.textContent = "Getting your models.";
+    post(PAGE + "models", { provider: provider.value, key: key }).then(function (data) {
+      var models = data.models || [];
+      store.set("aa.models." + provider.value, JSON.stringify(models));
+      fillPick(models, store.get("aa.pick." + provider.value));
+      if (models.length) {
+        status.textContent = models.length + (models.length === 1 ? " model" : " models") +
+          " found. Choose one from the Model list.";
+        pick.focus();
+      } else {
+        status.textContent = "No chat models were found for this key. The default will be used.";
+      }
+    }).catch(function (err) {
+      status.textContent = err.message;
+    }).then(function () {
+      modelsButton.disabled = false;
+    });
+  });
 
   forget.addEventListener("click", function () {
     Array.prototype.forEach.call(provider.options, function (o) { store.del("aa.key." + o.value); });
@@ -149,7 +202,7 @@
     post(PAGE + "ask", {
       provider: provider.value,
       key: keyField.value.trim(),
-      model: model.value.trim(),
+      model: model.value.trim() || pick.value,
       question: question.value,
       material: material.value
     }).then(function (data) {

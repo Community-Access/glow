@@ -74,6 +74,19 @@ def ask():
     return _no_store(jsonify(result))
 
 
+@accessibility_agents_bp.route("/models", methods=["POST"])
+@limiter.limit("10 per minute")
+def models():
+    data = request.get_json(silent=True) or {}
+    try:
+        found = aa_ask.list_models(str(data.get("provider") or ""), str(data.get("key") or ""))
+    except aa_ask.AskError as exc:
+        return _no_store(jsonify({"error": str(exc)})), 400
+    except Exception:  # noqa: BLE001 - never let a key reach a traceback page
+        return _no_store(jsonify({"error": "Something went wrong. Try again."})), 502
+    return _no_store(jsonify({"models": found}))
+
+
 @accessibility_agents_bp.route("/openrouter/exchange", methods=["POST"])
 @limiter.limit("5 per minute")
 def openrouter_exchange():

@@ -168,3 +168,69 @@ def test_ask_form_fields_are_labelled(client):
     assert 'type="password" id="aa-key"' in body
     for label in ("OpenAI", "Google Gemini", "Claude (Anthropic)", "OpenRouter"):
         assert label in body
+
+
+def _fake_get(seen, resp):
+    def fake(url, headers=None, timeout=None):
+        seen.update(url=url, headers=headers or {})
+        return resp
+    return fake
+
+
+def test_models_lists_only_chat_models_for_openai(client, monkeypatch):
+    seen = {}
+    payload = {"data": [{"id": "gpt-4o-mini"}, {"id": "text-embedding-3-small"},
+                        {"id": "gpt-4o-realtime-preview"}, {"id": "o3-mini"},
+                        {"id": "whisper-1"}, {"id": "gpt-4o-mini"}]}
+    monkeypatch.setattr(aa_ask.requests, "get", _fake_get(seen, _Resp(200, payload)))
+    resp = client.post("/accessibility-agents/models", json={"provider": "openai", "key": "sk-test"})
+    assert resp.status_code == 200
+    assert [m["id"] for m in resp.get_json()["models"]] == ["gpt-4o-mini", "o3-mini"]
+    assert seen["headers"]["Authorization"] == "Bearer sk-test"
+    assert resp.headers["Cache-Control"] == "no-store"
+
+
+def test_models_for_gemini_keeps_the_key_out_of_the_url(client, monkeypatch):
+    seen = {}
+    payload = {"models": [
+        {"name": "models/gemini-2.5-flash", "displayName": "Gemini 2.5 Flash",
+         "supportedGenerationMethods": ["generateContent"]},
+        {"name": "models/text-embedding-004", "supportedGenerationMethods": ["embedContent"]},
+        {"name": "models/gemini-embedding-001", "supportedGenerationMethods": ["generateContent"]},
+    ]}
+    monkeypatch.setattr(aa_ask.requests, "get", _fake_get(seen, _Resp(200, payload)))
+    resp = client.post("/accessibility-agents/models", json={"provider": "gemini", "key": "AIza-test"})
+    assert resp.get_json()["models"] == [{"id": "gemini-2.5-flash", "name": "Gemini 2.5 Flash"}]
+    assert "AIza-test" not in seen["url"]
+    assert seen["headers"]["x-goog-api-key"] == "AIza-test"
+
+
+def test_models_for_claude_and_openrouter(client, monkeypatch):
+    seen = {}
+    monkeypatch.setattr(aa_ask.requests, "get", _fake_get(seen, _Resp(200, {"data": [
+        {"id": "claude-haiku-5-5", "display_name": "Claude Haiku 5.5"}]})))
+    resp = client.post("/accessibility-agents/models", json={"provider": "anthropic", "key": "sk-ant"})
+    assert resp.get_json()["models"][0]["name"] == "Claude Haiku 5.5"
+    assert seen["headers"]["x-api-key"] == "sk-ant"
+    # OpenRouter's catalogue is public: no key needed, and only tool-capable models.
+    resp = client.post("/accessibility-agents/models", json={"provider": "openrouter"})
+    assert resp.status_code == 200
+    assert "supported_parameters=tools" in seen["url"]
+
+
+def test_models_needs_a_key_and_reports_a_bad_one(client, monkeypatch):
+    seen = {}
+    monkeypatch.setattr(aa_ask.requests, "get", _fake_get(seen, _Resp(401, {})))
+    resp = client.post("/accessibility-agents/models", json={"provider": "openai"})
+    assert resp.status_code == 400 and seen == {}
+    resp = client.post("/accessibility-agents/models", json={"provider": "openai", "key": "bad"})
+    assert "did not accept the key" in resp.get_json()["error"]
+
+
+def test_model_pick_list_is_labelled_and_wired(client):
+    body = client.get("/accessibility-agents/").get_data(as_text=True)
+    assert 'for="aa-model-pick"' in body
+    assert 'id="aa-models-button"' in body
+    script = (STATIC / "accessibility-agents-ask.js").read_text(encoding="utf-8")
+    assert '"models"' in script and "aa.models." in script
+    assert "model.value.trim() || pick.value" in script

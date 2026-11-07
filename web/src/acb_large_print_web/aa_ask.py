@@ -267,6 +267,76 @@ def ask(provider_id: str, key: str, model: str, question: str, material: str = "
     }
 
 
+# ---------------------------------------------------------------------------
+# The models a key can use
+# ---------------------------------------------------------------------------
+
+MODELS_URLS = {
+    "openai": "https://api.openai.com/v1/models",
+    "gemini": "https://generativelanguage.googleapis.com/v1beta/models?pageSize=1000",
+    "anthropic": "https://api.anthropic.com/v1/models?limit=1000",
+    "openrouter": "https://openrouter.ai/api/v1/models?supported_parameters=tools",
+}
+
+#: Words in an OpenAI or Gemini model id that mean it cannot chat with tools.
+_NOT_CHAT = ("embedding", "embed", "tts", "audio", "realtime", "transcribe",
+             "image", "dall-e", "whisper", "moderation", "search", "instruct",
+             "davinci", "babbage", "aqa", "imagen", "veo", "computer-use", "live")
+
+
+def _is_chat(model_id: str) -> bool:
+    lowered = model_id.lower()
+    return not any(word in lowered for word in _NOT_CHAT)
+
+
+def list_models(provider_id: str, key: str) -> list[dict[str, str]]:
+    """The chat models this key can use, as [{"id", "name"}], sorted by name.
+
+    OpenRouter's catalogue is public, so its key is optional here.
+    """
+    provider = PROVIDERS.get(provider_id)
+    if provider is None:
+        raise AskError("Choose a provider.")
+    key = (key or "").strip()
+    if not key and provider_id != "openrouter":
+        raise AskError(f"Enter your {provider['label']} key first.")
+    headers: dict[str, str] = {}
+    if provider_id == "anthropic":
+        headers = {"x-api-key": key, "anthropic-version": "2023-06-01"}
+    elif provider_id == "gemini":
+        headers = {"x-goog-api-key": key}
+    elif key:
+        headers = {"Authorization": f"Bearer {key}"}
+    try:
+        resp = requests.get(MODELS_URLS[provider_id], headers=headers, timeout=HTTP_TIMEOUT)
+    except requests.RequestException as exc:
+        raise AskError(f"{provider['label']} could not be reached.") from exc
+    if resp.status_code != 200:
+        raise _provider_error(resp, provider["label"])
+    data = resp.json() or {}
+
+    models: list[dict[str, str]] = []
+    if provider_id == "gemini":
+        for m in data.get("models") or []:
+            model_id = str(m.get("name") or "").removeprefix("models/")
+            if ("generateContent" in (m.get("supportedGenerationMethods") or [])
+                    and model_id.startswith("gemini") and _is_chat(model_id)):
+                models.append({"id": model_id, "name": str(m.get("displayName") or model_id)})
+    else:
+        for m in data.get("data") or []:
+            model_id = str(m.get("id") or "")
+            if not model_id:
+                continue
+            if provider_id == "openai" and not (
+                    model_id.startswith(("gpt-", "o1", "o3", "o4", "chatgpt-")) and _is_chat(model_id)):
+                continue
+            name = str(m.get("display_name") or m.get("name") or model_id)
+            models.append({"id": model_id, "name": name})
+    seen: set[str] = set()
+    unique = [m for m in models if not (m["id"] in seen or seen.add(m["id"]))]
+    return sorted(unique, key=lambda m: m["name"].lower())
+
+
 def exchange_openrouter_code(code: str, code_verifier: str) -> str:
     """Trade an OpenRouter sign-in code for the visitor's key (PKCE, S256)."""
     if not code or not code_verifier:
