@@ -495,3 +495,134 @@ def test_answers_are_rendered_without_parsing_model_html():
     assert "renderAnswer(answerBody, data.answer)" in script
     # The renderer builds nodes; it never hands model text to the HTML parser.
     assert "innerHTML" not in script and "insertAdjacentHTML" not in script
+
+
+# ---- Alt text for every image in a document ----
+
+def _png_bytes(color=(200, 30, 30)):
+    import io
+
+    from PIL import Image
+
+    buf = io.BytesIO()
+    Image.new("RGB", (8, 8), color).save(buf, "PNG")
+    return buf.getvalue()
+
+
+def _docx_with_two_images():
+    import io
+
+    import docx
+
+    doc = docx.Document()
+    doc.add_paragraph("Week one readings.")
+    doc.add_picture(io.BytesIO(_png_bytes()))
+    doc.add_paragraph("Enrollment by term.")
+    doc.add_picture(io.BytesIO(_png_bytes((30, 30, 200))))
+    doc.inline_shapes[0]._inline.docPr.set("descr", "Red square")
+    buf = io.BytesIO()
+    doc.save(buf)
+    return buf.getvalue()
+
+
+def _pptx_with_image():
+    import io
+
+    from pptx import Presentation
+    from pptx.util import Inches
+
+    prs = Presentation()
+    slide = prs.slides.add_slide(prs.slide_layouts[5])
+    slide.shapes.title.text = "Results"
+    slide.shapes.add_picture(io.BytesIO(_png_bytes()), Inches(1), Inches(2))
+    buf = io.BytesIO()
+    prs.save(buf)
+    return buf.getvalue()
+
+
+def test_images_lists_each_picture_with_a_key_and_keeps_nothing(client):
+    import io
+
+    from acb_large_print_web.upload import UPLOAD_TEMP_BASE
+
+    before = set(UPLOAD_TEMP_BASE.iterdir()) if UPLOAD_TEMP_BASE.exists() else set()
+    resp = client.post("/accessibility-agents/images", content_type="multipart/form-data",
+                       data={"file": (io.BytesIO(_docx_with_two_images()), "syllabus.docx")})
+    data = resp.get_json()
+    assert resp.status_code == 200, data
+    assert data["writable"] is True
+    assert [i["key"] for i in data["images"]] == ["docx:1", "docx:2"]
+    assert data["images"][0]["current_alt"] == "Red square"
+    assert data["images"][1]["image"].startswith("data:image/png;base64,")
+    after = set(UPLOAD_TEMP_BASE.iterdir()) if UPLOAD_TEMP_BASE.exists() else set()
+    assert after <= before
+
+
+def test_describe_returns_the_fields_from_the_model(client, monkeypatch):
+    calls = []
+    reply = ("Alt text: Bar chart of enrollment: Fall 120, Spring 90, Summer 40\n"
+             "Decorative: no\nLong description: Three bars, highest in Fall.\nText in image: none")
+    answer = _Resp(200, {"choices": [{"message": {"content": reply}}]})
+    monkeypatch.setattr(aa_ask.requests, "post", _image_fake(calls, answer))
+    resp = client.post("/accessibility-agents/describe", json={
+        "provider": "openrouter", "key": "sk-or", "image": _PNG, "label": "Word image 2",
+        "location": "Word document image 2", "context": ["Enrollment by term."]})
+    data = resp.get_json()
+    assert resp.status_code == 200, data
+    assert data["alt"].startswith("Bar chart of enrollment")
+    assert data["decorative"] is False and data["text_in_image"] == ""
+    assert data["long"] == "Three bars, highest in Fall."
+    model_call = [c for c in calls if c["url"] == aa_ask.PROVIDERS["openrouter"]["url"]][0]["json"]
+    assert "tools" not in model_call
+    assert "Enrollment by term." in model_call["messages"][1]["content"][0]["text"]
+
+
+def test_write_alt_puts_the_alt_text_into_word(client):
+    import io
+
+    import docx
+
+    resp = client.post("/accessibility-agents/write-alt", content_type="multipart/form-data", data={
+        "file": (io.BytesIO(_docx_with_two_images()), "syllabus.docx"),
+        "alts": _json.dumps({"docx:2": "Blue square", "../etc": "x", "docx:9": "missing"})})
+    assert resp.status_code == 200, resp.get_data(as_text=True)[:200]
+    assert resp.headers["X-Alt-Text-Written"] == "1"
+    assert "syllabus-with-alt-text.docx" in resp.headers["Content-Disposition"]
+    doc = docx.Document(io.BytesIO(resp.data))
+    alts = [s._inline.docPr.get("descr") for s in doc.inline_shapes]
+    assert alts == ["Red square", "Blue square"]
+
+
+def test_write_alt_puts_the_alt_text_into_powerpoint(client):
+    import io
+
+    from pptx import Presentation
+
+    listed = client.post("/accessibility-agents/images", content_type="multipart/form-data",
+                         data={"file": (io.BytesIO(_pptx_with_image()), "talk.pptx")}).get_json()
+    key = listed["images"][0]["key"]
+    resp = client.post("/accessibility-agents/write-alt", content_type="multipart/form-data", data={
+        "file": (io.BytesIO(_pptx_with_image()), "talk.pptx"), "alts": _json.dumps({key: "Red square"})})
+    assert resp.status_code == 200
+    prs = Presentation(io.BytesIO(resp.data))
+    pics = [s for s in prs.slides[0].shapes if s.shape_type == 13]
+    assert pics[0]._element.nvPicPr.cNvPr.get("descr") == "Red square"
+
+
+def test_write_alt_refuses_files_it_cannot_write(client):
+    import io
+
+    resp = client.post("/accessibility-agents/write-alt", content_type="multipart/form-data", data={
+        "file": (io.BytesIO(b"%PDF-1.4 x"), "a.pdf"), "alts": _json.dumps({"docx:1": "x"})})
+    assert resp.status_code == 400
+    resp = client.post("/accessibility-agents/write-alt", content_type="multipart/form-data", data={
+        "file": (io.BytesIO(_docx_with_two_images()), "a.docx"), "alts": "not json"})
+    assert resp.status_code == 400
+
+
+def test_the_alt_text_controls_are_on_the_page(client):
+    body = client.get("/accessibility-agents/").get_data(as_text=True)
+    assert 'id="aa-alt-button"' in body and 'id="aa-alt-heading"' in body
+    assert 'id="aa-alt-download"' in body
+    script = (STATIC / "accessibility-agents-ask.js").read_text(encoding="utf-8")
+    assert '"write-alt"' in script and '"describe"' in script and '"images"' in script

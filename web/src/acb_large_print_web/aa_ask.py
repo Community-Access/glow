@@ -281,7 +281,7 @@ def _ask_openai_style(provider: dict[str, str], key: str, model: str,
     used: list[str] = []
     for _ in range(MAX_ROUNDS):
         data = _post(provider["url"], headers,
-                     {"model": model, "messages": messages, "tools": functions},
+                     {"model": model, "messages": messages, **({"tools": functions} if functions else {})},
                      provider["label"])
         choice = (data.get("choices") or [{}])[0]
         message = choice.get("message") or {}
@@ -329,7 +329,7 @@ def _ask_anthropic(provider: dict[str, str], key: str, model: str,
     for _ in range(MAX_ROUNDS):
         data = _post(provider["url"], headers,
                      {"model": model, "max_tokens": 4096, "system": system,
-                      "messages": messages, "tools": tool_defs},
+                      "messages": messages, **({"tools": tool_defs} if tool_defs else {})},
                      provider["label"])
         blocks = data.get("content") or []
         calls = [b for b in blocks if b.get("type") == "tool_use"]
@@ -349,7 +349,7 @@ def _ask_anthropic(provider: dict[str, str], key: str, model: str,
 
 def ask(provider_id: str, key: str, model: str, question: str, material: str = "",
         source: str = "", scan: str = "", specialist: str = "",
-        image: str = "") -> dict[str, Any]:
+        image: str = "", use_tools: bool = True, answer_format: str = "") -> dict[str, Any]:
     """Answer one question. Returns {"answer", "tools_used", "provider", "model", "specialist"}.
 
     ``scan`` is the scanner's report on the file the text came from, and
@@ -403,7 +403,14 @@ def ask(provider_id: str, key: str, model: str, question: str, material: str = "
 
     system = SYSTEM_PROMPT
     instructions = get_specialist((specialist or "").strip()) if specialist else ""
-    if instructions and picture is not None:
+    if instructions and answer_format:
+        system += (
+            f"\n\nFor this request you are the {specialist} specialist. Follow its "
+            "instructions below. Where they mention tools or files you do not have, "
+            "use what you were given instead.\n\n" + instructions +
+            "\n\nThe answer format in the request overrides any output format above."
+        )
+    elif instructions and picture is not None:
         system += (
             f"\n\nFor this request you are the {specialist} specialist. Follow its "
             "instructions below for the attached image. Where they mention tools or "
@@ -423,7 +430,7 @@ def ask(provider_id: str, key: str, model: str, question: str, material: str = "
             "check in the original."
         )
 
-    tools = list_tools()
+    tools = list_tools() if use_tools else []
     if provider["style"] == "anthropic":
         answer, used = _ask_anthropic(provider, key, model, user_text, tools, system, picture)
     else:

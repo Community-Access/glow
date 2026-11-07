@@ -193,6 +193,8 @@
   var IMAGE_TYPES = ["image/png", "image/jpeg", "image/gif", "image/webp"];
   var scanBox = document.getElementById("aa-scan");
   var scanText = document.getElementById("aa-scan-text");
+  var altStart = document.getElementById("aa-alt-start");
+  var altFile = null;
   fileInput.addEventListener("change", function () {
     var file = fileInput.files && fileInput.files[0];
     fileSource = "";
@@ -200,7 +202,13 @@
     fileSpecialist = "";
     fileImage = "";
     scanBox.hidden = true;
+    altStart.hidden = true;
+    altFile = null;
     if (!file) return;
+    if (/\.(docx|pptx|xlsx|pdf|epub)$/i.test(file.name) && file.size <= 20 * 1024 * 1024) {
+      altFile = file;
+      altStart.hidden = false;
+    }
     if (IMAGE_TYPES.indexOf(file.type) !== -1) {
       if (file.size > 5 * 1024 * 1024) {
         status.textContent = "Choose an image under 5 MB.";
@@ -261,6 +269,197 @@
       status.textContent = err.message;
     }).then(function () {
       fileInput.disabled = false;
+    });
+  });
+
+  // ---- Alt text for every image in a document ----
+  // GLOW lists the file's pictures (and deletes the file), the visitor's AI
+  // drafts each one through /describe, the visitor edits them here, and
+  // /write-alt hands the file back with the alt text in place.
+  var altButton = document.getElementById("aa-alt-button");
+  var altBox = document.getElementById("aa-alt");
+  var altHeading = document.getElementById("aa-alt-heading");
+  var altFileName = document.getElementById("aa-alt-file");
+  var altProgress = document.getElementById("aa-alt-progress");
+  var altList = document.getElementById("aa-alt-list");
+  var altDownload = document.getElementById("aa-alt-download");
+  var altDownloadHelp = document.getElementById("aa-alt-download-help");
+  var altItems = [];
+  var altWritable = false;
+
+  function sendForm(url, form) {
+    return fetch(url, {
+      method: "POST", credentials: "same-origin",
+      headers: { "X-CSRFToken": csrf() }, body: form
+    });
+  }
+
+  function para(parent, cls, text) {
+    var p = document.createElement("p");
+    if (cls) p.className = cls;
+    p.textContent = text;
+    parent.appendChild(p);
+    return p;
+  }
+
+  function buildAltItem(item, i) {
+    var li = document.createElement("li");
+    li.className = "aa-alt-item";
+    var h = document.createElement("h4");
+    h.textContent = item.label + (item.location && item.label.indexOf(item.location) === -1 ? ", " + item.location : "");
+    li.appendChild(h);
+    if (item.image) {
+      var img = document.createElement("img");
+      img.src = item.image;
+      img.alt = item.current_alt || "";
+      img.className = "aa-alt-preview";
+      li.appendChild(img);
+    }
+    para(li, "form-help", item.current_alt ? "Alt text now: " + item.current_alt : "It has no alt text now.");
+    var id = "aa-alt-text-" + i;
+    var label = document.createElement("label");
+    label.setAttribute("for", id);
+    label.textContent = "New alt text for " + h.textContent;
+    li.appendChild(label);
+    var box = document.createElement("textarea");
+    box.id = id;
+    box.rows = 2;
+    box.maxLength = 1000;
+    box.value = "";
+    li.appendChild(box);
+    var note = para(li, "aa-alt-note", item.describable ? "Waiting." :
+      "This picture's format (EMF, WMF or TIFF, or over 5 MB) cannot be sent to an AI. Write its alt text yourself.");
+    var extra = document.createElement("div");
+    li.appendChild(extra);
+    altList.appendChild(li);
+    return { item: item, box: box, img: img || null, note: note, extra: extra };
+  }
+
+  function describeOne(entry) {
+    entry.note.textContent = "Writing.";
+    return post(PAGE + "describe", {
+      provider: provider.value, key: keyField.value.trim(), model: model.value.trim() || pick.value,
+      image: entry.item.image, label: entry.item.label, location: entry.item.location,
+      current_alt: entry.item.current_alt, context: entry.item.context
+    }).then(function (d) {
+      entry.box.value = d.alt || "";
+      if (entry.img) entry.img.alt = d.alt || "";
+      entry.note.textContent = d.decorative
+        ? "Done. Your AI thinks this may be decorative: if it is, mark it decorative in the program instead."
+        : "Done. Check it says what the picture is for in this document.";
+      entry.extra.textContent = "";
+      if (d.long) para(entry.extra, "", "Long description: " + d.long);
+      if (d.text_in_image) para(entry.extra, "", "Text in the image: " + d.text_in_image);
+      return true;
+    }).catch(function (err) {
+      entry.note.textContent = "Could not write this one: " + err.message;
+      return false;
+    });
+  }
+
+  altButton.addEventListener("click", function () {
+    if (!altFile) return;
+    if (!keyField.value.trim()) {
+      status.textContent = "Enter your API key first" + (provider.value === "openrouter" ? ", or sign in with OpenRouter." : ".");
+      keyField.focus();
+      return;
+    }
+    var form = new FormData();
+    form.append("file", altFile);
+    altButton.disabled = true;
+    status.textContent = "Finding the images in " + altFile.name + ".";
+    sendForm(PAGE + "images", form).then(function (r) {
+      return r.json().catch(function () { return {}; }).then(function (d) {
+        if (!r.ok) throw new Error(d.error || ("The images could not be read (" + r.status + ")."));
+        return d;
+      });
+    }).then(function (d) {
+      var found = d.images || [];
+      if (!found.length) {
+        status.textContent = "There are no pictures or charts in " + d.filename + ".";
+        altButton.disabled = false;
+        return;
+      }
+      altWritable = !!d.writable;
+      altList.textContent = "";
+      altFileName.textContent = d.filename;
+      altItems = found.map(buildAltItem);
+      altDownload.hidden = true;
+      altDownloadHelp.hidden = true;
+      altBox.hidden = false;
+      var todo = altItems.filter(function (e) { return e.item.describable; });
+      var done = 0, ok = 0;
+      altProgress.textContent = found.length + (found.length === 1 ? " picture" : " pictures") +
+        ". Writing alt text: 0 of " + todo.length + " done.";
+      status.textContent = "Found " + found.length + (found.length === 1 ? " picture" : " pictures") +
+        ". Your AI is writing the alt text; this can take a minute.";
+      altHeading.focus();
+      var queue = todo.slice();
+      function next() {
+        var entry = queue.shift();
+        if (!entry) return Promise.resolve();
+        return describeOne(entry).then(function (worked) {
+          done += 1;
+          if (worked) ok += 1;
+          altProgress.textContent = found.length + (found.length === 1 ? " picture" : " pictures") +
+            ". Writing alt text: " + done + " of " + todo.length + " done.";
+          return next();
+        });
+      }
+      // Two at a time: quick, and kind to a free model's rate limit.
+      return Promise.all([next(), next()]).then(function () {
+        altButton.disabled = false;
+        if (altWritable) { altDownload.hidden = false; altDownloadHelp.hidden = false; }
+        status.textContent = "Alt text written for " + ok + " of " + found.length +
+          (found.length === 1 ? " picture" : " pictures") + ". Review each one" +
+          (altWritable ? ", then download the file with it in place." : "; for this kind of file, add them in the program you made it in.");
+      });
+    }).catch(function (err) {
+      altButton.disabled = false;
+      status.textContent = err.message;
+    });
+  });
+
+  altDownload.addEventListener("click", function () {
+    if (!altFile) return;
+    var alts = {};
+    altItems.forEach(function (e) {
+      var text = e.box.value.trim();
+      if (text && e.item.key) alts[e.item.key] = text;
+    });
+    if (!Object.keys(alts).length) {
+      status.textContent = "There is no alt text to write yet.";
+      return;
+    }
+    var form = new FormData();
+    form.append("file", altFile);
+    form.append("alts", JSON.stringify(alts));
+    altDownload.disabled = true;
+    status.textContent = "Writing the alt text into " + altFile.name + ".";
+    sendForm(PAGE + "write-alt", form).then(function (r) {
+      if (!r.ok) {
+        return r.json().catch(function () { return {}; }).then(function (d) {
+          throw new Error(d.error || ("The file could not be written (" + r.status + ")."));
+        });
+      }
+      var written = r.headers.get("X-Alt-Text-Written") || "";
+      var name = altFile.name.replace(/(\.[^.]+)$/, "-with-alt-text$1");
+      return r.blob().then(function (blob) {
+        var url = URL.createObjectURL(blob);
+        var a = document.createElement("a");
+        a.href = url;
+        a.download = name;
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        setTimeout(function () { URL.revokeObjectURL(url); }, 10000);
+        status.textContent = "Downloaded " + name + ", with alt text on " + (written || "the") +
+          " pictures. Open it and check them before you share it.";
+      });
+    }).catch(function (err) {
+      status.textContent = err.message;
+    }).then(function () {
+      altDownload.disabled = false;
     });
   });
 

@@ -214,6 +214,9 @@ def _extract_docx_media(path: Path, max_items: int = 24) -> list[dict[str, Any]]
                         source_type="docx-image",
                     )
                 )
+                # Where the picture is, so alt text can be written back to it
+                # (docx_alt.write_alt_text): the nth w:drawing in document.xml.
+                items[-1]["key"] = f"docx:{idx}"
     except Exception:
         return []
     return items
@@ -316,6 +319,7 @@ def _extract_pptx_visuals(path: Path) -> list[dict[str, Any]]:
                             source_type="pptx-image",
                         )
                     )
+                    items[-1]["key"] = f"pptx:{slide_index}:{shape_counter}"
                 except Exception:
                     continue
             elif shape.shape_type == MSO_SHAPE_TYPE.CHART:
@@ -329,6 +333,7 @@ def _extract_pptx_visuals(path: Path) -> list[dict[str, Any]]:
                         source_type="pptx-chart",
                     )
                 )
+                items[-1]["key"] = f"pptx:{slide_index}:{shape_counter}"
     return items
 
 

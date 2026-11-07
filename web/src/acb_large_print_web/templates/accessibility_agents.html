@@ -190,6 +190,14 @@ ways to use it, and a place to run its checks right now.</p>
         <summary>Scanner report</summary>
         <pre id="aa-scan-text" class="aa-result-text" tabindex="0"></pre>
       </details>
+      <div id="aa-alt-start" hidden>
+        <p id="aa-alt-start-help" class="form-help">Your AI can write alt text for
+        every picture and chart in this file, one at a time, with your key. You
+        review each one, and for a Word or PowerPoint file you can then download
+        the file with the alt text in place.</p>
+        <button type="button" id="aa-alt-button" class="btn-secondary"
+                aria-describedby="aa-alt-start-help">Write alt text for every image</button>
+      </div>
     </div>
     <button type="submit" class="btn-primary">Ask</button>
   </form>
@@ -199,6 +207,17 @@ ways to use it, and a place to run its checks right now.</p>
     <div id="aa-answer-body" class="aa-answer-body"></div>
     <p id="aa-answer-meta" class="form-help"></p>
   </section>
+
+  <div id="aa-alt" class="aa-result" hidden>
+    <h3 id="aa-alt-heading" tabindex="-1">Alt text for <span id="aa-alt-file"></span></h3>
+    <p id="aa-alt-progress"></p>
+    <ol id="aa-alt-list" class="aa-alt-list"></ol>
+    <p id="aa-alt-download-help" class="form-help" hidden>The download is your
+    file with each alt text above written into its picture. Long descriptions are
+    not written in: add those to the document's text, near the picture.</p>
+    <button type="button" id="aa-alt-download" class="btn-primary"
+            aria-describedby="aa-alt-download-help" hidden>Download the file with this alt text</button>
+  </div>
 </section>
 
 <section>
