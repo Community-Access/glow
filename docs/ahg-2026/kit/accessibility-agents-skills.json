@@ -1,6 +1,6 @@
 {
   "source": "https://github.com/Community-Access/accessibility-agents",
-  "commit": "2f4fe226b9ed1691509b1751a2748b778eab477a",
+  "commit": "a538edc9edfb98cdd8bae96d6b79542874b478f7",
   "classified_by": "this script's reading of each SKILL.md",
   "skills": [
     {
@@ -353,10 +353,12 @@
       "you_can_ask_for_it": false,
       "needs": [
         "scanners",
+        "github",
         "scripts"
       ],
       "in_the_kit": [
         "Its scanner tools are not in the kit. Give it your checker's results instead, or use the full version in Codespaces.",
+        "Needs the GitHub command-line tool. Use the full version in Codespaces.",
         "Its report scripts are not in the kit. It writes its findings directly instead."
       ]
     },
