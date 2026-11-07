@@ -47,14 +47,14 @@
     },
     "kit/accessibility-agents.md": {
       "title": "Accessibility Agents, after today",
-      "sha256": "e9444472c01b88966118fc0b1129079cad6bacf760b3cdbbac15e9e34c63ab07",
+      "sha256": "3d1ed1c2aa5028ed03378a54408de0ea1a9e354bca03878e185d15b21211e3c0",
       "formats": [
         "accessibility-agents.md",
         "accessibility-agents.html",
         "accessibility-agents.docx",
         "accessibility-agents.pptx"
       ],
-      "slides": 27
+      "slides": 30
     },
     "kit/accessibility-agents-in-the-kit.md": {
       "title": "Accessibility Agents in this kit",
