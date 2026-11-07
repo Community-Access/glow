@@ -398,6 +398,7 @@ def test_ask_follows_the_specialist_and_gives_the_model_the_scan(client, monkeyp
     system = model_call["json"]["messages"][0]["content"]
     user = model_call["json"]["messages"][1]["content"]
     assert "word-accessibility specialist" in system and "Check heading styles." in system
+    assert "never JSON" in system and system.index("never JSON") > system.index("Check heading styles.")
     assert "doc-alt-text" in user and "scanned with the Accessibility Agents" in user
     # The model only has the text, so it is not offered the upload scanner.
     assert [t["function"]["name"] for t in model_call["json"]["tools"]] == ["check_contrast"]
