@@ -171,10 +171,15 @@ ways to use it, and a place to run its checks right now.</p>
       it here, or choose a file below and its text is put here for you.</p>
     </div>
     <div class="form-group">
-      <label for="aa-file">Or choose a file to review (optional)</label>
-      <input type="file" id="aa-file" name="file" aria-describedby="aa-file-help"
-             accept=".docx,.xlsx,.pptx,.pdf,.epub,.md,.html,.htm">
-      <p id="aa-file-help" class="form-help">Word, Excel, PowerPoint, PDF, ePub,
+      <label for="aa-file">Or choose a file or image to review (optional)</label>
+      <input type="file" id="aa-file" name="file" aria-describedby="aa-file-help aa-image-help"
+             accept=".docx,.xlsx,.pptx,.pdf,.epub,.md,.html,.htm,.png,.jpg,.jpeg,.gif,.webp">
+      <p id="aa-image-help" class="form-help">An image (PNG, JPEG, GIF or WebP, up to
+      5 MB) goes straight to your AI with your question, and the alt text
+      specialist writes its alt text, a long description when it needs one, and
+      any text it contains. GLOW does not keep it. Your AI must be one that can see
+      images; most current models can.</p>
+      <p id="aa-file-help" class="form-help">Documents: Word, Excel, PowerPoint, PDF, ePub,
       Markdown or HTML, up to 20 MB. The Accessibility Agents scanner checks
       the original file (title, language, headings, alt text, table headers, tags),
       its text goes in the box above, and the file is deleted straight away. Your AI
