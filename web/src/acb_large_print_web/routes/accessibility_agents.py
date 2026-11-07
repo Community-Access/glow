@@ -15,6 +15,8 @@ see aa_ask.py.
 
 from __future__ import annotations
 
+import re
+
 from flask import Blueprint, jsonify, render_template, request
 
 from .. import aa_ask
@@ -68,6 +70,8 @@ def ask():
             question=str(data.get("question") or ""),
             material=str(data.get("material") or ""),
             source=str(data.get("source") or ""),
+            scan=str(data.get("scan") or ""),
+            specialist=str(data.get("specialist") or ""),
         )
     except aa_ask.AskError as exc:
         return _no_store(jsonify({"error": str(exc)})), 400
@@ -89,11 +93,19 @@ def models():
     return _no_store(jsonify({"models": found}))
 
 
-#: Files Ask can read: GLOW's document formats plus plain web and text files.
-EXTRACT_EXTENSIONS = ALLOWED_EXTENSIONS | {".html", ".htm", ".txt", ".css", ".csv"}
-#: Text and web files are read as they are; documents go through MarkItDown.
-PLAIN_EXTENSIONS = {".html", ".htm", ".txt", ".css", ".csv", ".md"}
+#: Files Ask can read: the formats GLOW and the Accessibility Agents scanner
+#: both support (GLOW's documents, plus HTML for the markup checks).
+EXTRACT_EXTENSIONS = ALLOWED_EXTENSIONS | {".html", ".htm"}
+#: Web and Markdown files are read as they are; documents go through MarkItDown.
+PLAIN_EXTENSIONS = {".html", ".htm", ".md"}
 MAX_EXTRACT_BYTES = 20 * 1024 * 1024
+#: Files the Accessibility Agents scanner reads in the original.
+SCANNED_EXTENSIONS = EXTRACT_EXTENSIONS
+
+
+def _count_issues(report: str) -> int | None:
+    found = re.search(r"Issues(?: \(|: )(\d+)", report or "")
+    return int(found.group(1)) if found else None
 
 
 @accessibility_agents_bp.route("/extract", methods=["POST"])
@@ -116,6 +128,15 @@ def extract():
         if not text:
             return _no_store(jsonify({"error": "No text was found in that file. "
                                       "A scanned PDF needs GLOW's OCR first."})), 400
+        # The real scan: the server's own scanner reads the original file,
+        # which keeps what the text conversion loses (styles, alt text,
+        # table headers, tags, properties). A scan failure still leaves the text.
+        scan = {"report": "", "specialist": ""}
+        if ext in SCANNED_EXTENSIONS:
+            try:
+                scan = aa_ask.scan_file(path)
+            except aa_ask.AskError:
+                pass
         limit = aa_ask.MAX_MATERIAL_CHARS
         return _no_store(jsonify({
             "filename": path.name,
@@ -123,6 +144,9 @@ def extract():
             "text": text[:limit],
             "truncated": len(text) > limit,
             "characters": len(text),
+            "scan": scan["report"],
+            "specialist": scan["specialist"],
+            "issues": _count_issues(scan["report"]),
         }))
     except UploadError as exc:
         return _no_store(jsonify({"error": str(exc)})), 400

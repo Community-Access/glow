@@ -173,12 +173,18 @@ ways to use it, and a place to run its checks right now.</p>
     <div class="form-group">
       <label for="aa-file">Or choose a file to review (optional)</label>
       <input type="file" id="aa-file" name="file" aria-describedby="aa-file-help"
-             accept=".docx,.xlsx,.pptx,.pdf,.epub,.md,.html,.htm,.txt,.css,.csv">
+             accept=".docx,.xlsx,.pptx,.pdf,.epub,.md,.html,.htm">
       <p id="aa-file-help" class="form-help">Word, Excel, PowerPoint, PDF, ePub,
-      Markdown, HTML or text, up to 20 MB. GLOW turns it into text and deletes
-      it straight away; only the text goes to your AI. Fonts, colors and PDF tags
-      do not survive that, so for those use
-      <a href="{{ url_for('audit.audit_form') }}">GLOW's audit</a>.</p>
+      Markdown or HTML, up to 20 MB. The Accessibility Agents scanner checks
+      the original file (title, language, headings, alt text, table headers, tags),
+      its text goes in the box above, and the file is deleted straight away. Your AI
+      then reviews it as the matching specialist, such as the Word specialist for a
+      .docx. For fixing the file, use <a href="{{ url_for('fix.fix_form') }}">GLOW's
+      fixer</a>.</p>
+      <details id="aa-scan" class="aa-scan" hidden>
+        <summary>Scanner report</summary>
+        <pre id="aa-scan-text" class="aa-result-text" tabindex="0"></pre>
+      </details>
     </div>
     <button type="submit" class="btn-primary">Ask</button>
   </form>
