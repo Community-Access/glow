@@ -127,6 +127,11 @@ install.
   alt text specialist writes its alt text, a long description when it needs
   one, and any text in the image. Your AI must be one that can see images;
   most current models can.
+- Get alt text for every picture in a document. After choosing a Word,
+  PowerPoint, Excel, PDF or ePub file, choose "Write alt text for every
+  image". Your AI drafts each one, you check and edit them on the page, and
+  for a Word or PowerPoint file "Download the file with this alt text" gives
+  you the file back with the alt text in place.
 
 The answers come from your own AI, so they are a first draft: a person still
 reviews everything an agent writes.
@@ -139,9 +144,15 @@ assistant can run real checks instead of estimating: color contrast (WCAG and
 APCA), how colors look with color blindness, reading level, guidelines for a
 component such as a modal or tabs, and heading, link-text and form-label
 checks on HTML. It can also scan a Word, Excel, PowerPoint, PDF, ePub or
-Markdown file you attach, and it hands your assistant the instructions of
-any of the 113 specialists. It needs no account on our side, and it deletes
-a file as soon as it has scanned it.
+Markdown file, and it hands your assistant the instructions of any of the
+113 specialists. Ask it to "write alt text for every picture in this
+document" and it shows your assistant each picture, writes the alt text with
+you, and gives you a link to the file with the alt text in place (Word,
+PowerPoint, Excel and ePub). In a chat in your browser, give it the file as a
+share link from OneDrive, Google Drive or Dropbox; a chat cannot always pass
+an attached file on. It needs no account on our side, it deletes your file as
+soon as it has worked on it, and the fixed file's link stops working after
+an hour.
 
 - ChatGPT, on a paid plan: Settings, Apps and Connectors, Advanced settings,
   turn on Developer mode, then Create a connector with that address and no
@@ -163,8 +174,8 @@ Each row is one place you might use it, whether it works there today, and how.
 | GitHub Codespaces | Yes, with the scanners | codespaces.new/Community-Access/accessibility-agents |
 | GitHub Copilot CLI, Claude Code, Codex, Gemini CLI | Yes, with the scanners and review hooks | The install lines above |
 | ChatGPT, on a free or paid account | Yes, by pasting | The texts on letitglow.app/ahg/assistant, as above |
-| Any browser, with your own AI key | Yes | letitglow.app/accessibility-agents: checks, questions, document review and image alt text |
-| ChatGPT or Claude, with the server connected | Yes, on plans that allow custom connectors | Connect `https://letitglow.app/a11y/mcp`, as above. Adds the real checks, document scans and every specialist's instructions |
+| Any browser, with your own AI key | Yes | letitglow.app/accessibility-agents: checks, questions, document review, and alt text for an image or every picture in a document |
+| ChatGPT or Claude, with the server connected | Yes, on plans that allow custom connectors | Connect `https://letitglow.app/a11y/mcp`, as above. Adds the real checks, document scans, alt text written into your file, and every specialist's instructions |
 | ChatGPT's plugin directory | Not yet | Being prepared. When it is listed, you will install it once from Plugins in ChatGPT's sidebar instead of pasting a text |
 | Claude's plugin directory | In review | Submitted. When it is listed, Claude can install the skills and the server connection in one step |
 | Claude, Gemini, Copilot on github.com, a campus assistant | Yes, by pasting | The same texts |
