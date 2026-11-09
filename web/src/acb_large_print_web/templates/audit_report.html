@@ -4,6 +4,7 @@
 {% block heading %}Audit Report{% endblock %}
 
 {% block content %}
+{% include "_standards_terms.html" %}
 {% if email_status %}
 <div class="{{ 'success-box' if email_status.success else 'notice-box' }}" role="status">
   <p>{{ email_status.message }}</p>

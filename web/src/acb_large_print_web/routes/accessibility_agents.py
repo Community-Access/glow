@@ -55,6 +55,14 @@ def accessibility_agents_page():
         "accessibility_agents.html",
         hosted_mcp_url=HOSTED_MCP_URL,
         guideline_components=GUIDELINE_COMPONENTS,
+    )
+
+
+@accessibility_agents_bp.route("/chat/", methods=["GET"])
+def chat_page():
+    """Show the Accessibility Agents chat on its own page."""
+    return render_template(
+        "accessibility_agents_chat.html",
         ask_providers=[(pid, p["label"], p["default_model"], p["key_url"])
                        for pid, p in aa_ask.PROVIDERS.items()],
     )

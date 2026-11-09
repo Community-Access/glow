@@ -28,6 +28,8 @@ const PAGES = [
   { label: 'convert form', path: '/convert/', submit: /Convert My Document/i },
   { label: 'template form', path: '/template/', submit: /Create Template/i },
   { label: 'user guide', path: '/guide/', submit: null },
+  { label: 'accessibility agents landing page', path: '/accessibility-agents/', submit: null },
+  { label: 'accessibility agents chat', path: '/accessibility-agents/chat/', submit: /^Ask$/i },
 ];
 
 const WIDTHS = [

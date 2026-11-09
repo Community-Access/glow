@@ -10,6 +10,13 @@ Releases are tagged in the [GitHub repository](https://github.com/Community-Acce
 
 ### Fixed
 
+- Expand ACB, APH, WCAG, BOP and CMS terminology before first use across the
+  core forms and result pages, and record the plain-language check as passing.
+- Give Accessibility Agents chat its own page at
+  `/accessibility-agents/chat/`, keep the existing API routes, announce new
+  replies without moving focus, and redirect `/aa` to the Accessibility Agents
+  landing page.
+
 - AHG library DAISY requests and health checks use the same explicit IPv4
   loopback address, avoiding localhost address-resolution mismatches.
 

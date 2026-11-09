@@ -1,0 +1,124 @@
+<section>
+  <h2 id="aa-ask">Ask a question with your own AI</h2>
+  <p>Ask Accessibility Agents anything, such as <q>Is this form accessible?</q>
+  or <q>Explain 1.4.3 for my button</q>, and paste the HTML, text or colors it
+  should look at. The answer comes from your own AI account, which can run the
+  same checks as above while it works.</p>
+  <ul>
+    <li><strong>You pay your provider, not us.</strong> Each question uses your
+      key's credit. Google Gemini and OpenRouter both offer free models.</li>
+    <li><strong>Your key stays in this tab.</strong> It is kept only until you
+      close this tab or your browser, and it goes away then. GLOW passes it to
+      your provider with each question and never stores it.</li>
+  </ul>
+
+  <p id="aa-ask-status" class="aa-status" role="status" aria-live="polite"></p>
+
+  <form id="aa-ask-form"
+        data-api-base="{{ url_for('accessibility_agents.accessibility_agents_page') }}"
+        data-return-url="{{ url_for('accessibility_agents.chat_page') }}"
+        novalidate>
+    <fieldset>
+      <legend>Your AI</legend>
+      <div class="form-group">
+        <label for="aa-provider">Service</label>
+        <select id="aa-provider" name="provider">
+          {% for pid, label, default_model, key_url in ask_providers %}
+          <option value="{{ pid }}" data-default-model="{{ default_model }}" data-key-url="{{ key_url }}">{{ label }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div id="aa-openrouter-signin" class="form-group" hidden>
+        <p id="aa-openrouter-help">Sign in with your OpenRouter account and it
+        hands this tab a key, with no copying and pasting.</p>
+        <button type="button" id="aa-openrouter-button" class="btn-secondary"
+                aria-describedby="aa-openrouter-help">Sign in with OpenRouter</button>
+      </div>
+      <div class="form-group">
+        <label for="aa-key">API key</label>
+        <input type="password" id="aa-key" name="key" autocomplete="off"
+               spellcheck="false" aria-describedby="aa-key-help">
+        <p id="aa-key-help" class="form-help">Kept in this tab only.
+        <a id="aa-key-link" href="https://platform.openai.com/api-keys"
+           rel="noopener" target="_blank">Get a key from your provider (opens in a new tab)</a>.</p>
+      </div>
+      <div class="form-group">
+        <label for="aa-model-pick">Model</label>
+        <select id="aa-model-pick" name="model_pick" aria-describedby="aa-model-pick-help">
+          <option value="">The default for this service</option>
+        </select>
+        <p id="aa-model-pick-help" class="form-help">Choose Show my models to list
+        every model your key can use. The list stays in this tab only.</p>
+        <button type="button" id="aa-models-button" class="btn-secondary">Show my models</button>
+      </div>
+      <div class="form-group">
+        <label for="aa-model">Or type a model name (optional)</label>
+        <input type="text" id="aa-model" name="model" autocomplete="off"
+               spellcheck="false" aria-describedby="aa-model-help">
+        <p id="aa-model-help" class="form-help">A name typed here is used instead
+        of the list. The default for this service is
+        <span id="aa-model-default">gpt-4o-mini</span>.</p>
+      </div>
+      <button type="button" id="aa-forget" class="btn-secondary">Forget my key now</button>
+    </fieldset>
+
+    <div class="form-group">
+      <label for="aa-question">Your question</label>
+      <textarea id="aa-question" name="question" rows="4" maxlength="8000" required></textarea>
+    </div>
+    <div class="form-group">
+      <label for="aa-material">HTML, text or colors to look at (optional)</label>
+      <textarea id="aa-material" name="material" rows="8" maxlength="50000"
+                spellcheck="false" aria-describedby="aa-material-help"></textarea>
+      <p id="aa-material-help" class="form-help">Up to 50,000 characters. Paste
+      it here, or choose a file below and its text is put here for you.</p>
+    </div>
+    <div class="form-group">
+      <label for="aa-file">Or choose a file or image to review (optional)</label>
+      <input type="file" id="aa-file" name="file" aria-describedby="aa-file-help aa-image-help"
+             accept=".docx,.xlsx,.pptx,.pdf,.epub,.md,.html,.htm,.png,.jpg,.jpeg,.gif,.webp">
+      <p id="aa-image-help" class="form-help">An image (PNG, JPEG, GIF or WebP, up to
+      5 MB) goes straight to your AI with your question, and the alt text
+      specialist writes its alt text, a long description when it needs one, and
+      any text it contains. GLOW does not keep it. Your AI must be one that can see
+      images; most current models can.</p>
+      <p id="aa-file-help" class="form-help">Documents: Word, Excel, PowerPoint, PDF, ePub,
+      Markdown or HTML, up to 20 MB. The Accessibility Agents scanner checks
+      the original file (title, language, headings, alt text, table headers, tags),
+      its text goes in the box above, and the file is deleted straight away. Your AI
+      then reviews it as the matching specialist, such as the Word specialist for a
+      .docx. For fixing the file, use <a href="{{ url_for('fix.fix_form') }}">GLOW's
+      fixer</a>.</p>
+      <details id="aa-scan" class="aa-scan" hidden>
+        <summary>Scanner report</summary>
+        <pre id="aa-scan-text" class="aa-result-text" tabindex="0"></pre>
+      </details>
+      <div id="aa-alt-start" hidden>
+        <p id="aa-alt-start-help" class="form-help">Your AI can write alt text for
+        every picture and chart in this file, one at a time, with your key. You
+        review each one, and for a Word or PowerPoint file you can then download
+        the file with the alt text in place.</p>
+        <button type="button" id="aa-alt-button" class="btn-secondary"
+                aria-describedby="aa-alt-start-help">Write alt text for every image</button>
+      </div>
+    </div>
+    <button type="submit" class="btn-primary">Ask</button>
+  </form>
+
+  <section id="aa-answer" class="aa-result" hidden aria-labelledby="aa-answer-heading">
+    <h3 id="aa-answer-heading" tabindex="-1">Answer</h3>
+    <div id="aa-answer-body" class="aa-answer-body"></div>
+    <p id="aa-answer-meta" class="form-help"></p>
+  </section>
+
+  <div id="aa-alt" class="aa-result" hidden>
+    <h3 id="aa-alt-heading" tabindex="-1">Alt text for <span id="aa-alt-file"></span></h3>
+    <p id="aa-alt-progress"></p>
+    <ol id="aa-alt-list" class="aa-alt-list"></ol>
+    <p id="aa-alt-download-help" class="form-help" hidden>The download is your
+    file with each alt text above written into its picture. Long descriptions are
+    not written in: add those to the document's text, near the picture.</p>
+    <button type="button" id="aa-alt-download" class="btn-primary"
+            aria-describedby="aa-alt-download-help" hidden>Download the file with this alt text</button>
+  </div>
+</section>

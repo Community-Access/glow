@@ -18,7 +18,7 @@
 
 <details class="help-accordion">
   <summary>What does the audit do?</summary>
-  <p>The audit checks your document against the ACB Large Print Guidelines and WCAG 2.2 AA requirements. Rules adapt automatically to the file type:</p>
+  <p>The audit checks your document against the American Council of the Blind (ACB) Large Print Guidelines and the Web Content Accessibility Guidelines (WCAG) 2.2 Level AA requirements. Rules adapt automatically to the file type:</p>
   <ul>
     <li><strong>Word (.docx)</strong> -- fonts, sizes, spacing, alignment, emphasis, headings, margins, and document properties.</li>
     <li><strong>Excel (.xlsx)</strong> -- sheet names, table headers, merged cells, alt text, hidden content, and color-only cells.</li>
@@ -129,7 +129,7 @@
 
   <fieldset>
     <legend>Standards Profile</legend>
-    <p class="help-text">Choose the standards profile for this audit run. Default ACB behavior is unchanged.</p>
+    <p class="help-text">Profile names refer to guidance from the American Council of the Blind (ACB) and the American Printing House for the Blind (APH). Choose the standards profile for this audit run; the default behavior is unchanged.</p>
 
     <div class="radio-group">
       <label>
@@ -162,7 +162,7 @@
 
       <label>
         <input type="checkbox" name="category" value="msac" checked>
-        <strong>MS Accessibility Checker</strong> -- {{ rules_by_category.msac | length }} rules aligned with the Microsoft Office Accessibility Checker and WCAG 2.1 (alt text, tables, links, forms, reading order). Applies to all formats.
+        <strong>Microsoft Accessibility Checker</strong> -- {{ rules_by_category.msac | length }} rules aligned with the Microsoft Office Accessibility Checker and Web Content Accessibility Guidelines (WCAG) 2.1 (alt text, tables, links, forms, reading order). Applies to all formats.
       </label>
     </div>
   </fieldset>

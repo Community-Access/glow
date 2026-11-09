@@ -1,6 +1,6 @@
 /*
  * accessibility-agents-ask.js - "Ask a question with your own AI" on
- * /accessibility-agents.
+ * /accessibility-agents/chat.
  *
  * The visitor's key lives only in this tab's sessionStorage, which the
  * browser clears when the tab or the browser closes. It is sent with each
@@ -17,7 +17,8 @@
   var form = document.getElementById("aa-ask-form");
   if (!form) return;
 
-  var PAGE = "/accessibility-agents/";
+  var API_BASE = form.getAttribute("data-api-base") || "/accessibility-agents/";
+  var RETURN_URL = form.getAttribute("data-return-url") || window.location.pathname;
   var status = document.getElementById("aa-ask-status");
   var provider = document.getElementById("aa-provider");
   var keyField = document.getElementById("aa-key");
@@ -30,7 +31,6 @@
   var signinButton = document.getElementById("aa-openrouter-button");
   var forget = document.getElementById("aa-forget");
   var answer = document.getElementById("aa-answer");
-  var answerHeading = document.getElementById("aa-answer-heading");
   var answerBody = document.getElementById("aa-answer-body");
   var answerMeta = document.getElementById("aa-answer-meta");
 
@@ -115,7 +115,7 @@
     }
     modelsButton.disabled = true;
     status.textContent = "Getting your models.";
-    post(PAGE + "models", { provider: provider.value, key: key }).then(function (data) {
+    post(API_BASE + "models", { provider: provider.value, key: key }).then(function (data) {
       var models = data.models || [];
       store.set("aa.models." + provider.value, JSON.stringify(models));
       fillPick(models, store.get("aa.pick." + provider.value));
@@ -156,7 +156,7 @@
     var verifier = base64url(window.crypto.getRandomValues(new Uint8Array(32)));
     store.set("aa.or.verifier", verifier);
     window.crypto.subtle.digest("SHA-256", new TextEncoder().encode(verifier)).then(function (hash) {
-      var callback = window.location.origin + PAGE;
+      var callback = window.location.origin + RETURN_URL;
       window.location.href = "https://openrouter.ai/auth?callback_url=" + encodeURIComponent(callback) +
         "&code_challenge=" + base64url(new Uint8Array(hash)) + "&code_challenge_method=S256";
     });
@@ -166,12 +166,12 @@
   if (params.get("code")) {
     var code = params.get("code");
     var verifier = store.get("aa.or.verifier");
-    window.history.replaceState(null, "", PAGE + "#aa-ask");
+    window.history.replaceState(null, "", RETURN_URL + "#aa-ask");
     store.del("aa.or.verifier");
     provider.value = "openrouter";
     syncProvider();
     status.textContent = "Finishing the OpenRouter sign-in.";
-    post(PAGE + "openrouter/exchange", { code: code, code_verifier: verifier }).then(function (data) {
+    post(API_BASE + "openrouter/exchange", { code: code, code_verifier: verifier }).then(function (data) {
       store.set("aa.key.openrouter", data.key);
       keyField.value = data.key;
       status.textContent = "Signed in to OpenRouter. The key is kept in this tab only.";
@@ -239,7 +239,7 @@
     data.append("file", file);
     fileInput.disabled = true;
     status.textContent = "Reading and scanning " + file.name + ".";
-    fetch(PAGE + "extract", {
+    fetch(API_BASE + "extract", {
       method: "POST",
       credentials: "same-origin",
       headers: { "X-CSRFToken": csrf() },
@@ -337,7 +337,7 @@
 
   function describeOne(entry) {
     entry.note.textContent = "Writing.";
-    return post(PAGE + "describe", {
+    return post(API_BASE + "describe", {
       provider: provider.value, key: keyField.value.trim(), model: model.value.trim() || pick.value,
       image: entry.item.image, label: entry.item.label, location: entry.item.location,
       current_alt: entry.item.current_alt, context: entry.item.context
@@ -368,7 +368,7 @@
     form.append("file", altFile);
     altButton.disabled = true;
     status.textContent = "Finding the images in " + altFile.name + ".";
-    sendForm(PAGE + "images", form).then(function (r) {
+    sendForm(API_BASE + "images", form).then(function (r) {
       return r.json().catch(function () { return {}; }).then(function (d) {
         if (!r.ok) throw new Error(d.error || ("The images could not be read (" + r.status + ")."));
         return d;
@@ -436,7 +436,7 @@
     form.append("alts", JSON.stringify(alts));
     altDownload.disabled = true;
     status.textContent = "Writing the alt text into " + altFile.name + ".";
-    sendForm(PAGE + "write-alt", form).then(function (r) {
+    sendForm(API_BASE + "write-alt", form).then(function (r) {
       if (!r.ok) {
         return r.json().catch(function () { return {}; }).then(function (d) {
           throw new Error(d.error || ("The file could not be written (" + r.status + ")."));
@@ -561,7 +561,7 @@
     var button = form.querySelector("button[type=submit]");
     button.disabled = true;
     status.textContent = "Asking. This can take up to a minute.";
-    post(PAGE + "ask", {
+    post(API_BASE + "ask", {
       provider: provider.value,
       key: keyField.value.trim(),
       model: model.value.trim() || pick.value,
@@ -579,8 +579,7 @@
           ? " Checks it ran: " + data.tools_used.join(", ") + "."
           : " It ran no checks.");
       answer.hidden = false;
-      status.textContent = "Answer ready.";
-      answerHeading.focus();
+      status.textContent = "Answer ready. The answer is below.";
     }).catch(function (err) {
       status.textContent = err.message;
     }).then(function () {
