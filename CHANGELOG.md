@@ -10,6 +10,10 @@ Releases are tagged in the [GitHub repository](https://github.com/Community-Acce
 
 ### Fixed
 
+- Fix a JavaScript string literal on `/ahg/share?practice=1` and in the
+  offline kit share page that disabled practice selection, template filling,
+  agent downloads and GitHub sharing. Add keyboard regression tests for both
+  copies, including the downloaded `SKILL.md` content and prefilled GitHub URL.
 - Clarify that AHG uses prepared assistant prompts without a public directory
   listing, remove stale plugin-directory claims from the assistant and kit
   guide, describe the hosted server's twelve tools and document handling, and
