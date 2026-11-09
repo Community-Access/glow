@@ -41,6 +41,7 @@ compares them. Not sure? Take the browser path.
 
 - The browser path, about 10 minutes, nothing to install: use ChatGPT,
   Copilot on github.com, Claude, Gemini or your campus assistant, signed in.
+  No public directory listing or connector setup is needed.
 - VS Code on your computer, about 25 minutes: install VS Code and import the
   AHG 2026 profile.
 - VS Code for the Web, about 15 minutes, nothing to install: the same VS

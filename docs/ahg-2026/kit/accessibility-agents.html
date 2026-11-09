@@ -91,7 +91,7 @@ blockquote { border-left: 4px solid var(--rule); margin-left: 0; padding-left: 1
 <li>Start a new chat in Copilot Chat and ask for one of the six entry points.</li>
 </ol>
 <h3 id="with-your-it-team-on-a-laptop">With your IT team, on a laptop</h3>
-<p>The full install adds the scanners and the review hooks on your own laptop. Each line is one way to install it.</p>
+<p>The full local install can run scanners on your laptop after their optional dependencies are set up. Review hooks work only in apps that support them. Each line is one way to install it.</p>
 <div class="table-scroll" role="region" aria-label="Table 2" tabindex="0">
 <table>
 <thead>
@@ -128,9 +128,10 @@ blockquote { border-left: 4px solid var(--rule); margin-left: 0; padding-left: 1
 </tbody>
 </table>
 </div>
+<p>The Codex plugin install supplies skills and server tools, but not the review hook. To set up the hook for Codex, use <code>npm install</code> and <code>npm run setup</code> in a copy of the repository.</p>
 <p>Step-by-step setup for each app, written for people new to all of this, is at community-access.org/start.html. The VS Code extension in the repository is retired; use one of the ways above instead.</p>
 <h3 id="in-chatgpt-claude-or-another-assistant-in-a-browser">In ChatGPT, Claude or another assistant in a browser</h3>
-<p>On letitglow.app/ahg/assistant, under "Accessibility Agents in any assistant", copy the text for the entry point you want and paste it as your first message. Each text carries the entry point and the specialists it calls. Then give it your checker's results.</p>
+<p>On letitglow.app/ahg/assistant, under "Accessibility Agents in any assistant", copy the text for the entry point you want and paste it as your first message. Each text carries the entry point and the specialists it calls. Then give it your checker's results. For the workshop, you do not need a ChatGPT or Claude plugin listing or an external connector: the browser path works with these prepared texts.</p>
 <h3 id="on-the-web-at-letitglowappaccessibility-agents">On the web, at letitglow.app/accessibility-agents</h3>
 <p>The Accessibility Agents page on GLOW works in any browser, with nothing to install.</p>
 <ul>
@@ -142,12 +143,13 @@ blockquote { border-left: 4px solid var(--rule); margin-left: 0; padding-left: 1
 </ul>
 <p>The answers come from your own AI, so they are a first draft: a person still reviews everything an agent writes.</p>
 <h3 id="connect-your-assistant-to-the-accessibility-agents-server">Connect your assistant to the Accessibility Agents server</h3>
-<p>Accessibility Agents runs a public server at <code>https://letitglow.app/a11y/mcp</code>. Add it to your assistant once and the assistant can run real checks instead of estimating: color contrast (WCAG and APCA), how colors look with color blindness, reading level, guidelines for a component such as a modal or tabs, and heading, link-text and form-label checks on HTML. It can also scan a Word, Excel, PowerPoint, PDF, ePub or Markdown file, and it hands your assistant the instructions of any of the 113 specialists. Ask it to "write alt text for every picture in this document" and it shows your assistant each picture, writes the alt text with you, and gives you a link to the file with the alt text in place (Word, PowerPoint, Excel and ePub). In a chat in your browser, give it the file as a share link from OneDrive, Google Drive or Dropbox; a chat cannot always pass an attached file on. It needs no account on our side, it deletes your file as soon as it has worked on it, and the fixed file's link stops working after an hour.</p>
+<p>Accessibility Agents runs a public server at <code>https://letitglow.app/a11y/mcp</code>. It offers twelve tools: eight checks for colors, text, HTML and component guidelines, plus document scanning, specialist instructions, picture extraction and alt-text editing. It can scan Word, Excel, PowerPoint, PDF, ePub, Markdown and HTML files up to 20 MB. It can also show pictures from a document and, for Word, PowerPoint, Excel and ePub, return a copy with alt text added.</p>
+<p>Send the file contents, or give the assistant a public sharing link. A link must let anyone with the link view the file; only use files you are allowed to share that way. The server temporarily stores a copy while it works, then deletes it before answering. A file with alt text added is available through its download link for one hour. The server cannot open files on your computer unless you send them.</p>
 <ul>
 <li>ChatGPT, on a paid plan: Settings, Apps and Connectors, Advanced settings, turn on Developer mode, then Create a connector with that address and no authentication. On a campus plan, an administrator may have to allow it.</li>
 <li>Claude: Settings, Connectors, Add custom connector, with that address.</li>
 </ul>
-<p>This is optional on the day. A free account and the pasted texts are enough for everything in the workshop. Step-by-step instructions for each assistant are on letitglow.app/accessibility-agents, under "Connect your AI assistant".</p>
+<p>This is optional on the day. A free account and the pasted texts are enough for every workshop activity. Public directory listings are separate from these prepared texts and are not needed for class. Step-by-step instructions for each assistant are on letitglow.app/accessibility-agents, under "Connect your AI assistant".</p>
 <h3 id="where-accessibility-agents-is-available-as-of-7-november-2026">Where Accessibility Agents is available, as of 7 November 2026</h3>
 <p>Each row is one place you might use it, whether it works there today, and how.</p>
 <div class="table-scroll" role="region" aria-label="Table 3" tabindex="0">
@@ -171,9 +173,14 @@ blockquote { border-left: 4px solid var(--rule); margin-left: 0; padding-left: 1
 <td>codespaces.new/Community-Access/accessibility-agents</td>
 </tr>
 <tr>
-<td>GitHub Copilot CLI, Claude Code, Codex, Gemini CLI</td>
-<td>Yes, with the scanners and review hooks</td>
+<td>GitHub Copilot CLI, Claude Code, Gemini CLI</td>
+<td>Yes, with scanners after optional setup and supported review hooks</td>
 <td>The install lines above</td>
+</tr>
+<tr>
+<td>Codex</td>
+<td>Yes, with skills and server tools; the plugin install does not include review hooks</td>
+<td>Use <code>npm run setup</code> in a local repository copy to set up the hook</td>
 </tr>
 <tr>
 <td>ChatGPT, on a free or paid account</td>
@@ -188,17 +195,17 @@ blockquote { border-left: 4px solid var(--rule); margin-left: 0; padding-left: 1
 <tr>
 <td>ChatGPT or Claude, with the server connected</td>
 <td>Yes, on plans that allow custom connectors</td>
-<td>Connect <code>https://letitglow.app/a11y/mcp</code>, as above. Adds the real checks, document scans, alt text written into your file, and every specialist's instructions</td>
+<td>Connect <code>https://letitglow.app/a11y/mcp</code> for twelve tools, including checks, document scans and alt-text editing on files you send</td>
 </tr>
 <tr>
-<td>ChatGPT's plugin directory</td>
-<td>Not yet</td>
-<td>Being prepared. When it is listed, you will install it once from Plugins in ChatGPT's sidebar instead of pasting a text</td>
+<td>ChatGPT's app directory</td>
+<td>Not listed; not needed for class</td>
+<td>The browser path uses prepared texts; a custom connector is a separate option</td>
 </tr>
 <tr>
 <td>Claude's plugin directory</td>
-<td>In review</td>
-<td>Submitted. When it is listed, Claude can install the skills and the server connection in one step</td>
+<td>Full plugin refused by directory policy; skills-only follow-up pending as of 6 November 2026</td>
+<td>Not needed for class: use the prepared texts or configure the separate custom connector</td>
 </tr>
 <tr>
 <td>Claude, Gemini, Copilot on github.com, a campus assistant</td>
@@ -224,7 +231,7 @@ blockquote { border-left: 4px solid var(--rule); margin-left: 0; padding-left: 1
 <h2 id="thanks">Thanks</h2>
 <p>This workshop is by Jeff Bishop, <a href="https://accessibility.arizona.edu">University of Arizona</a>, IT Accessibility Consultant, in collaboration with <a href="https://www.bits-acb.org">Blind Information Technology Solutions (BITS)</a> and <a href="https://www.techopolis.app">Techopolis</a>. Special thanks to Taylor Arndt, who helped dream up and build Accessibility Agents.</p>
 <h2 id="sources">Sources</h2>
-<p>Checked on 29 October 2026.</p>
+<p>Checked on 7 November 2026.</p>
 <ul>
 <li><a href="https://github.com/Community-Access/accessibility-agents#readme">Accessibility Agents README</a>: the six entry points and the install line for each tool. The kit carries the skills from the commit named in <code>accessibility-agents-skills.json</code>.</li>
 <li><a href="https://code.visualstudio.com/docs/copilot/customization/agent-plugins">VS Code: agent plugins</a>: installing a plugin from a repository, and the <code>chat.plugins.enabled</code> setting it needs.</li>

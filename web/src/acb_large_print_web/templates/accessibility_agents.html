@@ -108,23 +108,26 @@ ways to use it, and a place to run its checks right now.</p>
   <h2 id="aa-ways">Ways to use Accessibility Agents</h2>
   <ul>
     <li><strong>In your AI assistant, with real checks.</strong> Connect ChatGPT,
-      Claude or VS Code to the Accessibility Agents server, as described
-      <a href="#aa-connect">below</a>. Your own AI account does the thinking;
-      the server runs the checks.</li>
+      Claude or VS Code to the Accessibility Agents server using the
+      <a href="#aa-connect">connection steps</a>. The public server checks
+      information you submit and can scan a document you send or share by
+      public link; it cannot reach into your computer. GLOW's own chat offers a
+      separate upload option.</li>
     <li><strong>In any assistant, by pasting.</strong> The texts on
-      <a href="/ahg/assistant">the AHG assistant page</a> carry an entry point and
-      its specialists. Paste one as your first message, then give it your
-      checker's results. A free account is enough.</li>
+      <a href="/ahg/assistant">the AHG assistant prompts</a> carry an entry
+      point and its specialists. Paste one as your first message, then give it
+      your checker's results. A free account is enough; no directory listing or
+      connector setup is required.</li>
     <li><strong>For documents.</strong> Upload a Word, Excel, PowerPoint,
       Markdown, PDF or ePub file to <a href="{{ url_for('audit.audit_form') }}">GLOW's
       audit</a> for a full report, then <a href="{{ url_for('fix.fix_form') }}">fix it</a>
       with GLOW.</li>
-    <li><strong>Installed in full.</strong> The full plugin adds review hooks
-      that stop an AI from changing a page before the accessibility review
-      runs, and scanners that check files on your own computer. It installs
-      in Claude Code, GitHub Copilot, Codex and Gemini CLI; see
+    <li><strong>Installed on your computer.</strong> The local package can run
+      scanners on your files after optional dependencies are installed. Review
+      hooks work only in clients that support them. The Codex plugin includes
+      skills and server tools, but not review hooks; see
       <a href="https://github.com/Community-Access/accessibility-agents#readme">the
-      Accessibility Agents README</a>.</li>
+      Accessibility Agents installation guide</a>.</li>
   </ul>
 </section>
 
@@ -137,6 +140,23 @@ ways to use it, and a place to run its checks right now.</p>
   sign-in.</p>
   <p>The server's address, for every assistant below:</p>
   <p class="aa-address"><code>{{ hosted_mcp_url }}</code></p>
+  <p>The public connector offers twelve tools. Eight check colors, text, HTML
+  and component guidance: WCAG and APCA contrast, color-vision simulation,
+  reading level, guidelines, headings, link text and form labels. Four more
+  scan Word, Excel, PowerPoint, PDF, ePub, Markdown and HTML files; provide
+  specialist instructions; extract pictures from documents; and add alt text
+  to supported files. Send file contents or a public sharing link for
+  documents up to 20 MB. Use a public link only for a file you are allowed to
+  share with anyone who has the link. The server stores a temporary copy while
+  it works and deletes it before answering; a file with alt text added is
+  available through a download link for one hour. It cannot reach into your
+  computer.
+  Follow your institution's data rules before sending files or making a
+  sharing link. GLOW's own chat above offers a separate upload option; local
+  scanners are another option when you install the package on your computer.</p>
+  <p>To scan a document, ask your assistant to review the file and attach it
+  if the app can send attachments to connectors. If it cannot, use a public
+  sharing link. <a href="#aa-privacy">Read how file handling works</a>.</p>
   <p>Choose your assistant to see its steps. Each section opens and closes
   with Enter or Space.</p>
 
@@ -158,9 +178,10 @@ ways to use it, and a place to run its checks right now.</p>
       <li>Back in Apps and Connectors, choose Create. It may say Add custom
         connector.</li>
       <li>For Name, type <code>Accessibility Agents</code>.</li>
-      <li>For Description, type <code>WCAG 2.2 AA checks for contrast,
-        reading level and HTML</code>.</li>
-      <li>For MCP server URL, enter <code>{{ hosted_mcp_url }}</code>.</li>
+      <li>For Description, type <code>WCAG 2.2 AA checks and document
+        accessibility tools</code>.</li>
+      <li>For MCP server URL (the remote tool connection), enter
+        <code>{{ hosted_mcp_url }}</code>.</li>
       <li>For Authentication, choose No authentication.</li>
       <li>Check the box saying you trust this application, then choose
         Create.</li>
@@ -203,9 +224,10 @@ ways to use it, and a place to run its checks right now.</p>
       <li>Ask something that needs a check, such as <q>Check the headings in
         this HTML</q>, and paste the HTML.</li>
     </ol>
-    <p>The full Accessibility Agents plugin is in review for Claude's plugin
-    directory. When it is listed, Claude will be able to install the skills and
-    this connection in one step.</p>
+    <p>This custom connector is separate from Claude's plugin directory. As of
+    6 November 2026, the full plugin submission was refused under directory
+    policy; follow-up on a skills-only version is still pending. This does not
+    affect using the connector or the workshop's browser path.</p>
   </details>
 
   <details class="aa-connect">
@@ -242,7 +264,7 @@ ways to use it, and a place to run its checks right now.</p>
     tools, and give it <code>{{ hosted_mcp_url }}</code> with no
     authentication.</p>
     <p>If your assistant cannot add a server, paste one of the texts from
-    <a href="/ahg/assistant">the AHG assistant page</a> instead. You get the
+    <a href="/ahg/assistant">the AHG assistant prompts</a> instead. You get the
     specialists without the measurements.</p>
   </details>
 
@@ -252,15 +274,21 @@ ways to use it, and a place to run its checks right now.</p>
 
 <section>
   <h2 id="aa-privacy">What the checks send</h2>
-  <p>A check sends only what you typed into it: two colors, a passage of text,
-  some HTML or a component name. It goes to the Accessibility Agents server on
-  this site, which reads no files, fetches no web addresses and keeps no
-  history.</p>
-  <p>A question you ask, with what you pasted and your key, goes to GLOW, which
-  sends it to the service you chose and passes the checks it asks for to the
-  Accessibility Agents server. GLOW keeps none of it. Your provider's own
-  terms cover what it does with your question. GLOW's own <a href="{{ url_for('privacy.privacy_page') }}">privacy
-  policy</a> covers the rest of this site.</p>
+  <p>Checks send the colors, text, HTML or component name you enter to the
+  Accessibility Agents server. Document tools send the file contents, or a
+  public sharing link that the server fetches. Follow your institution's data
+  rules before sending files or making a sharing link. The server accepts
+  files up to 20 MB, keeps a temporary copy while it works, then deletes that
+  copy before answering. A file with alt text added is kept behind its
+  download link for one hour, then deleted. The server does not access files
+  on your computer unless you send the file or a link.</p>
+  <p>In GLOW's own chat, your question, pasted content, file text, scanner
+  report, image you ask it to describe and key go through GLOW for the
+  request; GLOW sends the content to the AI provider you chose and runs any
+  requested checks. GLOW keeps none of it. Your provider's own terms cover
+  what it does with your question and content. GLOW's own
+  <a href="{{ url_for('privacy.privacy_page') }}">privacy policy</a> covers
+  the rest of this site.</p>
 </section>
 {% endblock %}
 

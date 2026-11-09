@@ -3,7 +3,7 @@
   "documents": {
     "pre-event-message.md": {
       "title": "Pre-event message",
-      "sha256": "a5e91ad19bc4e1337578aa9d545077046d3cc6097e1f7eee857a25aff5481de6",
+      "sha256": "2f16d34f9c39a7441772be9bf43d1be30b85c421f62ea58706564155b782430c",
       "formats": [
         "pre-event-message.md",
         "pre-event-message.html",
@@ -25,7 +25,7 @@
     },
     "kit/README.md": {
       "title": "Welcome to the AHG 2026 agent kit",
-      "sha256": "3f75f52c53f8b65ff4468fa9d5bdb0ce36495c19401e9223bfdfce68a59ff94d",
+      "sha256": "f585696bb1c60e1120af01c0f5159b56d587110b88ba0a870d0e9dcb1dc8ab8f",
       "formats": [
         "README.md",
         "read-me.html",
@@ -47,7 +47,7 @@
     },
     "kit/accessibility-agents.md": {
       "title": "Accessibility Agents, after today",
-      "sha256": "280351715c2559e2e08584198ee8cf37169896414436c9caa83359135ff1a38a",
+      "sha256": "966c4434dcf4433d578169437e285ea8c6a98bcbf52a35237a54756fb6edc733",
       "formats": [
         "accessibility-agents.md",
         "accessibility-agents.html",
