@@ -192,10 +192,12 @@ Sign in to your campus-approved assistant before you start. Free accounts
 have usage and message-length limits that can change. Save your latest agent
 after each revision. If a limit interrupts you, ask a helper to continue
 with a written example or another approved assistant.
-On the web and on a phone, ChatGPT reads skills only when they come in a
-plugin from its directory; until Accessibility Agents is listed there, the
-pasted texts are the way in. In every assistant, a skill that needs a
-scanner asks for your checker's results instead.
+
+On the web and on a phone, use the prepared texts on
+letitglow.app/ahg/assistant. A ChatGPT app-directory listing is not required
+for the workshop. A custom connector is a separate, optional way to use the
+hosted server. If a skill needs a scanner, it asks you for your checker's
+results instead.
 
 ## Using it with your own agent
 

@@ -126,6 +126,7 @@ def test_the_profile_installs_what_the_day_needs():
 
 def test_accessibility_agents_guide_separates_directory_server_and_local_features():
     guide = (KIT / "accessibility-agents.md").read_text(encoding="utf-8")
+    normalized = " ".join(guide.split())
     for text in (
         "not needed for class",
         "twelve tools",
@@ -133,9 +134,12 @@ def test_accessibility_agents_guide_separates_directory_server_and_local_feature
         "download link for one hour",
         "Full plugin refused by directory policy",
         "plugin install does not include review hooks",
+        "A ChatGPT app-directory listing is not required for the workshop",
+        "A custom connector is a separate, optional way to use the hosted server",
     ):
-        assert text in guide
-    assert "Being prepared" not in guide
+        assert text in normalized
+    assert "being prepared for chatgpt's plugin directory" not in normalized.lower()
+    assert "until Accessibility Agents is listed there" not in normalized
     assert "document scans, alt text written into your file" not in guide
 
 
