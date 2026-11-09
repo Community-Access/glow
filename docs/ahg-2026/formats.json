@@ -3,14 +3,14 @@
   "documents": {
     "pre-event-message.md": {
       "title": "Pre-event message",
-      "sha256": "a5e91ad19bc4e1337578aa9d545077046d3cc6097e1f7eee857a25aff5481de6",
+      "sha256": "6dee8f603a3f41163ec275bda612b8e920eb5cdfa78da8f42cad16939b37f4f2",
       "formats": [
         "pre-event-message.md",
         "pre-event-message.html",
         "pre-event-message.docx",
         "pre-event-message.pptx"
       ],
-      "slides": 11
+      "slides": 15
     },
     "workshop-frontfacing-guide.md": {
       "title": "Accessibility Agents: Building Human-Centered AI Workflows for Trusted Accessibility Automation at Scale",
@@ -25,7 +25,7 @@
     },
     "kit/README.md": {
       "title": "Welcome to the AHG 2026 agent kit",
-      "sha256": "3f75f52c53f8b65ff4468fa9d5bdb0ce36495c19401e9223bfdfce68a59ff94d",
+      "sha256": "f585696bb1c60e1120af01c0f5159b56d587110b88ba0a870d0e9dcb1dc8ab8f",
       "formats": [
         "README.md",
         "read-me.html",
@@ -47,7 +47,7 @@
     },
     "kit/accessibility-agents.md": {
       "title": "Accessibility Agents, after today",
-      "sha256": "280351715c2559e2e08584198ee8cf37169896414436c9caa83359135ff1a38a",
+      "sha256": "c21efcd2f9279775a6b7d421d04e11914d6499ab6edc40692bea3b4fcf87461c",
       "formats": [
         "accessibility-agents.md",
         "accessibility-agents.html",

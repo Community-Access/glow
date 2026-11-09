@@ -84,7 +84,8 @@ open. This is how your own agent became `/<name>` today, with
 
 ### With your IT team, on a laptop
 
-The full install adds the scanners and the review hooks on your own laptop.
+The full local install can run scanners on your laptop after their optional
+dependencies are set up. Review hooks work only in apps that support them.
 Each line is one way to install it.
 
 | For | Run |
@@ -96,6 +97,10 @@ Each line is one way to install it.
 | Gemini CLI | `gemini extensions install https://github.com/Community-Access/accessibility-agents` |
 | Every AI tool on the laptop | In a copy of the repository: `npm install`, then `npm run setup` |
 
+The Codex plugin install supplies skills and server tools, but not the review
+hook. To set up the hook for Codex, use `npm install` and `npm run setup` in
+a copy of the repository.
+
 Step-by-step setup for each app, written for people new to all of this, is
 at community-access.org/start.html. The VS Code extension in the repository
 is retired; use one of the ways above instead.
@@ -106,6 +111,8 @@ On letitglow.app/ahg/assistant, under "Accessibility Agents in any
 assistant", copy the text for the entry point you want and paste it as your
 first message. Each text carries the entry point and the specialists it
 calls. Then give it your checker's results.
+For the workshop, you do not need a ChatGPT or Claude plugin listing or an
+external connector: the browser path works with these prepared texts.
 
 ### On the web, at letitglow.app/accessibility-agents
 
@@ -139,20 +146,19 @@ reviews everything an agent writes.
 ### Connect your assistant to the Accessibility Agents server
 
 Accessibility Agents runs a public server at
-`https://letitglow.app/a11y/mcp`. Add it to your assistant once and the
-assistant can run real checks instead of estimating: color contrast (WCAG and
-APCA), how colors look with color blindness, reading level, guidelines for a
-component such as a modal or tabs, and heading, link-text and form-label
-checks on HTML. It can also scan a Word, Excel, PowerPoint, PDF, ePub or
-Markdown file, and it hands your assistant the instructions of any of the
-113 specialists. Ask it to "write alt text for every picture in this
-document" and it shows your assistant each picture, writes the alt text with
-you, and gives you a link to the file with the alt text in place (Word,
-PowerPoint, Excel and ePub). In a chat in your browser, give it the file as a
-share link from OneDrive, Google Drive or Dropbox; a chat cannot always pass
-an attached file on. It needs no account on our side, it deletes your file as
-soon as it has worked on it, and the fixed file's link stops working after
-an hour.
+`https://letitglow.app/a11y/mcp`. It offers twelve tools: eight checks for
+colors, text, HTML and component guidelines, plus document scanning,
+specialist instructions, picture extraction and alt-text editing. It can scan
+Word, Excel, PowerPoint, PDF, ePub, Markdown and HTML files up to 20 MB. It
+can also show pictures from a document and, for Word, PowerPoint, Excel and
+ePub, return a copy with alt text added.
+
+Send the file contents, or give the assistant a public sharing link. A link
+must let anyone with the link view the file; only use files you are allowed
+to share that way. The server temporarily stores a copy while it works, then
+deletes it before answering. A file with alt text added is available through
+its download link for one hour. The server cannot open files on your computer
+unless you send them.
 
 - ChatGPT, on a paid plan: Settings, Apps and Connectors, Advanced settings,
   turn on Developer mode, then Create a connector with that address and no
@@ -160,9 +166,10 @@ an hour.
 - Claude: Settings, Connectors, Add custom connector, with that address.
 
 This is optional on the day. A free account and the pasted texts are enough
-for everything in the workshop. Step-by-step instructions for each assistant
-are on letitglow.app/accessibility-agents, under "Connect your AI
-assistant".
+for every workshop activity. Public directory listings are separate from
+these prepared texts and are not needed for class. Step-by-step instructions
+for each assistant are on letitglow.app/accessibility-agents, under "Connect
+your AI assistant".
 
 ### Where Accessibility Agents is available, as of 7 November 2026
 
@@ -172,22 +179,25 @@ Each row is one place you might use it, whether it works there today, and how.
 |---|---|---|
 | VS Code, on a computer or at vscode.dev | Yes, all 113 skills | Already in this kit, or copy the `skills` folders into `.github/skills` |
 | GitHub Codespaces | Yes, with the scanners | codespaces.new/Community-Access/accessibility-agents |
-| GitHub Copilot CLI, Claude Code, Codex, Gemini CLI | Yes, with the scanners and review hooks | The install lines above |
+| GitHub Copilot CLI, Claude Code, Gemini CLI | Yes, with scanners after optional setup and supported review hooks | The install lines above |
+| Codex | Yes, with skills and server tools; the plugin install does not include review hooks | Use `npm run setup` in a local repository copy to set up the hook |
 | ChatGPT, on a free or paid account | Yes, by pasting | The texts on letitglow.app/ahg/assistant, as above |
 | Any browser, with your own AI key | Yes | letitglow.app/accessibility-agents: checks, questions, document review, and alt text for an image or every picture in a document |
-| ChatGPT or Claude, with the server connected | Yes, on plans that allow custom connectors | Connect `https://letitglow.app/a11y/mcp`, as above. Adds the real checks, document scans, alt text written into your file, and every specialist's instructions |
-| ChatGPT's plugin directory | Not yet | Being prepared. When it is listed, you will install it once from Plugins in ChatGPT's sidebar instead of pasting a text |
-| Claude's plugin directory | In review | Submitted. When it is listed, Claude can install the skills and the server connection in one step |
+| ChatGPT or Claude, with the server connected | Yes, on plans that allow custom connectors | Connect `https://letitglow.app/a11y/mcp` for twelve tools, including checks, document scans and alt-text editing on files you send |
+| ChatGPT's app directory | Not listed; not needed for class | The browser path uses prepared texts; a custom connector is a separate option |
+| Claude's plugin directory | Full plugin refused by directory policy; skills-only follow-up pending as of 6 November 2026 | Not needed for class: use the prepared texts or configure the separate custom connector |
 | Claude, Gemini, Copilot on github.com, a campus assistant | Yes, by pasting | The same texts |
 
 Sign in to your campus-approved assistant before you start. Free accounts
 have usage and message-length limits that can change. Save your latest agent
 after each revision. If a limit interrupts you, ask a helper to continue
 with a written example or another approved assistant.
-On the web and on a phone, ChatGPT reads skills only when they come in a
-plugin from its directory; until Accessibility Agents is listed there, the
-pasted texts are the way in. In every assistant, a skill that needs a
-scanner asks for your checker's results instead.
+
+On the web and on a phone, use the prepared texts on
+letitglow.app/ahg/assistant. A ChatGPT app-directory listing is not required
+for the workshop. A custom connector is a separate, optional way to use the
+hosted server. If a skill needs a scanner, it asks you for your checker's
+results instead.
 
 ## Using it with your own agent
 
@@ -218,7 +228,7 @@ and build Accessibility Agents.
 
 ## Sources
 
-Checked on 29 October 2026.
+Checked on 7 November 2026.
 
 - [Accessibility Agents README](https://github.com/Community-Access/accessibility-agents#readme):
   the six entry points and the install line for each tool. The kit carries

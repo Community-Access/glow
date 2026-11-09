@@ -10,6 +10,10 @@ Releases are tagged in the [GitHub repository](https://github.com/Community-Acce
 
 ### Fixed
 
+- Clarify that AHG uses prepared assistant prompts without a public directory
+  listing, remove stale plugin-directory claims from the assistant and kit
+  guide, describe the hosted server's twelve tools and document handling, and
+  correct Claude-directory and Codex hook status.
 - Expand ACB, APH, WCAG, BOP and CMS terminology before first use across the
   core forms and result pages, and record the plain-language check as passing.
 - Give Accessibility Agents chat its own page at

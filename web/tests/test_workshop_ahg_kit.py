@@ -124,6 +124,25 @@ def test_the_profile_installs_what_the_day_needs():
     assert settings["editor.fontSize"] >= 18
 
 
+def test_accessibility_agents_guide_separates_directory_server_and_local_features():
+    guide = (KIT / "accessibility-agents.md").read_text(encoding="utf-8")
+    normalized = " ".join(guide.split())
+    for text in (
+        "not needed for class",
+        "twelve tools",
+        "temporarily stores a copy",
+        "download link for one hour",
+        "Full plugin refused by directory policy",
+        "plugin install does not include review hooks",
+        "A ChatGPT app-directory listing is not required for the workshop",
+        "A custom connector is a separate, optional way to use the hosted server",
+    ):
+        assert text in normalized
+    assert "being prepared for chatgpt's plugin directory" not in normalized.lower()
+    assert "until Accessibility Agents is listed there" not in normalized
+    assert "document scans, alt text written into your file" not in guide
+
+
 def test_the_step_cards_pass_glow_s_own_audit(tmp_path):
     from acb_large_print.auditor import audit_document
 
@@ -384,6 +403,7 @@ def test_every_file_in_a_browser_path_text_is_the_kit_file_itself():
 
 def test_the_browser_path_page_offers_every_block_with_a_copy_button(client):
     body = client.get("/ahg/assistant").get_data(as_text=True)
+    normalized = " ".join(body.split())
     assert "<title>The workshop in any AI assistant - AHG 2026</title>" in body
     for number in ("1", "2", "3", "4", "5", "7"):
         assert f'id="block-{number}"' in body
@@ -397,15 +417,22 @@ def test_the_browser_path_page_offers_every_block_with_a_copy_button(client):
         assert f'id="{key}"' in body, key
     assert "Copy the text for Block 2: design your agent" in body
     assert "sign in" in body.lower()
+    assert "copy one of these prepared prompts into a new conversation" in normalized
+    assert "public directory listing or connector is not required" in normalized
+    assert "being prepared for ChatGPT's plugin directory" not in normalized
 
 
 def test_the_paths_page_compares_three_paths_and_each_assistant(client):
     body = client.get("/ahg/paths").get_data(as_text=True)
+    normalized = " ".join(body.split())
     assert "<caption id=\"paths-caption\">The three paths compared</caption>" in body
     for anchor in ("browser", "vscode", "vscode-web", "chatgpt", "copilot-web", "claude", "gemini", "m365"):
         assert f'id="{anchor}"' in body, anchor
     assert "Improve the model for everyone" in body and "Help improve Claude" in body
     assert "Chrome or Edge" in body and "/workshop/ahg-2026/ahg-2026.code-profile" in body
+    assert "prepared Accessibility Agents prompts" in normalized
+    assert "No public directory listing or connector is required" in normalized
+    assert "not yet in ChatGPT's plugin directory" not in normalized
 
 
 def test_the_landing_page_offers_the_three_paths(client):

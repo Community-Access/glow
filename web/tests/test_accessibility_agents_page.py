@@ -31,6 +31,24 @@ def test_page_renders_with_one_h1_and_the_server_address(client):
     assert 'aria-current="page"' in body  # the nav entry marks itself
 
 
+def test_page_separates_hosted_checks_from_upload_chat_and_local_plugins(client):
+    body = " ".join(client.get("/accessibility-agents/").get_data(as_text=True).split())
+    for text in (
+        "offers twelve tools",
+        "stores a temporary copy while it works",
+        "public sharing link that the server fetches",
+        "one hour, then deleted",
+        "GLOW's own chat above",
+        "after optional dependencies are installed",
+        "full plugin submission was refused under directory policy",
+        "but not review hooks",
+    ):
+        assert text in body
+    assert "cannot reach into your computer" in body
+    assert "cannot scan files or fetch websites" not in body
+    assert "full Accessibility Agents plugin is in review" not in body
+
+
 def test_accessibility_agents_page_links_to_the_standalone_chat(client):
     body = client.get("/accessibility-agents/").get_data(as_text=True)
     assert 'id="aa-ask-form"' not in body

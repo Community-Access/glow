@@ -23,7 +23,8 @@ your work local. A browser is not a way around campus policy.
 - In a browser: no kit needed. Open letitglow.app/ahg/assistant, copy each
   block's text, and paste it into ChatGPT, Copilot on github.com, Claude,
   Gemini or your campus assistant. The same texts are in this kit, in
-  `any-assistant/`.
+  `any-assistant/`. No public directory listing or external connector is needed
+  for this workshop path.
 - In VS Code on your computer: you are probably reading this there. Each
   block is one command in Copilot Chat.
 - In VS Code for the Web: the same, at vscode.dev in Chrome or Edge, with
