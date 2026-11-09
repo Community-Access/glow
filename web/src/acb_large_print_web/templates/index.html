@@ -8,7 +8,7 @@
 <div class="alert alert-info" style="margin-bottom:1.5em;">
   <strong>New in {{ release_version }}:</strong> GLOW now includes a <b>Model Context Protocol (MCP) server API</b>, Workshop Follow-Through, and richer workshop exports for coaching templates, checklists, and 30-day commitments. <a href="{{ url_for('about.about_page') }}#mcp-heading">Learn more &rarr;</a> | <a href="https://github.com/Community-Access/glow/tree/main/mcp_server">API docs</a>
 </div>
-<p>Check and fix your Office documents for compliance with the <a href="{{ url_for('guidelines.guidelines_page') }}">{{ brand_guidelines_name }}</a> and WCAG 2.2 AA standards -- no installation required. Use the goal-oriented sidebar to jump straight to any tool, or start below. <a href="{{ url_for('changelog.changelog_page') }}">Release notes &rarr;</a> See the latest shipped {{ release_version }} improvements.</p>
+<p>Check and fix your Office documents using the <a href="{{ url_for('guidelines.guidelines_page') }}">{{ brand_guidelines_name }}</a> from the American Council of the Blind (ACB) and the Web Content Accessibility Guidelines (WCAG) 2.2 Level AA -- no installation required. Use the goal-oriented sidebar to jump straight to any tool, or start below. <a href="{{ url_for('changelog.changelog_page') }}">Release notes &rarr;</a> See the latest shipped {{ release_version }} improvements.</p>
 
 <section class="home-whats-new">
   <h2 id="home-whats-new-heading">What's New in GLOW {{ release_version }}</h2>
@@ -66,7 +66,7 @@
     {% if feature_converter_enabled or feature_braille_enabled %}
     <div class="mission-card mission-card--transform">
       <h3 id="mission-transform">Transform Format</h3>
-      <p>Convert documents between formats -- Markdown, HTML, EPUB, PDF, DAISY, CMS Fragment -- or translate to and from braille.</p>
+      <p>Convert documents between formats -- Markdown, HTML, EPUB, PDF, DAISY, and fragments for a content management system (CMS) -- or translate to and from braille.</p>
       <ul class="mission-card__links" role="list">
         {% if feature_converter_enabled %}
         <li><a class="mission-card__cta" href="{{ url_for('convert.convert_form') }}">Open Convert Format &rarr;</a></li>

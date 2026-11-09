@@ -31,6 +31,34 @@ def test_page_renders_with_one_h1_and_the_server_address(client):
     assert 'aria-current="page"' in body  # the nav entry marks itself
 
 
+def test_accessibility_agents_page_links_to_the_standalone_chat(client):
+    body = client.get("/accessibility-agents/").get_data(as_text=True)
+    assert 'id="aa-ask-form"' not in body
+    assert 'href="/accessibility-agents/chat/"' in body
+    assert "Open Accessibility Agents chat" in body
+
+
+def test_short_aa_url_redirects_to_the_accessibility_agents_page(client):
+    resp = client.get("/aa")
+    assert resp.status_code == 301
+    assert resp.headers["Location"].endswith("/accessibility-agents/")
+
+
+def test_chat_page_has_one_h1_accessible_form_and_no_focus_stealing(client):
+    body = client.get("/accessibility-agents/chat/").get_data(as_text=True)
+    assert body.count("<h1") == 1
+    assert 'id="aa-ask-form"' in body
+    assert 'data-api-base="/accessibility-agents/"' in body
+    assert 'data-return-url="/accessibility-agents/chat/"' in body
+    assert 'id="aa-ask-status" class="aa-status" role="status" aria-live="polite"' in body
+    for field_id in ("aa-provider", "aa-key", "aa-model", "aa-question", "aa-material", "aa-file"):
+        assert f'for="{field_id}"' in body, f"{field_id} has no label"
+    assert "accessibility-agents-ask.js" in body
+    script = (STATIC / "accessibility-agents-ask.js").read_text(encoding="utf-8")
+    assert "answerHeading.focus()" not in script
+    assert "Answer ready. The answer is below." in script
+
+
 def test_every_field_has_a_label(client):
     body = client.get("/accessibility-agents/").get_data(as_text=True)
     for field_id in ("aa-foreground", "aa-background", "aa-apca", "aa-text", "aa-html", "aa-html-check", "aa-component"):
@@ -162,7 +190,7 @@ def test_openrouter_exchange_returns_the_key_and_stores_nothing(client, monkeypa
 
 
 def test_ask_form_fields_are_labelled(client):
-    body = client.get("/accessibility-agents/").get_data(as_text=True)
+    body = client.get("/accessibility-agents/chat/").get_data(as_text=True)
     for field_id in ("aa-provider", "aa-key", "aa-model", "aa-question", "aa-material"):
         assert f'for="{field_id}"' in body, f"{field_id} has no label"
     assert 'type="password" id="aa-key"' in body
@@ -228,7 +256,7 @@ def test_models_needs_a_key_and_reports_a_bad_one(client, monkeypatch):
 
 
 def test_model_pick_list_is_labelled_and_wired(client):
-    body = client.get("/accessibility-agents/").get_data(as_text=True)
+    body = client.get("/accessibility-agents/chat/").get_data(as_text=True)
     assert 'for="aa-model-pick"' in body
     assert 'id="aa-models-button"' in body
     script = (STATIC / "accessibility-agents-ask.js").read_text(encoding="utf-8")
@@ -297,7 +325,7 @@ def test_ask_names_the_file_it_reviews(client, monkeypatch):
 
 
 def test_file_chooser_is_labelled(client):
-    body = client.get("/accessibility-agents/").get_data(as_text=True)
+    body = client.get("/accessibility-agents/chat/").get_data(as_text=True)
     assert 'for="aa-file"' in body and 'type="file" id="aa-file"' in body
 
 
@@ -416,7 +444,7 @@ def test_a_bad_specialist_name_is_never_fetched(client, monkeypatch):
 
 
 def test_scanner_report_region_is_on_the_page(client):
-    body = client.get("/accessibility-agents/").get_data(as_text=True)
+    body = client.get("/accessibility-agents/chat/").get_data(as_text=True)
     assert 'id="aa-scan"' in body and "<summary>Scanner report</summary>" in body
 
 
@@ -484,7 +512,7 @@ def test_bad_images_are_refused_before_any_call(client, monkeypatch):
 
 
 def test_the_file_chooser_takes_images(client):
-    body = client.get("/accessibility-agents/").get_data(as_text=True)
+    body = client.get("/accessibility-agents/chat/").get_data(as_text=True)
     assert ".png,.jpg,.jpeg,.gif,.webp" in body and 'id="aa-image-help"' in body
     script = (STATIC / "accessibility-agents-ask.js").read_text(encoding="utf-8")
     assert "readAsDataURL" in script and "image: fileImage" in script
@@ -621,7 +649,7 @@ def test_write_alt_refuses_files_it_cannot_write(client):
 
 
 def test_the_alt_text_controls_are_on_the_page(client):
-    body = client.get("/accessibility-agents/").get_data(as_text=True)
+    body = client.get("/accessibility-agents/chat/").get_data(as_text=True)
     assert 'id="aa-alt-button"' in body and 'id="aa-alt-heading"' in body
     assert 'id="aa-alt-download"' in body
     script = (STATIC / "accessibility-agents-ask.js").read_text(encoding="utf-8")

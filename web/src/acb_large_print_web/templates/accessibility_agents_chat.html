@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+
+{% block title %}Chat with Accessibility Agents{% endblock %}
+{% block heading %}Chat with Accessibility Agents{% endblock %}
+
+{% block content %}
+<p>Ask a question about accessibility, paste text or HTML, or upload a document
+for review. Choose your AI provider; GLOW keeps your key in this browser tab
+only.</p>
+
+{% include "_accessibility_agents_ask.html" %}
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('static', filename='accessibility-agents-ask.js') }}" nonce="{{ csp_nonce }}" defer></script>
+{% endblock %}

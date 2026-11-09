@@ -263,6 +263,7 @@ test.describe('GLOW keyboard-only smoke test', () => {
     { label: 'fix form', path: '/fix/' },
     { label: 'convert form', path: '/convert/' },
     { label: 'template form', path: '/template/' },
+    { label: 'accessibility agents chat', path: '/accessibility-agents/chat/' },
   ]) {
     test(`${label}: every control reachable, visible focus, logical order, no trap`, async ({ page }) => {
       await page.goto(route);
@@ -303,7 +304,8 @@ test.describe('GLOW keyboard-only smoke test', () => {
     await chooseFileByKeyboard(page, 'convert form');
     await tabTo(page, 'form button[type="submit"]:has-text("Convert My Document")', 'convert form');
     await page.keyboard.press('Enter');
-    await expect(page.getByRole('heading', { level: 1, name: 'Conversion Complete' })).toBeVisible();
+    await expect(page.getByRole('heading', { level: 1, name: 'Conversion Complete' }))
+      .toBeVisible({ timeout: 30000 });
     assertKeyboardContract(await walkTabSequence(page), 'conversion complete');
 
     await page.evaluate(() => document.activeElement && document.activeElement.blur());

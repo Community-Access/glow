@@ -9,7 +9,7 @@
   <p>
     <strong>{{ original_stem }}</strong> was converted successfully.
     {% if preview_type == "cms" %}
-    The CMS Fragment is an HTML snippet ready to paste into a content management system.
+    The content management system (CMS) fragment is an HTML snippet ready to paste into your site.
     {% endif %}
   </p>
 
@@ -59,7 +59,7 @@
 {% if language_reports %}
 <section>
   <h2 id="language-heading">Language and clarity review</h2>
-  <p>GLOW ran WCAG language checks for this conversion.</p>
+  <p>GLOW ran Web Content Accessibility Guidelines (WCAG) language checks for this conversion.</p>
   {% for report in language_reports %}
   <article class="next-step-callout">
     <h3>{{ report.stage|capitalize }} stage</h3>
@@ -92,7 +92,7 @@
   {% if feature_audit_enabled and auditable_output %}
   <div class="next-step-callout">
     <h3 id="audit-next-heading">Recommended Next Step: Audit the Converted File</h3>
-    <p>Run an accessibility audit on your converted document to confirm it meets ACB Large Print Guidelines &mdash; without re-uploading.</p>
+    <p>Run an accessibility audit on your converted document to confirm it meets the American Council of the Blind (ACB) Large Print Guidelines &mdash; without re-uploading.</p>
     <form method="post" action="{{ url_for('audit.audit_from_convert') }}">
       <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
       <input type="hidden" name="token" value="{{ token }}">

@@ -213,15 +213,22 @@
         {% endif %}
 
         <!-- ── Group 5: Explore and Learn ─────────────────────────── -->
-        <li class="sidebar-group sidebar-group--explore{% if request.blueprint in ['ai', 'chat', 'alt_text', 'guidelines', 'rules_ref', 'guide', 'faq', 'settings', 'workshop', 'page_flow'] %} sidebar-group--active{% endif %}">
+        <li class="sidebar-group sidebar-group--explore{% if request.blueprint in ['ai', 'chat', 'accessibility_agents', 'alt_text', 'guidelines', 'rules_ref', 'guide', 'faq', 'settings', 'workshop', 'page_flow'] %} sidebar-group--active{% endif %}">
           <span class="sidebar-group-label" id="nav-group-explore">Explore and Learn</span>
           <ul aria-labelledby="nav-group-explore" role="list">
             <li>
               <a href="{{ url_for('accessibility_agents.accessibility_agents_page') }}"
-                 class="sidebar-link{% if request.blueprint == 'accessibility_agents' %} sidebar-link--active{% endif %}"
-                 {% if request.blueprint == 'accessibility_agents' %}aria-current="page"{% endif %}>
+                 class="sidebar-link{% if request.endpoint == 'accessibility_agents.accessibility_agents_page' %} sidebar-link--active{% endif %}"
+                 {% if request.endpoint == 'accessibility_agents.accessibility_agents_page' %}aria-current="page"{% endif %}>
                 <svg class="nav-icon" width="16" height="16" viewBox="0 0 16 16" aria-hidden="true" focusable="false"><circle cx="8" cy="3" r="1.6" fill="currentColor"/><path d="M3 5.5h10M8 5.5v4M8 9.5l-2.5 4.5M8 9.5l2.5 4.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" fill="none"/></svg>
                 Accessibility Agents
+              </a>
+            </li>
+            <li>
+              <a href="{{ url_for('accessibility_agents.chat_page') }}"
+                 class="sidebar-link{% if request.endpoint == 'accessibility_agents.chat_page' %} sidebar-link--active{% endif %}"
+                 {% if request.endpoint == 'accessibility_agents.chat_page' %}aria-current="page"{% endif %}>
+                Ask Accessibility Agents
               </a>
             </li>
             {% if ai_entry_enabled %}

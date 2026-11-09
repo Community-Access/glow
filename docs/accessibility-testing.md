@@ -221,9 +221,13 @@ accessibility owner accepted as a result.
 | Keyboard | Pass | The keyboard records above; every focus stop on the nine pages showed an indicator of at least 3:1 |
 | Alternative text | Pass | One informative image, the Community Access logo, with the alternative text "Community Access"; all 17 icons are hidden from assistive technology |
 | Descriptive titles, headings, labels and errors | Pass, after fixes | Fixed: a second "What's Next?" section on the fix results page, and the "No file selected" error not tied to its field |
-| Plain language | Open | ACB, APH, WCAG and other abbreviations are not spelled out on first use: [#157](https://github.com/Community-Access/glow/issues/157) |
+| Plain language | Pass, after copy update | Core pages now expand ACB, APH, WCAG, BOP and CMS before first use; "Microsoft Accessibility Checker" is written in full. Updated after the 29 October run. |
 | Zoom 200 percent and reflow 400 percent | Pass | No sideways scrolling, clipped text or lost control on nine pages at 640 and 320 CSS pixels and with text alone at 200 percent; `npm run test:reflow` also passes |
 | Contrast and color use | Pass, after a fix | Fixed: dark-mode text at 1.21:1 and focus rings at 1.98:1 on the result pages' next-step cards. Severity is always written as text |
+
+The 29 October run recorded the copy as it appeared then. The plain-language
+result above reflects the copy update made after that run; the historical
+observation below is preserved.
 
 ### Agent run: manual checks, 29 October 2026
 
@@ -266,9 +270,9 @@ it as a result on 29 October 2026.
   selected" in an alert and marked the file field invalid, but did not tie the
   message to the field; it is now in the field's description. The batch audit
   heading lost a decorative sparkle emoji that a screen reader reads aloud.
-- **Plain language:** short, direct instructions throughout, but ACB, APH,
-  WCAG, BOP, MS and CMS are never spelled out on the core pages; tracked in
-  [#157](https://github.com/Community-Access/glow/issues/157).
+- **Plain language:** short, direct instructions throughout. At the time of
+  this run, ACB, APH, WCAG, BOP, MS and CMS were not spelled out on the core
+  pages; the copy was updated afterward to address [#157](https://github.com/Community-Access/glow/issues/157).
 - **Alternative text:** one informative image (the Community Access logo,
   alternative text "Community Access"); the 17 navigation icons are SVG with
   `aria-hidden="true"`.

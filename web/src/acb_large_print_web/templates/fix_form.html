@@ -12,7 +12,7 @@
 
 <details class="help-accordion">
   <summary>What does the fix do?</summary>
-  <p>For <strong>Word documents</strong>, the fixer automatically corrects ACB Large Print compliance issues: fonts to Arial, sizes to 18pt/22pt/20pt, italic removed, bold emphasis converted to underline, flush-left alignment, line spacing, margins, widow/orphan control, hyphenation off, and language set. You download a fixed copy -- your original is not modified.</p>
+  <p>For <strong>Word documents</strong>, the fixer automatically corrects American Council of the Blind (ACB) Large Print compliance issues: fonts to Arial, sizes to 18pt/22pt/20pt, italic removed, bold emphasis converted to underline, flush-left alignment, line spacing, margins, widow/orphan control, hyphenation off, and language set. You download a fixed copy -- your original is not modified.</p>
   <p>For <strong>Markdown files</strong>, the fixer corrects heading hierarchy, italic removal, and em-dash replacement. Other Markdown issues require manual review.</p>
   <p>For <strong>Excel, PowerPoint, and PDF</strong> files, auto-fix is not yet available. You will receive an audit report with detailed findings and manual fix guidance instead.</p>
 </details>
@@ -52,7 +52,7 @@
 
   <fieldset>
     <legend>Standards Profile</legend>
-    <p class="help-text">Choose the standards profile for this fix run and report filtering. Default ACB behavior is unchanged.</p>
+    <p class="help-text">Profile names refer to guidance from the American Council of the Blind (ACB) and the American Printing House for the Blind (APH). Choose the standards profile for this fix run and report filtering; the default behavior is unchanged.</p>
 
     <div class="radio-group">
       <label>
@@ -85,7 +85,7 @@
 
       <label>
         <input type="checkbox" name="category" value="msac" checked>
-        <strong>MS Accessibility Checker</strong> -- {{ rules_by_category.msac | length }} rules aligned with the Microsoft Office Accessibility Checker and WCAG 2.1.
+        <strong>Microsoft Accessibility Checker</strong> -- {{ rules_by_category.msac | length }} rules aligned with the Microsoft Office Accessibility Checker and Web Content Accessibility Guidelines (WCAG) 2.1.
       </label>
     </div>
   </fieldset>
