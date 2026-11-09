@@ -145,8 +145,7 @@ line. That counts.</p>
       showEmpty("Your agent is empty. Paste it in, or choose your SKILL.md file.");
       return;
     }
-    var url = URL.createObjectURL(new Blob([body + "
-"], { type: "text/markdown;charset=utf-8" }));
+    var url = URL.createObjectURL(new Blob([body + "\n"], { type: "text/markdown;charset=utf-8" }));
     var link = document.createElement("a");
     link.href = url;
     link.download = "SKILL.md";

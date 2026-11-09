@@ -29,7 +29,7 @@
 
 import fs from 'node:fs';
 import path from 'node:path';
-import { fileURLToPath } from 'node:url';
+import { fileURLToPath, pathToFileURL } from 'node:url';
 import { test, expect } from '@playwright/test';
 
 const uploadDocx = process.env.E2E_UPLOAD_DOCX || path.resolve(
@@ -249,6 +249,62 @@ async function chooseFileByKeyboard(page, where) {
 }
 
 test.describe('GLOW keyboard-only smoke test', () => {
+  for (const [label, url] of [
+    ['online', '/ahg/share?practice=1'],
+    ['offline', `${pathToFileURL(path.resolve(
+      path.dirname(fileURLToPath(import.meta.url)),
+      '../../../docs/ahg-2026/kit/share-my-agent.html',
+    )).href}?practice=1`],
+  ]) {
+    test(`AHG ${label} practice agent fills, downloads and opens sharing by keyboard`, async ({ page }) => {
+      const errors = [];
+      page.on('pageerror', (error) => errors.push(error.message));
+      await page.addInitScript(() => {
+        window.__shareUrl = null;
+        window.open = (url) => {
+          window.__shareUrl = url;
+          return null;
+        };
+      });
+      await page.goto(url);
+      expect(errors).toEqual([]);
+      await expect(page.getByRole('radio', { name: 'My practice agent, before the day' })).toBeChecked();
+      await expect(page.locator('#fill-template')).toBeVisible();
+      await expect(page.locator('#download-skill')).toBeVisible();
+
+      await tabTo(page, '#fill-template', `AHG ${label} practice`);
+      await page.keyboard.press('Enter');
+      const template = await page.locator('#agent-text').inputValue();
+      expect(template).toBe(fs.readFileSync(path.resolve(
+        path.dirname(fileURLToPath(import.meta.url)),
+        '../../../docs/ahg-2026/kit/my-agent/SKILL.md',
+      ), 'utf8').replace(/\r\n/g, '\n'));
+      await expect(page.locator('#result')).toContainText('The practice template is in');
+      await expect(page.locator('#fill-template')).toBeFocused();
+
+      await tabTo(page, '#download-skill', `AHG ${label} practice`);
+      const [download] = await Promise.all([
+        page.waitForEvent('download'),
+        page.keyboard.press('Enter'),
+      ]);
+      expect(download.suggestedFilename()).toBe('SKILL.md');
+      expect(fs.readFileSync(await download.path(), 'utf8')).toBe(`${template.trim()}\n`);
+      await expect(page.locator('#download-skill')).toBeFocused();
+
+      await tabTo(page, 'button[type="submit"]', `AHG ${label} practice`);
+      await page.keyboard.press('Enter');
+      await expect.poll(() => page.evaluate(() => window.__shareUrl)).not.toBeNull();
+      const shareUrl = new URL(await page.evaluate(() => window.__shareUrl));
+      expect(shareUrl.origin + shareUrl.pathname).toBe('https://github.com/Community-Access/ahg-2026/issues/new');
+      expect(shareUrl.searchParams.get('template')).toBe('submit-agent.yml');
+      expect(shareUrl.searchParams.get('workshop-code')).toBe('AHG2026');
+      expect(shareUrl.searchParams.get('kind')).toBe('My practice agent');
+      expect(shareUrl.searchParams.get('agent')).toBe(template.trim());
+      await expect(page.locator('#result')).toContainText('The share form is open');
+      expect(errors).toEqual([]);
+    });
+  }
+
   test('skip link is first and moves focus to the main content', async ({ page }) => {
     await page.goto('/');
     await page.keyboard.press('Tab');
