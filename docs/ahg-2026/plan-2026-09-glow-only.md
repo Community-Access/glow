@@ -45,7 +45,7 @@ Recorded here so the plan is not re-litigated:
 | L4 | **No printed handouts from us.** Electronic copies only |
 | L5 | **MCP, CLIs, IDEs and plugins are invisible to participants.** Not on a slide, not in the agenda, not in the artifact |
 | L6 | **No vendor-specific tooling in the room** - not Gemini, Copilot, VS Code, or any other |
-| L7 | **Follow-through is self-directed, and support is guaranteed on request.** We do not chase anyone, but anyone who writes to `support@community-access.org` gets help. Decided 21 September 2026 |
+| L7 | **Follow-through is self-directed, and support is guaranteed on request.** We do not chase anyone, but anyone who writes to `jeffbis@arizona.edu` gets help. Decided 21 September 2026 |
 | L9 | **Designed for both a conference and a class** (was D2). The day is identical either way; see section 6 for why self-directed follow-through makes the distinction stop mattering |
 | L10 | **Keep the 30-day nudge**, reworded as a reminder rather than an offer of support (was D3) |
 | L11 | **Do the prompt-card derivation** from the twelve usable agent definitions (was D4). Not optional |
@@ -373,10 +373,10 @@ The take-home artifact then carries everything needed to act alone:
 - the prompt, for anyone who wants to use free ChatGPT,
 - the human-review gate in their own words,
 - the engagement plan,
-- and one line: questions go to `support@community-access.org`.
+- and one line: questions go to `jeffbis@arizona.edu`.
 
 **The support line is a commitment, not a footnote.** "Write to
-`support@community-access.org` and you will get help" is going to be said from
+`jeffbis@arizona.edu` and you will get help" is going to be said from
 the front of the room, printed in the artifact, and carried home by everyone
 who attends. It is the right offer and it is worth making. It also needs an
 owner and a rough response expectation before it is said out loud, because the

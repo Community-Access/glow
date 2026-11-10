@@ -146,7 +146,7 @@ Never put student or case details in an author line.
    disability information, or private identifying details. Use the sample course.
 2. Every agent ends with a person checking its work.
 
-Help, before or after the day: support@community-access.org.
+Help, before or after the day: jeffbis@arizona.edu.
 
 ## Thanks
 

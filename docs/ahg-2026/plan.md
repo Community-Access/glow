@@ -124,7 +124,7 @@ These replace L1 to L14 in the September plan.
 | D15 | Setup is one VS Code profile, the AHG 2026 profile, plus the agent kit. The kit's own settings recommend the same extensions, as a safety net if the profile does not import |
 | D11 | Documents are the center of the day. The sample course is three documents and one web page |
 | D12 | Nothing taught depends on GLOW. Every step names the general skill and shows it working with tools people already have, so the day still pays off if GLOW is never opened again |
-| D13 | Support on request at support@community-access.org, before and after the day |
+| D13 | Support on request at jeffbis@arizona.edu, before and after the day |
 | D14 | The last five minutes are the AHG session evaluation |
 | D18 | Three paths, one day: the browser path with any AI assistant, VS Code on a computer, and VS Code for the Web. The browser path is the default for anyone unsure. Every path ends with the same agent, team report and share. The facilitator demonstrates in VS Code, so every participant sees agent teams built in VS Code with Copilot |
 | D19 | The six commands are agent skills in `.github/skills/`, not prompt files. Since VS Code 1.143 prompt files run only in Local chat sessions; skills run in the default Copilot sessions too |
@@ -377,7 +377,7 @@ before. It is a short numbered list.
 4. Download the agent kit and open it in VS Code. A welcome page appears.
 5. Open the ready check page. It takes two minutes and tells you that you
    are set.
-6. Stuck? Write to support@community-access.org, or come to the setup table
+6. Stuck? Write to jeffbis@arizona.edu, or come to the setup table
    from 10:00 on the day.
 
 It says, plainly, that nobody needs to know VS Code or GitHub already, and

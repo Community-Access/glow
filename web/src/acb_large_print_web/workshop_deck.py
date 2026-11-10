@@ -829,7 +829,7 @@ def build_slides(ctx: DeckContext) -> list[Slide]:
             blocks=(
                 Para("You came in with a problem. You leave with an agent, a team and a plan.", lead=True),
                 Para("Now: the session evaluation. It shapes next year's conference."),
-                Para("Help any time: support@community-access.org"),
+                Para("Help any time: jeffbis@arizona.edu"),
                 Para(DECK_CREDIT, small=True),
             ),
             notes=(

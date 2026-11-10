@@ -766,9 +766,9 @@ FEEDBACK_GITHUB_LABELS=feedback,user-feedback
 OPENROUTER_API_KEY=PASTE_OPENROUTER_KEY_HERE
 POSTMARK_SERVER_TOKEN=PASTE_POSTMARK_SERVER_TOKEN
 POSTMARK_FROM_EMAIL=reports@glow.bits-acb.org
-ADMIN_LOCAL_EMAIL=jeff@jeffbishop.com
+ADMIN_LOCAL_EMAIL=jeffbis@arizona.edu
 ADMIN_LOCAL_PASSWORD=CHOOSE_A_STRONG_PASSWORD
-ADMIN_BOOTSTRAP_EMAILS=jeff@jeffbishop.com
+ADMIN_BOOTSTRAP_EMAILS=jeffbis@arizona.edu
 ADMIN_MAGIC_LINK_TTL_MINUTES=20
 LOG_LEVEL=INFO
 KEYCLOAK_HOSTNAME=lp.csedesigns.com
@@ -837,7 +837,7 @@ The JSON should show `services.openrouter.status` as `ok`, `services.keycloak.st
 Set these values in `.env`:
 
 ```dotenv
-ADMIN_LOCAL_EMAIL=jeff@jeffbishop.com
+ADMIN_LOCAL_EMAIL=jeffbis@arizona.edu
 ADMIN_LOCAL_PASSWORD=YOUR_BOOTSTRAP_PASSWORD
 ```
 

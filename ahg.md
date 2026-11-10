@@ -52,7 +52,7 @@ one to give anyone is `letitglow.app/ahg`.
 | Anyone who needs a hand with sharing | `https://github.com/Community-Access/ahg-2026/issues?q=label:needs-a-hand` |
 | GLOW health | `https://letitglow.app/health` |
 | Help desk, for support mail | `https://helpdesk.community-access.org` |
-| Support address given to participants | `support@community-access.org` |
+| Support address given to participants | `jeffbis@arizona.edu` |
 
 The landing page also answers to `/AHG`, `/ahg2026`, `/ahg-2026`, to
 `www.letitglow.app/ahg`, and to the old `letitglow.app/workshop/ahg-2026`.

@@ -150,7 +150,7 @@ Use the
 [accessibility issue form](https://github.com/Community-Access/glow/issues/new?template=accessibility.yml).
 If GitHub is a barrier for you, or you would rather not post publicly, use the
 [feedback form](https://letitglow.app/feedback/) in GLOW or email
-[support@community-access.org](mailto:support@community-access.org). How we
+[jeffbis@arizona.edu](mailto:jeffbis@arizona.edu). How we
 triage and respond is in
 [ACCESSIBILITY.md](ACCESSIBILITY.md#reporting-accessibility-issues).
 
@@ -172,15 +172,14 @@ contributions we value and credit.
 
 Everything in GLOW's development happens asynchronously and in text: issues,
 pull requests and review comments on GitHub, the feedback form in the web app,
-and email to [support@community-access.org](mailto:support@community-access.org).
+and email to [jeffbis@arizona.edu](mailto:jeffbis@arizona.edu).
 No meeting or call is required to contribute. When we hold a project meeting,
 the agenda is posted in advance, notes are posted to an issue afterwards, and
 joining with a camera or by speaking is never required.
 
 If a tool or process we use is a barrier for you, or you need an accommodation
 to contribute, email
-[support@community-access.org](mailto:support@community-access.org) or
-[jeff@jeffbishop.com](mailto:jeff@jeffbishop.com) privately. You do not need to
+[jeffbis@arizona.edu](mailto:jeffbis@arizona.edu) privately. You do not need to
 explain why, and we will not discuss it in public. How we reviewed the tools we
 use is in [docs/accessibility-framework.md](docs/accessibility-framework.md#community-phase).
 
@@ -238,6 +237,6 @@ This project adheres to the [Contributor Covenant](CODE_OF_CONDUCT.md). By parti
 
 - Open a [GitHub issue](https://github.com/Community-Access/glow/issues)
 - Submit feedback via the [web app](https://letitglow.app/feedback/)
-- Email [support@community-access.org](mailto:support@community-access.org)
+- Email [jeffbis@arizona.edu](mailto:jeffbis@arizona.edu)
 
 Thank you for contributing to accessible technology.

@@ -3,7 +3,7 @@
   "documents": {
     "pre-event-message.md": {
       "title": "Pre-event message",
-      "sha256": "6dee8f603a3f41163ec275bda612b8e920eb5cdfa78da8f42cad16939b37f4f2",
+      "sha256": "3bde347a01c17445e4916b20241845e9fe36a3d6331fdf0d709e43a124218be9",
       "formats": [
         "pre-event-message.md",
         "pre-event-message.html",
@@ -14,7 +14,7 @@
     },
     "workshop-frontfacing-guide.md": {
       "title": "Accessibility Agents: Building Human-Centered AI Workflows for Trusted Accessibility Automation at Scale",
-      "sha256": "6e5d9eb1e772ea04e41a6293bb5e1bd02c00d6baa7033311059a4f30a21dacb8",
+      "sha256": "75902189033b829ced2aa624d53ade4acd561526ebc30fec5d350f3017c38649",
       "formats": [
         "workshop-frontfacing-guide.md",
         "workshop-frontfacing-guide.html",
@@ -25,7 +25,7 @@
     },
     "kit/README.md": {
       "title": "Welcome to the AHG 2026 agent kit",
-      "sha256": "f585696bb1c60e1120af01c0f5159b56d587110b88ba0a870d0e9dcb1dc8ab8f",
+      "sha256": "2da7f747e8ab3f82aa6b53cbc100daff2e3cba6694454831b264d3bbf102b182",
       "formats": [
         "README.md",
         "read-me.html",
@@ -47,7 +47,7 @@
     },
     "kit/accessibility-agents.md": {
       "title": "Accessibility Agents, after today",
-      "sha256": "c21efcd2f9279775a6b7d421d04e11914d6499ab6edc40692bea3b4fcf87461c",
+      "sha256": "40c4414769dae5af85911a9f7030ef4a5a77b093011572ae981347efb49ab39f",
       "formats": [
         "accessibility-agents.md",
         "accessibility-agents.html",
@@ -80,7 +80,7 @@
     },
     "kit/session-in-plain-language.md": {
       "title": "The AHG 2026 Accessibility Agents workshop, in plain language",
-      "sha256": "d4ed9b9f789a06d2c85a75c2eb348a391ed3c0e3d406728b5cf2ca775f6ba88c",
+      "sha256": "b75f0b42bb784c53490857857388f28e0f228ef47ac23601d72132a53512a181",
       "formats": [
         "session-in-plain-language.md",
         "session-in-plain-language.html",
@@ -102,7 +102,7 @@
     },
     "kit/step-cards/0-before-the-day.md": {
       "title": "Step card 0: Before the day",
-      "sha256": "7cd2fd8f162482d045eff366d8b50b2ca55acd9bd2cf7ace4088ba1dd45839a5",
+      "sha256": "366865da553937c4adc6bef32f8af2573ba8e3b9793840320f3b85dd7e5e0fcd",
       "formats": [
         "0-before-the-day.md",
         "0-before-the-day.html",
@@ -179,7 +179,7 @@
     },
     "kit/step-cards/7-take-it-home.md": {
       "title": "Step card 7: Take it home",
-      "sha256": "5c8c7c27a870fa4cd60d1c67cf44a79d673db76589404938928f7a6681c785af",
+      "sha256": "4848269c187d7938f62670abc0006273e0c4635c6e7eac1a7eddf394cfcc6a7a",
       "formats": [
         "7-take-it-home.md",
         "7-take-it-home.html",
@@ -223,7 +223,7 @@
     },
     "repo/README.md": {
       "title": "Accessibility Agents at AHG 2026",
-      "sha256": "6a7f52f32c0824581789e2ae6b2c768fdf20d9f2cc709b39fe5f222ea2b7c723",
+      "sha256": "83ffa199a4037406b4539b68444426e7ec692126a9b3f9924fbd69d136dc9b6b",
       "formats": [
         "README.md",
         "read-me.html",

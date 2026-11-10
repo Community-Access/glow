@@ -68,7 +68,7 @@ practice template", then press "Open the share form on GitHub". It takes a
 minute, and GitHub replies to say it worked.
 
 If anything needs a hand, say which check, suggest one simple thing to try,
-and say: write to support@community-access.org, or come to the setup table
+and say: write to jeffbis@arizona.edu, or come to the setup table
 from 10:00 on the day. Nobody gets left behind.
 
 ## Files from the kit

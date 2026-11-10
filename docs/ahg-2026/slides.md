@@ -844,7 +844,7 @@ You came in with a problem. You leave with an agent, a team and a plan.
 
 Now: the session evaluation. It shapes next year's conference.
 
-Help any time: support@community-access.org
+Help any time: jeffbis@arizona.edu
 
 In collaboration with Blind Information Technology Solutions (BITS) and Techopolis, with special thanks to Taylor Arndt, who helped dream up and build Accessibility Agents.
 

@@ -67,7 +67,7 @@ Then, on any path:
 Want the short version to pass on to a colleague? Read the
 [plain-language workshop description](https://letitglow.app/ahg/kit/session-in-plain-language.md).
 
-If a step does not work, [write to the workshop support team](mailto:support@community-access.org)
+If a step does not work, [write to the workshop support team](mailto:jeffbis@arizona.edu)
 before the day, or come to the setup table outside the room from 10:00 on
 the day.
 Locked-down work laptop? Take the browser path: it needs nothing

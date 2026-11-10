@@ -353,7 +353,7 @@ def get_ollama_cloud_url() -> str:
 
 
 def get_bootstrap_admin_email() -> str:
-    return os.environ.get("ADMIN_LOCAL_EMAIL", "jeff@jeffbishop.com").strip().lower()
+    return os.environ.get("ADMIN_LOCAL_EMAIL", "jeffbis@arizona.edu").strip().lower()
 
 
 def get_bootstrap_admin_password() -> str:

@@ -160,7 +160,7 @@ RULES = [
 
 # Things that must be present somewhere in the material set.
 REQUIRED_SOMEWHERE = [
-    ("support@community-access.org", "D13: the support address participants are given"),
+    ("jeffbis@arizona.edu", "D13: the support address participants are given"),
     ("VS Code", "Promise: agents and teams built with Visual Studio Code"),
     ("Copilot", "Promise: agents and teams built with GitHub Copilot"),
     ("GitHub", "Promise: open-source collaboration on GitHub"),

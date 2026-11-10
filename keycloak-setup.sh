@@ -14,7 +14,7 @@ read -sp "Enter Keycloak admin password: " ADMIN_PWD; echo
 USERS=(
   "jeff.bishop@bits-acb.org::admin"
   "jeff.bishop@bitsusers.org::user"
-  "jeff@jeffbishop.com:accesswatch:admin"
+  "jeffbis@arizona.edu:accesswatch:admin"
   "jeff.bishop@outlook.com:access-watch-student:user"
 )
 

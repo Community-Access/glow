@@ -125,8 +125,7 @@ treat accessibility reports as expertise, not complaints.
   web app. You do not need a GitHub account.
 - **By email,** if GitHub or the form is a barrier for you, or you would rather
   not post publicly: write to
-  [support@community-access.org](mailto:support@community-access.org), or to
-  the maintainer, [jeff@jeffbishop.com](mailto:jeff@jeffbishop.com). We will
+  [jeffbis@arizona.edu](mailto:jeffbis@arizona.edu). We will
   file the issue for you if you want one, and keep your details private if you
   ask.
 
@@ -212,7 +211,7 @@ target resolution times; when we do, they will be here.
 
 Accessibility is owned by **Jeff Bishop**, project maintainer
 ([@accesswatch](https://github.com/accesswatch) on GitHub,
-[jeff@jeffbishop.com](mailto:jeff@jeffbishop.com)).
+[jeffbis@arizona.edu](mailto:jeffbis@arizona.edu)).
 
 The accessibility owner:
 
