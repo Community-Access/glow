@@ -12,7 +12,7 @@
     "provider": "google"
   },
   {
-    "email": "jeff@jeffbishop.com",
+    "email": "jeffbis@arizona.edu",
     "username": "accesswatch",
     "roles": ["admin"],
     "provider": "github"

@@ -805,9 +805,9 @@ FEEDBACK_GITHUB_LABELS=feedback,user-feedback
 OPENROUTER_API_KEY=PASTE_OPENROUTER_KEY_HERE
 POSTMARK_SERVER_TOKEN=PASTE_POSTMARK_SERVER_TOKEN
 POSTMARK_FROM_EMAIL=reports@glow.bits-acb.org
-ADMIN_LOCAL_EMAIL=jeff@jeffbishop.com
+ADMIN_LOCAL_EMAIL=jeffbis@arizona.edu
 ADMIN_LOCAL_PASSWORD=CHOOSE_A_STRONG_PASSWORD
-ADMIN_BOOTSTRAP_EMAILS=jeff@jeffbishop.com
+ADMIN_BOOTSTRAP_EMAILS=jeffbis@arizona.edu
 ADMIN_MAGIC_LINK_TTL_MINUTES=20
 LOG_LEVEL=INFO
 KEYCLOAK_HOSTNAME=lp.csedesigns.com
@@ -859,7 +859,7 @@ docker compose -f docker-compose.prod.yml up -d --build
 <p>The JSON should show <code>services.openrouter.status</code> as <code>ok</code>, <code>services.keycloak.status</code> as <code>ok</code>, and, if Whisper is configured, <code>services.whisper.status</code> as <code>ok</code>.</p>
 <h3 id="42b-bootstrap-the-jeff-bishop-admin-account">4.2b Bootstrap the Jeff Bishop admin account</h3>
 <p>Set these values in <code>.env</code>:</p>
-<pre><code>ADMIN_LOCAL_EMAIL=jeff@jeffbishop.com
+<pre><code>ADMIN_LOCAL_EMAIL=jeffbis@arizona.edu
 ADMIN_LOCAL_PASSWORD=YOUR_BOOTSTRAP_PASSWORD
 </code></pre>
 <p>On first app start, GLOW creates or updates this approved admin account and stores only the password hash in the admin database. Use the password sign-in form at <code>/admin/login</code> to access the admin queue and settings areas.</p>

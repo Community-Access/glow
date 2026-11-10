@@ -107,7 +107,7 @@ no pull request.</p>
 
 <h2>What happens on GitHub</h2>
 <ol>
-  <li>GitHub opens the "Share my agent" form, already filled in: the workshop code, which agent it is, and your agent.</li>
+  <li>GitHub opens the "Share my agent" form with the workshop code and your agent filled in. Check that the agent type is selected: choose "My practice agent" before the day, or "My real agent" on the day.</li>
   <li>Move to the end of the form and select the privacy check box: your agent contains nothing private.</li>
   <li>Press <strong>Submit new issue</strong>.</li>
 </ol>
@@ -117,7 +117,7 @@ fix it, and save, and it is checked again straight away. Your agent is
 committed in your name, so it shows on your own GitHub profile.</p>
 
 <h2>If anything goes wrong</h2>
-<p>Raise a hand, or write to <a href="mailto:support@community-access.org">support@community-access.org</a>. If you are stuck,
+<p>Raise a hand, or write to <a href="mailto:jeffbis@arizona.edu">jeffbis@arizona.edu</a>. If you are stuck,
 share one of the <a href="https://letitglow.app/ahg/kit#examples-agents">ready-made agents</a>
 (in the kit, <code>examples/agents/</code>) with your name on its author
 line. That counts.</p>
@@ -272,11 +272,11 @@ line. That counts.</p>
     if (url.length > MAX_URL) {
       say("Your agent is longer than GitHub accepts in one link. Open the <a href=\"https://github.com/" + REPO +
           "/issues/new?template=submit-agent.yml\" target=\"_blank\" rel=\"noopener\">share form on GitHub</a> " +
-          "and paste your agent into it.");
+          "and paste your agent into it. Select the agent type and the privacy check box before submitting.");
       return;
     }
     window.open(url, "_blank", "noopener");
-    say("The share form is open in a new tab, filled in. Select the privacy check box, then press Submit new issue. " +
+    say("The share form is open in a new tab. Confirm the agent type; if it is blank, select \"" + kind + "\". Select the privacy check box, then press Submit new issue. " +
         "If no tab opened, <a href=\"" + url + "\" target=\"_blank\" rel=\"noopener\">open the share form</a>.");
   });
 }());

@@ -213,7 +213,7 @@ results instead.
 
 ## Getting help, and helping
 
-- Questions about the workshop: support@community-access.org.
+- Questions about the workshop: jeffbis@arizona.edu.
 - A rule an agent gets wrong, or a pattern it should catch: open an issue on
   github.com/Community-Access/accessibility-agents.
 - The two rules still apply: nothing private goes into any AI, and a person

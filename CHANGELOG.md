@@ -277,7 +277,7 @@ Releases are tagged in the [GitHub repository](https://github.com/Community-Acce
   edition of this guide") until the two are merged (#147).
 - **Contributor links.** `CONTRIBUTING.md` and `CODE_OF_CONDUCT.md` no longer
   send people to GitHub Discussions, which are not enabled for this
-  repository; they point to issues and support@community-access.org.
+  repository; they point to issues and the project contact address.
   `CONTRIBUTING.md` links the feedback form at letitglow.app.
 
 - Default web Fix runs no longer show a custom-settings warning for balanced

@@ -164,7 +164,7 @@ def test_the_setup_page_has_every_step_and_link(client):
     body = resp.get_data(as_text=True)
     for needle in ("/workshop/ahg-2026/kit.zip", "/workshop/ahg-2026/ahg-2026.code-profile",
                    "/workshop/ahg-2026/share", "Import Profile", "Mountain Time",
-                   "support@community-access.org", "Never paste anything private",
+                   "jeffbis@arizona.edu", "Never paste anything private",
                    "practice agent", "Community-Access/ahg-2026", "Session evaluation"):
         assert needle in body, needle
 

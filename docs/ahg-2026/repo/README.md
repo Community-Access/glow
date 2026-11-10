@@ -25,7 +25,7 @@ Everything starts at the [AHG workshop home](https://letitglow.app/ahg).
    one button, and you get a reply here within about a minute.
 3. On the day, you will do the same with your real agent.
 
-Stuck at any point? Write to support@community-access.org. A person answers.
+Stuck at any point? Write to jeffbis@arizona.edu. A person answers.
 
 ## Sharing an agent
 

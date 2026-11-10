@@ -43,4 +43,4 @@ pending. The setup page walks you through it:
 Nothing private goes into any AI. A person checks everything an agent
 writes.
 
-Questions: support@community-access.org.
+Questions: jeffbis@arizona.edu.

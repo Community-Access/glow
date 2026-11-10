@@ -112,7 +112,7 @@ November. And on GitHub, within about a minute, a reply begins: Well done.
 
 ## If you are stuck
 
-Write to support@community-access.org before the day, or come to the setup
+Write to jeffbis@arizona.edu before the day, or come to the setup
 table outside the room from 10:00 on the day. Locked-down laptop, or VS Code
 blocked at work? Take the browser path; it needs nothing installed. GitHub
 blocked at work? Write to us; nobody is left out.

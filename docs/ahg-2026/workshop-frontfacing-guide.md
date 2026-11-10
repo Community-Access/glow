@@ -94,5 +94,5 @@ By the end of the day you will be able to:
 
 ## Support
 
-Help before and after the day: support@community-access.org. Large print, a
+Help before and after the day: jeffbis@arizona.edu. Large print, a
 particular seat, a pause or a repeat: ask for any of it, before or during.
