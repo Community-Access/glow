@@ -162,6 +162,33 @@ def test_small_library_has_the_layout_manifest_links_and_conference_set(library)
 
 
 @needs_pandoc
+def test_source_hyperlinks_survive_in_the_library_formats(library):
+    problems, checked = C.check_document_links(library, _notes(library))
+    assert checked == 12
+    assert problems == []
+
+
+@needs_pandoc
+def test_pdf_root_urls_allow_word_trailing_slash_but_not_different_paths(tmp_path):
+    pymupdf = pytest.importorskip("pymupdf")
+    folder = tmp_path / "01-start-here" / "glossary"
+    folder.mkdir(parents=True)
+    source = folder / "glossary.md"
+    source.write_text("# Resources\n\n[Resources](https://example.org)\n", encoding="utf-8")
+    with pymupdf.open() as pdf:
+        page = pdf.new_page()
+        page.insert_link({"kind": pymupdf.LINK_URI, "from": pymupdf.Rect(10, 10, 100, 30),
+                          "uri": "https://example.org/"})
+        pdf.save(folder / "glossary.pdf")
+    notes = {"only": ["glossary"]}
+    assert C.check_document_links(tmp_path, notes) == ([], 1)
+    source.write_text("# Resources\n\n[Resources](https://example.org/guide)\n", encoding="utf-8")
+    problems, checked = C.check_document_links(tmp_path, notes)
+    assert checked == 1
+    assert len(problems) == 1 and "https://example.org/guide" in problems[0]
+
+
+@needs_pandoc
 def test_each_document_folder_holds_one_base_name(library):
     folder = library / "01-start-here" / "glossary"
     names = sorted(p.name for p in folder.iterdir())

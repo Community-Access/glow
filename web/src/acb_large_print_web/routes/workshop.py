@@ -27,6 +27,8 @@ from flask import (
 )
 from markupsafe import Markup, escape
 
+from acb_large_print.document_links import address_parts
+
 from .. import workshop_agenda as agenda
 from .. import workshop_deck as deck
 from .. import ahg_kit_online as kit_online
@@ -101,6 +103,15 @@ from .admin import is_authenticated_admin
 
 workshop_bp = Blueprint("workshop", __name__)
 PARTICIPANT_COOKIE = "glow_workshop_participant"
+
+
+@workshop_bp.app_template_filter("workshop_address_links")
+def workshop_address_links(text: str) -> Markup:
+    return Markup("").join(
+        Markup('<a href="{}">{}</a>').format(target, label) if target else escape(label)
+        for label, target in address_parts(text)
+    )
+
 
 ACTIVITY_ORDER = [
     "journey_check_in",

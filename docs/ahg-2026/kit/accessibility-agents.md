@@ -146,7 +146,7 @@ reviews everything an agent writes.
 ### Connect your assistant to the Accessibility Agents server
 
 Accessibility Agents runs a public server at
-`https://letitglow.app/a11y/mcp`. It offers twelve tools: eight checks for
+[GLOW accessibility server (letitglow.app/a11y/mcp)](https://letitglow.app/a11y/mcp). It offers twelve tools: eight checks for
 colors, text, HTML and component guidelines, plus document scanning,
 specialist instructions, picture extraction and alt-text editing. It can scan
 Word, Excel, PowerPoint, PDF, ePub, Markdown and HTML files up to 20 MB. It
@@ -183,7 +183,7 @@ Each row is one place you might use it, whether it works there today, and how.
 | Codex | Yes, with skills and server tools; the plugin install does not include review hooks | Use `npm run setup` in a local repository copy to set up the hook |
 | ChatGPT, on a free or paid account | Yes, by pasting | The texts on letitglow.app/ahg/assistant, as above |
 | Any browser, with your own AI key | Yes | letitglow.app/accessibility-agents: checks, questions, document review, and alt text for an image or every picture in a document |
-| ChatGPT or Claude, with the server connected | Yes, on plans that allow custom connectors | Connect `https://letitglow.app/a11y/mcp` for twelve tools, including checks, document scans and alt-text editing on files you send |
+| ChatGPT or Claude, with the server connected | Yes, on plans that allow custom connectors | Connect the [GLOW accessibility server (letitglow.app/a11y/mcp)](https://letitglow.app/a11y/mcp) for twelve tools, including checks, document scans and alt-text editing on files you send |
 | ChatGPT's app directory | Not listed; not needed for class | The browser path uses prepared texts; a custom connector is a separate option |
 | Claude's plugin directory | Full plugin refused by directory policy; skills-only follow-up pending as of 6 November 2026 | Not needed for class: use the prepared texts or configure the separate custom connector |
 | Claude, Gemini, Copilot on github.com, a campus assistant | Yes, by pasting | The same texts |

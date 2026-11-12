@@ -47,14 +47,14 @@
     },
     "kit/accessibility-agents.md": {
       "title": "Accessibility Agents, after today",
-      "sha256": "40c4414769dae5af85911a9f7030ef4a5a77b093011572ae981347efb49ab39f",
+      "sha256": "58006a317d3b0108a00b0197894f14d88f47e0f3fa943d0da880b46bc345ebf4",
       "formats": [
         "accessibility-agents.md",
         "accessibility-agents.html",
         "accessibility-agents.docx",
         "accessibility-agents.pptx"
       ],
-      "slides": 31
+      "slides": 32
     },
     "kit/accessibility-agents-in-the-kit.md": {
       "title": "Accessibility Agents in this kit",
@@ -99,6 +99,17 @@
         "write-your-own-agent.pptx"
       ],
       "slides": 64
+    },
+    "kit/closing-demo.md": {
+      "title": "Closing demo: ChatGPT Dots and Claude Duet",
+      "sha256": "f70de75474d09d9c4a1b4bc4b27a46eb0d76a43412255234dd0f124b5e79bee1",
+      "formats": [
+        "closing-demo.md",
+        "closing-demo.html",
+        "closing-demo.docx",
+        "closing-demo.pptx"
+      ],
+      "slides": 14
     },
     "kit/step-cards/0-before-the-day.md": {
       "title": "Step card 0: Before the day",

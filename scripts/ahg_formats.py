@@ -65,6 +65,7 @@ SOURCES: tuple[str, ...] = (
     "kit/glossary.md",
     "kit/session-in-plain-language.md",
     "kit/write-your-own-agent.md",
+    "kit/closing-demo.md",
     "kit/step-cards/0-before-the-day.md",
     "kit/step-cards/1-why-we-are-here.md",
     "kit/step-cards/2-design-your-agent.md",
@@ -145,12 +146,41 @@ def pandoc() -> str:
     return exe
 
 
-def _pandoc_json(markdown: str) -> list:
+def linked_document(markdown: str) -> dict:
+    from acb_large_print.document_links import address_parts
+
     done = subprocess.run(
         [pandoc(), "-f", "gfm-raw_html-task_lists", "-t", "json"],
         input=markdown.encode("utf-8"), capture_output=True, check=True,
     )
-    return json.loads(done.stdout.decode("utf-8"))["blocks"]
+    document = json.loads(done.stdout.decode("utf-8"))
+
+    def visit(node):
+        if isinstance(node, list):
+            return [part for item in node for part in expand(item)]
+        if isinstance(node, dict):
+            if node.get("t") in ("Link", "CodeBlock"):
+                return node
+            return {key: visit(value) for key, value in node.items()}
+        return node
+
+    def expand(node):
+        if isinstance(node, dict) and node.get("t") in ("Str", "Code"):
+            text = node["c"] if node["t"] == "Str" else node["c"][1]
+            parts = []
+            for label, target in address_parts(text):
+                inline = {"t": "Str", "c": label} if node["t"] == "Str" else {
+                    "t": "Code", "c": [node["c"][0], label],
+                }
+                parts.append({"t": "Link", "c": [["", [], []], [inline], [target, ""]]} if target else inline)
+            return parts or [node]
+        return [visit(node)]
+
+    return visit(document)
+
+
+def _pandoc_json(markdown: str) -> list:
+    return linked_document(markdown)["blocks"]
 
 
 def _inlines(items: list, *, bold: bool = False, url: str = "") -> list[Run]:
@@ -307,11 +337,11 @@ def write_html(doc: Doc, target: Path) -> None:
         template = Path(tmp) / "ahg.html"
         template.write_text(HTML_TEMPLATE, encoding="utf-8")
         done = subprocess.run(
-            [pandoc(), "-f", "gfm-raw_html", "-t", "html5", "--standalone", "--wrap=none",
+            [pandoc(), "-f", "json", "-t", "html5", "--standalone", "--wrap=none",
              f"--template={template}",
              "--metadata", f"pagetitle={doc.title}", "--metadata", f"lang={doc.lang}",
              "--metadata", f"author-meta={doc.author}", "--metadata", f"description-meta={doc.description}"],
-            input=body.encode("utf-8"), capture_output=True, check=True,
+            input=json.dumps(linked_document(body)).encode("utf-8"), capture_output=True, check=True,
         )
     page = done.stdout.decode("utf-8").replace("\r\n", "\n")
     # Pandoc gives each line of a highlighted code block an empty, hidden
@@ -461,7 +491,7 @@ def write_docx(doc: Doc, target: Path) -> None:
         nonlocal last_heading
         for block in blocks:
             if block.kind == "heading":
-                word.add_heading(plain(block.runs), level=min(block.level, 9))
+                _docx_runs(word.add_heading("", level=min(block.level, 9)), block.runs)
                 last_heading = plain(block.runs)
             elif block.kind == "para":
                 # ACB large print sets nothing in from the margin, quotes
@@ -711,11 +741,14 @@ def _place(slide, Inches) -> None:
 
 
 def _title(slide, text: str, lang: str, size: int = 28) -> None:
+    from acb_large_print.document_links import address_parts
+
     frame = slide.shapes.title.text_frame
     frame.word_wrap = True
     frame.margin_top = frame.margin_bottom = 0
     paragraph = frame.paragraphs[0]
-    _pptx_runs(paragraph, [Run(text)], size=size, lang=lang, bold=True)
+    _pptx_runs(paragraph, [Run(label, url=target) for label, target in address_parts(text)],
+               size=size, lang=lang, bold=True)
 
 
 def write_pptx(doc: Doc, target: Path) -> None:
