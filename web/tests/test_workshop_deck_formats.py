@@ -68,6 +68,39 @@ def test_every_format_renders_the_same_slides(ctx: deck.DeckContext):
         assert slide.title in markdown
 
 
+def test_addresses_in_slide_text_and_tables_are_live_office_links(ctx, tmp_path, monkeypatch):
+    from docx import Document
+    from pptx import Presentation
+
+    sample = deck.Slide("links", "", "Links", blocks=(
+        deck.Para("Visit letitglow.app/ahg."),
+        deck.Bullets(("Email help@example.edu.",)),
+        deck.Table("Resources", ("Site", "Address"), (("Browser", "vscode.dev"),)),
+    ), notes=("Read https://example.org/notes.",))
+    monkeypatch.setattr(deck, "build_slides", lambda _ctx: [sample])
+    word = Document(BytesIO(deck.build_deck_docx_bytes(ctx)))
+    targets = {r.target_ref for r in word.part.rels.values() if r.reltype.endswith("/hyperlink")}
+    assert {"https://letitglow.app/ahg", "mailto:help@example.edu",
+            "https://vscode.dev", "https://example.org/notes"} <= targets
+    powerpoint = Presentation(BytesIO(deck.build_deck_pptx_bytes(ctx)))
+    table = next(shape.table for shape in powerpoint.slides[0].shapes if shape.has_table)
+    assert table.cell(1, 1).text_frame.paragraphs[0].runs[0].hyperlink.address == "https://vscode.dev"
+    note_targets = {
+        run.hyperlink.address
+        for paragraph in powerpoint.slides[0].notes_slide.notes_text_frame.paragraphs
+        for run in paragraph.runs
+    }
+    assert "https://example.org/notes" in note_targets
+
+
+def test_deck_address_links_escape_html_and_preserve_punctuation():
+    from acb_large_print_web.routes.workshop import workshop_address_links
+
+    html = str(workshop_address_links('<script>bad()</script> Visit letitglow.app/ahg.'))
+    assert "<script>" not in html
+    assert "&lt;script&gt;" in html
+    assert '<a href="https://letitglow.app/ahg">letitglow.app/ahg</a>.' in html
+
 def test_the_title_is_the_program_title():
     """AHG's top attendee complaint is a title that does not match the content."""
     assert f"{deck.DECK_TITLE}: {deck.DECK_SUBTITLE}" == (

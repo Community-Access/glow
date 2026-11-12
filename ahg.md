@@ -591,7 +591,7 @@ These cover the opening and every format of the deck.
 
 | ID | Steps | Expected | Result |
 |---|---|---|---|
-| Deck-01 | Open `/workshop/session/ahg-2026/deck` | 26 slides; first title "Accessibility Agents"; subtitle is the program title word for word | |
+| Deck-01 | Open `/workshop/session/ahg-2026/deck` | 35 slides; first title "Accessibility Agents"; subtitle is the program title word for word | |
 | Deck-02 | Move through the deck with arrow keys, Page Up and Page Down, Home and End | Each change moves focus to the slide heading and is announced politely | |
 | Deck-03 | Turn speaker notes on and off with the `n` key and the button | Notes show and hide; state is announced | |
 | Deck-04 | Use "Read as one page" | The deck becomes one document with one heading per slide | |
@@ -707,7 +707,7 @@ These check the 30-day plan on each path.
 
 | ID | Steps | Expected | ChatGPT | Desktop | Web |
 |---|---|---|---|---|---|
-| Plan-01 | Start the block; answer six questions | One question at a time. ChatGPT: the plan in one code block as a table. VS Code: `my-30-day-plan.md` saved | | | |
+| Plan-01 | Start the block; answer eight questions from step card 7 | One question at a time. ChatGPT: the plan in one code block as a table. VS Code: `my-30-day-plan.md` saved; unknown approvals or measures stay pending with an owner and next action | | | |
 | Plan-02 | Read the last lines | One reason the plan is realistic; the six learning outcomes read back, each tied to something made today; ends "Go make one more champion." | | | |
 
 The commitment wall is the same on every path.
@@ -1092,16 +1092,18 @@ each answer:
 6. Now do the same for psy101-announcement.html.
 7. Now do the same for psy101-week3-captions.vtt.
 
-For block 7, answer the six questions with these:
+For block 7, answer the eight questions with these:
 
 | Question | Type this |
 |---|---|
 | One workflow | Plan alternate formats for the next five scanned readings that come in. |
+| Where it plugs in | An approved request starts the task. The agent reads fictional or approved non-sensitive checker evidence. Its draft goes into the existing approved ticket for staff review. |
 | One partner | Our alternate format specialist. |
-| One safeguard | A person checks every converted page against the original before it goes to a student. |
-| First step this week | Run the planner on one request we already finished, and compare its plan with what we did. |
-| Who needs to know | My director. |
-| If it worked | We sent the first large print reading two days sooner, and nothing was wrong in it. |
+| One safeguard | The alternate format specialist checks every converted page against the original. Stop and use the existing manual process if evidence is missing, private data appears or a deadline would be missed. |
+| Approved tools and data | Campus approval is pending. The process owner will confirm the approved assistant and allowed data; until then use fictional examples or the written plan without AI. |
+| First step this week | Run the planner alongside the manual process on up to five fictional or approved non-sensitive examples; keep student records out of AI. |
+| Who needs to know | My director and the campus process owner must approve the pilot. |
+| Day-30 review | Review on 16 December 2026. Baseline and target are pending; the process owner will measure total staff time including review, errors, rework and on-time delivery, then decide whether to continue, revise or stop. |
 
 ### 3.7 Sitting E: the browser path, the whole day, in ChatGPT
 

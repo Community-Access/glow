@@ -157,6 +157,8 @@ PLACES: dict[str, Place] = {
                                                     "Which Accessibility Agents skills work fully in the kit."),
     "kit/write-your-own-agent.md": Place("04-guides", "write-your-own-agent",
                                          "The full tutorial, for writing agents after the day."),
+    "kit/closing-demo.md": Place("04-guides", "closing-demo",
+                                  "Optional ChatGPT Dots and Claude Duet demonstration, after the evaluation."),
     "repo/README.md": Place("04-guides", "workshop-repository",
                             "The front page of the workshop repository on GitHub."),
     "kit/examples/maria-alternate-format-planner.md": Place("05-worked-examples", "maria-alternate-format-planner",
@@ -490,7 +492,7 @@ def write_epub(rel: str, title: str, target: Path, built: str) -> None:
     # as "agents/<login>/<name>/" would reach the XHTML as tags. Read the
     # Markdown once, turn any raw HTML back into the text it was, and write
     # the EPUB from that, the way the Word and PowerPoint copies already do.
-    document = json.loads(run([F.pandoc(), "-f", "gfm", "-t", "json"], input=body).stdout)
+    document = F.linked_document(body)
     document["blocks"] = _raw_html_as_text(document["blocks"])
     with tempfile.TemporaryDirectory() as tmp:
         css = Path(tmp) / "ahg.css"

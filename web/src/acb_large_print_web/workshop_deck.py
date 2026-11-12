@@ -34,6 +34,8 @@ from dataclasses import dataclass, field, replace
 from io import BytesIO
 from typing import ClassVar
 
+from acb_large_print.document_links import address_parts
+
 from . import workshop_agenda as agenda
 
 DECK_TITLE = "Accessibility Agents"
@@ -241,6 +243,7 @@ def build_slides(ctx: DeckContext) -> list[Slide]:
             ),
             notes=(
                 "The proctor introduces the session. Put the microphone on before you say a word, and keep it on all day: when someone speaks from the floor, pass them a mic or repeat what they said into yours before you answer.",
+                f"The workshop's join page is {ctx.join_display}. Keep this address available for anyone who needs to rejoin.",
                 "Say the key point before any logistics, in one sentence: accessibility in higher education does not scale by fixing, it scales by making more people who can, and agents are how one person's know-how reaches a whole course.",
                 "Describe the slide: the title, the subtitle from the program, and one sentence promising what they leave with.",
                 "Name the collaborators out loud: BITS and Techopolis, and Taylor Arndt, who helped dream up and build Accessibility Agents.",
@@ -1017,7 +1020,7 @@ def build_deck_docx_bytes(ctx: DeckContext) -> bytes:
     doc.add_paragraph(f"Event: {DECK_EVENT}")
     doc.add_paragraph(f"Presenter: {DECK_BYLINE}")
     doc.add_paragraph(DECK_CREDIT)
-    doc.add_paragraph(f"Join: {ctx.join_display}")
+    _docx_text(doc.add_paragraph(), f"Join: {ctx.join_display}")
     doc.add_paragraph(
         "Speaker notes follow each slide, under a heading of their own, so "
         "they can be skipped by heading navigation or read deliberately."
@@ -1039,7 +1042,7 @@ def build_deck_docx_bytes(ctx: DeckContext) -> bytes:
             # rather than thirty identical entries.
             doc.add_heading(f"Speaker notes, slide {index}", level=3)
             for note in slide.notes:
-                doc.add_paragraph(note)
+                _docx_text(doc.add_paragraph(), note)
 
     out = BytesIO()
     doc.save(out)
@@ -1114,6 +1117,14 @@ def _docx_link(paragraph, label: str, url: str) -> None:
     paragraph._p.append(link)
 
 
+def _docx_text(paragraph, text: str) -> None:
+    for label, target in address_parts(text):
+        if target:
+            _docx_link(paragraph, label, target)
+        else:
+            paragraph.add_run(label)
+
+
 def _docx_block(doc, block: Content) -> None:
     from docx.oxml.ns import qn  # type: ignore
 
@@ -1121,37 +1132,37 @@ def _docx_block(doc, block: Content) -> None:
     # text is what GLOW's auditor reports as a faux heading, and on paper it
     # is one: a reader cannot tell a big line from a section break.
     if isinstance(block, Para):
-        doc.add_paragraph(block.text)
+        _docx_text(doc.add_paragraph(), block.text)
         return
 
     if isinstance(block, Url):
-        doc.add_paragraph(f"Address: {block.text}")
+        _docx_text(doc.add_paragraph(), f"Address: {block.text}")
         return
 
     if isinstance(block, Bullets):
         style = "List Number" if block.ordered else "List Bullet"
         for item in block.items:
-            doc.add_paragraph(item, style=style)
+            _docx_text(doc.add_paragraph(style=style), item)
         return
 
     if isinstance(block, Definitions):
         for term, meaning in block.items:
-            doc.add_paragraph(f"{term}: {meaning}", style="List Bullet")
+            _docx_text(doc.add_paragraph(style="List Bullet"), f"{term}: {meaning}")
         return
 
     if isinstance(block, Panel):
         for line in block.lines:
             # Not "Intense Quote": Word's version is italic, blue and centred.
-            doc.add_paragraph(line)
+            _docx_text(doc.add_paragraph(), line)
         return
 
     if isinstance(block, Table):
-        doc.add_paragraph(block.caption)
+        _docx_text(doc.add_paragraph(), block.caption)
         table = doc.add_table(rows=1, cols=len(block.headers))
         table.style = "Table Grid"
         header_cells = table.rows[0].cells
         for position, heading in enumerate(block.headers):
-            header_cells[position].text = heading
+            _docx_text(header_cells[position].paragraphs[0], heading)
         # Mark the header row so it repeats across pages and is announced as
         # a header row rather than data.
         tr_pr = table.rows[0]._tr.get_or_add_trPr()
@@ -1161,7 +1172,7 @@ def _docx_block(doc, block: Content) -> None:
         for row in block.rows:
             cells = table.add_row().cells
             for position, value in enumerate(row):
-                cells[position].text = value
+                _docx_text(cells[position].paragraphs[0], value)
         doc.add_paragraph("")
         return
 
@@ -1231,6 +1242,8 @@ def build_deck_pptx_bytes(ctx: DeckContext) -> bytes:
         if slide_data.kicker:
             notes.insert(0, f"[{slide_data.kicker}]")
         slide.notes_slide.notes_text_frame.text = "\n\n".join(notes)
+        for paragraph in slide.notes_slide.notes_text_frame.paragraphs:
+            _pptx_text(paragraph, paragraph.text)
 
     out = BytesIO()
     prs.save(out)
@@ -1241,6 +1254,15 @@ def build_deck_pptx_bytes(ctx: DeckContext) -> bytes:
 #: 24pt is the usual floor for a projected room; the ACB's 18pt is for print
 #: held in the hand, not for the back row.
 PPTX_FLOOR_PT = 24
+
+
+def _pptx_text(paragraph, text: str) -> None:
+    paragraph.clear()
+    for label, target in address_parts(text):
+        run = paragraph.add_run()
+        run.text = label
+        if target:
+            run.hyperlink.address = target
 
 
 def _pptx_links(frame, links: tuple[tuple[str, str], ...], Pt, *, first: bool) -> None:
@@ -1291,7 +1313,7 @@ def _pptx_body_slide(slide, slide_data: Slide, Pt) -> None:
         nonlocal first
         paragraph = frame.paragraphs[0] if first else frame.add_paragraph()
         first = False
-        paragraph.text = text
+        _pptx_text(paragraph, text)
         paragraph.level = level
         if marker is None:
             marker = level > 0
@@ -1366,9 +1388,9 @@ def _pptx_table_slide(slide, slide_data: Slide, Inches, Pt) -> None:
         frame = box.text_frame
         frame.word_wrap = True
         frame.margin_top = frame.margin_bottom = 0
-        frame.text = lines[0]
+        _pptx_text(frame.paragraphs[0], lines[0])
         for line in lines[1:]:
-            frame.add_paragraph().text = line
+            _pptx_text(frame.add_paragraph(), line)
         for paragraph in frame.paragraphs:
             for run in paragraph.runs:
                 run.font.size = Pt(PPTX_FLOOR_PT)
@@ -1399,7 +1421,7 @@ def _pptx_table_slide(slide, slide_data: Slide, Inches, Pt) -> None:
 
     for position, heading in enumerate(table_block.headers):
         cell = table.cell(0, position)
-        cell.text = heading
+        _pptx_text(cell.text_frame.paragraphs[0], heading)
         for paragraph in cell.text_frame.paragraphs:
             for run in paragraph.runs:
                 run.font.size = Pt(PPTX_FLOOR_PT)
@@ -1409,7 +1431,7 @@ def _pptx_table_slide(slide, slide_data: Slide, Inches, Pt) -> None:
     for row_index, row in enumerate(table_block.rows, start=1):
         for position, value in enumerate(row):
             cell = table.cell(row_index, position)
-            cell.text = value
+            _pptx_text(cell.text_frame.paragraphs[0], value)
             for paragraph in cell.text_frame.paragraphs:
                 for run in paragraph.runs:
                     run.font.size = Pt(PPTX_FLOOR_PT)
@@ -1432,7 +1454,7 @@ def _pptx_table_slide(slide, slide_data: Slide, Inches, Pt) -> None:
         for line in after:
             paragraph = frame.paragraphs[0] if first else frame.add_paragraph()
             first = False
-            paragraph.text = line
+            _pptx_text(paragraph, line)
             for run in paragraph.runs:
                 run.font.size = Pt(32)
                 run.font.bold = True

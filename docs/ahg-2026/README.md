@@ -91,6 +91,29 @@ because it carries the room's real join address:
 
 Tests hold each of those: `web/tests/test_workshop_deck_formats.py`.
 
+## Numbered teacher and student rehearsal
+
+From the repository root, with the active Python environment and
+`PYTHONPATH` pointing to `web\src;desktop\src`, run:
+
+```text
+python scripts\build_ahg_rehearsal.py S:\ahgtest
+python scripts\build_ahg_rehearsal.py S:\ahgtest --check
+```
+
+Open `S:\ahgtest\000-start-here.html`. Every ordered HTML step names and
+links to its original source. Markdown copies are in `text`; unchanged
+course files, including all slide formats, are in `materials`. The builder
+covers every test-plan case and applicable path, all 35 slides individually,
+the required accessibility environments, teacher preparation, beginner dry
+runs and the optional [Dots and Claude Duet demo](kit/closing-demo.md).
+The CSV results sheet starts Pending throughout; no historic pass is reused.
+
+The check verifies order, case/path and slide coverage, source snapshot
+hashes, local links and HTML structure. It does not run signed-in assistants
+or certify Office or assistive technology behavior. Use a fresh destination
+to rebuild: existing rehearsal notes and results are never overwritten.
+
 ## Reference, for the room and the build
 
 Each row is one file, and what it is for.

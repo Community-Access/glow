@@ -59,6 +59,45 @@ def test_a_readme_s_copies_never_compete_with_it():
     assert F.output_stem("kit/step-cards/6-share-it.md") == "kit/step-cards/6-share-it"
 
 
+def test_plain_and_code_addresses_are_clickable_in_every_export(tmp_path):
+    markdown = """# Link rehearsal
+
+## Resources
+
+Visit letitglow.app/ahg/paths, then `https://example.org/a_(b)`.
+Use [the named resource](https://example.com/named) or help@example.edu.
+
+| Site | Address |
+|---|---|
+| Browser | vscode.dev |
+
+```text
+curl https://example.com/command
+```
+"""
+    doc = F.Doc(tmp_path / "source.md", "Link rehearsal", "en", "AHG", "", markdown,
+                F._blocks(F._pandoc_json(markdown)))
+    expected = {"https://letitglow.app/ahg/paths", "https://example.org/a_(b)",
+                "https://example.com/named", "mailto:help@example.edu", "https://vscode.dev"}
+    assert C.expected_targets(markdown) == expected
+    for extension, writer in ((".html", F.write_html), (".docx", F.write_docx), (".pptx", F.write_pptx)):
+        target = tmp_path / ("links" + extension)
+        writer(doc, target)
+        assert C.hyperlink_targets(target) == expected, extension
+
+
+def test_address_detection_keeps_punctuation_and_does_not_link_file_names():
+    from acb_large_print.document_links import address_parts
+
+    text = "(https://example.org/a_(b)). Read slides.pptx, SKILL.md and report.html."
+    parts = list(address_parts(text))
+    assert "".join(label for label, _target in parts) == text
+    assert [(label, target) for label, target in parts if target] == [
+        ("https://example.org/a_(b)", "https://example.org/a_(b)"),
+    ]
+    assert list(address_parts("vscode.dev.")) == [("vscode.dev", "https://vscode.dev"), (".", "")]
+
+
 def test_reading_tables_allocate_space_for_wrapped_text(tmp_path):
     from pptx import Presentation
     from pptx.util import Inches

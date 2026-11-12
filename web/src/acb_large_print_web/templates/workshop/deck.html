@@ -267,26 +267,26 @@
 
 {% macro render_block(b) -%}
   {%- if b.kind == 'para' -%}
-    <p{% if b.big %} class="big"{% elif b.lead %} class="lead"{% elif b.small %} class="slide-no"{% endif %}>{{ b.text }}</p>
+    <p{% if b.big %} class="big"{% elif b.lead %} class="lead"{% elif b.small %} class="slide-no"{% endif %}>{{ b.text|workshop_address_links }}</p>
   {%- elif b.kind == 'url' -%}
-    <p class="url">{{ b.text }}</p>
+    <p class="url">{{ b.text|workshop_address_links }}</p>
   {%- elif b.kind == 'bullets' -%}
     {% if b.ordered %}<ol>{% else %}<ul>{% endif %}
-    {% for item in b.items %}<li>{{ item }}</li>{% endfor %}
+    {% for item in b.items %}<li>{{ item|workshop_address_links }}</li>{% endfor %}
     {% if b.ordered %}</ol>{% else %}</ul>{% endif %}
   {%- elif b.kind == 'definitions' -%}
     <dl class="formula">
-      {% for term, meaning in b.items %}<dt>{{ term }}</dt><dd>{{ meaning }}</dd>{% endfor %}
+      {% for term, meaning in b.items %}<dt>{{ term }}</dt><dd>{{ meaning|workshop_address_links }}</dd>{% endfor %}
     </dl>
   {%- elif b.kind == 'panel' -%}
-    <div class="panel">{% for line in b.lines %}<p>{{ line }}</p>{% endfor %}</div>
+    <div class="panel">{% for line in b.lines %}<p>{{ line|workshop_address_links }}</p>{% endfor %}</div>
   {%- elif b.kind == 'table' -%}
     <table{% if b.compact %} class="agenda"{% endif %}>
       <caption>{{ b.caption }}</caption>
       <thead><tr>{% for h in b.headers %}<th scope="col">{{ h }}</th>{% endfor %}</tr></thead>
       <tbody>
         {% for row in b.rows %}
-        <tr>{% for cell in row %}{% if loop.first %}<th scope="row">{{ cell }}</th>{% else %}<td>{{ cell }}</td>{% endif %}{% endfor %}</tr>
+        <tr>{% for cell in row %}{% if loop.first %}<th scope="row">{{ cell|workshop_address_links }}</th>{% else %}<td>{{ cell|workshop_address_links }}</td>{% endif %}{% endfor %}</tr>
         {% endfor %}
       </tbody>
     </table>
@@ -309,7 +309,7 @@
   {% if slide.notes %}
   <div class="notes">
     <h3>Speaker notes</h3>
-    {% for note in slide.notes %}<p>{{ note }}</p>{% endfor %}
+    {% for note in slide.notes %}<p>{{ note|workshop_address_links }}</p>{% endfor %}
   </div>
   {% endif %}
 </section>

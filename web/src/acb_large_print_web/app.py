@@ -20,7 +20,11 @@ from .rules import get_help_urls_map, get_rules_by_category, get_rules_by_severi
 try:
     from quill_glow_core import (
         configure_default_services as _configure_shared_core_default,
+    )
+    from quill_glow_core import (
         get_component_versions as _get_shared_core_component_versions,
+    )
+    from quill_glow_core import (
         get_startup_telemetry_dict as _get_shared_core_startup_telemetry,
     )
 except Exception:
@@ -175,7 +179,8 @@ def create_app(config: dict | None = None) -> Flask:
 
     @app.before_request
     def _record_request_start():
-        from flask import g as _g, request as _req
+        from flask import g as _g
+        from flask import request as _req
         _g._request_start = _time.monotonic()
         incoming_id = (_req.headers.get("X-Request-ID") or "").strip()
         _g.request_id = incoming_id or uuid.uuid4().hex[:12]
@@ -189,7 +194,8 @@ def create_app(config: dict | None = None) -> Flask:
     @app.before_request
     def _count_visitor():
         """Increment visitor counter once per browser session."""
-        from flask import session as _sess, request as _req
+        from flask import request as _req
+        from flask import session as _sess
         # Skip static files, health checks, and API calls
         if _req.path.startswith('/static') or _req.path == '/health':
             return
@@ -204,7 +210,8 @@ def create_app(config: dict | None = None) -> Flask:
 
     @app.after_request
     def _log_request(response):
-        from flask import g as _g, request as _req
+        from flask import g as _g
+        from flask import request as _req
         request_id = getattr(_g, "request_id", "") or uuid.uuid4().hex[:12]
         response.headers["X-Request-ID"] = request_id
         # Content-Security-Policy with per-request nonce. Set here (not in
@@ -247,6 +254,7 @@ def create_app(config: dict | None = None) -> Flask:
     @app.context_processor
     def inject_rules():
         from flask import g as _g
+
         from .ai_features import get_all_flags as _get_ai_flags
         from .branding import get_branding_context as _get_branding_context
         from .version import get_version as _get_release_version
@@ -283,7 +291,8 @@ def create_app(config: dict | None = None) -> Flask:
         # Ensure About page always has an explicit shared-core library version.
         if "shared_core_library" not in component_versions:
             try:
-                from importlib.metadata import PackageNotFoundError, version as _pkg_version
+                from importlib.metadata import PackageNotFoundError
+                from importlib.metadata import version as _pkg_version
 
                 try:
                     component_versions["shared_core_library"] = _pkg_version("quill-glow-core")
@@ -402,7 +411,9 @@ def create_app(config: dict | None = None) -> Flask:
     # inline code, unordered/ordered lists, horizontal rules, and paragraphs.
     # Uses markupsafe (already a Flask dependency) for escaping.
     import re as _re
-    from markupsafe import Markup, escape as _esc
+
+    from markupsafe import Markup
+    from markupsafe import escape as _esc
 
     def _markdown_to_html(text: str) -> Markup:
         if not text:
@@ -535,38 +546,38 @@ def create_app(config: dict | None = None) -> Flask:
     app.jinja_env.globals["group_findings_by_rule"] = _group_findings_by_rule
 
     # Register blueprints
-    from .routes.main import main_bp
+    from .routes.about import about_bp
     from .routes.accessibility_agents import accessibility_agents_bp
-    from .routes.audit import audit_bp
-    from .routes.fix import fix_bp
-    from .routes.template import template_bp
-    from .routes.export import export_bp
-    from .routes.guidelines import guidelines_bp
-    from .routes.feedback import feedback_bp
+    from .routes.admin import admin_bp
     from .routes.ahg_checkin import ahg_checkin_bp
     from .routes.ahg_survey import ahg_survey_bp
-    from .routes.about import about_bp
-    from .routes.convert import convert_bp
-    from .routes.docs_pages import guide_bp, changelog_bp, prd_bp, deployment_bp, faq_bp, announcement_bp
-    from .routes.settings import ai_bp, settings_bp
-    from .routes.privacy import privacy_bp
-    from .routes.whisperer import whisperer_bp
-    from .routes.consent import consent_bp, consent_required
-    from .routes.process import process_bp
-    from .routes.chat import chat_bp
-    from .routes.playground import playground_bp
-    from .routes.admin import admin_bp
-    from .routes.rules_ref import rules_ref_bp
-    from .routes.speech import speech_bp
-    from .routes.page_flow import page_flow_bp
-    from .routes.braille import braille_bp
-    from .routes.magic import magic_bp
-    from .routes.site_audit import site_audit_bp
     from .routes.ai_usage import ai_usage_bp
     from .routes.alt_text import alt_text_bp
+    from .routes.audit import audit_bp
+    from .routes.braille import braille_bp
+    from .routes.chat import chat_bp
+    from .routes.consent import consent_bp, consent_required
+    from .routes.convert import convert_bp
+    from .routes.docs_pages import announcement_bp, changelog_bp, deployment_bp, faq_bp, guide_bp, prd_bp
+    from .routes.export import export_bp
+    from .routes.feedback import feedback_bp
+    from .routes.fix import fix_bp
+    from .routes.guidelines import guidelines_bp
     from .routes.jobs import jobs_bp
+    from .routes.magic import magic_bp
+    from .routes.main import main_bp
+    from .routes.page_flow import page_flow_bp
     from .routes.passport import passport_bp
+    from .routes.playground import playground_bp
+    from .routes.privacy import privacy_bp
+    from .routes.process import process_bp
+    from .routes.rules_ref import rules_ref_bp
+    from .routes.settings import ai_bp, settings_bp
     from .routes.shortlinks import short_bp
+    from .routes.site_audit import site_audit_bp
+    from .routes.speech import speech_bp
+    from .routes.template import template_bp
+    from .routes.whisperer import whisperer_bp
     from .routes.workshop import workshop_bp
 
     app.register_blueprint(main_bp)
@@ -684,27 +695,31 @@ def create_app(config: dict | None = None) -> Flask:
     def require_consent():
         if app.testing:
             return None
-        from flask import redirect, request as req, url_for as _url_for
+        from flask import redirect
+        from flask import request as req
+        from flask import url_for as _url_for
         if consent_required(req):
             return redirect(
                 _url_for("consent.consent_form", next=req.full_path.rstrip("?"))
             )
 
     def _build_health_payload() -> tuple[dict, bool]:
-        from .gating import get_capacity_metrics
-        from .ai_gateway import (
-            get_admin_stats,
-            is_ai_configured,
-            is_budget_exhausted,
-        )
-        from . import feature_flags as _ff
+        import time as _htime
+
         from acb_large_print.braille_converter import (
             braille_available,
             get_unavailability_reason,
             louis_version,
         )
+
+        from . import feature_flags as _ff
+        from .ai_gateway import (
+            get_admin_stats,
+            is_ai_configured,
+            is_budget_exhausted,
+        )
+        from .gating import get_capacity_metrics
         from .speech import get_engine_status
-        import time as _htime
 
         _hstart = _htime.monotonic()
 
@@ -1070,6 +1085,7 @@ def create_app(config: dict | None = None) -> Flask:
         """
         import time
         from pathlib import Path as _Path
+
         from . import upload
 
         now = time.time()
@@ -1121,8 +1137,9 @@ def create_app(config: dict | None = None) -> Flask:
     # --- OIDC Authentication Integration ---
     try:
         from flask_oidc import OpenIDConnect
-        from .oidc_auth import oidc_auth_bp
+
         from .keycloak import build_oidc_settings
+        from .oidc_auth import oidc_auth_bp
 
         oidc_settings = build_oidc_settings()
         if oidc_settings is None:
@@ -1207,9 +1224,10 @@ def _probe_openrouter(timeout: float = 4.0) -> dict[str, str]:
     We hit /models (a cheap, read-only endpoint) with a short timeout.
     No content is sent -- this is purely a connectivity + auth check.
     """
-    from .credentials import get_openrouter_api_key
-    from urllib.request import Request, urlopen
     from urllib.error import HTTPError, URLError
+    from urllib.request import Request, urlopen
+
+    from .credentials import get_openrouter_api_key
 
     key = get_openrouter_api_key()
     if not key:

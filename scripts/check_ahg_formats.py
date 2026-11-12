@@ -26,6 +26,7 @@ import json
 import re
 import sys
 import zipfile
+import xml.etree.ElementTree as ET
 from html.parser import HTMLParser
 from pathlib import Path
 
@@ -44,6 +45,7 @@ class _Html(HTMLParser):
         self.title = ""
         self.headings: list[int] = []
         self.problems: list[str] = []
+        self.targets: set[str] = set()
         self._in_title = False
         self._link: list[str] | None = None
 
@@ -61,6 +63,8 @@ class _Html(HTMLParser):
             self.problems.append("an image has no alt attribute")
         elif tag == "a":
             self._link = []
+            if a.get("href"):
+                self.targets.add(a["href"])
 
     def handle_endtag(self, tag):
         if tag == "title":
@@ -172,6 +176,52 @@ def check_pptx(path: Path) -> list[str]:
     return out
 
 
+def hyperlink_targets(path: Path) -> set[str]:
+    """Read live anchors, not merely unused Office relationship records."""
+    if path.suffix == ".html":
+        parser = _Html()
+        parser.feed(path.read_text(encoding="utf-8"))
+        return parser.targets
+    targets: set[str] = set()
+    rid = "{http://schemas.openxmlformats.org/officeDocument/2006/relationships}id"
+    with zipfile.ZipFile(path) as archive:
+        for name in archive.namelist():
+            if name != "word/document.xml" and not re.fullmatch(
+                r"ppt/(?:slides/slide|notesSlides/notesSlide)\d+\.xml", name
+            ):
+                continue
+            parent, filename = name.rsplit("/", 1)
+            relfile = f"{parent}/_rels/{filename}.rels"
+            relationships = {
+                rel.attrib["Id"]: rel.attrib["Target"]
+                for rel in ET.fromstring(archive.read(relfile))
+                if rel.attrib["Type"].endswith("/hyperlink")
+            } if relfile in archive.namelist() else {}
+            for element in ET.fromstring(archive.read(name)).iter():
+                if element.tag.rsplit("}", 1)[-1] in ("hyperlink", "hlinkClick"):
+                    target = relationships.get(element.get(rid, ""))
+                    if target:
+                        targets.add(target)
+    return targets
+
+
+def expected_targets(markdown: str) -> set[str]:
+    def links(node):
+        if isinstance(node, dict):
+            if node.get("t") == "Link":
+                target = node["c"][2][0]
+                if target.startswith(("https://", "http://", "mailto:")):
+                    yield target
+            for value in node.values():
+                yield from links(value)
+        elif isinstance(node, list):
+            for value in node:
+                yield from links(value)
+
+    _meta, body = F.split_front_matter(markdown)
+    return set(links(F.linked_document(body)))
+
+
 def check_all() -> dict[str, list[str]]:
     results: dict[str, list[str]] = {}
     manifest = json.loads(F.MANIFEST.read_text(encoding="utf-8"))["documents"] if F.MANIFEST.is_file() else {}
@@ -184,6 +234,7 @@ def check_all() -> dict[str, list[str]]:
         recorded = manifest.get(rel, {}).get("sha256")
         if recorded != F.source_hash(markdown):
             problems.append(f"{rel}: changed since its formats were built; run python scripts/build_ahg_kit.py --formats-only")
+        expected = expected_targets(markdown)
         for out in F.outputs_for(rel):
             path = F.AHG / out
             if not path.is_file():
@@ -191,6 +242,9 @@ def check_all() -> dict[str, list[str]]:
                 continue
             check = {".html": check_html, ".docx": check_docx, ".pptx": check_pptx}[path.suffix]
             problems += [f"{out}: {p}" for p in check(path)]
+            missing = expected - hyperlink_targets(path)
+            if missing:
+                problems.append(f"{out}: missing clickable hyperlinks: {sorted(missing)}")
         results[rel] = problems
     return results
 

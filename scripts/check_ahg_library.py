@@ -30,6 +30,7 @@ import csv
 import json
 import re
 import sys
+import zipfile
 from html.parser import HTMLParser
 from pathlib import Path
 from urllib.parse import unquote, urlsplit
@@ -38,6 +39,7 @@ REPO = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(REPO / "scripts"))
 
 import build_ahg_library as B
+import check_ahg_formats as C
 
 AXE_CANDIDATES = (
     REPO / "web" / "node_modules" / "axe-core" / "axe.min.js",
@@ -128,6 +130,60 @@ def check_layout(root: Path, notes: dict) -> list[str]:
         if "planted on purpose" not in first:
             problems.append("08-sample-course/README.md: the first sentence must say the barriers are planted on purpose")
     return problems
+
+
+def _normalized_target(target: str) -> str:
+    parts = urlsplit(unquote(target))
+    if parts.scheme in ("http", "https") and parts.netloc and not parts.path:
+        parts = parts._replace(path="/")
+    return parts.geturl()
+
+
+def check_document_links(root: Path, notes: dict) -> tuple[list[str], int]:
+    """Prove that source destinations survived conversion in each reading format."""
+    problems: list[str] = []
+    checked = 0
+    only = set(notes.get("only") or [])
+    for place in B.PLACES.values():
+        if only and place.slug not in only:
+            continue
+        folder = root / place.group / place.slug
+        source = folder / f"{place.slug}.md"
+        if not source.is_file():
+            continue  # check_layout reports the missing document
+        expected = C.expected_targets(source.read_text(encoding="utf-8"))
+        for extension in ("html", "docx", "pptx", "epub", "pdf", "daisy-202", "daisy-3"):
+            path = folder / f"{place.slug}.{extension}"
+            if extension.startswith("daisy-"):
+                path = folder / "daisy" / extension
+            if not path.exists():
+                continue  # recorded format exceptions and layout are checked separately
+            if extension in ("html", "docx", "pptx"):
+                targets = C.hyperlink_targets(path)
+            elif extension == "pdf":
+                import pymupdf
+
+                with pymupdf.open(path) as document:
+                    targets = {link["uri"] for page in document for link in page.get_links() if link.get("uri")}
+            else:
+                parser = _Links()
+                if extension == "epub":
+                    with zipfile.ZipFile(path) as archive:
+                        for name in archive.namelist():
+                            if name.endswith((".xhtml", ".html")):
+                                parser.feed(archive.read(name).decode("utf-8"))
+                else:
+                    for content in path.rglob("*"):
+                        if content.suffix.lower() in (".html", ".xhtml", ".xml"):
+                            parser.feed(content.read_text(encoding="utf-8"))
+                targets = set(parser.links)
+            missing = {_normalized_target(target) for target in expected} - {
+                _normalized_target(target) for target in targets
+            }
+            if missing:
+                problems.append(f"{path.relative_to(root)}: missing clickable targets: {sorted(missing)}")
+            checked += 1
+    return problems, checked
 
 
 def check_manifest(root: Path) -> tuple[list[str], int]:
@@ -279,6 +335,8 @@ def main(argv: list[str] | None = None) -> int:
     report.append(("Links in index.html and README.md", problems, f"{links} links"))
     problems, files = check_conference(root, notes)
     report.append(("Conference set", problems, f"{files} files"))
+    problems, files = check_document_links(root, notes)
+    report.append(("Source hyperlinks in reading formats", problems, f"{files} formats checked"))
     if not args.no_axe:
         axe_js = args.axe_js or _axe_js()
         if axe_js is None:
