@@ -17,30 +17,40 @@ Step 7 of 7: your campus, and a 30-day plan.
 
 A 30-day plan for your own campus, and your commitment on the wall.
 
+## Why and where
+
+The plan turns today's practice into one safe, measurable next step. On the
+browser path, answer in the same assistant conversation and save a draft in
+an approved document. On either VS Code path, Copilot saves a draft in the
+kit. Both paths review the draft before saving the final version.
+
 ## Steps
 
 ### In a browser
 
 1. In the same conversation, paste the text for "Block 7: take it home" from letitglow.app/ahg/assistant, and press Enter.
 2. Answer eight short questions: workflow, handoff, partner, review safeguard, approved tools and data, first step, approval, and a measurable 30-day check.
-3. Your assistant gives your plan back in a box with a Copy button. Copy it into an email to yourself or a Word document.
+3. Your assistant gives your plan back in a box with a Copy button. Copy it into a Word document or an email to yourself as a draft.
 
 ### In VS Code
 
 1. Open Copilot Chat: Control+Alt+I on Windows, or Control+Command+I on a Mac.
 2. Type /my-30-day-plan and press Enter.
 3. Answer eight short questions: workflow, handoff, partner, review safeguard, approved tools and data, first step, approval, and a measurable 30-day check.
-4. Copilot saves your plan as my-30-day-plan.md in the kit.
+4. Copilot saves your draft as my-30-day-plan.md in the kit.
 
 ### Everyone
 
-Before saving, explain your plan to a partner in one minute: what starts
+Before the final save, explain your draft to a partner in one minute: what starts
 it, what evidence goes in, where the draft goes, who checks it, and what
 would make you stop. Your partner names one unclear handoff to fix. If you
 work alone, check these against one worked example. Unknown measurements or
 approvals stay pending, with a role and next action to confirm them.
 
-1. At 4:15, open letitglow.app/w/ahg-2026/11 in your browser and add your one-sentence commitment for the wall. It appears with no name on it.
+1. Correct the unclear handoff and save the final plan. In VS Code, ask
+   Copilot to update my-30-day-plan.md or edit and save it yourself. In a
+   browser, update the draft document or email.
+2. At 4:15, open letitglow.app/w/ahg-2026/11 in your browser and add your one-sentence commitment for the wall. It appears with no name on it.
 
 ## You are on track if
 

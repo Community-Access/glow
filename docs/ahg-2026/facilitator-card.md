@@ -58,7 +58,7 @@ letitglow.app/ahg/assistant.
 | 1:15 | 4. Ground it (50), then version 3 | /ground-my-agent, /review-my-agent |
 | 2:05 | Break (10) | none |
 | 2:15 | 5. Build the office (50), then version 4; Accessibility Agents on the projector last | /run-the-office, /review-my-agent |
-| 3:05 | 6. Share it (35), read names as agents arrive; everyone's agents on the projector last | share page |
+| 3:05 | 6. Share it (35), project approved agents only with their authors' permission; otherwise use ready-made examples | share page |
 | 3:40 | 7. Take it home (35): demo 5, plan 20, partner check 5, save 5 | /my-30-day-plan |
 | 4:15 | Commitments (10) | the wall |
 | 4:25 | Session evaluation (5) | proctor |
@@ -68,8 +68,19 @@ letitglow.app/ahg/assistant.
 - Before a word: mic on. Keep it on. Repeat every question into it.
 - First minutes: "Forty thousand files and three people. Here is where we will be at four o'clock."
 - Every block: "Here is what you will have at the end." Then show it.
+- Name the number and destination, and leave the matching step card and
+  `your-day-at-a-glance.md` available in writing. Say the same transition
+  aloud:
+  - 1 to 2: "Your path is ready; next we design one task."
+  - 2 to 3: "Keep version 1; next we try it without a report."
+  - 3 to 4: "Keep version 2 and the answer; after lunch add evidence."
+  - 4 to 5: "Verify the citation and keep version 3; next join the team."
+  - 5 to 6: "Keep version 4; check privacy and permission before sharing."
+  - 6 to 7: "Shared or deferred, you have a copy; next make your plan."
+  - 7 to close: "Check the draft with a partner, save it and add a commitment."
 - Often: "Stuck? Start from a ready-made agent and put your name on it. That counts."
-- When VS Code fights back: "Take the browser path. Same block, nothing to install."
+- When VS Code fights back: "Keep your agent; use an approved browser assistant
+  or a written example with a helper, from the same block."
 - Whenever an assistant comes up: "Never paste anything private."
 - Whatever you project: say what is on it.
 - At 4:25: "Before you go: the session evaluation." Then stop talking.
@@ -80,6 +91,8 @@ letitglow.app/ahg/assistant.
 2. Copilot limit reached, or VS Code will not cooperate: save the agent; use an approved browser assistant or a written example, same block.
 3. Wifi slow: one block at a time, demo each step on the projector.
 4. GitHub down: participants keep a reviewed agent and share later; collect files only with permission using an approved transfer method.
+5. A browser copy or download fails: follow the on-screen manual copy or
+   plain-text editor instruction; keep the latest version before changing tools.
 
 ## Before the room fills
 

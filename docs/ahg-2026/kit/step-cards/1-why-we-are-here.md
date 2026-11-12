@@ -27,6 +27,12 @@ person who checks its work.
 - Every word we use: [the glossary](https://letitglow.app/ahg/kit/glossary.md)
 - How to write an agent, step by step: [write your own agent](https://letitglow.app/ahg/kit/write-your-own-agent.md)
 - The three paths: [choose your workshop path](https://letitglow.app/ahg/paths)
+- The seven stops: [your day at a glance](https://letitglow.app/ahg/kit/your-day-at-a-glance.md)
+
+On the browser path, the workshop page supplies prompts and your assistant
+answers them in a separate tab. On either VS Code path, use Copilot Chat
+with the kit open. Stay on your chosen path unless you need an approved
+fallback.
 
 ## Steps
 
@@ -37,7 +43,7 @@ person who checks its work.
 1. Open letitglow.app/ahg/assistant in one tab, and your AI assistant, signed in, in another.
 2. Start a new conversation. Use this one conversation all day.
 3. Under "Block 1: the ready check", press the Copy button.
-4. Switch to your assistant's tab with Control+Tab, move to the message box, paste with Control+V on Windows or Command+V on a Mac, and press Enter.
+4. Switch to your assistant's tab. Control+Tab moves through tabs; repeat it until you reach your assistant, or choose its tab by name. Move to the message box, paste with Control+V on Windows or Command+V on a Mac, and press Enter.
 
 ### In VS Code
 
@@ -51,13 +57,14 @@ Your assistant or Copilot ends the ready check with: You are ready for 16 Novemb
 
 ## If you are stuck
 
-If the ready check says something needs a hand, a helper fixes it with you while the room carries on. If VS Code will not cooperate, switch to the browser path: it needs nothing installed, and you will not miss anything.
+If the ready check says something needs a hand, a helper fixes it with you while the room carries on. If VS Code will not cooperate, use an approved browser assistant or a written example with a helper.
 
 Raise a hand at any time. A helper comes to you.
 
 ## Your win
 
-You are set up. That was the hardest part of the day, and it is done.
+You are set up. Next, in block 2, describe one task and make your first
+agent.
 
 ## On Monday
 

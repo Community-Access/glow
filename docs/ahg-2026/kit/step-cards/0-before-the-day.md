@@ -12,9 +12,9 @@ path. Everything starts at letitglow.app/ahg.
 
 ## What you will have at the end
 
-A laptop that is ready for the whole workshop, a message from your AI
-assistant saying so, and your practice agent already shared, so sharing on
-the day is the second time, not the first.
+A laptop that is ready for the workshop and a message from your AI assistant
+saying so. If public sharing is approved, you will also have shared a
+practice agent. Otherwise keep it local and note how to seek approval.
 
 New to words like agent, skill or Copilot Chat? Read `glossary.md` in the
 kit, or at letitglow.app/ahg/kit, first. It is one page.
@@ -22,7 +22,9 @@ kit, or at letitglow.app/ahg/kit, first. It is one page.
 ## Choose your path
 
 The day is the same on every path. Not sure? Take the browser path.
-letitglow.app/ahg/paths compares them.
+letitglow.app/ahg/paths compares them. Choose an approved path now so you
+can stay in it during the exercises. `your-day-at-a-glance.md` in the kit
+shows where each block leads.
 
 - The browser path: nothing to install. ChatGPT, Copilot on github.com,
   Claude, Gemini or your campus assistant, in any browser.
@@ -40,8 +42,9 @@ keep your agent local until approval is confirmed.
 
 ### Everyone
 
-1. Make a free GitHub account at github.com, if you do not have one. Use
-   your work email if your institution allows it. If GitHub asks you to set
+1. If your chosen path or approved sharing needs GitHub, make a free account
+   at github.com, if you do not have one. Use your work email if your
+   institution allows it. If GitHub asks you to set
    up two-factor sign-in, choose the option that works best with your screen
    reader or phone; GitHub Mobile and an authenticator app both work.
 2. Answer the five-minute survey at letitglow.app/ahg/survey: your name,
@@ -61,12 +64,18 @@ keep your agent local until approval is confirmed.
 3. In another tab, open letitglow.app/ahg/assistant. Under "Block 1: the
    ready check", press the Copy button. A message under the button says it
    is copied.
-4. Switch to your assistant's tab with Control+Tab. Move to the message box,
-   paste with Control+V on Windows or Command+V on a Mac, and press Enter.
-5. Share your practice agent. Open letitglow.app/ahg/share, choose "My
+4. Switch to your assistant's tab. Control+Tab moves through tabs; repeat it
+   until you reach your assistant, or choose its tab by name. Move to the
+   message box, paste with Control+V on Windows or Command+V on a Mac, and
+   press Enter.
+5. If public sharing is approved, share your practice agent. Open
+   letitglow.app/ahg/share, choose "My
    practice agent", press "Fill in the practice template", and press "Open
    the share form on GitHub". On GitHub, sign in if asked, select the privacy
    check box at the end of the form, and press "Submit new issue".
+   If sharing is not approved, copy the practice template from the ready
+   check, paste it into "Your agent to save" on the workshop page and
+   download it locally instead.
 
 ### In VS Code on your computer
 
@@ -85,7 +94,8 @@ keep your agent local until approval is confirmed.
    workshop kit, and Copilot cannot work on its files until you trust it.
 6. Open Copilot Chat: Control+Alt+I on Windows, or Control+Command+I on a
    Mac. Type /ready-check and press Enter.
-7. Share your practice agent. Open letitglow.app/ahg/share in your browser,
+7. If public sharing is approved, share your practice agent. Open
+   letitglow.app/ahg/share in your browser,
    choose "My practice agent", choose the file my-agent/SKILL.md from the
    kit, and press "Open the share form on GitHub". On GitHub, select the
    privacy check box at the end of the form and press "Submit new issue".
@@ -103,12 +113,15 @@ keep your agent local until approval is confirmed.
    in with GitHub.
 5. Open Copilot Chat: Control+Alt+I on Windows, or Control+Command+I on a
    Mac. Type /ready-check and press Enter.
-6. Share your practice agent, as in step 7 of the VS Code steps above.
+6. If public sharing is approved, share your practice agent, as in step 7
+   of the VS Code steps above.
 
 ## You are on track if
 
 Your assistant or Copilot ends the ready check with: You are ready for 16
-November. And on GitHub, within about a minute, a reply begins: Well done.
+November. If you shared a practice agent, GitHub replies: Well done. If
+sharing is not approved, you have kept it locally and identified who can
+confirm approval.
 
 ## If you are stuck
 
@@ -119,8 +132,8 @@ blocked at work? Write to us; nobody is left out.
 
 ## Your win
 
-You are set up, and you have already shared an agent once. The hardest part
-of the day is done.
+You are set up, and your practice is either shared or safely kept for later.
+Bring your chosen path and this card to block 1.
 
 ## Sources
 

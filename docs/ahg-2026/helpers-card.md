@@ -19,6 +19,9 @@ Facilitators only; it is not in the kit.
   everyone; "that one there" works for nobody using a screen reader.
 - Ask before you touch anyone's laptop, braille display or chair.
 - Let the screen reader finish speaking before you talk.
+- Say the block number, where to work, the expected result and the next
+  step. Leave the matching card available in writing; do not rely on the
+  projected slide or a spoken cue alone.
 - Never ask for, read out or repeat anything private: student names,
   records, accommodation details. If you see any on a screen, ask the person
   to remove it from the chat.
@@ -44,13 +47,20 @@ Each row is one block of the day, what to watch for, and what to do.
 
 ## The three fallbacks
 
-1. Copilot Free limit reached, or VS Code will not work: the browser path,
-   from the same block, at letitglow.app/ahg/assistant. Their agent goes
-   with them.
+1. Copilot Free limit reached, or VS Code will not work: keep the latest
+   agent and use an approved browser assistant or a written example with a
+   helper, from the same block. Do not bypass campus policy.
 2. An assistant forgets their agent: paste the agent as its own message,
    then the block's text again.
-3. GitHub unreachable in block 6: copy their agent file to the USB stick at
-   the front. It is shared for them after the session, credited to them.
+3. GitHub unreachable or sharing not approved in block 6: keep the reviewed
+   file local and agree who will follow up and when. Collect or transfer it
+   only with the participant's permission using an approved method; do not
+   call it shared until the collection confirms it.
+
+If a copy button fails, follow the selected-text instruction. If a local
+download fails, save the text in a plain-text editor as `SKILL.md`. Before
+switching conversations or tools, make sure the participant has the latest
+version and knows how to reopen it.
 
 ## Needs a hand
 

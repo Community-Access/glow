@@ -13,6 +13,15 @@ Pacific Time (UTC-7).
 
 ### Fixed
 
+- Keep the AHG sharing slides, step card, facilitator guidance and
+  `my-30-day-plan` skill consistent: check permission first, allow deferred
+  sharing, and only project participants' agents with their permission.
+- Rebuild the `/changelog/` page from `CHANGELOG.md` so recent updates are
+  published, remove its duplicate H1, and add tests to detect future drift.
+- Add the changed AHG landing and share pages to the axe accessibility audit.
+- Fix `.github/workflows/docs-quality.yml` so the editor's Markdown settings
+  no longer override the accessibility-only lint rules in CI. A failing
+  probe verifies that all seven intended rules are active.
 - Make bare web addresses and inline-code URLs clickable in AHG HTML, Word,
   PowerPoint and library EPUB exports, including addresses in slide text and
   tables. Check live hyperlink destinations in the format gate.
@@ -455,6 +464,9 @@ Pacific Time (UTC-7).
 
 ### Added
 
+- Add an AHG day-at-a-glance map in Markdown, HTML, Word and PowerPoint, with
+  the seven stops, work locations, saved versions and approval-based sharing.
+
 - Add an optional, ten-minute ChatGPT Dots and Claude Duet closing demo with
   verified product references, fictional evidence, approval boundaries and a
   no-account fallback. Add a numbered teacher/student rehearsal builder with
@@ -723,6 +735,15 @@ Pacific Time (UTC-7).
   (`Strict-Transport-Security`, `Permissions-Policy`).
 
 ### Changed
+
+- Clarify the AHG step cards, facilitator and helper guidance, kit welcome
+  page and deck: use one browser conversation, review versions after blocks
+  3 to 5, verify evidence, and check a draft 30-day plan before saving it.
+- Let browser-path participants save each agent version locally on
+  `/ahg/assistant`, with review controls next to blocks 3 to 5, keyboard and
+  clipboard fallbacks, and explicit instructions not to overwrite earlier
+  downloads. The online and offline share pages warn that opening GitHub's
+  form sends the agent text before submission.
 
 - **Job progress page auto-advances on success.** When a queued job completes
   and a `continue_url` is set (e.g., PageFlow handing off to the narration

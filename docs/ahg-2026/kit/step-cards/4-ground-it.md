@@ -17,6 +17,13 @@ Step 4 of 7: your agent, grounded in real evidence.
 
 Your agent giving cited answers from real evidence, a before and after you can show a colleague, and version 3 of your agent.
 
+## Why and where
+
+The checker report gives the agent evidence to cite; it does not replace
+your judgment. Stay in the same assistant conversation on the browser path,
+or in Copilot Chat on either VS Code path. Use the same sample file as in
+block 3.
+
 ## Steps
 
 ### In a browser
@@ -41,9 +48,10 @@ Your agent giving cited answers from real evidence, a before and after you can s
 
 ### Then make the next version, in a browser
 
-1. In the same conversation, paste the review text from letitglow.app/ahg/assistant, under "Review your agent", and press Enter.
+1. Return to letitglow.app/ahg/assistant. Under block 4, press "Copy the review text for block 4", then paste it in the same assistant conversation and press Enter.
 2. Read the twelve Yes or Not yet lines, then the one change it suggests and why.
-3. Say yes, or reword the change in your own words. Your assistant gives you version 3 of your agent in a box with a Copy button. Copy it and keep it, the same way as in block 2.
+3. Say yes, or reword the change in your own words. Your assistant gives you version 3 of your agent in a box with a Copy button.
+4. Copy the whole agent, return to "Keep a copy of your agent" on the workshop page and download it. Keep the earlier versions too: if asked to replace a file, choose Cancel and save this version with a different name or in a different folder.
 
 ### Then make the next version, in VS Code
 
@@ -59,7 +67,10 @@ source and verify that it supports the claim. A citation alone is not proof.
 
 ## If you are stuck
 
-Read the before and after in examples/maria-alternate-format-planner.md, section 4, and run this block with a ready-made agent. It works the same way.
+If the assistant forgets your agent, paste the latest saved version as its
+own message, then repeat the block prompt. If a citation or claim cannot be
+verified, mark it for human review rather than treating it as established.
+Use Maria's before and after or a ready-made agent with a helper.
 
 Raise a hand at any time. A helper comes to you.
 
@@ -67,7 +78,7 @@ Raise a hand at any time. A helper comes to you.
 
 Your agent has evidence a person can verify. Grounding reduces guessing; it
 does not guarantee correctness. Separate confirmed findings from suggested
-checks and unverified observations.
+checks and unverified observations. Keep version 3 for the team in block 5.
 
 ## On Monday
 

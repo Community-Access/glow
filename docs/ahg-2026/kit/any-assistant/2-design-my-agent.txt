@@ -80,14 +80,15 @@ what they are building. Follow agent-file-principles.md, below.
    three dashes to the last line, and nothing else inside that block.
 7. After the code block, in five lines or fewer: tell them one specific thing
    their agent does well, then how to keep it: press the Copy button on the
-   code block, open letitglow.app/ahg/share in a new tab, paste it into the
-   box "Your agent, as text", and press "Download as SKILL.md". That saves it
-   on their computer. Do not share it yet; that comes after the office.
+   code block, return to letitglow.app/ahg/assistant, paste it into "Your
+   agent to save", and press "Download a copy as SKILL.md". Keep the
+   downloaded file on their computer. Do not share it yet; that comes after
+   the office, if approved.
 
 End with: Your agent exists. This is version 1. Next, we put it to work, and then we make it better.
 
-Keep this conversation open all day: the next blocks use the agent you just
-wrote, and every revision replaces it.
+Keep this conversation open all day: the next blocks use the latest version
+of the agent you wrote.
 
 ## Files from the kit
 

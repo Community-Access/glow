@@ -138,6 +138,8 @@ PLACES: dict[str, Place] = {
     "kit/glossary.md": Place("01-start-here", "glossary", "The words used on the day, in plain English."),
     "kit/session-in-plain-language.md": Place("01-start-here", "in-plain-language",
                                               "The workshop in about 150 words: what it is, who it is for, what you do."),
+    "kit/your-day-at-a-glance.md": Place("01-start-here", "your-day-at-a-glance",
+                                         "The seven stops, where to work, and what to keep."),
     "slides.md": Place("02-slides", "slides", "The deck for the whole day, with speaker notes."),
     "kit/step-cards/0-before-the-day.md": Place("03-step-cards", "0-before-the-day", "Setup, before the day."),
     "kit/step-cards/1-why-we-are-here.md": Place("03-step-cards", "1-why-we-are-here", "Block 1."),

@@ -535,10 +535,12 @@ If all three are ready, end with exactly this, on its own line:
 
 You are ready for 16 November. Getting set up was the hardest part of the day, and it is done.
 
-Then add one more line: Last step: share your practice agent at
-letitglow.app/ahg/share. Choose "My practice agent", press "Fill in the
-practice template", then press "Open the share form on GitHub". It takes a
-minute, and GitHub replies to say it worked.
+Then add one more line: If public sharing is approved, share your practice
+agent at letitglow.app/ahg/share. Choose "My practice agent", press "Fill in
+the practice template", then press "Open the share form on GitHub". If
+sharing is not approved, copy the practice template into "Your agent to save"
+at letitglow.app/ahg/assistant, download it locally and ask a helper about
+approval instead.
 
 If anything needs a hand, say which check, suggest one simple thing to try,
 and say: write to jeffbis@arizona.edu, or come to the setup table
@@ -586,14 +588,15 @@ what they are building. Follow agent-file-principles.md, below.
    three dashes to the last line, and nothing else inside that block.
 7. After the code block, in five lines or fewer: tell them one specific thing
    their agent does well, then how to keep it: press the Copy button on the
-   code block, open letitglow.app/ahg/share in a new tab, paste it into the
-   box "Your agent, as text", and press "Download as SKILL.md". That saves it
-   on their computer. Do not share it yet; that comes after the office.
+   code block, return to letitglow.app/ahg/assistant, paste it into "Your
+   agent to save", and press "Download a copy as SKILL.md". Keep the
+   downloaded file on their computer. Do not share it yet; that comes after
+   the office, if approved.
 
 End with: Your agent exists. This is version 1. Next, we put it to work, and then we make it better.
 
-Keep this conversation open all day: the next blocks use the agent you just
-wrote, and every revision replaces it.""",
+Keep this conversation open all day: the next blocks use the latest version
+of the agent you wrote.""",
     ),
     "3-try-my-agent": dict(
         title="Block 3: your agent at work",
@@ -722,8 +725,10 @@ is one: that answer is the best evidence of what to improve.
    version under metadata by one, adding version: "2" if it is missing. Keep
    quoted fields in double quotes.
 6. After the code block, in three lines: This is version N of your agent. Copy
-   it with the code block's Copy button, paste it over the old one on
-   letitglow.app/ahg/share, and press "Download as SKILL.md" again. From now
+   it with the code block's Copy button, return to letitglow.app/ahg/assistant,
+   paste it into "Your agent to save", and press "Download a copy as SKILL.md".
+   Keep the previous copy too: if asked to replace it, choose Cancel and save
+   the new version with a different name or in a different folder. From now
    on, use this version.
 
 Do not make more than one change per review. One change at a time is how

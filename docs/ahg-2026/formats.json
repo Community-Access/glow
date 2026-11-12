@@ -25,7 +25,7 @@
     },
     "kit/README.md": {
       "title": "Welcome to the AHG 2026 agent kit",
-      "sha256": "2da7f747e8ab3f82aa6b53cbc100daff2e3cba6694454831b264d3bbf102b182",
+      "sha256": "fbb3cad5b27140ff9a2340c36e5bb2ba067b70c8a3d828a19e91d07b5539b8a0",
       "formats": [
         "README.md",
         "read-me.html",
@@ -89,6 +89,17 @@
       ],
       "slides": 7
     },
+    "kit/your-day-at-a-glance.md": {
+      "title": "Your day at a glance",
+      "sha256": "8d4a5fce7ecfac53630e62d0f4b644182e7832067709f02c1bae8c52d7409e94",
+      "formats": [
+        "your-day-at-a-glance.md",
+        "your-day-at-a-glance.html",
+        "your-day-at-a-glance.docx",
+        "your-day-at-a-glance.pptx"
+      ],
+      "slides": 5
+    },
     "kit/write-your-own-agent.md": {
       "title": "Write your own accessibility agent: a tutorial",
       "sha256": "a594d5c1692e6fe9cd4576f15e8c79f85263a9988ff75197d3bec00bbbab9d27",
@@ -113,18 +124,18 @@
     },
     "kit/step-cards/0-before-the-day.md": {
       "title": "Step card 0: Before the day",
-      "sha256": "366865da553937c4adc6bef32f8af2573ba8e3b9793840320f3b85dd7e5e0fcd",
+      "sha256": "e5d037fa0093ce73fd30f8b06e2b3daa524877e78db29cd61de7e04464595d22",
       "formats": [
         "0-before-the-day.md",
         "0-before-the-day.html",
         "0-before-the-day.docx",
         "0-before-the-day.pptx"
       ],
-      "slides": 15
+      "slides": 16
     },
     "kit/step-cards/1-why-we-are-here.md": {
       "title": "Step card 1: Why we are here",
-      "sha256": "d6ab56c5317c38b26293a8350def6d1af6018fe213cb30961da654dd05152645",
+      "sha256": "ee35b8ce1b4b1f040077f9c3aacb6066a919bc1f8cce79a3ae669e613f97cefd",
       "formats": [
         "1-why-we-are-here.md",
         "1-why-we-are-here.html",
@@ -135,69 +146,69 @@
     },
     "kit/step-cards/2-design-your-agent.md": {
       "title": "Step card 2: Design your agent",
-      "sha256": "3ff52d1a62d06c23e987356122a2aef3bb1f2f8374656d0908f505b6aa950173",
+      "sha256": "4a80d1c55551f56e543f30a961d81d9bc926fbe672a3323796761e936858df48",
       "formats": [
         "2-design-your-agent.md",
         "2-design-your-agent.html",
         "2-design-your-agent.docx",
         "2-design-your-agent.pptx"
       ],
-      "slides": 13
+      "slides": 14
     },
     "kit/step-cards/3-your-agent-at-work.md": {
       "title": "Step card 3: Your agent at work",
-      "sha256": "70abe81bc37b462c79f4cb04afa8c87a220789c9643d85c98e35dcd5a612842a",
+      "sha256": "cac79715c0ec19c99b189806fc7dc9909dbce027ac99cad719e0548810a3b123",
       "formats": [
         "3-your-agent-at-work.md",
         "3-your-agent-at-work.html",
         "3-your-agent-at-work.docx",
         "3-your-agent-at-work.pptx"
       ],
-      "slides": 14
+      "slides": 15
     },
     "kit/step-cards/4-ground-it.md": {
       "title": "Step card 4: Ground it",
-      "sha256": "a9c01b5c74bc0d8136f8050e8db421091ca7dd8c0b9624dc26557fd9de96ee5e",
+      "sha256": "82da34ce02ac2e41ce182b3c35ed4497679ccfa794674eb58dd41f4ca4a58e15",
       "formats": [
         "4-ground-it.md",
         "4-ground-it.html",
         "4-ground-it.docx",
         "4-ground-it.pptx"
       ],
-      "slides": 15
+      "slides": 16
     },
     "kit/step-cards/5-build-the-office.md": {
       "title": "Step card 5: Build the office",
-      "sha256": "248e1bc57eab424134eeb1737f29d3dd86881e1dc0b10e5d08803d4fce28096e",
+      "sha256": "0330e48f8103e7c1f18d48b5a629b9e85fd294c592d3fd0f8efc3446c3d08430",
       "formats": [
         "5-build-the-office.md",
         "5-build-the-office.html",
         "5-build-the-office.docx",
         "5-build-the-office.pptx"
       ],
-      "slides": 14
+      "slides": 15
     },
     "kit/step-cards/6-share-it.md": {
       "title": "Step card 6: Share it",
-      "sha256": "c6e76fbf34b11a76f8ca6c05db9008b2986fb66d717e9412d961ba9dfa66368c",
+      "sha256": "198a9ac40e97205660999b8d3211f909df3478ea566d814b6b29ca6bcc5664be",
       "formats": [
         "6-share-it.md",
         "6-share-it.html",
         "6-share-it.docx",
         "6-share-it.pptx"
       ],
-      "slides": 11
+      "slides": 12
     },
     "kit/step-cards/7-take-it-home.md": {
       "title": "Step card 7: Take it home",
-      "sha256": "4848269c187d7938f62670abc0006273e0c4635c6e7eac1a7eddf394cfcc6a7a",
+      "sha256": "d37434e19afabb38d5afeeac0008cd339d956ae71fbd74afb2360967213ba958",
       "formats": [
         "7-take-it-home.md",
         "7-take-it-home.html",
         "7-take-it-home.docx",
         "7-take-it-home.pptx"
       ],
-      "slides": 17
+      "slides": 18
     },
     "kit/examples/jordan-faculty-coach.md": {
       "title": "Worked example: Jordan's faculty coach",

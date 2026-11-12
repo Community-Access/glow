@@ -327,6 +327,9 @@ const STATIC_PAGES = [
 const WORKSHOP_SESSION = process.env.E2E_WORKSHOP_SESSION || 'axe-workshop';
 
 const WORKSHOP_PAGES = [
+  { label: 'AHG workshop landing', path: '/ahg' },
+  { label: 'AHG browser path', path: '/ahg/assistant' },
+  { label: 'AHG share page', path: '/ahg/share' },
   { label: 'workshop home', path: '/workshop/' },
   { label: 'workshop guide', path: '/workshop/guide' },
   { label: 'workshop exercises', path: '/workshop/exercises' },

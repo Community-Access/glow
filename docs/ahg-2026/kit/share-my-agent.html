@@ -77,6 +77,9 @@
 <p>One form, one button. Your agent goes into the AHG 2026 collection with
 your name on it, and you get a reply within about a minute. No Git, no fork,
 no pull request.</p>
+<p>Before opening the GitHub form, confirm that public sharing is approved
+and remove private or non-public information. Opening the form sends your
+agent text to GitHub, even before you submit it.</p>
 
 <form id="share-form" novalidate>
   <fieldset>
@@ -140,6 +143,24 @@ line. That counts.</p>
 <script>
 (function () {
   "use strict";
+  function downloadSkillMarkdown(body) {
+  var url = "";
+  var link = document.createElement("a");
+  try {
+    url = URL.createObjectURL(new Blob([body.trim() + "\n"], { type: "text/markdown;charset=utf-8" }));
+    link.href = url;
+    link.download = "SKILL.md";
+    document.body.appendChild(link);
+    link.click();
+    window.setTimeout(function () { URL.revokeObjectURL(url); }, 1000);
+    return true;
+  } catch (error) {
+    if (url) { URL.revokeObjectURL(url); }
+    return false;
+  } finally {
+    link.remove();
+  }
+}
   // ?repo=owner/name sends to a test copy for rehearsals; ?practice=1 starts
   // on "practice". Anything else in the address is ignored.
   var params = new URLSearchParams(window.location.search);
@@ -222,14 +243,10 @@ line. That counts.</p>
       showEmpty("Your agent is empty. Paste it in, or choose your SKILL.md file.");
       return;
     }
-    var url = URL.createObjectURL(new Blob([body + "\n"], { type: "text/markdown;charset=utf-8" }));
-    var link = document.createElement("a");
-    link.href = url;
-    link.download = "SKILL.md";
-    document.body.appendChild(link);
-    link.click();
-    link.remove();
-    window.setTimeout(function () { URL.revokeObjectURL(url); }, 1000);
+    if (!downloadSkillMarkdown(body)) {
+      say("The download could not start. Copy your agent into a plain-text editor and save it as SKILL.md.");
+      return;
+    }
     say("Your browser is saving SKILL.md, usually to your Downloads folder.");
   });
 

@@ -6,6 +6,7 @@ on:
       - "**/*.md"
       - ".vale.ini"
       - ".vale/**"
+      - ".markdownlint.json"
       - ".github/a11y.markdownlint-cli2.jsonc"
       - ".github/workflows/docs-quality.yml"
   push:
@@ -14,6 +15,7 @@ on:
       - "**/*.md"
       - ".vale.ini"
       - ".vale/**"
+      - ".markdownlint.json"
       - ".github/a11y.markdownlint-cli2.jsonc"
       - ".github/workflows/docs-quality.yml"
 
@@ -36,7 +38,54 @@ jobs:
           node-version: "22"
 
       - name: Run markdownlint (accessibility rules)
-        run: npx --yes markdownlint-cli2@0.18.1 --config .github/a11y.markdownlint-cli2.jsonc
+        run: |
+          # The editor config overrides --config when it is in the checkout.
+          # Keep it intact while this disposable runner uses the CI rules.
+          lint_temp="$(mktemp -d "$RUNNER_TEMP/markdownlint-XXXXXX")"
+          mv .markdownlint.json "$lint_temp/editor.json"
+          trap 'mv "$lint_temp/editor.json" .markdownlint.json' EXIT
+
+          cat > "$lint_temp/probe.md" <<'EOF'
+          # Accessibility lint probe
+
+          ### Skipped heading
+
+          This deliberately long line checks that ordinary prose style is not accidentally enforced by the accessibility-only documentation gate.
+
+          ![](https://example.com/image.png)
+
+          [click here](https://example.com)
+
+          | First | Second |
+          | ----- | ------ |
+          | one |
+          two | two |
+
+          ```
+          code
+          ```
+
+          # Second title
+          EOF
+          # A literal path can be linted outside the checkout with gitignore on.
+          probe_path="$(node -p 'require("node:path").resolve(process.argv[1])' "$lint_temp/probe.md")"
+          if npx --yes markdownlint-cli2@0.18.1 --config .github/a11y.markdownlint-cli2.jsonc --no-globs ":$probe_path" > "$lint_temp/probe.log" 2>&1; then
+            echo "::error::The accessibility lint probe unexpectedly passed."
+            exit 1
+          fi
+          for rule in MD001 MD025 MD040 MD045 MD055 MD056 MD059; do
+            if ! grep -q "$rule/" "$lint_temp/probe.log"; then
+              cat "$lint_temp/probe.log"
+              echo "::error::The accessibility lint probe did not report $rule."
+              exit 1
+            fi
+          done
+          if grep -q 'MD013/' "$lint_temp/probe.log"; then
+            cat "$lint_temp/probe.log"
+            echo "::error::The accessibility gate unexpectedly enabled the prose line-length rule."
+            exit 1
+          fi
+          npx --yes markdownlint-cli2@0.18.1 --config .github/a11y.markdownlint-cli2.jsonc
 
   vale:
     name: Vale prose lint

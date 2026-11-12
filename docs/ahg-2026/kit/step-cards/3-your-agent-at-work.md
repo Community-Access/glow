@@ -17,6 +17,13 @@ Step 3 of 7: your agent at work on one course document.
 
 Your agent's first answer on a real course document, and version 2 of your agent, revised from what that answer showed.
 
+## Why and where
+
+This first try shows what the agent can and cannot say without a checker
+report. Browser participants stay in the same assistant conversation and use
+the workshop page for prompts and local saving. Both VS Code paths use
+Copilot Chat and the open kit.
+
 ## Steps
 
 ### In a browser
@@ -35,9 +42,10 @@ Your agent's first answer on a real course document, and version 2 of your agent
 
 ### Then make the next version, in a browser
 
-1. In the same conversation, paste the review text from letitglow.app/ahg/assistant, under "Review your agent", and press Enter.
+1. Return to letitglow.app/ahg/assistant. Under block 3, press "Copy the review text for block 3", then paste it in the same assistant conversation and press Enter.
 2. Read the twelve Yes or Not yet lines, then the one change it suggests and why.
-3. Say yes, or reword the change in your own words. Your assistant gives you version 2 of your agent in a box with a Copy button. Copy it and keep it, the same way as in block 2.
+3. Say yes, or reword the change in your own words. Your assistant gives you version 2 of your agent in a box with a Copy button.
+4. Copy the whole agent, return to "Keep a copy of your agent" on the workshop page and download it. Keep version 1 too: if asked to replace a file, choose Cancel and save this version with a different name or in a different folder.
 
 ### Then make the next version, in VS Code
 
@@ -53,14 +61,15 @@ do not make the agent invent findings to finish this block.
 
 ## If you are stuck
 
-Use a ready-made agent for this step, or read the first answer in examples/maria-alternate-format-planner.md, section 4.
+If the assistant forgets your agent, paste your saved version as its own message, then repeat the block prompt. If copying is blocked, follow the selected-text instruction and copy manually. Use a ready-made agent or Maria's worked example with a helper if needed.
 
 Raise a hand at any time. A helper comes to you.
 
 ## Your win
 
 You tested how your agent handles missing evidence, and made its instructions
-clearer. After lunch you give it the report and verify its answer.
+clearer. Keep the answer and version 2. After lunch, use the same file's
+report in block 4 and verify the new answer.
 
 ## On Monday
 

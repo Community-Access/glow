@@ -13,8 +13,9 @@ each revision so you can recover if a step fails.
 
 ## Three paths into the same day
 
-Every path gives you the same agent, the same team report and the same
-share on GitHub. letitglow.app/ahg/paths compares them.
+Every path leads to an agent, a team report and a plan. Sharing on GitHub
+is optional until public sharing is approved. letitglow.app/ahg/paths
+compares the paths; `your-day-at-a-glance.md` maps the seven stops.
 
 Use only campus-approved tools and data. If AI use or public sharing is not
 approved, use the worked examples in Word or on paper with a helper and keep
@@ -24,7 +25,10 @@ your work local. A browser is not a way around campus policy.
   block's text, and paste it into ChatGPT, Copilot on github.com, Claude,
   Gemini or your campus assistant. The same texts are in this kit, in
   `any-assistant/`. No public directory listing or external connector is needed
-  for this workshop path.
+  for this workshop path. Save each version on the workshop page before the
+  next block without replacing earlier files. If asked to replace a file,
+  choose Cancel and use a different name or folder. Visit the share page in
+  block 6, if approved.
 - In VS Code on your computer: you are probably reading this there. Each
   block is one command in Copilot Chat.
 - In VS Code for the Web: the same, at vscode.dev in Chrome or Edge, with
@@ -81,6 +85,7 @@ This list follows the folders in the Explorer, top to bottom.
 | `agent-file-principles.md` | What makes a good agent file, and the twelve review questions /review-my-agent uses |
 | `glossary.md` | The words used today, one line each |
 | `session-in-plain-language.md` | The workshop in about 150 words, to pass on |
+| `your-day-at-a-glance.md` | The seven stops, where to work and what to keep |
 | `write-your-own-agent.md` | The full tutorial: write, test, ground, revise and share an agent on your own, in any assistant |
 
 ## You cannot fall behind
@@ -88,8 +93,9 @@ This list follows the folders in the Explorer, top to bottom.
 Every step has a finished version in `examples/`. If anything goes wrong,
 start from one of the six ready-made agents in `examples/agents/`, put your
 name on it, and carry on. That is still your agent, and it still goes into
-the open-source project with your name on it. If VS Code gives you trouble,
-switch to the browser path and carry on from the same block.
+the open-source project with your name on it if sharing is approved. If VS
+Code gives you trouble, keep your latest version and use an approved browser
+assistant or a written example with a helper, starting at the same block.
 
 ## If you use a screen reader
 

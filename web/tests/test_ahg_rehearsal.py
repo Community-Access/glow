@@ -24,7 +24,8 @@ def test_block_instructions_include_full_actions_without_another_page():
     text = R.block_instructions(source.read_text(encoding="utf-8"))
     assert "### Step card 2: Design your agent" in text
     assert "##### In a browser" in text
-    assert 'Paste your agent into "Your agent, as text"' in text
+    assert 'paste it into "Your agent to save"' in text
+    assert 'press "Download a copy as SKILL.md"' in text
     assert "Type /design-my-agent and press Enter." in text
     assert "After blocks 3, 4 and 5" in text
     assert "title:" not in text

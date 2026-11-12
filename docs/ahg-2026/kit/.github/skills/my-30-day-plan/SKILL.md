@@ -49,8 +49,9 @@ Then read the six learning outcomes back, one line each, as "You can now
    catches them: their agent's Human review section.
 4. Explain how a team of specialists and a coordinator scales work: their
    agent's section of the team report.
-5. Contribute to an open-source project, credited: the reply that said
-   "Your agent is in".
+5. Contribute to an open-source project, credited: if shared, the reply that
+   said "Your agent is in". Otherwise, use the reviewed local copy and its
+   permission follow-up; do not claim it was submitted.
 6. Plan one workflow for the next 30 days: this plan.
 
 If they skipped a block, say what they can still do, not what they missed.
