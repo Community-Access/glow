@@ -141,6 +141,12 @@ page at 1280 and 320 pixels.
 Each row is one kind of file a participant may see, and why it stays in the one
 format it has.
 
+The optional tester walkthroughs in `kit/manual-walkthroughs/` are rehearsal
+scripts, not additional participant lessons. Each comes as Markdown and
+self-contained HTML with complete inputs, expected outputs and blank result
+fields. The short verification sequence is `manual-verification.txt` beside
+this document; matching observed rehearsal copies live in `S:\ahgtest`.
+
 | Files                                                                                                                                                                                                             | Why one format                                                                                                                                                                                                                                                                                          |
 | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | The agent files: `kit/.github/skills/*/SKILL.md`, `kit/my-agent/SKILL.md`, `kit/examples/agents/*/SKILL.md`, `kit/office-team/*/SKILL.md`, `kit/.github/agents/*.agent.md`, `kit/.github/copilot-instructions.md` | They are instructions an assistant reads, and the format is the point: VS Code finds a skill only as a `SKILL.md` in its own folder. A Word copy could be edited and pasted back with the formatting that breaks it. Participants read them online at letitglow.app/ahg/kit, which shows each as a page |

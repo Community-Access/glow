@@ -93,6 +93,25 @@ Tests hold each of those: `web/tests/test_workshop_deck_formats.py`.
 
 ## Teacher and student rehearsal
 
+Start with [the short manual verification checklist](manual-verification.txt).
+The complete, self-contained walkthroughs are available in the repository
+and in the published kit:
+
+- [ChatGPT walkthrough](kit/manual-walkthroughs/05-student-path-chatgpt.md)
+- [VS Code desktop walkthrough](kit/manual-walkthroughs/06-student-path-vscode-desktop.md)
+- [VS Code web walkthrough](kit/manual-walkthroughs/07-student-path-vscode-web.md)
+
+Each has an offline HTML copy beside it. The matching local scenarios are
+`S:\ahgtest\05-student-path-chatgpt.html`,
+`S:\ahgtest\06-student-path-vscode-desktop.html` and
+`S:\ahgtest\07-student-path-vscode-web.html`. Public copies have blank result
+fields; the local rehearsal retains its original observations.
+
+The AHG exercises cover large print, audio and other approved formats, not
+braille production or translation. No braille download or translator setup
+is required for workshop sign-off. GLOW's Braille Studio remains available
+outside the workshop; participants may still use their own braille displays.
+
 The existing rehearsal at `S:\ahgtest` uses 14 self-contained scenarios.
 Start with `S:\ahgtest\00-start-here.html`; editable copies are in
 `S:\ahgtest\markdown`. Each scenario includes its instructions, complete

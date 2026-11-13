@@ -13,6 +13,20 @@ Pacific Time (UTC-7).
 
 ### Fixed
 
+- Include complete ChatGPT, VS Code desktop and VS Code web manual
+  walkthroughs in `docs/ahg-2026/kit/manual-walkthroughs/`, as Markdown and
+  offline HTML, for both repository and live-kit access. Keep the matching
+  rehearsal scenarios and quick checklist synchronized in `S:\ahgtest`.
+  Generate the manuals from current prompts and Copilot commands with
+  `scripts/build_ahg_manuals.py`; include small numbered ChatGPT paste
+  messages, exact interview answers, expected responses, version save checks,
+  recovery steps and a written fallback without requiring chat attachments.
+- Remove braille production from AHG alternate-format exercise examples
+  and browser prompts; clarify that no braille translator or output is
+  required. Keep GLOW Braille Studio and personal assistive technology.
+- Restore the real optional liblouis state after braille availability and
+  route tests in `web/tests/test_braille.py`, preventing randomized local
+  test runs from mistaking a leaked mock for an installed translator.
 - Align AHG setup, prompts, cards and facilitator guidance on approved
   tools, optional sharing and a complete written-example route. Require
   practice-file save/reopen checks rather than relying on an AI's Ready message.

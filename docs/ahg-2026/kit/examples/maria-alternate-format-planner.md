@@ -49,7 +49,7 @@ the frontmatter or the never-do list; they come from the template.
 ```markdown
 ---
 name: alternate-format-planner
-description: Plans alternate formats for a course document from a checker's report and the formats a student needs. Use when a student needs a course document in large print, audio, braille or another format.
+description: Plans alternate formats for a course document from a checker's report and the formats a student needs. Use when a student needs a course document in large print, audio or another approved format.
 license: MIT
 metadata:
   tier: specialist

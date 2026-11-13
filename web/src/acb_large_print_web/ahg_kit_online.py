@@ -21,6 +21,7 @@ from markupsafe import Markup, escape
 # Folders in the order the kit README introduces them, with what each holds.
 GROUPS: tuple[tuple[str, str, str], ...] = (
     ("", "Start here", "The kit's welcome page, and the VS Code profile."),
+    ("manual-walkthroughs", "Complete manual walkthroughs", "ChatGPT first, then VS Code desktop and web: exact text, expected results, save checks and next steps. No chat attachments required."),
     ("step-cards", "Step cards", "One card per block, in the order things appear on screen. Read them here, or download the large print Word file."),
     ("my-agent", "Your agent", "The template you fill in during block 2. Copy it into your own folder, or ask Copilot to."),
     ("examples", "Worked examples", "Three people, three agents, from first draft to team report."),
@@ -92,6 +93,9 @@ def group_of(rel: str) -> str:
 
 # Names that title-casing a folder would get wrong.
 LABELS = {
+    "manual-walkthroughs/05-student-path-chatgpt.md": "ChatGPT: complete paste-only walkthrough",
+    "manual-walkthroughs/06-student-path-vscode-desktop.md": "VS Code desktop: complete walkthrough",
+    "manual-walkthroughs/07-student-path-vscode-web.md": "VS Code for the Web: complete walkthrough",
     "ahg-2026.code-profile": "The AHG 2026 VS Code profile",
     ".vscode/extensions.json": "Recommended extensions",
     ".vscode/settings.json": "Editor settings",
