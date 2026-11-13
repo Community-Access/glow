@@ -4,13 +4,31 @@ Use the newest live kit only after deployment is confirmed. Until then use
 S:\ahgtest\current-exports\ahg-2026-agent-kit.zip.
 Extract into a NEW scratch folder. Never overwrite your earlier work.
 Use fictional PSY 101 content only. Do not publish test agents.
+No braille translation, output download or translator setup is required
+for AHG. Keep the screen-reader and personal assistive-technology checks.
 
 OPEN THESE SELF-CONTAINED TEST FILES
+Repository copies (Markdown and offline HTML):
+docs\ahg-2026\kit\manual-walkthroughs\05-student-path-chatgpt.html
+docs\ahg-2026\kit\manual-walkthroughs\06-student-path-vscode-desktop.html
+docs\ahg-2026\kit\manual-walkthroughs\07-student-path-vscode-web.html
+After publication, read them at:
+https://letitglow.app/ahg/kit/manual-walkthroughs/05-student-path-chatgpt.md
+https://letitglow.app/ahg/kit/manual-walkthroughs/06-student-path-vscode-desktop.md
+https://letitglow.app/ahg/kit/manual-walkthroughs/07-student-path-vscode-web.md
+Local rehearsal copies, retaining historical observations:
 ChatGPT: S:\ahgtest\05-student-path-chatgpt.html
 Desktop: S:\ahgtest\06-student-path-vscode-desktop.html
 VS Code web: S:\ahgtest\07-student-path-vscode-web.html
 Each contains every complete prompt, answer to type, evidence and expected
 result. Use its headings to navigate; do not copy this checklist as a prompt.
+Start with the new guided walkthrough at the top. ChatGPT uses pasted text,
+not file attachments, plugins or connectors. Long instructions are split
+into numbered messages of at most 6,000 characters, followed by RUN.
+Send them in order in the same conversation. Do not send all parts at once.
+Account quota and total-context limits can still block a run. Record the
+exact error, keep saved work and use the included written fallback; never
+label the fallback a successful ChatGPT run.
 Work through ALL its test-table rows, not just the seven-block happy path.
 Record actual Pass/Fail/Blocked, environment, minutes and saved evidence.
 Keep historical results; record this new run separately.
@@ -30,8 +48,8 @@ headings." It must not claim it inspected your computer.
 
 2. DESIGN / BLOCK 2
 Copy the complete block 2 prompt from the same workshop page or test file.
-Use the exact alternate-format answers in the test file's
-"The answers you type" section, one answer per question.
+Use the exact alternate-format answers immediately under block 2 in the
+guided walkthrough, one answer per question.
 Expected: a complete agent, seven headings, unchanged three Never rules,
 metadata version 1. Save with Version 1 as agent-v1.md; reopen and inspect.
 

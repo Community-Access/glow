@@ -11,6 +11,11 @@ You are in the right place. This page opens by itself when you open the kit
 in VS Code. The exercises need no coding. Keep a copy of your agent after
 each revision so you can recover if a step fails.
 
+The workshop exercises use large print, audio and other approved formats.
+You do not need a braille translator or a braille output file for any
+exercise. Your own assistive technology, including a braille display,
+remains welcome.
+
 ## Three paths into the same day
 
 Every path leads to an agent, a team report and a plan. Sharing on GitHub
@@ -66,6 +71,14 @@ block has every key and every expected result in words.
 | 7. Take it home | 3:40 | /my-30-day-plan | A 30-day plan for your campus |
 
 ## What is in this folder
+
+For an exact manual rehearsal, use the complete
+[ChatGPT walkthrough](manual-walkthroughs/05-student-path-chatgpt.md),
+[VS Code desktop walkthrough](manual-walkthroughs/06-student-path-vscode-desktop.md)
+or [VS Code web walkthrough](manual-walkthroughs/07-student-path-vscode-web.md).
+Each includes every input, expected output and blank result fields, with an
+offline HTML copy beside it. These are test scripts, not a claim that a
+particular assistant or environment has passed.
 
 This list follows the folders in the Explorer, top to bottom.
 

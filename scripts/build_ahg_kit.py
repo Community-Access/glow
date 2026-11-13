@@ -265,7 +265,7 @@ OFFICE = [
 READY = [
     dict(
         name="alternate-format-planner", title="Alternate Format Planner",
-        use_when="a student needs a course document in large print, audio, braille or another format.",
+        use_when="a student needs a course document in large print, audio or another approved format.",
         example=("Request: the scanned week 2 reading, in large print. Answer, in short: The problem: the PDF is "
                  "pictures of text, so it cannot be enlarged or read aloud ([1.4.5 Images of Text]"
                  "(https://www.w3.org/WAI/WCAG22/Understanding/images-of-text.html)). 1. Ask the instructor for the "
@@ -944,6 +944,9 @@ def write_assistant_texts() -> list[Path]:
             path = ASSISTANT / f"{key}.txt"
             path.write_text(aa_text(key), encoding="utf-8")
             out.append(path)
+    from build_ahg_manuals import write_manuals
+
+    out.extend(write_manuals())
     return out
 
 

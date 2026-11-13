@@ -25,7 +25,7 @@
     },
     "kit/README.md": {
       "title": "Welcome to the AHG 2026 agent kit",
-      "sha256": "e48d96ed32a6c2d15fefe853f9642e77b7e85ff4cd377448257665d94683e298",
+      "sha256": "6c380d5e7e8149a2d1722e4054e005c01a572e5071fd17e5f1d0de9976da4ac0",
       "formats": [
         "README.md",
         "read-me.html",
@@ -36,7 +36,7 @@
     },
     "kit/agent-file-principles.md": {
       "title": "What makes a good agent file",
-      "sha256": "16cedcb6b83a96c5f71488d867ffa54097142c41048417d94a78cc4938b8893c",
+      "sha256": "a3672bc1cf2c5a97edacb84757ad6ee81574f28037b083cd2c1a9d6309ceed3d",
       "formats": [
         "agent-file-principles.md",
         "agent-file-principles.html",
@@ -223,7 +223,7 @@
     },
     "kit/examples/maria-alternate-format-planner.md": {
       "title": "Worked example: Maria's alternate format planner",
-      "sha256": "95156fb8760ac27d632b761dea1436b4e9be8c0bf82a386a3ea5cbe24a6c43f1",
+      "sha256": "f87f755b6425c42c51968e49f4b4f4338c82c4faf6b6aa31ace4d2b19ead8363",
       "formats": [
         "maria-alternate-format-planner.md",
         "maria-alternate-format-planner.html",

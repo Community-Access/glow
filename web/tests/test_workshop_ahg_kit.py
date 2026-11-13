@@ -66,6 +66,18 @@ def test_every_role_card_has_two_ready_made_fallback_agents():
     assert {"remediation-log-keeper", "vendor-report-reader"} <= names
 
 
+def test_ahg_exercise_examples_do_not_require_braille_production():
+    paths = [
+        KIT / "agent-file-principles.md",
+        KIT / "examples/agents/alternate-format-planner/SKILL.md",
+        KIT / "examples/maria-alternate-format-planner.md",
+        *sorted((KIT / "any-assistant").glob("*.txt")),
+    ]
+    for path in paths:
+        assert not re.search(r"\bbraille\b|\bbrf\b", path.read_text(encoding="utf-8"), re.I), path
+    assert not list(KIT.rglob("*.brf"))
+
+
 def test_no_agent_ever_claims_compliance_or_asks_for_student_data():
     for path in [*_agent_files("office-team"), *_agent_files("examples/agents"), KIT / "my-agent" / "SKILL.md"]:
         text = path.read_text(encoding="utf-8")
@@ -502,6 +514,42 @@ def test_browser_prompts_match_the_generator_and_preserve_missing_answer_boundar
         text = " ".join(path.read_text(encoding="utf-8").split())
         assert "comparison incomplete" in text
         assert "do not invent a previous result" in text
+
+
+def test_manual_walkthroughs_match_current_prompts_and_commands():
+    import sys
+
+    sys.path.insert(0, str(REPO / "scripts"))
+    import build_ahg_manuals as manuals
+
+    for name, expected in (
+        ("05-student-path-chatgpt", manuals.browser_manual()),
+        ("06-student-path-vscode-desktop", manuals.vscode_manual(False)),
+        ("07-student-path-vscode-web", manuals.vscode_manual(True)),
+    ):
+        source = KIT / "manual-walkthroughs" / f"{name}.md"
+        assert source.read_text(encoding="utf-8") == expected
+        assert source.with_suffix(".html").is_file()
+    for source in (KIT / "any-assistant").glob("*.txt"):
+        text = source.read_text(encoding="utf-8")
+        parts = manuals.paste_parts(text)
+        assert "".join(parts) == text, source.name
+        assert all(0 < len(part) <= 6000 for part in parts), source.name
+    for key, _, _ in manuals.BLOCKS:
+        text = (KIT / "any-assistant" / f"{key}.txt").read_text(encoding="utf-8")
+        for part in manuals.paste_parts(text):
+            assert part in manuals.browser_manual(), key
+
+
+def test_kit_exposes_complete_manual_walkthroughs(client):
+    body = client.get("/ahg/kit").get_data(as_text=True)
+    assert "Complete manual walkthroughs" in body
+    for name in ("05-student-path-chatgpt", "06-student-path-vscode-desktop", "07-student-path-vscode-web"):
+        url = f"/ahg/kit/manual-walkthroughs/{name}.md"
+        assert url in body
+        response = client.get(url)
+        assert response.status_code == 200
+        assert b"What should happen" in response.data
 
 
 def test_the_landing_page_offers_the_three_paths(client):

@@ -138,14 +138,16 @@ class TestBrailleConverter:
 
     def test_braille_unavailable_without_louis(self):
         """When louis is not installed, braille_available() must return False."""
-        with patch.dict(sys.modules, {"louis": None}):
-            import importlib
-            import acb_large_print.braille_converter as m
-            importlib.reload(m)
-            # After reload with louis absent, check availability
-            if not m.braille_available():
+        import importlib
+        import acb_large_print.braille_converter as m
+
+        try:
+            with patch.dict(sys.modules, {"louis": None}):
+                importlib.reload(m)
+                assert not m.braille_available()
                 assert m.get_unavailability_reason() != ""
-            importlib.reload(m)  # restore original state
+        finally:
+            importlib.reload(m)
 
     def test_text_to_braille_raises_on_empty_input(self):
         m = self._module()
@@ -349,20 +351,15 @@ class TestBrailleRoute:
         mock_louis = MagicMock()
         mock_louis.translateString.return_value = "\u2801\u2803"  # dots 1, 12
 
-        with patch.dict(sys.modules, {"louis": mock_louis}):
-            import importlib
-            import acb_large_print.braille_converter as m
-            m._louis = mock_louis
+        import acb_large_print.braille_converter as m
 
+        with patch.object(m, "_louis", mock_louis):
             resp = client.post(
                 "/braille/",
                 data={"direction": "text-to-braille", "grade": "ueb_g2",
                       "output_format": "unicode", "input_text": "hello"},
             )
             assert resp.status_code == 200
-            # Restore
-            m._louis = None
-            importlib.reload(m)
 
     def test_rate_limit_applied(self, client):
         """Endpoint must have a rate limit (verified by presence of limiter decorator)."""

@@ -155,7 +155,7 @@ file when the skill is used, and a file in `references` only when the
 instructions point to it. Say what the agent does,
 then start a second sentence with "Use when". For example: "Plans alternate
 formats for a course document from a checker's report. Use when a student
-needs a course document in large print, audio or braille."
+needs a course document in large print, audio or another approved format."
 
 ### 4. A role with a person in it
 
@@ -366,7 +366,7 @@ you send this" checklist for that person.
 ===== FILE: examples/agents/alternate-format-planner/SKILL.md =====
 ---
 name: alternate-format-planner
-description: "Plans alternate formats for a course document from a checker's report and the formats a student needs. Use when a student needs a course document in large print, audio, braille or another format."
+description: "Plans alternate formats for a course document from a checker's report and the formats a student needs. Use when a student needs a course document in large print, audio or another approved format."
 license: MIT
 metadata:
   tier: specialist
