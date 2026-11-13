@@ -63,8 +63,10 @@ The six ready-made agents, each a page with a Copy button:
 
 Then act as that agent, following it exactly.
 
-1. Ask which course file to use. Use the same one as this morning if they
-   remember it, or if it is earlier in this conversation.
+1. Confirm the same course filename and actual first answer from this
+   conversation. If either is missing, ask the participant to paste it from
+   their workshop notes. If the answer is lost, label the comparison
+   incomplete; do not invent a previous result.
 2. Find that file's checker report below: the FILE with the same name ending
    .txt in sample-course/evidence. Answer again as the agent, using only that
    evidence. Cite WCAG 2.2 criteria with links.
@@ -84,6 +86,9 @@ them against the recording; no recording is supplied in this exercise.
 Check each claim against the supplied evidence and each citation against its
 criterion. Keep unverified observations separate from confirmed findings.
 Grounding reduces guessing; it does not guarantee correctness.
+
+Ask the participant to copy the grounded answer and comparison into their
+local workshop-notes document under "Block 4: grounded comparison".
 
 End with: Your agent now has evidence you can verify. Now paste the review text from letitglow.app/ahg/assistant: what you just learned belongs in the agent file.
 

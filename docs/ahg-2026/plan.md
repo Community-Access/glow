@@ -111,22 +111,22 @@ These replace L1 to L14 in the September plan.
 |---|---|
 | D1 | One day, Monday 16 November, 10:30 AM to 4:30 PM Mountain Time. Lunch 12:15 to 1:15, to confirm with AHG |
 | D2 | A Windows or Mac laptop, as the program says, with headphones for screen reader users |
-| D3 | Every participant uses GitHub Copilot through their own free GitHub account. Other assistants are welcome in the morning. GLOW provides no AI and holds no AI key |
-| D4 | Text only into an assistant, never an upload. Free tiers cap uploads and do not cap text, and a document's text report keeps the document itself out of the AI |
+| D3 | Participants use a campus-approved assistant on their chosen path, or the written-example route. GitHub is needed for Copilot, the VS Code paths or approved sharing. GLOW provides no AI and holds no AI key |
+| D4 | Text only into an assistant, never an upload. Text messages and accounts also have limits; use an approved alternative or written route when blocked. A checker's text report keeps the document itself out of the AI |
 | D5 | No student records, accommodation details, health information or names go into any AI tool. All work uses the sample course |
 | D6 | Grounding comes from checkers, not from the AI: GLOW for documents, Accessibility Insights FastPass and axe-core for the web page. Agents must cite WCAG and the sources the Accessibility Agents citation policy names |
 | D7 | Every agent has a human review step the participant writes. Nothing an agent produces goes anywhere without a named person approving it |
-| D8 | Every participant builds the agent team in VS Code with Copilot: they add their own specialist to the ready-made office and run the team across the sample course |
-| D9 | Every participant shares their agent into the workshop collection, Community-Access/ahg-2026, with one form and one button. The automation commits it with them as the author, so it is their commit, on their GitHub profile. No fork, no pull request, no Git |
-| D10 | At the end of the day the facilitator sends the whole collection to the Accessibility Agents repository in one pull request with every author credited as a co-author, which keeps the program's promise that participants commit to that repository. Accessibility Agents is the read-only source of the specialists until then |
-| D16 | Everyone shares a practice agent before the day, so sharing on the day is the second time, not the first |
+| D8 | Participants add their specialist to the ready-made office on their chosen path. The written route adapts a labeled example report; it is not claimed as a live team run |
+| D9 | Approved participants share into Community-Access/ahg-2026 after privacy and licence review. Opening GitHub's form sends the text before submission. Others keep a reviewed local copy with a permission follow-up |
+| D10 | The facilitator reviews approved contributions before proposing promotion to Accessibility Agents, with author credit. A contribution is not guaranteed acceptance or publication |
+| D16 | Everyone saves and reopens a practice file before the day. Practice sharing is optional and requires permission |
 | D17 | letitglow.app/ahg is the one address for everything, on the program, the slides, the cards and the setup message |
 | D15 | Setup is one VS Code profile, the AHG 2026 profile, plus the agent kit. The kit's own settings recommend the same extensions, as a safety net if the profile does not import |
 | D11 | Documents are the center of the day. The sample course is three documents and one web page |
 | D12 | Nothing taught depends on GLOW. Every step names the general skill and shows it working with tools people already have, so the day still pays off if GLOW is never opened again |
 | D13 | Support on request at jeffbis@arizona.edu, before and after the day |
 | D14 | The last five minutes are the AHG session evaluation |
-| D18 | Three paths, one day: the browser path with any AI assistant, VS Code on a computer, and VS Code for the Web. The browser path is the default for anyone unsure. Every path ends with the same agent, team report and share. The facilitator demonstrates in VS Code, so every participant sees agent teams built in VS Code with Copilot |
+| D18 | Three paths share learning goals: an approved browser assistant, desktop VS Code and VS Code for the Web. The browser path is the default for anyone unsure. Verify each setup's commands, save/reopen and assistive-technology behavior independently; do not assume feature parity. The written-example route needs no AI or account |
 | D19 | The six commands are agent skills in `.github/skills/`, not prompt files. Since VS Code 1.143 prompt files run only in Local chat sessions; skills run in the default Copilot sessions too |
 | D20 | The browser path pastes text, never files: one generated text per block, carrying the block's instructions and every kit file it needs, built by `scripts/build_ahg_kit.py` into `kit/any-assistant/`. Participants on it must sign in to their assistant; ChatGPT without an account stops after a message or two |
 | D21 | The kit carries Accessibility Agents itself: all 113 of its skills (108 when first copied), copied unchanged into `.github/skills` from one pinned commit by `scripts/vendor_accessibility_agents.py`, so every VS Code participant has the whole project with nothing to install. The kit says plainly which skills work fully without the project's scanners, scripts and hooks, and what the others do instead. The browser path gets four texts that each carry an entry point and its specialists. `accessibility-agents.md` shows the ways to keep using it after the day. The day moves building the office before sharing, and blocks 3 to 5 each end with /review-my-agent, so participants share their best version. Section 2.13a of `ahg.md` tests it |
@@ -141,12 +141,12 @@ If a block is cut, this table shows which promise breaks.
 | Agents analyze content, find barriers, generate remediation guidance | Blocks 2 and 3 |
 | Grounded in authoritative standards; axe-core and Accessibility Insights | Block 4: evidence from GLOW, Accessibility Insights and axe-core, with citations required |
 | Human-centered, extending experts | The review step in every agent, and the named reviewer in the team report |
-| VS Code, GitHub and Copilot | GitHub for every participant in block 6. Copilot and VS Code hands-on for everyone on the two VS Code paths, and in every demonstration for everyone on the browser path, who may also use Copilot on github.com as their assistant (D18) |
+| VS Code, GitHub and Copilot | Hands-on for approved VS Code paths; demonstrated for other paths. GitHub sharing is conditional on permission (D9) |
 | Learn to build agent teams | Block 5: each participant adds their specialist to the office team and runs the team themselves |
 | Agent teams of coordinated specialists | Block 5: the coordinator routes the course to specialists, including the participant's own |
 | At scale | Block 5: one team run across the whole course, one prioritized report |
 | Quality, accountability, transparency | The team report: every finding has evidence, a citation and a named reviewer |
-| Open-source collaboration; capstone commit | Block 6: each participant commits their agent to the open-source workshop collection in their own name; after the session the collection goes into Accessibility Agents with every author credited (D10) |
+| Open-source collaboration; capstone commit | Block 6: approved sharing with confirmation, or a reviewed local copy and permission follow-up. Promotion requires review (D10) |
 | Cognitive and learning accessibility, alternate formats, student success | The alternate format role card, and the plain language specialist in the team |
 | Beginner, bring a laptop | The setup message, the step cards, the helpers |
 
@@ -238,7 +238,7 @@ Each role card has the same seven artifacts.
 | 1:15 | 50 | 4. Ground it | A before and after: the same agent, with evidence and citations; then version 3 |
 | 2:05 | 10 | Break | |
 | 2:15 | 50 | 5. Build the office, at scale | Their specialist added to the team, the team run across the course, then version 4; the full Accessibility Agents project on the projector last |
-| 3:05 | 35 | 6. Share it | Their best version in the open-source collection, committed in their name; everyone's shared agents run once on the projector last |
+| 3:05 | 35 | 6. Share it | A confirmed approved contribution, or a reviewed local copy and permission follow-up; any projected contribution requires its author's permission |
 | 3:40 | 35 | 7. Take it home | A 30-day plan, and Accessibility Agents on their own laptop |
 | 4:15 | 10 | Commitments | The commitment wall, anonymous |
 | 4:25 | 5 | Session evaluation | |

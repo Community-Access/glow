@@ -147,9 +147,11 @@ down instead of hidden.
 
 ## 5. In the collection
 
-Shared from the share page in about a minute, as
+After permission and privacy review, shared from the share page as
 `agents/<Sam's GitHub account>/remediation-log-keeper/SKILL.md`, committed in
 Sam's name.
+Opening the GitHub form sends the text before submission. If approval were
+pending, Sam would keep the reviewed copy locally with a follow-up date.
 
 ## 6. In the team
 

@@ -33,6 +33,7 @@
         " is selected: press " + copyKey + " to copy it.");
     var details = box.closest("details");
     if (details) { details.open = true; }
+    box.setAttribute("aria-describedby", region.id);
     box.focus();
     box.select();
   }

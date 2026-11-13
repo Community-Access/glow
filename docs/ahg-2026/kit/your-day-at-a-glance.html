@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en" xml:lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="author" content="Jeff Bishop, University of Arizona, IT Accessibility Consultant">
+<meta name="description" content="The seven workshop stops, where to work, and what to keep.">
+<title>Your day at a glance</title>
+<style>
+:root { color-scheme: light dark; --bg: #ffffff; --fg: #1a1a1a; --link: #0b57d0; --rule: #6b6b6b; --code-bg: #f2f2f2; --focus: #b3261e; }
+@media (prefers-color-scheme: dark) { :root { --bg: #121212; --fg: #f1f1f1; --link: #a8c7fa; --rule: #9a9a9a; --code-bg: #262626; --focus: #ffb4ab; } }
+html { font-size: 112.5%; }
+body { background: var(--bg); color: var(--fg); font-family: Arial, Helvetica, sans-serif; line-height: 1.5; max-width: 46rem; margin: 0 auto; padding: 1rem; overflow-wrap: break-word; }
+a { color: var(--link); text-decoration: underline; }
+a:focus-visible, [tabindex]:focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; }
+h1, h2, h3, h4 { line-height: 1.25; }
+code, pre { font-family: Consolas, "Courier New", monospace; background: var(--code-bg); }
+pre { padding: 0.75rem; overflow-x: auto; white-space: pre-wrap; }
+/* At 320px a long path or address wraps rather than widening the page (WCAG 1.4.10). */
+code, pre, a { overflow-wrap: anywhere; }
+table { border-collapse: collapse; margin: 1rem 0; }
+th, td { border: 1px solid var(--rule); padding: 0.4rem 0.6rem; text-align: left; vertical-align: top; }
+.table-scroll { overflow-x: auto; }
+blockquote { border-left: 4px solid var(--rule); margin-left: 0; padding-left: 1rem; }
+@media print { body { max-width: none; } a { color: inherit; } }
+</style>
+</head>
+<body>
+<main>
+<h1 id="your-day-at-a-glance">Your day at a glance</h1>
+<p>Choose one campus-approved path. Times are Mountain Time.</p>
+<h2 id="where-to-work">Where to work</h2>
+<ul>
+<li>Browser: keep the workshop page at <a href="https://letitglow.app/ahg/assistant">letitglow.app/ahg/assistant</a> and your assistant in separate tabs. Copy each prompt to the same conversation. Save each complete agent version on the workshop page: choose the matching "Version to save", then "Download this version". Keep agent-v1.md through agent-v4.md without replacing an earlier file. If asked to replace it, choose Cancel and use a different name or folder.</li>
+<li>VS Code on your computer or at <a href="https://vscode.dev">vscode.dev</a>: keep the kit open and use Copilot Chat. Your working agent is in <code>my-agent/SKILL.md</code>; earlier versions are in <code>my-agent/history/</code>. Reopen the saved files to check them.</li>
+<li>Sharing: use <a href="https://letitglow.app/ahg/share">letitglow.app/ahg/share</a> in block 6 only when public sharing is approved. Otherwise keep a reviewed copy and a next step locally.</li>
+</ul>
+<h2 id="the-seven-stops">The seven stops</h2>
+<ol type="1">
+<li>10:30, ready check: set up your chosen path; a helper can get you unstuck.</li>
+<li>11:05, design: answer the questions and save your agent, version 1.</li>
+<li>11:45, try: test it without a report, review one change and save version 2.</li>
+<li>1:15, ground: use the same file's evidence, verify the answer and save version 3. Lunch is at 12:15.</li>
+<li>2:15, office: add your agent to a team, review the report and save version 4. The break starts at 2:05.</li>
+<li>3:05, share: review privacy and permission; share or record a later step.</li>
+<li>3:40, plan: make a draft, check it with a partner and save your final 30-day plan. The commitment wall opens at 4:15.</li>
+</ol>
+<p>Each step card has the detailed keys, expected result and recovery options. Keep earlier versions. Never paste private information into an AI, and have a person review every draft before it is used.</p>
+<h2 id="what-to-keep-before-moving-on">What to keep before moving on</h2>
+<p>The following list names each output and its completion check.</p>
+<ul>
+<li>Ready check: save and reopen the practice file. An assistant saying "Ready" is not enough if you cannot find and read your saved copy.</li>
+<li>Block 2: agent-v1.md with one task, input, output and reviewer role.</li>
+<li>Block 3: agent-v2.md and workshop notes naming the course file and keeping the complete first answer. A request for missing evidence is a valid answer.</li>
+<li>Block 4: agent-v3.md and the grounded answer and comparison in the notes. Verify a citation against its source and identify a remaining human check.</li>
+<li>Block 5: agent-v4.md and the team report in the notes. Find your agent's contribution; role-playing a team is not an independent review.</li>
+<li>Block 6: a confirmed collection link, or a reviewed local copy with a permission owner and follow-up date. A submitted form is not confirmation.</li>
+<li>Block 7: a saved final 30-day plan after partner review, or self-review against the worked example. Keep unknown approvals and measures pending.</li>
+</ul>
+<p>Browser participants keep a local document named workshop-notes. VS Code uses <code>my-agent/workshop-notes.md</code>; the commands ask before writing. Agent versions are kept inside <code>my-agent/history/</code> in VS Code. If a save fails, stop and keep a manual copy before continuing. Never replace an old history file; repeated runs use a new suffix.</p>
+<h2 id="resume-after-an-interruption">Resume after an interruption</h2>
+<ol type="1">
+<li>Reopen your latest saved agent and workshop notes.</li>
+<li>In the approved assistant or Copilot Chat, provide the complete agent, current block number and chosen course filename.</li>
+<li>Before block 4, also provide the actual block-3 answer. If it is lost, mark the comparison incomplete rather than inventing what happened.</li>
+<li>Repeat the current block's prompt or command. Check that the assistant identifies the right agent and file before continuing.</li>
+</ol>
+<p>If a message is too long, a new conversation may not change that limit. Do not remove evidence to force it through. Use the written route below or ask a helper about a tested, approved assistant. If no approved option works, do not bypass campus policy.</p>
+<h2 id="written-example-route-no-ai-or-account-required">Written-example route: no AI or account required</h2>
+<p>Use Maria's alternate-format-planner example in the kit's <code>examples</code> folder, or its online page at <a href="https://letitglow.app/ahg/kit/examples/maria-alternate-format-planner.md">letitglow.app/ahg/kit/examples/maria-alternate-format-planner.md</a>. Download or print it before the day if you need to work offline. Use Word, a plain-text editor or paper. Label all outputs "written-example exercise"; do not claim that you ran an assistant or an independent team.</p>
+<ol type="1">
+<li>Ready: open the example and create a local notes document. Save and reopen it, or use paper. You need no GitHub account.</li>
+<li>Design: read Maria's six answers in section 2. Write your own one-task description, safe input, output and reviewer role using those questions. Save it as agent-v1.md, or label the paper copy version 1.</li>
+<li>Try: read section 4's intentionally flawed first answer. Mark one unsupported claim and write the request for evidence you would prefer. Keep that answer in notes labeled "sample answer, not my AI run". Add the evidence-request instruction to a new agent-v2.md; retain version 1.</li>
+<li>Ground: compare that answer with the evidence and revised answer in section 4. Match one claim to the evidence and one criterion to its source. If offline, mark external citation verification pending. Save the comparison in notes and one improved review instruction in agent-v3.md, retaining versions 1 and 2.</li>
+<li>Team: read section 5. Identify your specialist's contribution and where a person checks the combined report. Write one improved review instruction. Save the adapted report in notes and the new agent-v4.md without replacing earlier versions. Reopen each file, or check its paper label.</li>
+<li>Share: keep your work locally. Record whether sharing is approved, who can confirm it and the next date; public posting is not required.</li>
+<li>Plan: adapt section 7 using workflow, handoff, partner, safeguard, approved tools/data, first step, approval and day-30 measure. Review with a partner, correct one unclear handoff and save the final plan.</li>
+</ol>
+<p>At the next block time, rejoin the matching numbered step above. A helper can read it with you; the written steps remain available without one.</p>
+</main>
+</body>
+</html>

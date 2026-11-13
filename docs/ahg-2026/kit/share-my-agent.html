@@ -41,7 +41,7 @@
   fieldset { border: 2px solid var(--fg); padding: 0.5rem 1rem 1rem; margin-top: 1.5rem; min-width: 0; }
   fieldset label { font-weight: 400; margin-top: 0.5rem; }
   .hint { margin: 0.25rem 0 0.5rem; }
-  input[type="text"], input[type="email"], input[type="file"], textarea { font: inherit; width: 100%; padding: 0.5rem;
+  input[type="text"], input[type="email"], input[type="file"], textarea, select { font: inherit; width: 100%; padding: 0.5rem;
          border: 2px solid var(--fg); background: var(--bg); color: var(--fg); }
   input[type="radio"], input[type="checkbox"] { width: 1.25rem; height: 1.25rem; margin-right: 0.5rem; vertical-align: -0.1em; }
   textarea { min-height: 12rem; }
@@ -77,6 +77,9 @@
 <p>One form, one button. Your agent goes into the AHG 2026 collection with
 your name on it, and you get a reply within about a minute. No Git, no fork,
 no pull request.</p>
+<p>Before opening the GitHub form, confirm that public sharing is approved
+and remove private or non-public information. Opening the form sends your
+agent text to GitHub, even before you submit it.</p>
 
 <form id="share-form" novalidate>
   <fieldset>
@@ -140,6 +143,24 @@ line. That counts.</p>
 <script>
 (function () {
   "use strict";
+  function downloadSkillMarkdown(body, filename) {
+  var url = "";
+  var link = document.createElement("a");
+  try {
+    url = URL.createObjectURL(new Blob([body.trim() + "\n"], { type: "text/markdown;charset=utf-8" }));
+    link.href = url;
+    link.download = filename || "SKILL.md";
+    document.body.appendChild(link);
+    link.click();
+    window.setTimeout(function () { URL.revokeObjectURL(url); }, 1000);
+    return true;
+  } catch (error) {
+    if (url) { URL.revokeObjectURL(url); }
+    return false;
+  } finally {
+    link.remove();
+  }
+}
   // ?repo=owner/name sends to a test copy for rehearsals; ?practice=1 starts
   // on "practice". Anything else in the address is ignored.
   var params = new URLSearchParams(window.location.search);
@@ -222,14 +243,10 @@ line. That counts.</p>
       showEmpty("Your agent is empty. Paste it in, or choose your SKILL.md file.");
       return;
     }
-    var url = URL.createObjectURL(new Blob([body + "\n"], { type: "text/markdown;charset=utf-8" }));
-    var link = document.createElement("a");
-    link.href = url;
-    link.download = "SKILL.md";
-    document.body.appendChild(link);
-    link.click();
-    link.remove();
-    window.setTimeout(function () { URL.revokeObjectURL(url); }, 1000);
+    if (!downloadSkillMarkdown(body)) {
+      say("The download could not start. Copy your agent into a plain-text editor and save it as SKILL.md.");
+      return;
+    }
     say("Your browser is saving SKILL.md, usually to your Downloads folder.");
   });
 

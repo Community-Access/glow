@@ -22,7 +22,8 @@ fixed.
 - Participants use one of three paths (`plan.md`, D18): the browser path with
   ChatGPT or another assistant and letitglow.app/ahg/assistant; VS Code on a
   computer with the AHG 2026 profile and the kit; or VS Code for the Web at
-  vscode.dev with the kit. Everyone uses their own GitHub account to share, and
+  vscode.dev with the kit. Approved public sharing uses a GitHub account;
+  otherwise participants keep reviewed work locally. Everyone can use
   GLOW for the evidence and the commitment wall
 - Facilitator: Jeff Bishop, University of Arizona, IT Accessibility Consultant,
   with at least one helper per ten participants
@@ -32,8 +33,9 @@ fixed.
 Everyone wins every block. Each block shows the finished result first, has a
 step card and a Copilot command, and has a ready-made fallback in the kit, so
 nobody falls behind and stays behind. A participant who starts from a ready-made
-agent and puts their name on it has still built an agent, run a team and shared
-an agent in their own name. Say so out loud, more than once.
+agent and adapts it has completed a meaningful exercise. Distinguish an
+actual AI run, a written-example exercise and a confirmed public share.
+Do not announce an action that the participant did not perform.
 
 ## 2. The day, by the clock
 
@@ -52,7 +54,7 @@ both.
 | 1:15  | 50      | 4. Ground it                       | /ground-my-agent, then /review-my-agent | "Real evidence in, claims you can verify out. Version 3."                                          |
 | 2:05  | 10      | Break                              | none                                    | "Next, your agent joins a team."                                                                   |
 | 2:15  | 50      | 5. Build the office                | /run-the-office, then /review-my-agent  | "Your specialist joins the team. The team works the whole course. Version 4 is the one you share." |
-| 3:05  | 35      | 6. Share it                        | letitglow.app/ahg/share                 | "One form, one button. You did this before the day; same again, with your best version."           |
+| 3:05  | 35      | 6. Share it                        | letitglow.app/ahg/share, if approved    | "Check permission first. Share your reviewed version, or keep it locally with a follow-up." |
 | 3:40  | 35      | 7. Take it home                    | /my-30-day-plan                         | "Small is the point. One workflow, one partner, one safeguard."                                    |
 | 4:15  | 10      | Commitments                        | GLOW wall                               | Read three aloud. Do not name anyone.                                                              |
 | 4:25  | 5       | Session evaluation                 | proctor                                 | "Before you go: the session evaluation. It shapes next year." Then stop talking.                   |
@@ -79,9 +81,10 @@ require a paid subscription or preview access.
 - Block 2 is the one that runs long. If it does, use the ready-made agent to
   catch up. If five minutes must come from block 7, shorten its demo, never the
   plan-writing, partner review or saving time.
-- Never cut the session evaluation, and never cut block 6: the shared agent is
-  the capstone the program promised.
-- In block 6, project the collection, `agents/README.md` in
+- Never cut the session evaluation or block 6's privacy and permission review.
+  Confirmed sharing and a reviewed local copy with a permission follow-up are
+  distinct valid outcomes.
+- In block 6, with the authors' permission, project the collection, `agents/README.md` in
   Community-Access/ahg-2026, and refresh it as agents arrive; read each name and
   agent title aloud. Helpers watch the issues labelled needs-a-hand and go to
   those people first.
@@ -156,8 +159,14 @@ Run down this ladder. Do not jump to the bottom.
 | A browser path participant's assistant forgets their agent        | Paste the agent as its own message, then the block's text again                                                                                      | Nothing                                          |
 | The profile did not import                                        | Open the kit; VS Code offers the recommended extensions; a helper installs them                                                                      | Nothing                                          |
 | Conference wifi degrades                                          | Everything except Copilot and GitHub is in the kit already; slow the room to one block at a time and demo each step on the projector                 | "We will do this one together on the screen."    |
-| GitHub is unreachable in block 6                                  | With permission, collect only reviewed public agent instructions using an approved transfer method; otherwise participants keep them and share later | "Your agent still goes in with your name on it." |
+| GitHub is unreachable in block 6                                  | With permission, collect only reviewed public agent instructions using an approved transfer method; otherwise participants keep them locally | "Keep the reviewed copy and record the next approval or retry step." |
 | Projector fails                                                   | Read the slide aloud; everyone has the step cards in the kit                                                                                         | Nothing                                          |
+
+Use the complete written-example route in `kit/your-day-at-a-glance.md`
+when no approved AI works. For a tool switch, preserve the current block,
+course filename, actual first answer and subsequent report as well as the
+latest agent. Reopen the saved copies before resuming. Do not invent a
+before-and-after result if the first answer was lost.
 
 ## 6. Pre-flight
 

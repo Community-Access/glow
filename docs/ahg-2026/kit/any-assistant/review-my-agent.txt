@@ -79,9 +79,16 @@ is one: that answer is the best evidence of what to improve.
    version under metadata by one, adding version: "2" if it is missing. Keep
    quoted fields in double quotes.
 6. After the code block, in three lines: This is version N of your agent. Copy
-   it with the code block's Copy button, paste it over the old one on
-   letitglow.app/ahg/share, and press "Download as SKILL.md" again. From now
-   on, use this version.
+   it with the code block's Copy button, return to letitglow.app/ahg/assistant,
+   paste it into "Your agent to save", choose the matching version under
+   "Version to save", and press "Download this version". Reopen agent-vN.md
+   (N is the new version) and verify its complete text and version.
+   Keep the previous copy too: if asked to replace it, choose Cancel and
+   use a different name or folder.
+7. Name the next block: after block 3, keep the first answer and resume at
+   1:15 with block 4 on the same file; after block 4, resume at 2:15 with
+   block 5; after block 5, review sharing permission at 3:05. If the current
+   block is unknown, ask rather than guessing the next step.
 
 Do not make more than one change per review. One change at a time is how
 they learn what each change does.

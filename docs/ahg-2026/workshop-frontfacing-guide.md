@@ -31,10 +31,10 @@ scale without losing quality, accountability or transparency.
   so you can verify its claims and WCAG 2.2 citations.
 - Build the office: add your agent to an agent team of coordinated
   specialists and run the team across the whole course.
-- Share it: add your agent to the open-source AHG 2026 collection on
-  GitHub with one form and one button, committed in your name. At the end of
-  the day every agent goes into the Accessibility Agents project, with its
-  author credited.
+- Share it if approved: review privacy and licensing before opening
+  GitHub's form, which sends the text before submission. Otherwise keep a
+  reviewed local copy with a permission follow-up. Approved contributions
+  are reviewed before promotion to Accessibility Agents.
 - Leave with a 30-day plan for your own campus.
 
 The plan fits one step of an existing disability resource center workflow:
@@ -52,9 +52,9 @@ you do not need to have used VS Code or GitHub before.
 
 ## What you need
 
-A laptop, a free GitHub account for sharing your agent, and one of three
-paths into the same day. Every path gives you the same agent, the same team
-report and the same share on GitHub. letitglow.app/ahg/paths compares them
+A laptop and one campus-approved path. GitHub is needed for the VS Code
+paths, GitHub Copilot or approved sharing, not for the written-example
+route. The paths share learning goals, not identical tool capabilities. letitglow.app/ahg/paths compares them
 and has every setup step.
 
 1. The browser path: nothing to install. ChatGPT, Copilot on github.com,
@@ -62,8 +62,9 @@ and has every setup step.
    block from letitglow.app/ahg/assistant. About 10 minutes to set up.
 2. VS Code on your computer: VS Code with the AHG 2026 profile, the agent
    kit from letitglow.app/ahg, and Copilot Free. About 25 minutes.
-3. VS Code for the Web: the same VS Code and Copilot at vscode.dev, in
-   Chrome or Edge, with the kit opened from your laptop. About 15 minutes.
+3. VS Code for the Web: vscode.dev in Chrome or Edge, with the kit opened
+   from your laptop. About 15 minutes. Verify command discovery, writing
+   files and reopening them; desktop feature parity is not assumed.
 
 Not sure? Take the browser path. There is a setup table outside the room
 from 10:00 on the day.

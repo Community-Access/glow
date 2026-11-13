@@ -6,14 +6,14 @@
 <p>
   This is the browser path: the whole day in a web browser, with the AI
   assistant you already have. Every block has one text. You copy it, paste it
-  into your assistant as one message, and answer its questions. It runs the
-  block exactly as the VS Code command does, and you finish with the same
-  agent, the same team report and the same plan.
+  into your assistant as one message, and answer its questions. You work
+  toward the same agent, team report and plan as the VS Code paths. Keep
+  this page and your assistant open; the share page comes in block 6.
 </p>
 <p>
-  Tested with ChatGPT, signed in to a free account. It also works with
-  GitHub Copilot on github.com, Claude, Gemini and Microsoft 365 Copilot
-  Chat, including the one your campus provides.
+  You can try ChatGPT, GitHub Copilot on github.com, Claude, Gemini or
+  Microsoft 365 Copilot Chat, including the one your campus provides.
+  Responses and message limits vary; use a campus-approved assistant.
   <a href="{{ url_for('shortlinks.ahg_paths') }}#browser">Setting up your assistant</a>
   has the steps for each, and how to stop your chats being used for training.
 </p>
@@ -23,36 +23,69 @@
   <li>Open your assistant in a second browser tab, and sign in. Signing in matters: ChatGPT without an account stops after a message or two and asks you to log in.</li>
   <li>Start one new conversation, and use that same conversation all day. Your agent from block 2 stays in it, so the later blocks can find it.</li>
   <li>Never paste anything private: no student names, records, accommodation or health details. We use a fictional course all day.</li>
+  <li>Keep <a href="{{ url_for('shortlinks.ahg_kit_file', rel='your-day-at-a-glance.md') }}">your day at a glance</a> available. It includes the saved outputs, recovery steps and a written-example route if AI is unavailable or not approved.</li>
 </ol>
 
 <h2 id="how">How every block works</h2>
 <ol>
   <li>On this page, press the block's Copy button. A message under the button says the text is copied.</li>
-  <li>Switch to your assistant's tab: Control+Tab, on Windows or Mac.</li>
+  <li>Switch to your assistant's tab. Control+Tab moves through tabs on Windows or Mac; repeat it until you reach your assistant, or choose its tab by name.</li>
   <li>Move to the message box, where you would type a question. Paste with Control+V on Windows, or Command+V on a Mac.</li>
   <li>Press Enter to send. The assistant starts the block, usually by asking you one question.</li>
   <li>Answer each question in the same message box. When it gives you something to keep, it puts it in a box with its own Copy button.</li>
 </ol>
 <p>
   Want to read a text before you paste it? Each block has "Read the text
-  first". It is long because it carries the kit's files with it; that is
-  what lets your assistant work from evidence instead of guessing.
+  first". The evidence-based blocks carry the relevant kit files. Check
+  the assistant's claims against those sources; evidence reduces guessing
+  but does not guarantee a correct answer.
 </p>
+
+<h2 id="save-agent">Keep a copy of your agent</h2>
+<p id="save-agent-hint">
+  After block 2 and each review in blocks 3, 4 and 5, copy the complete
+  agent from your assistant and paste it here. Download a copy before you
+  continue. Saving here does not send your agent to GLOW or GitHub.
+  Choose the version that matches the agent's version line. The filenames
+  are practice-SKILL.md and agent-v1.md through agent-v4.md. Keep each version and
+  choose agent-v4.md when you share after the final review. Never replace an earlier file:
+  if asked to replace it, choose Cancel and save the new version with a
+  different name or in a different folder. If downloading is unavailable,
+  paste into a plain-text editor and save with the same versioned name.
+  Reopen each download to check its complete text and version. This page
+  does not retain your pasted text after you close or reload it.
+</p>
+<label for="save-agent-text">Your agent to save</label>
+<p class="hint" id="save-agent-error" hidden></p>
+<textarea id="save-agent-text" spellcheck="false" aria-describedby="save-agent-hint save-agent-error"></textarea>
+<label for="save-agent-version">Version to save</label>
+<select id="save-agent-version" aria-describedby="save-agent-hint">
+  <option value="practice-SKILL.md">Practice template</option>
+  <option value="agent-v1.md">Version 1: after block 2</option>
+  <option value="agent-v2.md">Version 2: after block 3 review</option>
+  <option value="agent-v3.md">Version 3: after block 4 review</option>
+  <option value="agent-v4.md">Version 4: after block 5 review</option>
+</select>
+<button type="button" id="save-agent-download" hidden>Download this version</button>
+<div id="save-agent-status" role="status"></div>
+<p>Keep a local workshop-notes document too: record your current block, chosen
+course filename, first answer, grounded comparison and team report. Save the
+30-day plan separately. These outputs let you resume after a lost conversation.</p>
 
 {% for b in blocks %}
 <h2 id="block-{{ b.number }}">{{ b.title }}</h2>
 {% if b.number == "1" %}
-<p>Do this before the day, and again at 10:30. Your assistant checks three things and tells you that you are ready.</p>
+<p>Do this before the day, and again at 10:30. Your assistant checks the template and rules, then waits while you save and reopen the practice file. Confirm that you can find and read it before calling setup complete.</p>
 {% elif b.number == "2" %}
-<p>Your assistant asks six questions, one at a time, and writes your agent. It gives your agent back in a box with a Copy button. Copy it, open the <a href="{{ url_for('shortlinks.ahg_share_short') }}">share page</a>, paste it into "Your agent, as text", and press "Download as SKILL.md" to keep it on your computer.</p>
+<p>Your assistant asks six questions, one at a time, and writes your agent. Copy the complete agent from its box, then <a href="#save-agent">keep a local copy on this page</a>. That is version 1; you will try it in block 3.</p>
 {% elif b.number == "3" %}
-<p>Your agent works on one course document, with no evidence yet. Watch where it has to guess. Then use <a href="#review">the review text</a> to make version 2.</p>
+<p>Your agent works on one course document, with no checker report yet. Look for unsupported claims or an appropriate request for evidence. Then review and save version 2.</p>
 {% elif b.number == "4" %}
-<p>The same agent, now with each course file's checker report. It cites WCAG 2.2 and stops guessing. Then use <a href="#review">the review text</a> again: version 3.</p>
+<p>Try the same file with its checker report. Compare the answers and verify the evidence and WCAG 2.2 citation; grounding reduces guessing, but a person must still check. Then review and save version 3.</p>
 {% elif b.number == "5" %}
-<p>Your agent joins a team of eight specialists and a coordinator, and the team works through the whole course. This is the longest text; paste it all as one message. If your assistant stops before the last file, type <kbd>continue</kbd> and press Enter. Then use <a href="#review">the review text</a> once more: version 4, the one you share.</p>
+<p>Your agent joins a coordinator and eight specialist roles working through the course in one conversation. Paste this longest text as one message; if it stops before the last file, type <kbd>continue</kbd>. Check the team report, then review and save version 4 for sharing if approved.</p>
 {% elif b.number == "7" %}
-<p>Six short questions, and a 30-day plan for your campus in a box with a Copy button. Paste it into an email to yourself or a Word document.</p>
+<p>Answer eight short questions and keep a draft 30-day plan. Check it with a partner, make any corrections and save the final plan in a Word document or an email to yourself.</p>
 {% endif %}
 <p>In VS Code this block is <kbd>{{ b.command }}</kbd>. About {{ b.kb }} KB of text.</p>
 <button type="button" hidden data-copy="text-{{ b.key }}" data-status="status-{{ b.key }}"
@@ -65,13 +98,28 @@
   <textarea id="text-{{ b.key }}" readonly spellcheck="false" aria-describedby="status-{{ b.key }}">{{ b.text }}</textarea>
   <p><a href="{{ b.raw_url }}">The text for {{ b.short }} as plain text</a>, at <code>{{ b.raw_url }}</code></p>
 </details>
+{% if review and b.number in ("3", "4", "5") %}
+<p>After the block, use this review in the same conversation. You can also <a href="#review">read the review text first</a>.</p>
+<button type="button" hidden data-copy="text-{{ review.key }}" data-status="status-review-{{ b.number }}"
+        data-what="review text for block {{ b.number }}"
+        data-next="Go to the same conversation, paste with {paste}, and press Enter.">Copy the review text for block {{ b.number }}</button>
+<div id="status-review-{{ b.number }}" role="status"></div>
+<p>After agreeing to a change, copy the whole revised agent and <a href="#save-agent">save its new version</a>.</p>
+{% endif %}
 {% if b.number == "5" %}
 <h2 id="block-6">Block 6: share it</h2>
 <p>
-  No text to paste for this one. Open the <a href="{{ url_for('shortlinks.ahg_share_short') }}">share page</a>,
+  Before opening the GitHub form, confirm that public sharing is approved
+  and remove private or non-public information. Opening the form sends
+  your agent text to GitHub, even before you submit it.
+</p>
+<p>
+  If approved, open the <a href="{{ url_for('shortlinks.ahg_share_short') }}">share page</a>,
   leave "My real agent" chosen, paste your newest version into "Your agent, as text"
-  (or choose the SKILL.md you saved last), and press "Open the
-  share form on GitHub". Step card 6 has every key.
+  (or choose agent-v4.md), and press "Open the
+  share form on GitHub". Step card 6 has every key. If approval is pending
+  or GitHub is unavailable, keep your reviewed copy locally and arrange a
+  next step with a helper.
 </p>
 {% endif %}
 {% endfor %}
@@ -83,7 +131,8 @@
   after your agent has answered. Your assistant checks your agent against
   twelve questions, suggests one change and asks before making it. Say yes,
   or reword it, and it gives you the next version in a box with a Copy
-  button. In VS Code this is <kbd>{{ review.command }}</kbd>. About {{ review.kb }} KB of text.
+  button. Save each new version using <a href="#save-agent">the local save
+  control</a>. In VS Code this is <kbd>{{ review.command }}</kbd>. About {{ review.kb }} KB of text.
 </p>
 <button type="button" hidden data-copy="text-{{ review.key }}" data-status="status-{{ review.key }}"
         data-what="review text"
@@ -109,9 +158,9 @@
   has every skill: ask for the entry point by name.
 </p>
 <p>
-  In ChatGPT, copy one of these prepared prompts into a new conversation; it
-  works on a free or paid account. A public directory listing or connector is
-  not required for the workshop.
+  In ChatGPT, copy one of these prepared prompts into a new conversation.
+  Account limits and results may vary. A public directory listing or
+  connector is not required for the workshop.
 </p>
 {% for t in aa_texts %}
 <h3 id="{{ t.key }}">{{ t.title }}</h3>
@@ -132,8 +181,8 @@
 <h2 id="help">If something goes wrong</h2>
 <ul>
   <li>The assistant asks you to log in: sign in or make a free account, then paste the block's text again.</li>
-  <li>The assistant says the message is too long: start a new conversation and paste again. If it still refuses, ask a helper; message limits vary. Save your latest agent before changing conversations, then paste the agent and the block text in the new conversation.</li>
-  <li>The assistant has forgotten your agent: paste your agent again as its own message, then paste the block's text.</li>
+  <li>The assistant says the message is too long: a new conversation may not change its per-message limit. Keep your saved work and use the written-example route in the day-at-a-glance guide, or a tested campus-approved assistant with a helper. Do not remove evidence to make the prompt fit.</li>
+  <li>Before changing conversations or tools, save your agent and workshop notes. In the new conversation, paste the latest agent, then say your current block and chosen course filename. Paste the previous answer from your notes before requesting a before-and-after comparison, then paste the block text. If that answer is lost, label the comparison incomplete; do not reconstruct it as an actual result.</li>
   <li>The assistant has used up its free messages for now: use another campus-approved assistant or a written example with a helper, and carry on from this block. Your agent is on your computer, from block 2.</li>
   <li>Anything else: raise a hand, or write to <a href="mailto:jeffbis@arizona.edu">jeffbis@arizona.edu</a>.</li>
 </ul>
@@ -143,4 +192,47 @@
 
 {% block scripts %}
 {% include "workshop/_ahg_copy.html" %}
+<script nonce="{{ csp_nonce }}">
+(function () {
+  "use strict";
+  {% include "workshop/_ahg_download.js" %}
+  var text = document.getElementById("save-agent-text");
+  var error = document.getElementById("save-agent-error");
+  var button = document.getElementById("save-agent-download");
+  var version = document.getElementById("save-agent-version");
+  var status = document.getElementById("save-agent-status");
+  var lastSaid = "";
+
+  function say(message) {
+    if (message === lastSaid) { message = "Again: " + message; }
+    lastSaid = message;
+    var p = document.createElement("p");
+    p.className = "panel";
+    p.textContent = message;
+    status.replaceChildren(p);
+  }
+
+  text.addEventListener("input", function () {
+    error.hidden = true;
+    error.textContent = "";
+    text.removeAttribute("aria-invalid");
+  });
+  button.hidden = false;
+  button.addEventListener("click", function () {
+    if (!text.value.trim()) {
+      error.textContent = "Paste your complete agent before downloading.";
+      error.hidden = false;
+      text.setAttribute("aria-invalid", "true");
+      say(error.textContent);
+      text.focus();
+      return;
+    }
+    if (!downloadSkillMarkdown(text.value, version.value)) {
+      say("The download could not start. Copy your agent into a plain-text editor and save it as " + version.value + ".");
+      return;
+    }
+    say("Your browser is saving " + version.value + ", usually to Downloads. Reopen it and check the version and complete text before continuing.");
+  });
+}());
+</script>
 {% endblock %}

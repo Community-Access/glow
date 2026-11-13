@@ -74,7 +74,7 @@ LEAVES_WITH = (
     "Version 2",
     "Version 3, cited",
     "Version 4, in a team",
-    "Shared, in your name",
+    "Shared or saved",
     "A 30-day plan",
 )
 
@@ -183,7 +183,7 @@ JOURNEY = (
     "Your agent at work: your AI uses it on one course document, and you revise it.",
     "Your agent, grounded: real evidence in, cited answers out.",
     "Your agent in the team: the whole course, at once.",
-    "Your agent, shared: your best version, in an open-source collection, with your name on it.",
+    "Your reviewed agent: share it if approved, or keep it for later.",
     "Your campus: a 30-day plan.",
 )
 
@@ -201,7 +201,11 @@ OUTCOMES = (
 
 
 def _journey_note(number: int) -> str:
-    return f"Say where we are on the journey: step {number} of 7, \"{JOURNEY[number - 1]}\" Then show what they will have at the end of this block before anyone starts."
+    return (
+        f"Say where we are on the journey: step {number} of 7, \"{JOURNEY[number - 1]}\" "
+        "Show what they will have at the end, name where each path works, and say the next transition. "
+        "Keep the matching step card and the written journey map available."
+    )
 
 
 # ---------------------------------------------------------------------------
@@ -237,7 +241,7 @@ def build_slides(ctx: DeckContext) -> list[Slide]:
             id="s1", section="Opening", kicker=DECK_EVENT, title=DECK_TITLE,
             blocks=(
                 Para(DECK_SUBTITLE, lead=True),
-                Para("Today you build an accessibility agent. By 4:00 it works in a team, in an open-source project, with your name on it."),
+                Para("Today you build an accessibility agent. By 4:00 it works in a team and is ready to share if approved."),
                 Para(DECK_BYLINE, small=True),
                 Para(DECK_CREDIT, small=True),
             ),
@@ -300,10 +304,11 @@ def build_slides(ctx: DeckContext) -> list[Slide]:
             ),
             notes=(
                 "Read the seven, slowly. This map comes back at the start of every block, so nobody ever wonders where we are.",
-                "Point out the pattern: every block makes the same agent better. Version 1 before lunch, version 4 by three o'clock.",
+                "Point out the pattern: every block makes the same agent better. Version 2 before lunch, version 4 by three o'clock.",
                 "Promise them out loud: every step has a finished example to fall back on. Nobody gets stuck and stays stuck.",
+                "Offer the written journey map. On the browser path, keep the workshop and assistant tabs open; on either VS Code path, use Copilot Chat with the kit open.",
             ),
-            links=(("The kit's own map of the day", _kit("README.md")),),
+            links=(("Your day at a glance", _kit("your-day-at-a-glance.md")),),
         ),
         Slide(
             id="outcomes", section="Opening", kicker="By 4:30", title="What you will be able to do",
@@ -325,7 +330,7 @@ def build_slides(ctx: DeckContext) -> list[Slide]:
             notes=(
                 "Name the exits and the restrooms, physically pointing.",
                 "Say the last line slowly, then add: that is not an interruption of this workshop - it is this workshop.",
-                "Say the three paths once: VS Code on a laptop, VS Code for the Web at vscode.dev, or the browser path with ChatGPT or another assistant at letitglow.app/ahg/assistant. Same blocks, same agent, same share. Anyone whose VS Code will not cooperate moves to the browser path and loses nothing.",
+                "Say the three paths once: VS Code on a laptop, VS Code for the Web at vscode.dev, or the browser path with an approved assistant at letitglow.app/ahg/assistant. Stay on the chosen path; use another approved path or a written example only if needed.",
                 f"The last five minutes, at {evaluation.starts_at}, belong to the session evaluation.",
             ),
             links=(("Choose your path", f"{SITE}/ahg/paths"),),
@@ -336,14 +341,14 @@ def build_slides(ctx: DeckContext) -> list[Slide]:
                 Bullets(ordered=True, items=(
                     "VS Code: open your kit folder, open Copilot Chat, type /ready-check.",
                     "Browser: copy the ready check text from letitglow.app/ahg/assistant into your assistant.",
-                    "Wait for: You are ready.",
+                    "Save and reopen the practice file; then confirm you are ready.",
                 )),
                 Para("Needs a hand? Raise it. A helper comes to you, and the room carries on.", big=True),
             ),
             notes=(
                 "Give this five full minutes. Run /ready-check on the projector first, so everyone hears what ready sounds like.",
                 "Copilot Chat opens with Control+Alt+I, or Control+Command+I on a Mac. Say the keys out loud.",
-                "Helpers move now, to every raised hand and to anyone who has not typed anything. A laptop that will not cooperate goes to the browser path, which loses nothing.",
+                "Helpers move now, to every raised hand and to anyone who has not typed anything. If a laptop will not cooperate, offer an approved browser assistant or a written example.",
             ),
             links=(_card(0), ("The browser path", f"{SITE}/ahg/assistant")),
         ),
@@ -537,7 +542,7 @@ def build_slides(ctx: DeckContext) -> list[Slide]:
                 Para("Stuck? Start from a ready-made agent. That counts.", big=True),
             ),
             notes=(
-                "VS Code writes the agent into my-agent/SKILL.md. In a browser it comes back in a box with a Copy button; download it from the share page.",
+                "VS Code writes my-agent/SKILL.md and my-agent/history/agent-v1.md. In a browser, paste the complete agent on the workshop page, choose version 1 and Download this version. Reopen agent-v1.md. Do not visit the share page until block 6.",
                 "You are on track when your AI tells you one thing your agent does well.",
                 "Helpers move now. Look for the person who has not typed anything yet, and sit with them quietly.",
                 "Step card 2 has every key and every expected screen in words, for screen reader users and anyone who prefers paper.",
@@ -559,6 +564,7 @@ def build_slides(ctx: DeckContext) -> list[Slide]:
             notes=(
                 _journey_note(3),
                 "PSY 101 is fictional: a course about memory and procrastination that keeps forgetting things and running late. The barriers in it are planted on purpose; the answer key is in the facilitator folder.",
+                "Save the chosen course filename and first answer in workshop notes. In the browser, copy the review text beside block 3, choose version 2 under Version to save, then Download this version. Reopen agent-v2.md; keep version 1 too. In VS Code, run /review-my-agent and check my-agent/history.",
             ),
             links=(_card(3), ("The sample course", f"{SITE}/ahg/kit#sample-course")),
         ),
@@ -609,6 +615,7 @@ def build_slides(ctx: DeckContext) -> list[Slide]:
                 _journey_note(4),
                 "The checker report is GLOW's audit for documents and axe for the web page.",
                 "Grounding supports the trusted in the session title. It reduces guessing but does not guarantee correctness. Check the source, the citation and what the checker did not test; a person decides.",
+                "Keep the actual first answer and grounded comparison in workshop notes. In the browser, review then choose version 3 and Download this version; reopen agent-v3.md. In VS Code check my-agent/history/agent-v3.md. Keep earlier versions for recovery.",
             ),
             links=(_card(4), ("Checker reports for PSY 101", f"{SITE}/ahg/kit#sample-course")),
         ),
@@ -672,6 +679,7 @@ def build_slides(ctx: DeckContext) -> list[Slide]:
                 "You get one team report, with your agent's section in it.",
                 "This is building an agent team: they added a specialist, and their coordinator is running it. Copilot announces each file as it finishes, so screen reader users hear progress, not silence.",
                 "On the browser path the same coordinator and specialists travel inside the block 5 text, so ChatGPT or any assistant runs the same team. If an assistant stops part way, type continue.",
+                "Save the complete team report in workshop notes. In the browser, review then choose version 4 and Download this version; reopen agent-v4.md. In VS Code check my-agent/history/agent-v4.md. Check privacy and permission before sharing next.",
             ),
             links=(_card(5), ("The office team", f"{SITE}/ahg/kit#office-team")),
         ),
@@ -704,7 +712,7 @@ def build_slides(ctx: DeckContext) -> list[Slide]:
             notes=(
                 "Fifteen minutes, on the projector, in VS Code with the kit open. Start a new chat and ask: use document-accessibility-wizard to review the PSY 101 course, using the files in sample-course/evidence. Web, Word, PowerPoint, Excel and PDF, on the screen.",
                 "Point out that the skills that need scanners say so and ask for checker results, as accessibility-agents-in-the-kit.md explains. Never let it claim a scan it did not run.",
-                "Close with: your agent goes into this project tonight, credited to you. That is the next block.",
+                "Close with: next you can share your agent if approved, or keep it for later.",
             ),
             links=(
                 ("Accessibility Agents", _kit("accessibility-agents.md")),
@@ -716,43 +724,45 @@ def build_slides(ctx: DeckContext) -> list[Slide]:
             id="s22", section="Afternoon", kicker=_you_are_here(6), title="Share it",
             blocks=(
                 Bullets(ordered=True, items=(
-                    "Open letitglow.app/ahg/share, and choose your newest SKILL.md.",
+                    "Check permission to share publicly; remove private information.",
+                    "Open letitglow.app/ahg/share; choose reviewed version 4.",
                     "Press Open the share form on GitHub.",
                     "Check the privacy box, and press Submit new issue.",
-                    "Within a minute: Your agent is in.",
+                    "Wait for the collection reply.",
                 )),
-                Para("Behind? Share any version. Version 1 counts."),
+                Para("Behind? Any version counts. If sharing is not approved or GitHub is unavailable, keep a reviewed copy and a next step."),
             ),
             notes=(
                 _journey_note(6),
                 "You can also paste the agent in instead of choosing the file. The form opens already filled in.",
-                "Everyone shared a practice agent before the day, so this is the second time, not the first. Say so; it changes the room.",
+                "Some people shared a practice agent before the day; others saved it locally. Both are on track.",
                 "Helpers watch the issues labelled needs-a-hand and go to those people first. A Nearly there reply always says exactly what to fix.",
                 "If sharing is not approved or GitHub is unavailable, save a reviewed draft and a next step. Do not call it published, and do not collect it without permission.",
+                "Opening the share form sends the agent text to GitHub before submission. Confirm permission and remove private or non-public information first.",
             ),
             links=(_card(6), ("Share your agent", f"{SITE}/ahg/share")),
         ),
         Slide(
-            id="s23", section="Afternoon", kicker="Open source, live", title="In the collection, with your name on it",
+            id="s23", section="Afternoon", kicker="Open source, live", title="Confirmed agents in the collection",
             blocks=(
-                Para("As your agents arrive, the collection grows, here, on the screen."),
-                Para("Tonight they all go into Accessibility Agents, every author credited.", big=True),
+                Para("With permission, show approved agents as they arrive."),
+                Para("A collection reply confirms when an agent is in.", big=True),
             ),
             notes=(
-                "Project agents/README.md in github.com/Community-Access/ahg-2026 and refresh it as agents arrive. Read each name and agent title out loud. Applause is allowed and encouraged.",
+                "With each author's permission, project their approved agent from agents/README.md in github.com/Community-Access/ahg-2026. Read its chosen credit and title out loud.",
                 "The collection is for anyone in higher education to use and improve.",
-                "Each agent is committed in its author's name, so it shows on their own GitHub profile. Started from a ready-made agent? It still counts. Say so: what matters is that it is yours now.",
+                "A submitted form alone is not confirmation. A reviewed local copy with a permission follow-up is also a valid outcome.",
             ),
             links=(("The AHG 2026 collection", "https://github.com/Community-Access/ahg-2026"),),
         ),
         Slide(
-            id="s24", section="Afternoon", kicker="Agents in action", title="Everyone's agents, together",
+            id="s24", section="Afternoon", kicker="Agents in action", title="Shared agents, together",
             blocks=(
-                Para("One more run, on the screen: the office team with every agent this room shared."),
-                Para("Listen for yours."),
+                Para("One more run: the office team with approved agents, shown with permission."),
+                Para("No approved shares? Use ready-made examples."),
             ),
             notes=(
-                "Last thing in this block. Copy every agents/<login>/<name>/ folder from the ahg-2026 repository into a room/ folder in your kit, then run /run-the-office on the projector. Read out each agent's name as the coordinator calls it.",
+                "With each author's permission, copy their approved agents/<login>/<name>/ folders into a room/ folder in your kit, then run /run-the-office on the projector. If none are available, use ready-made agents and say so.",
                 "If the run is slow, narrate it. If it stumbles, say what happened and why; a real failure explained well teaches more than a perfect demo.",
             ),
         ),
@@ -771,6 +781,7 @@ def build_slides(ctx: DeckContext) -> list[Slide]:
                 _journey_note(7),
                 "Try up to five fictional or approved non-sensitive examples beside the existing process. Include review time, errors and delivery time in the comparison. Never delay an accommodation for a pilot.",
                 "Reserve five minutes for a partner to check the plan: input, output destination, reviewer role, deadline, approval, day-30 measure and stop rule. If AI is not approved, a paper workflow and approval request count.",
+                "Keep a draft first, make the partner's correction, then save the final plan. On the VS Code paths Copilot may already have saved the draft.",
                 "The commitment goes on the wall, with no names on it.",
             ),
             links=(_card(7),),

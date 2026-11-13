@@ -326,7 +326,11 @@ automated and by a person before a release.
 
 The lint configuration is `.github/a11y.markdownlint-cli2.jsonc`; the Docs
 Quality workflow runs it on every Markdown file outside `vendor/`, the sample
-inputs and the AHG workshop materials.
+inputs and the AHG workshop materials. In its disposable runner, the workflow
+temporarily moves the editor configuration out of the way and restores it
+afterward: otherwise it overrides the accessibility rules. A deliberately
+invalid probe checks that all seven accessibility rules are active and the
+prose line-length rule is not.
 
 The editor also uses `.markdownlint.json`. Prose wraps at 80 characters; code
 blocks and semantic table rows keep their necessary syntax. YAML metadata titles

@@ -17,6 +17,13 @@ Step 2 of 7: your agent, as six plain-English answers.
 
 Your own agent, with your answers in it and your name on it: the file SKILL.md.
 
+## Why and where
+
+One clear task makes the agent easier to test. On the browser path, the
+workshop page supplies the prompt and saves your agent; answer in your
+assistant's tab. On either VS Code path, answer in Copilot Chat with the kit
+open. The share page is for block 6.
+
 ## Steps
 
 1. Pick one role card: documents and alternate formats; course content and faculty coaching; or compliance and procurement.
@@ -25,18 +32,25 @@ Your own agent, with your answers in it and your name on it: the file SKILL.md.
 ### In a browser
 
 1. On letitglow.app/ahg/assistant, under "Block 2: design your agent", press the Copy button.
-2. Switch to your assistant's tab with Control+Tab, move to the message box, paste with Control+V on Windows or Command+V on a Mac, and press Enter.
-3. Answer your assistant's questions one at a time: your role card and problem, then role, task, trusted guidance, output format, an example of a good answer and human review, then your name and institution. Borrow from the example whenever you like.
+2. Switch to your assistant's tab. Control+Tab moves through tabs; repeat it until you reach your assistant, or choose its tab by name. Move to the message box, paste with Control+V on Windows or Command+V on a Mac, and press Enter.
+3. Answer your assistant's questions one at a time: your role card and problem, then role, task, trusted guidance, output format, an example of a good answer and human review. Author credit is optional in the conversation; a helper can add it locally later. Borrow from the example whenever you like.
 4. Your assistant gives your agent back in a box with a Copy button. Press that Copy button.
-5. Open letitglow.app/ahg/share in a new tab. Paste your agent into "Your agent, as text", then press "Download as SKILL.md". Your browser saves it, usually in your Downloads folder. Do not share it yet.
+5. Return to letitglow.app/ahg/assistant. Under "Keep a copy of your agent",
+   paste it into "Your agent to save", choose "Version 1: after block 2"
+   under "Version to save", then press "Download this version". Reopen
+   agent-v1.md, usually in Downloads, and check its complete text and
+   version. Keep it; do not share yet. Never replace an earlier file:
+   choose Cancel and use a different name or folder if prompted.
 
 ### In VS Code
 
 1. Open Copilot Chat: Control+Alt+I on Windows, or Control+Command+I on a Mac.
 2. Type /design-my-agent and press Enter.
-3. Answer Copilot's questions one at a time: your role card and problem, then role, task, trusted guidance, output format, an example of a good answer and human review, then your name and institution. Borrow from the example whenever you like.
+3. Answer Copilot's questions one at a time: your role card and problem, then role, task, trusted guidance, output format, an example of a good answer and human review. Author credit is optional in the conversation; a helper can add it locally later. Borrow from the example whenever you like.
 4. Copilot writes your answers into my-agent/SKILL.md and reads the file back to you. If it asks before it changes the file, allow it.
 5. Optional: open my-agent/SKILL.md to read it yourself. Press Control+P on Windows or Command+P on a Mac, type SKILL, and choose my-agent.
+6. Reopen my-agent/history/agent-v1.md and confirm the complete saved agent.
+   If the command reports a failed save, stop for help before moving on.
 
 ## You are on track if
 
@@ -47,13 +61,13 @@ To see a finished example first, open examples/maria-alternate-format-planner.md
 
 ## If you are stuck
 
-Start from a ready-made agent. At letitglow.app/ahg/kit, under Ready-made agents, open the one nearest your card and press "Copy this file's text". In a browser, paste it into your assistant as your agent. In VS Code, paste it over my-agent/SKILL.md. Then change the author line to your name. That is a real agent, and it is yours now.
+Start from a ready-made agent at 11:45. Bring version 1 and choose one sample course filename. At letitglow.app/ahg/kit, under Ready-made agents, open the one nearest your card and press "Copy this file's text". In a browser, paste it into your assistant as your agent and save a local copy. In VS Code, paste it over my-agent/SKILL.md. Add your chosen public credit locally when you are ready. That is a real agent, and it is yours now.
 
 Raise a hand at any time. A helper comes to you.
 
 ## Your win
 
-Your agent exists. You wrote it in plain English, and it follows the same format as the open-source Accessibility Agents project.
+Your agent exists. You wrote it in plain English, and it follows the same format as the open-source Accessibility Agents project. Keep version 1; next you will test it on one sample file.
 
 ## On Monday
 

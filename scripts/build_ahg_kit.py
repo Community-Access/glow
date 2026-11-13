@@ -531,14 +531,23 @@ hand", with one plain sentence:
    how to copy it in one sentence: most assistants put a Copy button just
    under or above a code block.
 
-If all three are ready, end with exactly this, on its own line:
+After these checks, ask the participant to copy the complete template into
+"Your agent to save" at letitglow.app/ahg/assistant, choose "Practice template"
+under "Version to save", and press "Download this version". Ask them to
+reopen practice-SKILL.md from Downloads and confirm that they can read its
+seven headings. Wait for their reply. If copying, saving or reopening fails,
+report "Needs a hand" and offer a plain-text editor or a helper, not a
+success message. Do not claim to have inspected their computer.
+
+Only after they confirm the save and reopen check, say:
 
 You are ready for 16 November. Getting set up was the hardest part of the day, and it is done.
 
-Then add one more line: Last step: share your practice agent at
-letitglow.app/ahg/share. Choose "My practice agent", press "Fill in the
-practice template", then press "Open the share form on GitHub". It takes a
-minute, and GitHub replies to say it worked.
+Then add one more line: If public sharing is approved, share your practice
+agent at letitglow.app/ahg/share. Choose "My practice agent", press "Fill in
+the practice template", then press "Open the share form on GitHub". If
+sharing is not approved, keep the practice file locally and ask a helper
+about approval instead. At 11:05, use the block 2 text to design your agent.
 
 If anything needs a hand, say which check, suggest one simple thing to try,
 and say: write to jeffbis@arizona.edu, or come to the setup table
@@ -586,14 +595,16 @@ what they are building. Follow agent-file-principles.md, below.
    three dashes to the last line, and nothing else inside that block.
 7. After the code block, in five lines or fewer: tell them one specific thing
    their agent does well, then how to keep it: press the Copy button on the
-   code block, open letitglow.app/ahg/share in a new tab, paste it into the
-   box "Your agent, as text", and press "Download as SKILL.md". That saves it
-   on their computer. Do not share it yet; that comes after the office.
+   code block, return to letitglow.app/ahg/assistant, paste it into "Your
+   agent to save", choose "Version 1: after block 2" under "Version to save",
+   and press "Download this version". Reopen agent-v1.md and check its
+   complete text and version. Keep it on their computer. Do not share it
+   yet; that comes after the office, if approved.
 
 End with: Your agent exists. This is version 1. Next, we put it to work, and then we make it better.
 
-Keep this conversation open all day: the next blocks use the agent you just
-wrote, and every revision replaces it.""",
+Keep this conversation open all day: the next blocks use the latest version
+of the agent you wrote.""",
     ),
     "3-try-my-agent": dict(
         title="Block 3: your agent at work",
@@ -623,6 +634,10 @@ the participant:
 - One thing to watch: anywhere it had to guess because it had no evidence,
   or anywhere the agent file left you unsure what to do.
 
+Ask the participant to copy the chosen course filename and complete first
+answer into a local workshop-notes document, under "Block 3: first answer".
+Keep it for the comparison after lunch. Do not claim you saved it for them.
+
 End with: That is your agent's first answer. Now paste the review text from letitglow.app/ahg/assistant to make version 2.""",
     ),
     "4-ground-my-agent": dict(
@@ -637,8 +652,10 @@ Give the participant's agent real evidence, and compare before and after.
 
 Then act as that agent, following it exactly.
 
-1. Ask which course file to use. Use the same one as this morning if they
-   remember it, or if it is earlier in this conversation.
+1. Confirm the same course filename and actual first answer from this
+   conversation. If either is missing, ask the participant to paste it from
+   their workshop notes. If the answer is lost, label the comparison
+   incomplete; do not invent a previous result.
 2. Find that file's checker report below: the FILE with the same name ending
    .txt in sample-course/evidence. Answer again as the agent, using only that
    evidence. Cite WCAG 2.2 criteria with links.
@@ -658,6 +675,9 @@ them against the recording; no recording is supplied in this exercise.
 Check each claim against the supplied evidence and each citation against its
 criterion. Keep unverified observations separate from confirmed findings.
 Grounding reduces guessing; it does not guarantee correctness.
+
+Ask the participant to copy the grounded answer and comparison into their
+local workshop-notes document under "Block 4: grounded comparison".
 
 End with: Your agent now has evidence you can verify. Now paste the review text from letitglow.app/ahg/assistant: what you just learned belongs in the agent file.""",
     ),
@@ -689,9 +709,13 @@ and they will get one team report.
 
 Then act as the office coordinator, following it exactly, and write the
 report. Work through the course files one at a time, and after each file
-write one line saying which specialists worked on it, so a screen reader user
-hears progress rather than silence. If you have to stop before the last file,
+write one line saying which specialists worked on it. Keep progress readable
+as text; automatic screen-reader announcements depend on the setup.
+If you have to stop before the last file,
 say so and tell the participant to type: continue.
+
+Ask the participant to save the complete report in their local
+workshop-notes document under "Block 5: team report".
 
 End with one sentence on what their agent added to the team, and one on what
 would make it a better team member, then: Paste the review text from letitglow.app/ahg/assistant to make that change before you share it.""",
@@ -722,9 +746,16 @@ is one: that answer is the best evidence of what to improve.
    version under metadata by one, adding version: "2" if it is missing. Keep
    quoted fields in double quotes.
 6. After the code block, in three lines: This is version N of your agent. Copy
-   it with the code block's Copy button, paste it over the old one on
-   letitglow.app/ahg/share, and press "Download as SKILL.md" again. From now
-   on, use this version.
+   it with the code block's Copy button, return to letitglow.app/ahg/assistant,
+   paste it into "Your agent to save", choose the matching version under
+   "Version to save", and press "Download this version". Reopen agent-vN.md
+   (N is the new version) and verify its complete text and version.
+   Keep the previous copy too: if asked to replace it, choose Cancel and
+   use a different name or folder.
+7. Name the next block: after block 3, keep the first answer and resume at
+   1:15 with block 4 on the same file; after block 4, resume at 2:15 with
+   block 5; after block 5, review sharing permission at 3:05. If the current
+   block is unknown, ask rather than guessing the next step.
 
 Do not make more than one change per review. One change at a time is how
 they learn what each change does.""",
@@ -766,7 +797,11 @@ the workflow and approval request without running the agent.
 Give back the plan inside ONE code block, as a short Markdown table with
 their agent's name in a heading at the top. Then tell them one specific
 reason their plan is realistic, and how to keep it: press the Copy button on
-the code block and paste it into an email to themselves or a Word document.
+the code block and paste it into an approved local document as a draft.
+Ask them to explain the trigger, input, handoff, reviewer and stop rule to
+a partner, fix one unclear handoff, then save the final 30-day plan. If
+working alone, compare against the worked example. Do not claim this review
+or final save happened until they confirm it.
 
 Then, in one line: the full Accessibility Agents team works the same way in
 any assistant; the texts are under "Accessibility Agents in any assistant" on

@@ -71,6 +71,7 @@ SOURCES: dict[str, tuple[Path, Path, dict[str, str | None]]] = {
             "toc_id": "changelog-toc-heading",
             "body_class": "changelog-content",
             "back_label": "Back to version list",
+            "drop_title": "yes",
         },
     ),
     "prd": (

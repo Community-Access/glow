@@ -12,6 +12,8 @@ Covers:
 
 from __future__ import annotations
 
+import importlib.util
+import re
 from pathlib import Path
 
 import pytest
@@ -197,6 +199,23 @@ def test_changelog_page_no_jinja_syntax_error(client):
     # the changelog text that *documents* the fix -- that is fine.
     assert "jinja2.exceptions.TemplateSyntaxError" not in body
     assert "Internal Server Error" not in body
+
+
+def test_changelog_page_has_one_h1(client):
+    body = client.get("/changelog/").get_data(as_text=True)
+    assert len(re.findall(r"<h1(?:\s|>)", body)) == 1
+
+
+def test_changelog_partial_matches_the_markdown():
+    pytest.importorskip("markdown")
+    root = Path(__file__).resolve().parents[2]
+    spec = importlib.util.spec_from_file_location("build_doc_pages", root / "scripts" / "build-doc-pages.py")
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    partial = root / "web" / "src" / "acb_large_print_web" / "templates" / "partials" / "changelog_body.html"
+    assert module.render("changelog") == partial.read_text(encoding="utf-8"), (
+        "changelog_body.html is out of date: run `python scripts/build-doc-pages.py changelog`"
+    )
 
 
 # ---------------------------------------------------------------------------

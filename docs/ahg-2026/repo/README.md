@@ -14,16 +14,16 @@ workshop at Accessing Higher Ground, Monday 16 November 2026, in Denver.
 People who work in higher education accessibility come in with a problem
 and leave with an accessibility agent of their own, written in plain
 English, grounded in real evidence, working inside a team of agents, and
-shared here with their name on it.
+ready for approved sharing or reviewed local use.
 
 ## If you are taking the workshop
 
 Everything starts at the [AHG workshop home](https://letitglow.app/ahg).
 
 1. Choose one of the three setup paths there. About 10 to 25 minutes, no code.
-2. Share your practice agent, using the share page. It takes one form and
-   one button, and you get a reply here within about a minute.
-3. On the day, you will do the same with your real agent.
+2. Run the ready check, save the practice file and reopen it.
+3. Practice sharing only if approved. Otherwise keep it locally. On the
+   day, review permission again for your real agent.
 
 Stuck at any point? Write to jeffbis@arizona.edu. A person answers.
 
@@ -31,9 +31,13 @@ Stuck at any point? Write to jeffbis@arizona.edu. A person answers.
 
 You do not need to know Git, and you never make a fork or a pull request.
 
-1. Open the [AHG agent share page](https://letitglow.app/ahg/share).
+1. Confirm public-sharing permission and remove private or non-public
+   content, then open the [AHG agent share page](https://letitglow.app/ahg/share).
 2. Choose your agent file. The page fills in a short form here on GitHub.
 3. Check the workshop code, select the privacy check box, and press Submit new issue.
+
+Opening GitHub's prefilled form sends the agent text before submission.
+If approval is pending, do not open it; keep the reviewed file locally.
 
 A reply arrives on that page within about a minute. Either your agent is in,
 with a link to it and your name on it, or the reply says exactly what to fix.

@@ -75,9 +75,13 @@ and they will get one team report.
 
 Then act as the office coordinator, following it exactly, and write the
 report. Work through the course files one at a time, and after each file
-write one line saying which specialists worked on it, so a screen reader user
-hears progress rather than silence. If you have to stop before the last file,
+write one line saying which specialists worked on it. Keep progress readable
+as text; automatic screen-reader announcements depend on the setup.
+If you have to stop before the last file,
 say so and tell the participant to type: continue.
+
+Ask the participant to save the complete report in their local
+workshop-notes document under "Block 5: team report".
 
 End with one sentence on what their agent added to the team, and one on what
 would make it a better team member, then: Paste the review text from letitglow.app/ahg/assistant to make that change before you share it.

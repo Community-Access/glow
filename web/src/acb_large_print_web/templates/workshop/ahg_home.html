@@ -25,9 +25,9 @@
 <ol>
   <li>Design your own accessibility agent, in plain English, for a real problem from your job.</li>
   <li>Put it to work with GitHub Copilot, or the AI assistant you already use, on a sample course full of real barriers.</li>
-  <li>Ground it in evidence from GLOW, axe and Accessibility Insights, so it cites WCAG 2.2 instead of guessing.</li>
-  <li>Share it with one form and one button, with your name on it.</li>
+  <li>Ground it in evidence from GLOW, axe and Accessibility Insights, and check its WCAG 2.2 citations.</li>
   <li>Add it to a team of agents that works through the whole course.</li>
+  <li>Share it with your name on it if public sharing is approved, or keep it locally for later.</li>
   <li>Leave with a 30-day plan for your own campus.</li>
 </ol>
 
@@ -41,8 +41,8 @@
 <h2 id="get-ready">Get ready: choose a path</h2>
 <p>
   There are three paths into the same day. Each one ends with your own agent,
-  a team report on the whole course, and your agent shared on GitHub with
-  your name on it. <a href="{{ url_for('shortlinks.ahg_paths') }}">Choosing a path</a>
+  a team report on the whole course, and a reviewed agent ready to share
+  when approved. <a href="{{ url_for('shortlinks.ahg_paths') }}">Choosing a path</a>
   compares them and has every setup step. Step card 0 has every click.
 </p>
 <ul>
@@ -60,19 +60,21 @@
   </li>
   <li>
     <a href="{{ url_for('shortlinks.ahg_paths') }}#vscode-web">VS Code for the Web</a>:
-    the same VS Code and Copilot in Chrome or Edge at vscode.dev, with the kit
-    opened from your laptop and nothing to install. About 15 minutes.
+    VS Code in Chrome or Edge at vscode.dev, with the kit opened from your
+    laptop and nothing to install. About 15 minutes. Confirm commands and
+    file saving work in the ready check; browser capabilities can differ.
   </li>
 </ul>
-<p>Whichever you choose, finish setup the same way:</p>
+<p>Finish setup on your chosen path:</p>
 <ol>
-  <li>Make a free GitHub account at github.com, if you do not have one. Everyone needs it to share.</li>
-  <li>Run the ready check: block 1 on the browser path page, or <kbd>/ready-check</kbd> in Copilot Chat in VS Code.</li>
+  <li>If your path or approved sharing needs GitHub, make a free account at github.com, if you do not have one.</li>
+  <li>Run the ready check: block 1 on the browser path page, or <kbd>/ready-check</kbd> in Copilot Chat in VS Code. Save the practice file and reopen it yourself before setup is complete.</li>
   <li>
-    Share your practice agent: open <a href="{{ url_for('workshop.ahg_share') }}?practice=1">the share page</a>,
+    If public sharing is approved, share your practice agent: open <a href="{{ url_for('workshop.ahg_share') }}?practice=1">the share page</a>,
     press "Fill in the practice template" (or choose <code>my-agent/SKILL.md</code> from the kit),
     and press the button. GitHub replies within about a minute. That is the whole of sharing; on the
-    day you do it once more with your real agent.
+    day you do it once more with your real agent. Otherwise keep the practice
+    local and ask a helper about approval.
   </li>
 </ol>
 <p>
@@ -92,7 +94,7 @@
 </p>
 
 <h2 id="the-day">The day</h2>
-<p>Times are Mountain Time. Each block has its own step card, its own Copilot command in VS Code, and its own text on the browser path.</p>
+<p>Times are Mountain Time. Each block has its own step card, its own Copilot command in VS Code, and its own text on the browser path. Keep <a href="{{ url_for('shortlinks.ahg_kit_file', rel='your-day-at-a-glance.md') }}">your day at a glance</a> open for the seven stops and where to work.</p>
 <div class="table-scroll" role="region" aria-labelledby="schedule-caption" tabindex="0">
 <table>
   <caption id="schedule-caption">The workshop, 10:30 AM to 4:30 PM</caption>

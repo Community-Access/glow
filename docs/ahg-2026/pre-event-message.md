@@ -29,14 +29,14 @@ November, 10:30 AM to 4:30 PM Mountain Time, in Matchless.
 
 By the end of the day you will have designed your own accessibility agent,
 added it to a team of agents that works through a whole course, and
-contributed it to an open-source project with your name on it. You do not
+prepared it for an approved open-source contribution or local use. You do not
 need to be a developer. You do not need to have used VS Code or GitHub
 before. Every step on the day comes with a step card and a helper.
 
 ### Before the day: choose a path
 
 There are three paths into the same day, and every one ends with your own
-agent, shared on GitHub with your name on it. [Compare the three paths](https://letitglow.app/ahg/paths).
+agent and a plan. Sharing on GitHub is conditional on permission. [Compare the three paths](https://letitglow.app/ahg/paths).
 Not sure? Take the browser path.
 
 - The browser path, about 10 minutes, nothing to install: use ChatGPT,
@@ -49,14 +49,16 @@ Not sure? Take the browser path.
 
 Then, on any path:
 
-1. Make a free GitHub account at github.com, if you do not have one. Use your
+1. If your chosen path or approved sharing needs GitHub, make a free account
+   at github.com. Use your
    work email if your institution allows it.
 2. Follow your path's steps on [the setup page](https://letitglow.app/ahg/paths),
-   and run the ready check. It takes two minutes and tells you whether you
-   are set.
-3. Share your practice agent with [the practice-agent form](https://letitglow.app/ahg/share?practice=1):
-   one form, one button, and a reply within a minute. On the day you do it
-   once more, with your real agent.
+   and run the ready check. Save and reopen its practice file before
+   declaring setup complete.
+3. If public sharing is approved, try
+   [the practice-agent form](https://letitglow.app/ahg/share?practice=1).
+   Opening the GitHub form sends the text before submission. Otherwise
+   keep practice local; public sharing is not a readiness requirement.
 4. Answer [the five-minute survey](https://letitglow.app/ahg/survey). It asks
    for your name and registration email, your role and setup, any access
    needs, and what you hope to work on. A GitHub username is optional. The
@@ -95,8 +97,8 @@ agent local until sharing is approved.
 - After lunch: ground it in real evidence from GLOW, axe and Accessibility
   Insights, so you can verify its claims and WCAG 2.2 citations.
 - Afternoon: add it to an agent team and watch the team work through the
-  whole course, then share it to the open-source AHG 2026 collection on
-  GitHub, with one form and your name on it.
+  whole course, then review it for approved sharing or keep a local copy
+  with a permission follow-up.
 - The last five minutes are the session evaluation. It shapes next year's
   conference.
 

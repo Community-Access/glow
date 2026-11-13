@@ -1,0 +1,129 @@
+AHG: QUICK COMPLETE MANUAL VERIFICATION
+
+Use the newest live kit only after deployment is confirmed. Until then use
+S:\ahgtest\current-exports\ahg-2026-agent-kit.zip.
+Extract into a NEW scratch folder. Never overwrite your earlier work.
+Use fictional PSY 101 content only. Do not publish test agents.
+
+OPEN THESE SELF-CONTAINED TEST FILES
+ChatGPT: S:\ahgtest\05-student-path-chatgpt.html
+Desktop: S:\ahgtest\06-student-path-vscode-desktop.html
+VS Code web: S:\ahgtest\07-student-path-vscode-web.html
+Each contains every complete prompt, answer to type, evidence and expected
+result. Use its headings to navigate; do not copy this checklist as a prompt.
+Work through ALL its test-table rows, not just the seven-block happy path.
+Record actual Pass/Fail/Blocked, environment, minutes and saved evidence.
+Keep historical results; record this new run separately.
+
+1. CHATGPT IN EDGE
+Open https://chatgpt.com and sign in yourself. Start a NEW conversation.
+Confirm approved data/training settings. Record account tier and browser.
+On https://letitglow.app/ahg/assistant copy block 1 into ChatGPT.
+If the live page lacks "Version to save", it is NOT the new release yet:
+use the complete block 1 text embedded in the ChatGPT test file instead.
+Expected: seven template headings, privacy/human-review rules, exact
+template, then WAIT for your actual save/reopen confirmation.
+Copy the template into "Your agent to save"; choose Practice template;
+Download this version; reopen practice-SKILL.md and check all headings.
+Only then tell ChatGPT: "I saved and reopened the file and read its seven
+headings." It must not claim it inspected your computer.
+
+2. DESIGN / BLOCK 2
+Copy the complete block 2 prompt from the same workshop page or test file.
+Use the exact alternate-format answers in the test file's
+"The answers you type" section, one answer per question.
+Expected: a complete agent, seven headings, unchanged three Never rules,
+metadata version 1. Save with Version 1 as agent-v1.md; reopen and inspect.
+
+3. TRY / BLOCK 3
+Paste the complete block 3 text in the SAME conversation.
+When asked for a file type: psy101-reading-forgetting-scanned.pdf
+Save the COMPLETE first answer and filename in workshop-notes.
+No checker evidence yet: it must not pretend to scan or invent findings.
+Copy block 3's review text. Check twelve Yes/Not yet answers, one proposed
+change and permission request. Type "yes" only after checking that change.
+Expected: complete version 2; retain Never rules; save/reopen agent-v2.md.
+
+4. GROUND / BLOCK 4
+Paste block 4; use the SAME scanned-reading filename and actual first
+answer. The prompt includes checker evidence. Compare both real answers.
+Expected: evidence-backed findings, a verifiable WCAG criterion/link and
+specific human checks, not an "accessible/compliant" verdict.
+Save grounded answer and comparison in notes.
+Run block 4 review, approve one justified change; save/reopen agent-v3.md.
+Repeat the seven named-file cases Ground-01 through Ground-07 using the
+exact requests and complete evidence embedded in your scenario.
+
+5. TEAM / BLOCK 5
+Paste the complete block 5 text. If output stops early, type "continue".
+Expected: all seven course files addressed; your specialist contributes;
+findings match evidence, priorities/citations/reviewer are explicit.
+This is one assistant acting as roles, NOT an independent team review.
+Save complete report in notes. Review once; save/reopen agent-v4.md.
+Verify versions 1, 2, 3 and 4 all still exist with different correct content.
+
+6. SHARE / BLOCK 6
+Review privacy, permission and licence. For rehearsal choose deferred
+sharing: keep version 4 locally and record permission owner/next date.
+DO NOT open GitHub's form without permission: opening sends its text.
+An authorized live share passes only after actual collection confirmation,
+not merely opening/submitting a form. No fake submission or author credit.
+
+7. PLAN / BLOCK 7
+Paste block 7; use all EIGHT exact planning answers in your scenario.
+Save draft. Explain trigger, input, handoff, reviewer and stop rule to a
+partner (or compare Maria's example). Clarify one handoff.
+Save and reopen FINAL plan. Unknown approvals/measures remain pending.
+Keep plan, four agent versions, first answer, comparison and team report.
+
+8. VS CODE DESKTOP: REPEAT THE FULL DAY
+Use a NEW extracted kit. Open its folder in VS Code; trust only the known
+workshop kit. Use your approved signed-in Copilot account.
+Type "/" in Chat. Verify these commands are discoverable; do not assume.
+Run /ready-check; allow practice write; reopen history/practice-SKILL.md.
+Expected: six resource checks AND real write/readback/reopen; denied writes
+must be Needs a hand, not Ready.
+Run /design-my-agent with the same exact answers as step 2.
+Run /try-my-agent, then /review-my-agent.
+Run /ground-my-agent, then /review-my-agent.
+Run /run-the-office, then /review-my-agent.
+Run /my-30-day-plan and do partner/self-review before final save.
+Use the same file, evidence, output checks and saving criteria as above.
+Expected: my-agent/SKILL.md is latest; my-agent/history preserves each
+version; newest working/history/.github/skills/<agent-name>/SKILL.md match.
+Read my-agent/workshop-notes.md: actual first answer, filename, comparison
+and complete report must be present. Denied/failed saves must be explicit.
+Complete every remaining Desktop table row in its scenario.
+
+9. VS CODE WEB: REPEAT INDEPENDENTLY
+In Edge or Chrome open https://vscode.dev with ANOTHER fresh extracted kit.
+Allow folder access/write only for this known scratch kit; sign in yourself.
+Repeat step 8 end-to-end. Close/reopen tab and reopen saved outputs.
+Verify commands, permission, writes and history rather than assuming
+desktop parity. Missing capabilities = Blocked with the written fallback.
+Complete every remaining Web table row in its scenario.
+
+10. RECOVERY / NEGATIVE CHECKS (EACH PATH)
+Use Journey-01 through Journey-07 in the scenario:
+- Refuse save/reopen confirmation: no premature Ready.
+- Repeat review with existing history: no old file overwritten.
+- New chat: restore agent, block, filename and COMPLETE actual first answer.
+- Say "I lost the first answer. Do not recreate it."
+  Expected: comparison incomplete; never invented prior output.
+- Say sharing is not approved: keep local, no GitHub transmission.
+- Deny a scratch-file write: explicit error/manual copy, no false success.
+- If account/message limits block work, record Blocked and complete the
+  included written-example route; do not pretend it was a live AI run.
+
+11. ACCESSIBILITY AND FINAL SIGN-OFF
+Keyboard: Tab/Shift+Tab every changed control; Enter/Space activate;
+arrow keys choose version; visible focus, labels, no trap.
+Repeat required screen-reader/environment cases in
+S:\ahgtest\11-end-to-end-matrix.html (NVDA/JAWS/VoiceOver as applicable).
+Unavailable environments stay Blocked, never Pass.
+Check all 35 slides and Office formats using
+S:\ahgtest\04-deck-and-slides.html and current-exports.
+Record results in scenario tables and the existing results.csv mapping;
+new Journey rows can be recorded directly in their scenario tables.
+Keep original observations. A quick happy-path run is NOT full sign-off.
+Release/manual gaps remain listed in S:\ahgtest\green.md.

@@ -76,7 +76,11 @@ the workflow and approval request without running the agent.
 Give back the plan inside ONE code block, as a short Markdown table with
 their agent's name in a heading at the top. Then tell them one specific
 reason their plan is realistic, and how to keep it: press the Copy button on
-the code block and paste it into an email to themselves or a Word document.
+the code block and paste it into an approved local document as a draft.
+Ask them to explain the trigger, input, handoff, reviewer and stop rule to
+a partner, fix one unclear handoff, then save the final 30-day plan. If
+working alone, compare against the worked example. Do not claim this review
+or final save happened until they confirm it.
 
 Then, in one line: the full Accessibility Agents team works the same way in
 any assistant; the texts are under "Accessibility Agents in any assistant" on

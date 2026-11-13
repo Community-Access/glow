@@ -208,6 +208,20 @@ def test_the_privacy_rule_is_on_a_slide(ctx: deck.DeckContext):
     assert "Never paste anything private" in text
 
 
+def test_sharing_slides_preserve_approval_and_deferred_paths(ctx: deck.DeckContext):
+    slides = {slide.id: slide for slide in deck.build_slides(ctx)}
+    steps = next(block.items for block in slides["s22"].blocks if isinstance(block, deck.Bullets))
+    assert "permission" in steps[0].lower()
+    assert "private" in steps[0].lower()
+    assert "GitHub" in " ".join(steps[1:])
+    assert "keep a reviewed copy" in " ".join(
+        block.text for block in slides["s22"].blocks if isinstance(block, deck.Para)
+    )
+    assert "permission" in " ".join(slides["s23"].notes).lower()
+    assert "permission" in " ".join(slides["s24"].notes).lower()
+    assert "ready-made" in " ".join(slides["s24"].notes).lower()
+
+
 def test_every_promise_is_named_on_a_slide(ctx: deck.DeckContext):
     markdown = deck.build_deck_markdown(ctx)
     for promise in ("VS Code", "Copilot", "GitHub", "collection", "Accessibility Agents",

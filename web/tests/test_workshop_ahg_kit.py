@@ -99,6 +99,14 @@ def test_every_step_card_has_a_way_back_in_and_a_win():
             assert heading in text, (card.name, heading)
 
 
+def test_unshared_agents_are_not_described_as_already_published():
+    share_card = (KIT / "step-cards" / "6-share-it.md").read_text(encoding="utf-8")
+    plan = (KIT / ".github" / "skills" / "my-30-day-plan" / "SKILL.md").read_text(encoding="utf-8")
+    assert "If you shared a practice agent before the day" in share_card
+    assert "Otherwise, use the reviewed local copy" in " ".join(plan.split())
+    assert "do not claim it was submitted" in " ".join(plan.lower().split())
+
+
 def test_every_course_file_has_its_evidence():
     course = KIT / "sample-course"
     for item in ("psy101-syllabus", "psy101-week3-lecture", "psy101-gradebook",
@@ -187,12 +195,18 @@ def test_the_kit_downloads_as_one_zip_without_the_answer_key(client):
     resp = client.get("/workshop/ahg-2026/kit.zip")
     assert resp.status_code == 200
     assert resp.mimetype == "application/zip"
-    names = zipfile.ZipFile(io.BytesIO(resp.data)).namelist()
-    for needle in ("ahg-2026-agent-kit/README.md", "ahg-2026-agent-kit/my-agent/SKILL.md",
-                   "ahg-2026-agent-kit/.github/skills/design-my-agent/SKILL.md",
-                   "ahg-2026-agent-kit/sample-course/psy101-syllabus.docx"):
-        assert needle in names, needle
-    assert not any("answer-key" in n for n in names)
+    with zipfile.ZipFile(io.BytesIO(resp.data)) as archive:
+        names = archive.namelist()
+        for needle in ("ahg-2026-agent-kit/README.md", "ahg-2026-agent-kit/my-agent/SKILL.md",
+                       "ahg-2026-agent-kit/.github/skills/design-my-agent/SKILL.md",
+                       "ahg-2026-agent-kit/sample-course/psy101-syllabus.docx"):
+            assert needle in names, needle
+        assert not any("answer-key" in n for n in names)
+        for extension in ("md", "html", "docx", "pptx"):
+            rel = f"your-day-at-a-glance.{extension}"
+            assert archive.read(f"ahg-2026-agent-kit/{rel}") == (KIT / rel).read_bytes()
+        for rel in ("any-assistant/2-design-my-agent.txt", "any-assistant/review-my-agent.txt"):
+            assert archive.read(f"ahg-2026-agent-kit/{rel}") == (KIT / rel).read_bytes()
 
 
 def test_the_profile_is_served_for_import(client):
@@ -409,17 +423,39 @@ def test_the_browser_path_page_offers_every_block_with_a_copy_button(client):
         assert f'id="block-{number}"' in body
     # Block 6, sharing, has no text: it points to the share page.
     assert 'id="block-6"' in body and "/ahg/share" in body.split('id="block-6"')[1].split("<h2")[0]
-    # Six blocks, the review text, and four Accessibility Agents texts.
-    assert body.count("data-copy=") == 11 and body.count('role="status"') == 11
-    assert body.count("<textarea") == 11 and "readonly" in body
+    # Six blocks, four review controls, and four Accessibility Agents texts.
+    assert body.count("data-copy=") == 14 and body.count('role="status"') == 15
+    assert body.count("<textarea") == 12 and "readonly" in body
+    assert 'id="save-agent-text"' in body and 'id="save-agent-download"' in body
+    for number in ("3", "4", "5"):
+        assert f'data-copy="text-review-my-agent" data-status="status-review-{number}"' in body
+        assert f"Copy the review text for block {number}" in body
     assert 'id="review"' in body and 'id="accessibility-agents"' in body
     for key in ("aa-office-documents", "aa-pdf-and-epub", "aa-web-pages", "aa-markdown"):
         assert f'id="{key}"' in body, key
     assert "Copy the text for Block 2: design your agent" in body
     assert "sign in" in body.lower()
+    assert "Never replace an earlier file" in normalized
+    block_six = body.split('id="block-6"', 1)[1].split("<h2", 1)[0]
+    assert block_six.index("confirm that public sharing is approved") < block_six.index("Open the\n  share form on GitHub")
+    assert "even before you submit it" in block_six
     assert "copy one of these prepared prompts into a new conversation" in normalized
     assert "public directory listing or connector is not required" in normalized
     assert "being prepared for ChatGPT's plugin directory" not in normalized
+
+
+def test_browser_prompts_save_each_version_on_the_workshop_page():
+    for key in ("2-design-my-agent", "review-my-agent"):
+        task = (KIT / "any-assistant" / f"{key}.txt").read_text(encoding="utf-8").split(
+            "## Files from the kit", 1
+        )[0]
+        task = " ".join(task.split())
+        assert "letitglow.app/ahg/assistant" in task
+        assert "Your agent to save" in task
+        assert "Download this version" in task
+        assert "Version to save" in task
+        assert "Reopen" in task
+        assert "letitglow.app/ahg/share" not in task
 
 
 def test_the_paths_page_compares_three_paths_and_each_assistant(client):
@@ -433,6 +469,39 @@ def test_the_paths_page_compares_three_paths_and_each_assistant(client):
     assert "prepared Accessibility Agents prompts" in normalized
     assert "No public directory listing or connector is required" in normalized
     assert "not yet in ChatGPT's plugin directory" not in normalized
+
+
+def test_setup_paths_require_permission_and_observable_readiness(client):
+    from bs4 import BeautifulSoup
+
+    soup = BeautifulSoup(client.get("/ahg/paths").data, "html.parser")
+    for anchor in ("browser-setup", "vscode-setup", "vscode-web-setup"):
+        steps = soup.find(id=anchor).find_next("ol").get_text(" ", strip=True)
+        assert "sharing is approved" in steps, anchor
+        assert "before submission" in steps, anchor
+        assert "reopen" in steps, anchor
+    ready = (KIT / ".github/skills/ready-check/SKILL.md").read_text(encoding="utf-8")
+    assert ready.index("save/reopen check succeed") < ready.index("You are ready for 16 November")
+    assert 'report "Needs a hand", not Ready' in ready
+
+
+def test_browser_prompts_match_the_generator_and_preserve_missing_answer_boundary():
+    import sys
+
+    sys.path.insert(0, str(REPO / "scripts"))
+    import build_ahg_kit
+
+    for key in build_ahg_kit.ASSISTANT_TEXTS:
+        assert (KIT / "any-assistant" / f"{key}.txt").read_text(encoding="utf-8") == (
+            build_ahg_kit.assistant_text(key)
+        ), key
+    for path in (
+        KIT / "any-assistant/4-ground-my-agent.txt",
+        KIT / ".github/skills/ground-my-agent/SKILL.md",
+    ):
+        text = " ".join(path.read_text(encoding="utf-8").split())
+        assert "comparison incomplete" in text
+        assert "do not invent a previous result" in text
 
 
 def test_the_landing_page_offers_the_three_paths(client):

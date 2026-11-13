@@ -11,15 +11,24 @@ Block 6 of 7, 3:05 to 3:40.
 
 ## Where we are
 
-Step 6 of 7: your best version, shared in an open-source collection, with your name on it.
+Step 6 of 7: share your best version if approved, or keep it for later.
 
 ## What you will have at the end
 
-Your agent in the AHG 2026 collection on GitHub, committed in your name, and a reply that links to it.
+If approved, your agent in the AHG 2026 collection on GitHub and a reply
+that links to it. Otherwise, a reviewed local copy and a specific next step
+for seeking permission and sharing later.
+
+## Why and where
+
+Sharing lets others use your work; it is a separate choice from saving.
+Use the browser share page for every path. Opening the GitHub form sends
+the agent text to GitHub before you submit it, so check permission first.
 
 ## Steps
 
-The same on every path. You did this once before the day, with your practice agent.
+The same on every path. If you shared a practice agent before the day,
+these steps will be familiar.
 
 Before uploading, check that you have permission to publish the instructions
 under the MIT licence. Remove internal procedures, private data and
@@ -28,7 +37,10 @@ is pending, keep the file locally and arrange later sharing with a helper.
 
 1. In your browser, open letitglow.app/ahg/share.
 2. Leave "My real agent" chosen.
-3. Give the page your agent. In VS Code: choose Your agent file, and pick my-agent/SKILL.md from the kit folder. In a browser: choose your newest SKILL.md, version 4, or paste your agent into "Your agent, as text". The page fills in your agent's short name, and says so.
+3. Give the page your agent. In VS Code: choose Your agent file, and pick
+   my-agent/SKILL.md after checking that it is version 4. In a browser:
+   choose agent-v4.md, or paste your complete reviewed agent into "Your
+   agent, as text". The page fills in your agent's short name, and says so.
 4. Press "Open the share form on GitHub". A new tab opens with GitHub's Share my agent form, already filled in: the workshop code, "My real agent", and your agent.
 5. Move to the end of the form. Select the check box that says your agent contains nothing private.
 6. Press "Submit new issue".
@@ -40,7 +52,10 @@ sharing. This is a deferred contribution, not a completed public share.
 
 ## You are on track if
 
-The reply begins: Your agent is in. It names your agent, gives it a number in the collection, and links to it.
+If shared, the reply begins: Your agent is in. It names your agent, gives it
+a number in the collection, and links to it. A submitted form alone is not
+confirmation. If sharing is deferred, your reviewed local file and
+permission follow-up are recorded.
 
 ## If you are stuck
 
@@ -50,11 +65,14 @@ Raise a hand at any time. A helper comes to you.
 
 ## Your win
 
-Your agent is part of an open-source collection, committed in your name, so it shows on your own GitHub profile. At the end of the day it goes into the Accessibility Agents project with you credited.
+You have either contributed an approved agent with your chosen credit or
+kept a reviewed copy for later. Next, use what you learned to draft a
+30-day campus plan at 3:40. Keep the confirmation link or deferred-sharing
+owner and date in your workshop notes.
 
 ## On Monday
 
-Your agent stays in the collection at github.com/Community-Access/ahg-2026, for anyone in higher education to use and improve. Yours included.
+If shared, your agent stays in the collection at github.com/Community-Access/ahg-2026 for others to use and improve. Otherwise follow up on the permission and sharing step you recorded.
 
 ## Sources
 

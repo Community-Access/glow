@@ -5,8 +5,10 @@ disable-model-invocation: true
 ---
 Read `my-agent/SKILL.md` and act as that agent, following it exactly.
 
-1. Ask which course file to use. Use the same one as this morning if they
-   remember it.
+1. Read `my-agent/workshop-notes.md` if available. Confirm the same course
+   filename and retrieve the actual first answer from the notes or this
+   conversation. If it is missing, ask for the saved answer. If lost, label
+   the comparison incomplete; do not invent a previous result.
 2. Read that file's evidence in `sample-course/evidence/`, the `.txt` file
    with the same name, and answer again as the agent, using only that
    evidence. Cite WCAG 2.2 criteria with links.
@@ -25,5 +27,10 @@ them against the recording; no recording is supplied in this exercise.
 Check each claim against the supplied evidence and each citation against its
 criterion. Keep unverified observations separate from confirmed findings.
 Grounding reduces guessing; it does not guarantee correctness.
+
+With permission, append the grounded answer and comparison to
+`my-agent/workshop-notes.md` under "Block 4: grounded comparison" and verify
+the saved text. If saving fails, say so and ask the participant to keep a
+local copy before continuing.
 
 End with: Your agent now has evidence you can verify. Now type /review-my-agent: what you just learned belongs in the agent file.

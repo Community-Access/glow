@@ -249,6 +249,104 @@ async function chooseFileByKeyboard(page, where) {
 }
 
 test.describe('GLOW keyboard-only smoke test', () => {
+  test('AHG browser path saves distinct versions locally by keyboard', async ({ page }) => {
+    await page.goto('/ahg/assistant');
+    const requests = [];
+    page.on('request', (request) => {
+      if (request.url().startsWith('http')) requests.push(request.url());
+    });
+
+    await tabTo(page, '#save-agent-download', 'AHG local save');
+    await page.keyboard.press('Enter');
+    await expect(page.locator('#save-agent-text')).toBeFocused();
+    await expect(page.locator('#save-agent-text')).toHaveAttribute('aria-invalid', 'true');
+    await expect(page.locator('#save-agent-error')).toContainText('Paste your complete agent');
+
+    const saved = [];
+    for (let version = 0; version <= 4; version++) {
+      if (version > 0) {
+        await page.keyboard.press('Shift+Tab');
+        await page.keyboard.press('Shift+Tab');
+      }
+      await expect(page.locator('#save-agent-text')).toBeFocused();
+      await page.keyboard.press('Control+A');
+      const body = `---\nname: example\nmetadata:\n  version: "${version}"\n---\nComplete version ${version}`;
+      await page.keyboard.insertText(body);
+      await expect(page.locator('#save-agent-text')).not.toHaveAttribute('aria-invalid');
+      await page.keyboard.press('Tab');
+      await expect(page.locator('#save-agent-version')).toBeFocused();
+      await page.keyboard.press('Home');
+      for (let i = 0; i < version; i++) await page.keyboard.press('ArrowDown');
+      await page.keyboard.press('Tab');
+      await expect(page.locator('#save-agent-download')).toBeFocused();
+      const [download] = await Promise.all([
+        page.waitForEvent('download'),
+        page.keyboard.press('Enter'),
+      ]);
+      const filename = version === 0 ? 'practice-SKILL.md' : `agent-v${version}.md`;
+      expect(download.suggestedFilename()).toBe(filename);
+      saved.push({ path: await download.path(), body: `${body}\n` });
+      await expect(page.locator('#save-agent-status')).toContainText(`saving ${filename}`);
+    }
+    for (const copy of saved) {
+      expect(fs.readFileSync(copy.path, 'utf8')).toBe(copy.body);
+    }
+    expect(requests).toEqual([]);
+    await expect(page).toHaveURL(/\/ahg\/assistant$/);
+  });
+
+  test('AHG review buttons copy the shared prompt at each block', async ({ page }) => {
+    await page.addInitScript(() => {
+      Object.defineProperty(navigator, 'clipboard', {
+        configurable: true,
+        value: { writeText: async (text) => { window.__reviewCopied = text; } },
+      });
+    });
+    await page.goto('/ahg/assistant');
+    const review = await page.locator('#text-review-my-agent').inputValue();
+    for (const number of ['3', '4', '5']) {
+      await tabTo(page, `[data-status="status-review-${number}"]`, `AHG block ${number}`);
+      await page.keyboard.press('Enter');
+      await expect.poll(() => page.evaluate(() => window.__reviewCopied)).toBe(review);
+      await expect(page.locator(`#status-review-${number}`)).toContainText(`review text for block ${number}`);
+    }
+  });
+
+  test('AHG review fallback opens and describes the selected prompt', async ({ page }) => {
+    await page.addInitScript(() => {
+      Object.defineProperty(navigator, 'clipboard', {
+        configurable: true,
+        value: { writeText: async () => { throw new Error('Clipboard denied'); } },
+      });
+    });
+    await page.goto('/ahg/assistant');
+    await tabTo(page, '[data-status="status-review-4"]', 'AHG review fallback');
+    await page.keyboard.press('Enter');
+    const review = page.locator('#text-review-my-agent');
+    await expect(review).toBeFocused();
+    await expect(review).toHaveAttribute('aria-describedby', 'status-review-4');
+    await expect(page.locator('#status-review-4')).toContainText(/press (Control|Command)\+C/);
+    expect(await review.evaluate((el) => el.selectionEnd - el.selectionStart)).toBe(
+      (await review.inputValue()).length,
+    );
+  });
+
+  test('AHG local save reports download failures without losing the text', async ({ page }) => {
+    await page.addInitScript(() => {
+      URL.createObjectURL = () => { throw new Error('Download unavailable'); };
+    });
+    await page.goto('/ahg/assistant');
+    await tabTo(page, '#save-agent-text', 'AHG download failure');
+    await page.keyboard.insertText('My agent');
+    await page.keyboard.press('Tab');
+    await page.keyboard.press('End');
+    await page.keyboard.press('Tab');
+    await page.keyboard.press('Enter');
+    await expect(page.locator('#save-agent-status')).toContainText('download could not start');
+    await expect(page.locator('#save-agent-status')).toContainText('agent-v4.md');
+    await expect(page.locator('#save-agent-text')).toHaveValue('My agent');
+  });
+
   for (const [label, url] of [
     ['online', '/ahg/share?practice=1'],
     ['offline', `${pathToFileURL(path.resolve(
@@ -320,6 +418,7 @@ test.describe('GLOW keyboard-only smoke test', () => {
     { label: 'convert form', path: '/convert/' },
     { label: 'template form', path: '/template/' },
     { label: 'accessibility agents chat', path: '/accessibility-agents/chat/' },
+    { label: 'AHG browser path', path: '/ahg/assistant' },
   ]) {
     test(`${label}: every control reachable, visible focus, logical order, no trap`, async ({ page }) => {
       await page.goto(route);

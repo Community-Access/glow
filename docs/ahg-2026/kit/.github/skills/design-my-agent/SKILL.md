@@ -28,7 +28,9 @@ what they are building. Follow `agent-file-principles.md`.
 4. Ask what public author credit they choose, such as their professional
    name and institution. They may leave the placeholder and add credit
    locally with a helper before sharing; do not insist on personal details.
-5. Write their answers into `my-agent/SKILL.md`, keeping the template's
+5. Before replacing a non-template `my-agent/SKILL.md`, preserve its complete
+   contents in an unused file in `my-agent/history/` and confirm the copy.
+   Write their answers into `my-agent/SKILL.md`, keeping the template's
    headings and its "Never" section exactly. Set `name` to a short lowercase
    name with hyphens, at most 64 characters. Write the `description` as what
    it does in one sentence, then a second sentence starting "Use when". Set
@@ -36,7 +38,11 @@ what they are building. Follow `agent-file-principles.md`.
    `version: "1"` under `metadata`. Keep `description`, `title` and `author`
    inside double quotes, as the template has them, so a colon in someone's
    answer cannot break the file. Keep the WCAG 2.2 links in Trusted guidance.
-6. Read the finished file back in five lines or fewer, and tell them one
+6. Save a complete copy as `my-agent/history/agent-v1.md`. Never replace an
+   existing history file; use an unused numbered suffix if needed. Read both
+   files back and verify that they match. If saving fails, say which file
+   failed and stop for help; do not claim version 1 was saved.
+7. Read the finished file back in five lines or fewer, and tell them one
    specific thing their agent does well.
 
 End with: Your agent exists. This is version 1. Next, we put it to work, and then we make it better.
