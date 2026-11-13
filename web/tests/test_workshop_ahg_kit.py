@@ -214,7 +214,21 @@ def test_every_way_of_typing_the_address_reaches_the_landing_page(client, path):
 def test_the_short_addresses_reach_the_share_page_kit_and_slides(client):
     assert client.get("/ahg/share?practice=1").headers["Location"].endswith("/workshop/ahg-2026/share?practice=1")
     assert client.get("/ahg/kit.zip").headers["Location"].endswith("/workshop/ahg-2026/kit.zip")
-    assert client.get("/ahg/slides").headers["Location"].endswith("/workshop/deck")
+    assert client.get("/ahg/slides").headers["Location"].endswith("/workshop/session/ahg-2026/deck")
+
+
+def test_ahg_slides_use_the_event_room_and_matching_downloads(client):
+    joined = client.get("/w/ahg-2026", follow_redirects=True)
+    assert joined.status_code == 200
+    landing = client.get("/ahg").get_data(as_text=True)
+    assert 'href="/ahg/slides"' in landing
+    response = client.get("/ahg/slides", follow_redirects=True)
+    assert response.status_code == 200
+    body = response.get_data(as_text=True)
+    assert "localhost/w/ahg-2026" in body
+    assert "/w/your-code" not in body
+    for suffix in ("?download=1", ".md", ".docx", ".pptx", "-handout.docx"):
+        assert f"/workshop/session/ahg-2026/deck{suffix}" in body
 
 
 def test_the_kit_downloads_as_one_zip_without_the_answer_key(client):

@@ -138,14 +138,14 @@
 <h2 id="step-cards">Step cards</h2>
 <p>One card per block, in the order things appear on screen, as large print Word files. They are also in the kit, in the step-cards folder.</p>
 <ul>
-  {% for card in step_cards %}
+  <!-- {% for card in step_cards %} -->
   <li><a href="{{ url_for('workshop.ahg_step_card', name=card.file) }}">{{ card.title }}</a></li>
-  {% endfor %}
+  <!-- {% endfor %} -->
 </ul>
 
 <h2 id="slides">The slides</h2>
 <p>
-  <a href="{{ url_for('workshop.workshop_deck') }}">The slides, with speaker notes</a>,
+  <a href="{{ url_for('shortlinks.ahg_slides_short') }}">The slides, with speaker notes</a>,
   including a "Read as one page" mode for screen readers and a download as
   one file, PowerPoint, Word or Markdown.
 </p>
