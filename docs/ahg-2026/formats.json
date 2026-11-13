@@ -25,7 +25,7 @@
     },
     "kit/README.md": {
       "title": "Welcome to the AHG 2026 agent kit",
-      "sha256": "6c380d5e7e8149a2d1722e4054e005c01a572e5071fd17e5f1d0de9976da4ac0",
+      "sha256": "ec4b523e5f5ddb460c44d5cc59ace30551ed2a9172a1c0b252ef9745a0f918cf",
       "formats": [
         "README.md",
         "read-me.html",
@@ -124,7 +124,7 @@
     },
     "kit/step-cards/0-before-the-day.md": {
       "title": "Step card 0: Before the day",
-      "sha256": "2d5439479e326b1ed6fb7b14742bab94997159007ccb9be2f031224101cd90eb",
+      "sha256": "b55fbf78de0d9d568fb3c6ba3d1aa06675c2c5972ad0ebf5a1ea2e37dfdd9d62",
       "formats": [
         "0-before-the-day.md",
         "0-before-the-day.html",
@@ -135,7 +135,7 @@
     },
     "kit/step-cards/1-why-we-are-here.md": {
       "title": "Step card 1: Why we are here",
-      "sha256": "9fce9994dbd14b159202970f296893058db67bdda743fb2c46d5bcba0fb1f12a",
+      "sha256": "2401a7ce700b58b88aa1d1e6ba2ae1d107cc6b077fc5ea40200937bf032f6ac6",
       "formats": [
         "1-why-we-are-here.md",
         "1-why-we-are-here.html",
@@ -146,7 +146,7 @@
     },
     "kit/step-cards/2-design-your-agent.md": {
       "title": "Step card 2: Design your agent",
-      "sha256": "52da1870f017adfd97a4d4d89fb966e1006ac34141db76e7d3e5d7c4b02512af",
+      "sha256": "a6b44fbb8bd47a39803af7bcd86487bab8686f32105e8ad79c505f15c6e85566",
       "formats": [
         "2-design-your-agent.md",
         "2-design-your-agent.html",
@@ -157,7 +157,7 @@
     },
     "kit/step-cards/3-your-agent-at-work.md": {
       "title": "Step card 3: Your agent at work",
-      "sha256": "7670717abb393a92bdf53165bf24b805679776a956da7714c2b658690b0615be",
+      "sha256": "1a3b0bd7a632e2da0d7dcc57d02495569015dda448fc824c47daa3ad8021537e",
       "formats": [
         "3-your-agent-at-work.md",
         "3-your-agent-at-work.html",
@@ -168,7 +168,7 @@
     },
     "kit/step-cards/4-ground-it.md": {
       "title": "Step card 4: Ground it",
-      "sha256": "397ec693571d8ada1df4c21d5b5eb4ace66c662dda911d32cb1caf500d139b6b",
+      "sha256": "1170e49764bc4d5270fc81976fe1478fe64173304fbb4d58909a3114fbf6ca65",
       "formats": [
         "4-ground-it.md",
         "4-ground-it.html",
@@ -179,7 +179,7 @@
     },
     "kit/step-cards/5-build-the-office.md": {
       "title": "Step card 5: Build the office",
-      "sha256": "d426da9799e919e5c85cefb20ab8403ef0e6f8c2a7efaaca54953e8dddbecea3",
+      "sha256": "f0d663cf1cdd36dedd5c52f0c19006b7963e6daa227b5645be7279122aabf407",
       "formats": [
         "5-build-the-office.md",
         "5-build-the-office.html",
@@ -190,7 +190,7 @@
     },
     "kit/step-cards/6-share-it.md": {
       "title": "Step card 6: Share it",
-      "sha256": "20d3a3bed1a69caa4b09c87cc038915c130bbe29a15de3c6eac3ce1c49709ed2",
+      "sha256": "9ed7bac559fcb17da287e3b155218271ce96f77737c40548ec5dff881aa24007",
       "formats": [
         "6-share-it.md",
         "6-share-it.html",
@@ -201,7 +201,7 @@
     },
     "kit/step-cards/7-take-it-home.md": {
       "title": "Step card 7: Take it home",
-      "sha256": "2187971855f934e65ec7ee71a01a71519896a91a24d7639b36db230994af03a9",
+      "sha256": "6bb93f3cd9f2d3c671c752305bfca2205017a8283263061c16eee45a9f2294b2",
       "formats": [
         "7-take-it-home.md",
         "7-take-it-home.html",

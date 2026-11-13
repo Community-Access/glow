@@ -15,52 +15,64 @@ Step 5 of 7: your agent in the team, across the whole course.
 
 ## What you will have at the end
 
-Your agent working inside a team of agents across the whole PSY 101 course, one team report with your agent's section in it, and version 4 of your agent, ready to share if approved.
+Your agent working inside a team of agents across the whole PSY 101 course, one
+team report with your agent's section in it, and version 4 of your agent, ready
+to share if approved.
 
 ## Why and where
 
 This block shows how a coordinator combines specialist work. Use the same
-assistant conversation on the browser path, or Copilot Chat with the kit
-open on either VS Code path. Keep your latest agent available in case the
-assistant asks for it.
+assistant conversation on the browser path, or Copilot Chat with the kit open on
+either VS Code path. Keep your latest agent available in case the assistant asks
+for it.
 
 ## Steps
 
 ### In a browser
 
-1. In the same conversation, paste the text for "Block 5: build the office" from letitglow.app/ahg/assistant, and press Enter. It is the longest text of the day: the coordinator, eight specialists and every checker report.
-2. Your assistant says what is about to happen, then works through the course one file at a time, saying which specialists worked on each file.
+1. In the same conversation, paste the text for "Block 5: build the office" from
+   letitglow.app/ahg/assistant, and press Enter. It is the longest text of the
+   day: the coordinator, eight specialists and every checker report.
+2. Your assistant says what is about to happen, then works through the course
+   one file at a time, saying which specialists worked on each file.
 3. Read the team report. Find the section your agent wrote.
 4. Read the last line: what your agent added to the team's work.
-5. Save the complete report in your workshop-notes document under
-   "Block 5: team report".
+5. Save the complete report in your workshop-notes document under "Block 5: team
+   report".
 
 ### In VS Code
 
 1. Open Copilot Chat: Control+Alt+I on Windows, or Control+Command+I on a Mac.
 2. Type /run-the-office and press Enter.
-3. Copilot tells you what is about to happen, then works through the course
-   one file at a time, naming its specialists. Progress remains readable
-   as text; automatic announcements depend on your screen reader and settings.
-4. Read the team report. Find the section your agent wrote. Alt+F2 on Windows, or Option+F2 on a Mac, shows the whole report as plain text.
+3. Copilot tells you what is about to happen, then works through the course one
+   file at a time, naming its specialists. Progress remains readable as text;
+   automatic announcements depend on your screen reader and settings.
+4. Read the team report. Find the section your agent wrote. Alt+F2 on Windows,
+   or Option+F2 on a Mac, shows the whole report as plain text.
 5. Read the last line: what your agent added to the team's work.
 6. Approve appending the report to my-agent/workshop-notes.md and reopen it.
 
 ### Then make the next version, in a browser
 
-1. Return to letitglow.app/ahg/assistant. Under block 5, press "Copy the review text for block 5", then paste it in the same assistant conversation and press Enter.
-2. Read the twelve Yes or Not yet lines, then the one change it suggests and why.
-3. Say yes, or reword the change in your own words. Your assistant gives you version 4 of your agent in a box with a Copy button.
-4. Copy the whole agent to "Your agent to save" on the workshop page.
-   Choose version 4 under "Version to save" and press "Download this version".
-   Reopen agent-v4.md and verify its version and complete text. Keep the
-   earlier versions; never approve replacing an earlier copy.
+1. Return to letitglow.app/ahg/assistant. Under block 5, press "Copy the review
+   text for block 5", then paste it in the same assistant conversation and press
+   Enter.
+2. Read the twelve Yes or Not yet lines, then the one change it suggests and
+   why.
+3. Say yes, or reword the change in your own words. Your assistant gives you
+   version 4 of your agent in a box with a Copy button.
+4. Copy the whole agent to "Your agent to save" on the workshop page. Choose
+   version 4 under "Version to save" and press "Download this version". Reopen
+   agent-v4.md and verify its version and complete text. Keep the earlier
+   versions; never approve replacing an earlier copy.
 
 ### Then make the next version, in VS Code
 
 1. Type /review-my-agent and press Enter.
-2. Read the twelve Yes or Not yet lines, then the one change it suggests and why.
-3. Say yes, or reword the change. Copilot saves version 4 of your agent and installs it.
+2. Read the twelve Yes or Not yet lines, then the one change it suggests and
+   why.
+3. Say yes, or reword the change. Copilot saves version 4 of your agent and
+   installs it.
 4. Reopen my-agent/history/agent-v4.md and confirm versions 1, 2 and 3 remain.
 
 The workshop team follows specialist instructions in sequence in one
@@ -69,34 +81,35 @@ independent second review or a fresh scan of every file.
 
 ## You are on track if
 
-The report names your agent in at least one file's section, identifies
-evidence and human review, and you have version 4. Add public author
-credit locally when you choose; it is not required in the conversation.
+The report names your agent in at least one file's section, identifies evidence
+and human review, and you have version 4. Add public author credit locally when
+you choose; it is not required in the conversation.
 
 ## If you are stuck
 
 If the run stops, type: continue. If your assistant has forgotten your agent,
-paste your latest saved version as its own message. If the prompt is too
-long, a new conversation may not fix the message limit. Use the complete
-written-example route in the day-at-a-glance guide, or ask a helper about
-a tested approved assistant. Carry your saved agent, current block and notes.
-At the end of this block, watch the projector: the full
-Accessibility Agents project runs on the same course.
+paste your latest saved version as its own message. If the prompt is too long, a
+new conversation may not fix the message limit. Use the complete written-example
+route in the day-at-a-glance guide, or ask a helper about a tested approved
+assistant. Carry your saved agent, current block and notes. At the end of this
+block, watch the projector: the full Accessibility Agents project runs on the
+same course.
 
 Raise a hand at any time. A helper comes to you.
 
 ## Your win
 
 You built part of an agent team today, and it worked through a whole course.
-Keep version 4; in block 6 you will review it for sharing permission and
-privacy at 3:05. Bring your reviewed version 4, not the practice template.
+Keep version 4; in block 6 you will review it for sharing permission and privacy
+at 3:05. Bring your reviewed version 4, not the practice template.
 
 ## On Monday
 
-Big jobs split into specialists and a coordinator. Start with one specialist; add the next when the first one earns its place.
+Big jobs split into specialists and a coordinator. Start with one specialist;
+add the next when the first one earns its place.
 
 ## Sources
 
-Checked on 29 October 2026: the keys on this card are in the kit's
-README, with their sources. The standard every agent cites is
+Checked on 29 October 2026: the keys on this card are in the kit's README, with
+their sources. The standard every agent cites is
 [WCAG 2.2](https://www.w3.org/TR/WCAG22/).

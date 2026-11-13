@@ -13,6 +13,13 @@ Pacific Time (UTC-7).
 
 ### Fixed
 
+- Point `/ahg/slides` and the AHG landing page to the `ahg-2026` room's
+  deck and matching HTML, Markdown, Word, PowerPoint and handout downloads,
+  rather than the generic `your-code` deck. Verify the room through the
+  normal workshop join flow before publication.
+- Correct AHG kit README and step-card Markdown formatting without changing
+  exercise text, and keep Jinja loop controls out of the landing page's
+  static HTML list structure.
 - Package `templates/workshop/_ahg_download.js` in the installed web
   application so `/ahg/assistant` and `/ahg/share` render after Docker
   deployment. Check that every literal template dependency is included in

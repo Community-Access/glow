@@ -149,7 +149,7 @@ def ahg_kit_file(rel: str):
 
 @short_bp.route("/ahg/slides", methods=["GET"], strict_slashes=False)
 def ahg_slides_short():
-    return redirect(url_for("workshop.workshop_deck"))
+    return redirect(url_for("workshop.workshop_session_deck", session_code="ahg-2026"))
 
 
 @short_bp.route("/ahg/site", methods=["GET"], strict_slashes=False)
