@@ -6,6 +6,11 @@ This document describes the safe, failsafe deployment process for the GLOW web a
 
 Before production deployment, the preferred workstation gate is a WSL-hosted Docker staging run plus focused regressions. That catches container/runtime differences earlier while keeping the production server deploy script narrow and predictable.
 
+Template includes must also be listed in `web/pyproject.toml` package data.
+Source-checkout tests alone do not catch missing installed resources: AHG's
+shared JavaScript template is required by both the assistant and share pages.
+Verify those live pages after deployment, not just `/health`.
+
 ### Recommended Pre-Production WSL Gate
 
 From Windows PowerShell on the development workstation:
