@@ -1,6 +1,8 @@
 """Build self-contained AHG walkthroughs from the current workshop prompts."""
 
 from pathlib import Path
+import re
+import textwrap
 
 import ahg_formats
 
@@ -49,6 +51,32 @@ BLOCKS = (
 
 def fence(text: str) -> str:
     return "````````text\n" + text + ("" if text.endswith("\n") else "\n") + "````````\n"
+
+
+def format_prose(text: str) -> str:
+    lines = []
+    delimiter = None
+    for line in text.splitlines():
+        if delimiter is not None:
+            lines.append(line)
+            if line == delimiter:
+                delimiter = None
+        elif re.match(r"^`{8}text$", line):
+            delimiter = "````````"
+            lines.append(line)
+        elif not line.strip():
+            if lines and lines[-1]:
+                lines.append("")
+        elif line.startswith("#"):
+            lines.append(line)
+        else:
+            item = re.match(r"^(\d+\. |- )", line)
+            continuation = " " * len(item[0]) if item else ""
+            lines.extend(textwrap.wrap(
+                line, width=80, subsequent_indent=continuation,
+                break_long_words=False, break_on_hyphens=False,
+            ))
+    return "\n".join(lines).rstrip() + "\n"
 
 
 def paste_parts(text: str) -> list[str]:
@@ -174,7 +202,7 @@ Follow this in order to build an alternate format planner, improve it using fict
                     "worked example. Correct an unclear handoff, save the final plan, reopen it, then "
                     "confirm the review and save to the assistant. Do not call an unreviewed draft final."]
     out += [FINISH, fence((KIT / "examples" / "maria-alternate-format-planner.md").read_text(encoding="utf-8"))]
-    return "\n\n".join(out).rstrip() + "\n"
+    return format_prose("\n\n".join(out))
 
 
 def sharing() -> str:
@@ -266,7 +294,7 @@ def vscode_manual(web: bool) -> str:
                     "run-the-office", "review-my-agent", "my-30-day-plan"):
         out += [f"### Instructions for /{command}",
                 fence((KIT / ".github" / "skills" / command / "SKILL.md").read_text(encoding="utf-8"))]
-    return "\n\n".join(out).rstrip() + "\n"
+    return format_prose("\n\n".join(out))
 
 
 def write_manuals() -> list[Path]:

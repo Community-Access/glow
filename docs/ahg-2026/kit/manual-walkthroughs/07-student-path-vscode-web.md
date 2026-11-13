@@ -1,15 +1,33 @@
 # VS Code for the Web walkthrough: commands, exact answers and saved results
 
-
 ## Start here
 
-This file contains the exact commands, interview answers, expected results and source instructions for the complete fictional alternate-format exercise. No chat attachment is required: Copilot reads the local kit as a workspace. Do not use private documents. Braille production is not required.
+This file contains the exact commands, interview answers, expected results and
+source instructions for the complete fictional alternate-format exercise. No
+chat attachment is required: Copilot reads the local kit as a workspace. Do not
+use private documents. Braille production is not required.
 
-1. Download [the current workshop kit ZIP](https://letitglow.app/ahg/kit.zip). Extract all files to a new writable folder so you do not overwrite an earlier run.
-2. In Edge or Chrome, open [VS Code for the Web](https://vscode.dev). Choose Open Folder and select the extracted `ahg-2026-agent-kit` folder. Allow the browser to read it and, when asked, save changes. Sign in through Accounts. If the browser cannot open the folder, Copilot commands are unavailable or writes are denied, stop and record Blocked; use an approved browser or written route instead.
-3. In Explorer, confirm you can see `my-agent`, `sample-course` and `.github`. Open Copilot Chat with Control+Alt+I on Windows or Control+Command+I on a Mac. Choose Agent mode if available; the mode must permit the expected workspace reads and approved writes.
-4. Type each command below in the chat message box and send it. Do not type it in a terminal. Keep one conversation. Approve only the workshop file operations you expect. Read back files in Explorer after each save; a success message alone is not proof.
-5. If a slash command is missing, do not pretend it ran. The complete command instructions are included at the end of this file for inspection with a helper. Record Blocked and switch to an approved route if the command or file access cannot be restored.
+1. Download [the current workshop kit ZIP](https://letitglow.app/ahg/kit.zip).
+   Extract all files to a new writable folder so you do not overwrite an earlier
+   run.
+2. In Edge or Chrome, open [VS Code for the Web](https://vscode.dev). Choose
+   Open Folder and select the extracted `ahg-2026-agent-kit` folder. Allow the
+   browser to read it and, when asked, save changes. Sign in through Accounts.
+   If the browser cannot open the folder, Copilot commands are unavailable or
+   writes are denied, stop and record Blocked; use an approved browser or
+   written route instead.
+3. In Explorer, confirm you can see `my-agent`, `sample-course` and `.github`.
+   Open Copilot Chat with Control+Alt+I on Windows or Control+Command+I on a
+   Mac. Choose Agent mode if available; the mode must permit the expected
+   workspace reads and approved writes.
+4. Type each command below in the chat message box and send it. Do not type it
+   in a terminal. Keep one conversation. Approve only the workshop file
+   operations you expect. Read back files in Explorer after each save; a success
+   message alone is not proof.
+5. If a slash command is missing, do not pretend it ran. The complete command
+   instructions are included at the end of this file for inspection with a
+   helper. Record Blocked and switch to an approved route if the command or file
+   access cannot be restored.
 
 ## Block 1: save and reopen the practice template
 
@@ -19,10 +37,14 @@ Type and send:
 /ready-check
 ````````
 
+What should happen: Expect the assistant to name the template's seven headings,
+explain both privacy and human-review rules, and return the whole template. It
+must wait for you to confirm a successful save and reopen before declaring you
+ready.
 
-What should happen: Expect the assistant to name the template's seven headings, explain both privacy and human-review rules, and return the whole template. It must wait for you to confirm a successful save and reopen before declaring you ready.
-
-Next: approve saving the practice copy in `my-agent/history/practice-SKILL.md`. Open it in Explorer, check all seven headings and confirm the reopen to Copilot. Only then continue to block 2.
+Next: approve saving the practice copy in `my-agent/history/practice-SKILL.md`.
+Open it in Explorer, check all seven headings and confirm the reopen to Copilot.
+Only then continue to block 2.
 
 ## Block 2: design version 1
 
@@ -32,8 +54,11 @@ Type and send:
 /design-my-agent
 ````````
 
-
-What should happen: Expect a role-card question, a starting-agent suggestion, six design questions one at a time, and optional author credit. Use the exact answers below as each question arrives. Expect one complete agent with YAML front matter, all seven template headings, unchanged Never rules, trusted-guidance links and version 1.
+What should happen: Expect a role-card question, a starting-agent suggestion,
+six design questions one at a time, and optional author credit. Use the exact
+answers below as each question arrives. Expect one complete agent with YAML
+front matter, all seven template headings, unchanged Never rules,
+trusted-guidance links and version 1.
 
 When asked about role card and problem, send only:
 
@@ -41,13 +66,11 @@ When asked about role card and problem, send only:
 Documents and alternate formats. When a student needs a scanned course reading in large print, we lose days working out what to produce and who checks it.
 ````````
 
-
 When asked about starting agent, send only:
 
 ````````text
 Start from the alternate format planner.
 ````````
-
 
 When asked about role, send only:
 
@@ -55,13 +78,11 @@ When asked about role, send only:
 You are an alternate format planner in a university disability resource center. You work for the specialist who handles accommodation requests.
 ````````
 
-
 When asked about task, send only:
 
 ````````text
 Given a checker's report on a course document and the formats a student needs, plan how to deliver those formats, in order, with who does each step.
 ````````
-
 
 When asked about trusted guidance, send only:
 
@@ -69,13 +90,11 @@ When asked about trusted guidance, send only:
 WCAG 2.2, especially 1.4.5 Images of Text and 1.1.1 Non-text Content, the ACB Large Print Guidelines, and our center's alternate format procedure.
 ````````
 
-
 When asked about output format, send only:
 
 ````````text
 The problem in one line, numbered steps with who does each, the formats to deliver, then a checklist.
 ````````
-
 
 When asked about example, send only:
 
@@ -83,13 +102,11 @@ When asked about example, send only:
 For a scanned reading, state that pages are images of text; assign text conversion and page-by-page checking to a specialist; list the requested large-print output and a review checklist.
 ````````
 
-
 When asked about human review, send only:
 
 ````````text
 The alternate format specialist checks the converted text against the original page by page, and the student confirms the format works.
 ````````
-
 
 When asked about optional author credit, send only:
 
@@ -97,8 +114,8 @@ When asked about optional author credit, send only:
 Use the fictional public credit Workshop Test Author, AHG test run.
 ````````
 
-
-Next: open `my-agent/SKILL.md` and `my-agent/history/agent-v1.md`. Confirm both complete texts match and metadata says version 1. Continue to block 3.
+Next: open `my-agent/SKILL.md` and `my-agent/history/agent-v1.md`. Confirm both
+complete texts match and metadata says version 1. Continue to block 3.
 
 ## Block 3: try it without checker evidence
 
@@ -108,10 +125,14 @@ Type and send:
 /try-my-agent
 ````````
 
+What should happen: When asked for the course file, paste
+psy101-reading-forgetting-scanned.pdf. This is a filename, not an attachment.
+Expect the assistant to name your agent and either give a cautious plan or ask
+for missing evidence. Asking for evidence is a successful first try; invented
+checker findings are not.
 
-What should happen: When asked for the course file, paste psy101-reading-forgetting-scanned.pdf. This is a filename, not an attachment. Expect the assistant to name your agent and either give a cautious plan or ask for missing evidence. Asking for evidence is a successful first try; invented checker findings are not.
-
-Next: approve appending the actual answer to `my-agent/workshop-notes.md`. Reopen the notes; keep the first answer for the grounded comparison.
+Next: approve appending the actual answer to `my-agent/workshop-notes.md`.
+Reopen the notes; keep the first answer for the grounded comparison.
 
 ### Review: make version 2
 
@@ -121,15 +142,18 @@ Send:
 /review-my-agent
 ````````
 
-
-Expect twelve Yes/Not yet checks and one proposed change. Read it; it must wait for your permission. If the change is appropriate, send:
+Expect twelve Yes/Not yet checks and one proposed change. Read it; it must wait
+for your permission. If the change is appropriate, send:
 
 ````````text
 Yes. Make only that proposed change and keep the Never rules unchanged.
 ````````
 
-
-Next: approve the expected saves. Open `my-agent/SKILL.md`, `my-agent/history/agent-v2.md` and the installed skill path Copilot names. All must contain the same complete agent with version 2. Keep earlier history copies. Stop for help on a mismatch or failed save; otherwise continue to the next block.
+Next: approve the expected saves. Open `my-agent/SKILL.md`,
+`my-agent/history/agent-v2.md` and the installed skill path Copilot names. All
+must contain the same complete agent with version 2. Keep earlier history
+copies. Stop for help on a mismatch or failed save; otherwise continue to the
+next block.
 
 ## Block 4: add evidence and compare
 
@@ -139,10 +163,14 @@ Type and send:
 /ground-my-agent
 ````````
 
+What should happen: Use the same scanned-reading filename and the actual first
+answer. The complete checker evidence is included in the workspace. Expect a new
+evidence-based answer, linked WCAG criteria, a before-and-after comparison and
+remaining human checks. It must not pretend to have opened the original PDF or
+invent the first answer.
 
-What should happen: Use the same scanned-reading filename and the actual first answer. The complete checker evidence is included in the workspace. Expect a new evidence-based answer, linked WCAG criteria, a before-and-after comparison and remaining human checks. It must not pretend to have opened the original PDF or invent the first answer.
-
-Next: approve appending the actual answer to `my-agent/workshop-notes.md`. Reopen the notes; keep the first answer for the grounded comparison.
+Next: approve appending the actual answer to `my-agent/workshop-notes.md`.
+Reopen the notes; keep the first answer for the grounded comparison.
 
 ### Review: make version 3
 
@@ -152,15 +180,18 @@ Send:
 /review-my-agent
 ````````
 
-
-Expect twelve Yes/Not yet checks and one proposed change. Read it; it must wait for your permission. If the change is appropriate, send:
+Expect twelve Yes/Not yet checks and one proposed change. Read it; it must wait
+for your permission. If the change is appropriate, send:
 
 ````````text
 Yes. Make only that proposed change and keep the Never rules unchanged.
 ````````
 
-
-Next: approve the expected saves. Open `my-agent/SKILL.md`, `my-agent/history/agent-v3.md` and the installed skill path Copilot names. All must contain the same complete agent with version 3. Keep earlier history copies. Stop for help on a mismatch or failed save; otherwise continue to the next block.
+Next: approve the expected saves. Open `my-agent/SKILL.md`,
+`my-agent/history/agent-v3.md` and the installed skill path Copilot names. All
+must contain the same complete agent with version 3. Keep earlier history
+copies. Stop for help on a mismatch or failed save; otherwise continue to the
+next block.
 
 ## Block 5: run the team
 
@@ -170,10 +201,14 @@ Type and send:
 /run-the-office
 ````````
 
+What should happen: Copilot should read the team instructions and fictional
+evidence from the workspace. Expect progress by filename and a team report
+covering all seven course files, your agent's contribution, priorities, evidence
+limits and human review. If the answer stops partway through, paste: Continue
+from the last completed file; do not repeat or invent results.
 
-What should happen: Copilot should read the team instructions and fictional evidence from the workspace. Expect progress by filename and a team report covering all seven course files, your agent's contribution, priorities, evidence limits and human review. If the answer stops partway through, paste: Continue from the last completed file; do not repeat or invent results.
-
-Next: approve appending the actual answer to `my-agent/workshop-notes.md`. Reopen the notes; keep the first answer for the grounded comparison.
+Next: approve appending the actual answer to `my-agent/workshop-notes.md`.
+Reopen the notes; keep the first answer for the grounded comparison.
 
 ### Review: make version 4
 
@@ -183,27 +218,38 @@ Send:
 /review-my-agent
 ````````
 
-
-Expect twelve Yes/Not yet checks and one proposed change. Read it; it must wait for your permission. If the change is appropriate, send:
+Expect twelve Yes/Not yet checks and one proposed change. Read it; it must wait
+for your permission. If the change is appropriate, send:
 
 ````````text
 Yes. Make only that proposed change and keep the Never rules unchanged.
 ````````
 
-
-Next: approve the expected saves. Open `my-agent/SKILL.md`, `my-agent/history/agent-v4.md` and the installed skill path Copilot names. All must contain the same complete agent with version 4. Keep earlier history copies. Stop for help on a mismatch or failed save; otherwise continue to the next block.
+Next: approve the expected saves. Open `my-agent/SKILL.md`,
+`my-agent/history/agent-v4.md` and the installed skill path Copilot names. All
+must contain the same complete agent with version 4. Keep earlier history
+copies. Stop for help on a mismatch or failed save; otherwise continue to the
+next block.
 
 ## Block 6: keep it local or share with permission
 
-No chat command or attachment is needed. If sharing is not approved, keep version 4 locally and record the role that must authorize sharing. Then go to block 7; sharing is not a completion requirement.
+No chat command or attachment is needed. If sharing is not approved, keep
+version 4 locally and record the role that must authorize sharing. Then go to
+block 7; sharing is not a completion requirement.
 
 If sharing is approved:
 
 1. Open [the workshop share page](https://letitglow.app/ahg/share).
-2. Choose your newest saved agent, or paste its complete text. Inspect the preview and remove private or non-public information.
-3. Read the destination and permission notice before pressing "Open the share form on GitHub": opening that form sends the text to GitHub before submission.
-4. Sign in if asked, inspect the issue content, select the privacy confirmation and press "Submit new issue".
-5. Inspect the resulting issue and actual automated reply. If it does not appear, record the issue address and status; do not claim publication succeeded.
+2. Choose your newest saved agent, or paste its complete text. Inspect the
+   preview and remove private or non-public information.
+3. Read the destination and permission notice before pressing "Open the share
+   form on GitHub": opening that form sends the text to GitHub before
+   submission.
+4. Sign in if asked, inspect the issue content, select the privacy confirmation
+   and press "Submit new issue".
+5. Inspect the resulting issue and actual automated reply. If it does not
+   appear, record the issue address and status; do not claim publication
+   succeeded.
 
 Next: return to the same assistant conversation for block 7.
 
@@ -215,8 +261,10 @@ Type and send:
 /my-30-day-plan
 ````````
 
-
-What should happen: Expect eight questions, one at a time. Use the exact answers below. Expect a short Markdown table in one code block, with unknown approvals and measurements marked pending. It must ask you to review the draft before calling the plan final.
+What should happen: Expect eight questions, one at a time. Use the exact answers
+below. Expect a short Markdown table in one code block, with unknown approvals
+and measurements marked pending. It must ask you to review the draft before
+calling the plan final.
 
 When asked about one workflow, send only:
 
@@ -224,13 +272,11 @@ When asked about one workflow, send only:
 Plan alternate formats for the next five scanned readings that come in.
 ````````
 
-
 When asked about where it plugs in, send only:
 
 ````````text
 An approved request starts the task. The agent reads fictional or approved non-sensitive checker evidence. Its draft goes into the existing approved ticket for staff review.
 ````````
-
 
 When asked about one partner, send only:
 
@@ -238,13 +284,11 @@ When asked about one partner, send only:
 Our alternate format specialist.
 ````````
 
-
 When asked about one safeguard, send only:
 
 ````````text
 The alternate format specialist checks every converted page against the original. Stop and use the existing manual process if evidence is missing, private data appears or a deadline would be missed.
 ````````
-
 
 When asked about approved tools and data, send only:
 
@@ -252,13 +296,11 @@ When asked about approved tools and data, send only:
 Campus approval is pending. The process owner will confirm the approved assistant and allowed data; until then use fictional examples or the written plan without AI.
 ````````
 
-
 When asked about first step this week, send only:
 
 ````````text
 Run the planner alongside the manual process on up to five fictional or approved non-sensitive examples; keep student records out of AI.
 ````````
-
 
 When asked about who needs to know, send only:
 
@@ -266,35 +308,57 @@ When asked about who needs to know, send only:
 My director and the campus process owner must approve the pilot.
 ````````
 
-
 When asked about day-30 review, send only:
 
 ````````text
 Review on 16 December 2026. Baseline and target are pending; the process owner will measure total staff time including review, errors, rework and on-time delivery, then decide whether to continue, revise or stop.
 ````````
 
-
-Next: approve the draft save to `my-30-day-plan.md` and reopen it. Explain the trigger, evidence, handoff, reviewer and stop rule to a partner; when alone, compare against the included example. Tell Copilot the correction, approve the final save, reopen it and confirm it contains the reviewed plan. Preserve any previous plan before replacing it.
+Next: approve the draft save to `my-30-day-plan.md` and reopen it. Explain the
+trigger, evidence, handoff, reviewer and stop rule to a partner; when alone,
+compare against the included example. Tell Copilot the correction, approve the
+final save, reopen it and confirm it contains the reviewed plan. Preserve any
+previous plan before replacing it.
 
 ## Finish: verify what you actually kept
 
-You should now have a readable practice template, complete agent versions 1 to 4, the actual first answer, the grounded comparison, a seven-file team report and a reviewed final 30-day plan. Inspect each saved file, not just the assistant's success message.
+You should now have a readable practice template, complete agent versions 1 to
+4, the actual first answer, the grounded comparison, a seven-file team report
+and a reviewed final 30-day plan. Inspect each saved file, not just the
+assistant's success message.
 
-Record each block as Pass, Fail, Blocked or Not run, with the actual response and saved filename. Missing quota, a missing command, a denied write or an unavailable service is Blocked, not Pass. Different wording is acceptable; missing evidence, missing files or invented results are not.
+Record each block as Pass, Fail, Blocked or Not run, with the actual response
+and saved filename. Missing quota, a missing command, a denied write or an
+unavailable service is Blocked, not Pass. Different wording is acceptable;
+missing evidence, missing files or invented results are not.
 
 ## If something stops working
 
-- Do not buy a subscription or upload documents to get through this exercise. All required text is in this walkthrough. These are instructions for a person to run, not a claim that ChatGPT, Copilot or a screen reader has already passed.
-- If an account rejects a message or reaches its context or usage limit, save the work completed and record the exact message. Smaller paste parts help with individual-message size, not exhausted quota or total conversation context.
-- For an interrupted chat, paste the latest complete agent, the chosen filename and the actual saved first answer into a new approved conversation before resuming the relevant block. Do not let the assistant invent lost work. If it cannot hold the required context, stop that AI test and use the written fallback below.
-- A written fallback is a different completion route, not a successful live-AI test. Read the included finished example, copy it into a local document, mark its stages against your own problem, keep a manual review checklist and write the eight plan answers above as your draft. Ask a partner to check the trigger, input, handoff, reviewer and stop rule. Save their correction and the final plan.
-- For setup help, contact the workshop organizer or attend the setup table from 10:00. Do not expose private information in screenshots or support requests.
+- Do not buy a subscription or upload documents to get through this exercise.
+  All required text is in this walkthrough. These are instructions for a person
+  to run, not a claim that ChatGPT, Copilot or a screen reader has already
+  passed.
+- If an account rejects a message or reaches its context or usage limit, save
+  the work completed and record the exact message. Smaller paste parts help with
+  individual-message size, not exhausted quota or total conversation context.
+- For an interrupted chat, paste the latest complete agent, the chosen filename
+  and the actual saved first answer into a new approved conversation before
+  resuming the relevant block. Do not let the assistant invent lost work. If it
+  cannot hold the required context, stop that AI test and use the written
+  fallback below.
+- A written fallback is a different completion route, not a successful live-AI
+  test. Read the included finished example, copy it into a local document, mark
+  its stages against your own problem, keep a manual review checklist and write
+  the eight plan answers above as your draft. Ask a partner to check the
+  trigger, input, handoff, reviewer and stop rule. Save their correction and the
+  final plan.
+- For setup help, contact the workshop organizer or attend the setup table from
+  10:00. Do not expose private information in screenshots or support requests.
 
 ## Finished example for the written fallback
 
-The following is the complete current Maria worked example. Its sample output is not evidence that your own AI run succeeded.
-
-
+The following is the complete current Maria worked example. Its sample output is
+not evidence that your own AI run succeeded.
 
 ````````text
 ---
@@ -531,10 +595,10 @@ Checked on 29 October 2026.
   American Council of the Blind.
 ````````
 
-
 ## Complete command instructions for a helper
 
-These are reference text, not additional commands to run. The workspace kit supplies the templates and course evidence the commands read.
+These are reference text, not additional commands to run. The workspace kit
+supplies the templates and course evidence the commands read.
 
 ### Instructions for /ready-check
 
@@ -580,7 +644,6 @@ If anything needs a hand, say which step, suggest one simple thing to try,
 and say: write to jeffbis@arizona.edu, or come to the setup table
 from 10:00 on the day. Nobody gets left behind.
 ````````
-
 
 ### Instructions for /design-my-agent
 
@@ -635,7 +698,6 @@ what they are building. Follow `agent-file-principles.md`.
 End with: Your agent exists. This is version 1. Next, we put it to work, and then we make it better.
 ````````
 
-
 ### Instructions for /try-my-agent
 
 ````````text
@@ -668,7 +730,6 @@ ask the participant to copy it to a local document and confirm it is saved.
 
 End with: That is your agent's first answer. Now type /review-my-agent to make version 2.
 ````````
-
 
 ### Instructions for /ground-my-agent
 
@@ -711,7 +772,6 @@ local copy before continuing.
 End with: Your agent now has evidence you can verify. Now type /review-my-agent: what you just learned belongs in the agent file.
 ````````
 
-
 ### Instructions for /run-the-office
 
 ````````text
@@ -741,7 +801,6 @@ and ask the participant to keep a local copy before continuing.
 End with one sentence on what their agent added to the team, and one on what
 would make it a better team member, then: Type /review-my-agent to make that change before you share it.
 ````````
-
 
 ### Instructions for /review-my-agent
 
@@ -794,7 +853,6 @@ that answer is the best evidence of what to improve.
 Do not make more than one change per review. One change at a time is how
 they learn what each change does.
 ````````
-
 
 ### Instructions for /my-30-day-plan
 
