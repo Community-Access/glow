@@ -328,6 +328,7 @@ const WORKSHOP_SESSION = process.env.E2E_WORKSHOP_SESSION || 'axe-workshop';
 
 const WORKSHOP_PAGES = [
   { label: 'AHG workshop landing', path: '/ahg' },
+  { label: 'AHG capstone guide', path: '/ahg/capstone' },
   { label: 'AHG browser path', path: '/ahg/assistant' },
   { label: 'AHG share page', path: '/ahg/share' },
   { label: 'workshop home', path: '/workshop/' },

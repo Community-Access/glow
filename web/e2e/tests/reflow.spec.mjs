@@ -31,6 +31,8 @@ const PAGES = [
   { label: 'accessibility agents landing page', path: '/accessibility-agents/', submit: null },
   { label: 'accessibility agents chat', path: '/accessibility-agents/chat/', submit: /^Ask$/i },
   { label: 'AHG browser path', path: '/ahg/assistant', submit: /Download this version/i, primaryNav: false },
+  { label: 'AHG workshop landing', path: '/ahg', submit: null, primaryNav: false },
+  { label: 'AHG capstone guide', path: '/ahg/capstone', submit: null, primaryNav: false },
 ];
 
 const WIDTHS = [

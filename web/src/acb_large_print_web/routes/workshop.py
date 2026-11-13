@@ -3016,6 +3016,30 @@ def render_ahg_landing():
     )
 
 
+def send_ahg_capstone(extension: str):
+    if not _workshop_enabled():
+        abort(404)
+    types = {
+        "html": "text/html",
+        "md": "text/markdown",
+        "docx": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+        "pptx": "application/vnd.openxmlformats-officedocument.presentationml.presentation",
+    }
+    if extension not in types:
+        abort(404)
+    filename = f"chatgpt-mcp-capstone.{extension}"
+    path = _resolve_asset("docs", "ahg-2026", filename)
+    if path is None:
+        current_app.logger.error("AHG capstone resource missing: %s", filename)
+        abort(404)
+    if extension == "html":
+        html = path.read_text(encoding="utf-8").replace("<style>", f'<style nonce="{g.csp_nonce}">')
+        response = make_response(html)
+        response.headers["Cache-Control"] = "no-store"
+        return response
+    return send_file(str(path), mimetype=types[extension], as_attachment=True, download_name=filename)
+
+
 @workshop_bp.route("/ahg-2026", methods=["GET"])
 def ahg_home():
     # The first address, kept working: setup emails and slides already use it.

@@ -15,6 +15,13 @@ sign-off. The workshop is ready when
 every test case in Part 2 is marked Pass and the sign-off in section 2.15 is
 complete.
 
+The presenter-led team-sharing capstone has its own complete
+[ChatGPT and GLOW MCP setup and rehearsal guide](docs/ahg-2026/chatgpt-mcp-capstone.md).
+Use the fictional PSY 101 announcement and four new slides in the current
+39-slide deck. Preserve older slide observations as historical; complete
+the guide's fresh MCP-01 to MCP-11 checks before claiming live or team readiness.
+Local guide formats and current slide exports are also in `S:\ahgtest`.
+
 Session: Accessibility Agents: Building Human-Centered AI Workflows for
 Trusted Accessibility Automation at Scale. Monday 16 November 2026, 10:30 AM
 to 4:30 PM Mountain Time, Matchless, Hilton Denver City Center.

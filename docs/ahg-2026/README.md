@@ -93,6 +93,19 @@ Tests hold each of those: `web/tests/test_workshop_deck_formats.py`.
 
 ## Teacher and student rehearsal
 
+For the presenter-led team-sharing capstone, follow
+[PSY 101 in ChatGPT with GLOW tools](chatgpt-mcp-capstone.md). It includes
+account setup, exact prompts, expected tool results, recovery, an eight-minute
+room script and blank readiness checks. Participants do not configure MCP.
+Also available as an [offline HTML guide](chatgpt-mcp-capstone.html),
+[Word guide](chatgpt-mcp-capstone.docx) and
+[PowerPoint reading guide](chatgpt-mcp-capstone.pptx).
+After deployment, the [public capstone guide](https://letitglow.app/ahg/capstone)
+and its downloads are linked from the AHG landing page.
+The deck now has 39 slides; older 35-slide results remain historical.
+Local rehearsal copies are in `S:\ahgtest`, with updated deck files in
+`current-exports`. Signed-in ChatGPT and team sharing require a fresh rehearsal.
+
 Start with [the short manual verification checklist](manual-verification.txt).
 The complete, self-contained walkthroughs are available in the repository
 and in the published kit:
@@ -133,7 +146,7 @@ python scripts\build_ahg_rehearsal.py S:\ahg-rehearsal-new --check
 Open `S:\ahg-rehearsal-new\000-start-here.html`. Every ordered HTML step names and
 links to its original source. Markdown copies are in `text`; unchanged
 course files, including all slide formats, are in `materials`. The builder
-covers every test-plan case and applicable path, all 35 slides individually,
+covers every test-plan case and applicable path, all current slides individually,
 the required accessibility environments, teacher preparation, beginner dry
 runs and the optional [Dots and Claude Duet demo](kit/closing-demo.md).
 The CSV results sheet starts Pending throughout; no historic pass is reused.

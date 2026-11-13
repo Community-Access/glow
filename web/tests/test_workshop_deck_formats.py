@@ -60,7 +60,7 @@ def client(app: Flask):
 
 def test_every_format_renders_the_same_slides(ctx: deck.DeckContext):
     slides = deck.build_slides(ctx)
-    assert len(slides) == 35
+    assert len(slides) == 39
     assert len({s.id for s in slides}) == len(slides), "slide ids are anchors"
 
     markdown = deck.build_deck_markdown(ctx)
@@ -490,7 +490,7 @@ def test_html_slide_list_is_links_not_a_dropdown(client):
     body = client.get(f"/workshop/session/{CODE}/deck").get_data(as_text=True)
     assert "<select" not in body
     assert 'id="slide-list"' in body
-    assert body.count('data-index="') == 35
+    assert body.count('data-index="') == 39
     assert 'href="https://letitglow.app/ahg/kit/step-cards/2-design-your-agent.md"' in body
     assert deck.LINKS_LABEL in body
 

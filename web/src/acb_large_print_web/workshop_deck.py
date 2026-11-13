@@ -766,6 +766,77 @@ def build_slides(ctx: DeckContext) -> list[Slide]:
                 "If the run is slow, narrate it. If it stumbles, say what happened and why; a real failure explained well teaches more than a perfect demo.",
             ),
         ),
+        Slide(
+            id="team-sharing", section="Afternoon", kicker="After the workshop", title="Your coworkers can use it, too",
+            blocks=(
+                Bullets(items=(
+                    "Start with reviewed instructions in an approved shared location.",
+                    "VS Code teams can share skills in a project.",
+                    "An approved assistant can connect to shared tools.",
+                    "Public contribution is optional, not team deployment.",
+                )),
+            ),
+            notes=(
+                "Use the eight-minute presenter capstone instead of the optional shared-agent rerun if time is tight. Never cut privacy review, plan writing or the evaluation.",
+                "Instructions define the job. A plugin packages capabilities for a supporting application. A Model Context Protocol (MCP) server supplies tools to compatible assistants. These are different layers, not a universal upload format.",
+                "Participants watch; nobody needs to buy a subscription, create a connection or grant permissions. Use the complete chatgpt-mcp-capstone.md presenter guide in docs/ahg-2026.",
+            ),
+            links=(("Presenter capstone guide", f"{SITE}/ahg/capstone"),),
+        ),
+        Slide(
+            id="mcp-capstone", section="Afternoon", kicker="Presenter demonstration", title="Our PSY 101 agent, inside ChatGPT",
+            blocks=(
+                Bullets(ordered=True, items=(
+                    "Use the prepared GLOW server connection.",
+                    "Give ChatGPT our reviewed agent instructions.",
+                    "Check the fictional course announcement's HTML.",
+                    "Open the tool results, then review the draft.",
+                )),
+                Para("No plugin package upload. No whole-site crawl."),
+            ),
+            notes=(
+                "Before the room opens, connect letitglow.app/a11y/mcp using an authorized ChatGPT account. The interface may call this Create as a plugin; it registers the hosted connection, not an uploaded package or public listing.",
+                "Open letitglow.app/ahg/site/psy101-announcement.html. Describe the fictional course page and its reflection control. Paste the guide's instructions and complete source HTML, not the site index or rendered text.",
+                "Select the GLOW connection on each tool-request message if needed. Run check_heading_structure, check_link_text and check_contrast with #b5b5b5 on #ffffff. These tools accept HTML or colors; they do not crawl the site or operate its controls.",
+                "Read each tool name and result aloud. Expected baseline: one heading jump, two ambiguous links, and contrast 2.05:1. Expand tool details; a confident answer without an actual call is not a successful demonstration.",
+            ),
+            links=(("The fictional course announcement", f"{SITE}/ahg/site/psy101-announcement.html"),
+                   ("Accessibility Agents connection help", f"{SITE}/accessibility-agents")),
+        ),
+        Slide(
+            id="mcp-review", section="Afternoon", kicker="Evidence, not a promise", title="The tool checked it. A person still decides.",
+            blocks=(
+                Bullets(items=(
+                    "Measured: a heading jump, unclear links, low contrast.",
+                    "Still untested: keyboard behavior and screen reader experience.",
+                    "Draft fixes are not changes to the course.",
+                    "No result means not checked, not passed.",
+                )),
+            ),
+            notes=(
+                "The source contains a clickable div labelled Submit reflection. The three tools do not test whether a keyboard user can operate it. Try Tab on the fictional page and describe the observed result; do not activate or submit anything.",
+                "A heading-level jump is a structural warning, not automatic proof of a WCAG failure in every context. Check relationships and purpose before making the final finding.",
+                "Ask ChatGPT for a faculty coaching draft separating tool evidence, source observations and manual checks. Review the real tool outputs before approving any statement. Nothing is sent, published or repaired.",
+                "If the service or account fails, use saved results explicitly labelled recorded, or the guide's written baseline. Do not silently substitute another tool or pretend a live call succeeded.",
+            ),
+        ),
+        Slide(
+            id="mcp-team-rollout", section="Afternoon", kicker="A small team pilot", title="From this demonstration to your department",
+            blocks=(
+                Bullets(items=(
+                    "Name the agent owner and two pilot users.",
+                    "Approve the assistant, tools and permitted data.",
+                    "Share instructions and the vetted connection separately.",
+                    "Record versions, review results and a stop rule.",
+                )),
+                Para("Workspace access needs administrator approval."),
+            ),
+            notes=(
+                "Connecting this server does not publish a participant's agent or give access to campus files. A shared chat is not deployment. An authorized administrator can vet and publish a connection to the permitted workspace audience where supported.",
+                "Only demonstrate workspace sharing after permission and a separate-user test. Otherwise describe that step as pending. Do not change workspace membership or public-directory settings during the demonstration.",
+                "Transition to the 30-day plan: where will your reviewed instructions live, who can use them, and who maintains them? Keep the existing eight-question exercise and its saving and partner-review time.",
+            ),
+        ),
         # -- Block 7: take it home ------------------------------------------
         Slide(
             id="s25", section="Close", kicker=_you_are_here(7), title="Take it home",

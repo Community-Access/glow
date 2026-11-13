@@ -88,6 +88,13 @@ require a paid subscription or preview access.
   Community-Access/ahg-2026, and refresh it as agents arrive; read each name and
   agent title aloud. Helpers watch the issues labelled needs-a-hand and go to
   those people first.
+- At the end of block 6, use the eight-minute presenter-led
+  [ChatGPT and GLOW MCP capstone](chatgpt-mcp-capstone.md) to show how coworkers
+  can use reviewed instructions with shared tools on the fictional PSY 101
+  announcement. Replace the optional shared-agent rerun if needed; do not
+  extend the block or cut permission review. Preconfigure the account off
+  screen. Participants watch, with no new account or paid requirement.
+  If time or connectivity fails, show the explicitly labelled saved example.
 - In block 5, everyone runs their own team first, then /review-my-agent. The
   last 15 minutes are the full Accessibility Agents project on the projector, on
   the same course, from the skills in the kit. The projector run with every

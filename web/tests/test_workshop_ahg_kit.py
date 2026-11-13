@@ -261,6 +261,44 @@ def test_the_kit_downloads_as_one_zip_without_the_answer_key(client):
             assert archive.read(f"ahg-2026-agent-kit/{rel}") == (KIT / rel).read_bytes()
 
 
+def test_capstone_guide_is_linked_and_served_with_nonce_and_downloads(client):
+    landing = client.get("/ahg").get_data(as_text=True)
+    assert 'href="/ahg/capstone"' in landing
+    response = client.get("/ahg/capstone")
+    assert response.status_code == 200
+    body = response.get_data(as_text=True)
+    nonce = re.search(r"'nonce-([^']+)'", response.headers["Content-Security-Policy"]).group(1)
+    assert f'<style nonce="{nonce}">' in body
+    assert "MCP-11" in body
+    assert response.headers["Cache-Control"] == "no-store"
+    for extension, mimetype in (
+        ("md", "text/markdown"),
+        ("docx", "application/vnd.openxmlformats-officedocument.wordprocessingml.document"),
+        ("pptx", "application/vnd.openxmlformats-officedocument.presentationml.presentation"),
+    ):
+        path = f"/ahg/capstone.{extension}"
+        assert f'href="{path}"' in landing
+        download = client.get(path)
+        assert download.status_code == 200
+        assert download.mimetype == mimetype
+        assert "attachment;" in download.headers["Content-Disposition"]
+        assert download.data == (REPO / "docs" / "ahg-2026" / f"chatgpt-mcp-capstone.{extension}").read_bytes()
+    assert client.get("/ahg/capstone.exe").status_code == 404
+
+
+def test_capstone_resolves_installed_assets_and_reports_missing_files(client, tmp_path, monkeypatch, caplog):
+    from acb_large_print_web.routes import workshop
+
+    assets = tmp_path / "image" / "docs" / "ahg-2026"
+    assets.mkdir(parents=True)
+    source = REPO / "docs" / "ahg-2026" / "chatgpt-mcp-capstone.md"
+    (assets / source.name).write_bytes(source.read_bytes())
+    monkeypatch.setattr(workshop, "_asset_roots", lambda: [tmp_path / "image"])
+    assert client.get("/ahg/capstone.md").data == source.read_bytes()
+    assert client.get("/ahg/capstone.docx").status_code == 404
+    assert "AHG capstone resource missing" in caplog.text
+
+
 def test_the_profile_is_served_for_import(client):
     resp = client.get("/workshop/ahg-2026/ahg-2026.code-profile")
     assert resp.status_code == 200
@@ -291,7 +329,7 @@ def test_the_conference_pages_open_without_a_consent_form():
 
     from acb_large_print_web.routes.consent import consent_required
 
-    for path in ("/ahg", "/ahg/", "/AHG", "/workshop/ahg-2026/ahg-2026.code-profile",
+    for path in ("/ahg", "/ahg/", "/AHG", "/ahg/capstone", "/ahg/capstone.docx", "/workshop/ahg-2026/ahg-2026.code-profile",
                  "/workshop/ahg-2026/kit.zip", "/workshop/ahg-2026/share",
                  "/workshop/ahg-2026/step-cards/2-design-your-agent.docx"):
         req = SimpleNamespace(path=path, cookies={}, headers={})

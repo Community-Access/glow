@@ -88,6 +88,7 @@ RUN pip install --no-cache-dir --no-deps ./web
 # the sample-download and resource-download routes 404 in the container.
 COPY samples/ /app/samples/
 COPY docs/ahg-2026/workshop-frontfacing-guide.md docs/ahg-2026/workshop-frontfacing-exercises.md docs/ahg-2026/workshop-frontfacing-utilization.md /app/docs/ahg-2026/
+COPY docs/ahg-2026/chatgpt-mcp-capstone.md docs/ahg-2026/chatgpt-mcp-capstone.html docs/ahg-2026/chatgpt-mcp-capstone.docx docs/ahg-2026/chatgpt-mcp-capstone.pptx /app/docs/ahg-2026/
 # The AHG 2026 agent kit, served as a zip, a VS Code profile and step cards
 # from /workshop/ahg-2026 (routes/workshop.py resolves it relative to /app).
 COPY docs/ahg-2026/kit/ /app/docs/ahg-2026/kit/
