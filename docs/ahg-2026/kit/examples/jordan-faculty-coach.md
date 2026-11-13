@@ -160,9 +160,11 @@ the instructor wrote herself, and the hard conversation handed to a person.
 
 ## 5. In the collection
 
-Shared from the share page in about a minute, as
+After permission and privacy review, shared from the share page as
 `agents/<Jordan's GitHub account>/faculty-coach/SKILL.md`, committed in
 Jordan's name.
+Opening the GitHub form sends the text before submission. If approval were
+pending, Jordan would keep the reviewed copy locally with a follow-up date.
 
 ## 6. In the team
 

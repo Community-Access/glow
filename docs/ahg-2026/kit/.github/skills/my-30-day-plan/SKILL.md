@@ -32,8 +32,14 @@ Never delay an accommodation for the pilot or make eligibility,
 accommodation or purchasing decisions. If no AI tool is approved, help write
 the workflow and approval request without running the agent.
 
-Write the plan to `my-30-day-plan.md` as a short table, with their agent's
-name at the top. Then tell them one specific reason their plan is realistic.
+Ask permission to save the draft to `my-30-day-plan.md` as a short table,
+with their agent's name at the top. Preserve any previous plan in an unused
+backup file first. Read the saved draft back to verify it; report any save
+failure explicitly. Then ask them to explain the trigger, input, handoff,
+reviewer and stop rule to a partner, or compare with the worked example
+when alone. Wait for their correction, apply it with permission, save and
+reopen the final plan. Do not call it final before this review and save.
+Tell them one specific reason their plan is realistic.
 
 Then point them to `accessibility-agents.md` in the kit, in one line: how to
 keep using their agent and the full Accessibility Agents team after today.

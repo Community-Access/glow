@@ -80,6 +80,10 @@ the participant:
 - One thing to watch: anywhere it had to guess because it had no evidence,
   or anywhere the agent file left you unsure what to do.
 
+Ask the participant to copy the chosen course filename and complete first
+answer into a local workshop-notes document, under "Block 3: first answer".
+Keep it for the comparison after lunch. Do not claim you saved it for them.
+
 End with: That is your agent's first answer. Now paste the review text from letitglow.app/ahg/assistant to make version 2.
 
 ## The PSY 101 sample course

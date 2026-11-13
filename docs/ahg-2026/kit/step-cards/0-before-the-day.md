@@ -68,14 +68,17 @@ keep your agent local until approval is confirmed.
    until you reach your assistant, or choose its tab by name. Move to the
    message box, paste with Control+V on Windows or Command+V on a Mac, and
    press Enter.
+   Complete its save/reopen check before optional sharing: copy the template
+   to "Your agent to save", choose "Practice template" under "Version to
+   save", press "Download this version", then reopen practice-SKILL.md and
+   confirm its seven headings in the assistant.
 5. If public sharing is approved, share your practice agent. Open
    letitglow.app/ahg/share, choose "My
    practice agent", press "Fill in the practice template", and press "Open
    the share form on GitHub". On GitHub, sign in if asked, select the privacy
    check box at the end of the form, and press "Submit new issue".
-   If sharing is not approved, copy the practice template from the ready
-   check, paste it into "Your agent to save" on the workshop page and
-   download it locally instead.
+   If sharing is not approved, keep the saved practice file locally and
+   record who can confirm permission.
 
 ### In VS Code on your computer
 
@@ -93,7 +96,9 @@ keep your agent local until approval is confirmed.
 5. If a banner says Restricted Mode, choose Manage, then Trust. It is the
    workshop kit, and Copilot cannot work on its files until you trust it.
 6. Open Copilot Chat: Control+Alt+I on Windows, or Control+Command+I on a
-   Mac. Type /ready-check and press Enter.
+   Mac. Type /ready-check and press Enter. It asks to save a practice copy
+   in my-agent/history. Approve only that expected write, then reopen the
+   file and confirm its seven headings. If saving fails, setup needs a hand.
 7. If public sharing is approved, share your practice agent. Open
    letitglow.app/ahg/share in your browser,
    choose "My practice agent", choose the file my-agent/SKILL.md from the
@@ -112,14 +117,16 @@ keep your agent local until approval is confirmed.
 4. Open the Accounts menu, at the bottom of the bar on the left, and sign
    in with GitHub.
 5. Open Copilot Chat: Control+Alt+I on Windows, or Control+Command+I on a
-   Mac. Type /ready-check and press Enter.
+   Mac. Type /ready-check and press Enter. Check that the command is found
+   and can save the practice copy, then reopen it. If commands or file writes
+   are unavailable, ask a helper for an approved browser or written route.
 6. If public sharing is approved, share your practice agent, as in step 7
    of the VS Code steps above.
 
 ## You are on track if
 
 Your assistant or Copilot ends the ready check with: You are ready for 16
-November. If you shared a practice agent, GitHub replies: Well done. If
+November after you have saved and reopened the practice file. If you shared a practice agent, GitHub replies: Well done. If
 sharing is not approved, you have kept it locally and identified who can
 confirm approval.
 
@@ -129,6 +136,8 @@ Write to jeffbis@arizona.edu before the day, or come to the setup
 table outside the room from 10:00 on the day. Locked-down laptop, or VS Code
 blocked at work? Take the browser path; it needs nothing installed. GitHub
 blocked at work? Write to us; nobody is left out.
+Use only an approved alternative. The written-example route in
+`your-day-at-a-glance.md` gives all seven steps without AI or an account.
 
 ## Your win
 

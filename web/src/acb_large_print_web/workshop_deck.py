@@ -304,7 +304,7 @@ def build_slides(ctx: DeckContext) -> list[Slide]:
             ),
             notes=(
                 "Read the seven, slowly. This map comes back at the start of every block, so nobody ever wonders where we are.",
-                "Point out the pattern: every block makes the same agent better. Version 1 before lunch, version 4 by three o'clock.",
+                "Point out the pattern: every block makes the same agent better. Version 2 before lunch, version 4 by three o'clock.",
                 "Promise them out loud: every step has a finished example to fall back on. Nobody gets stuck and stays stuck.",
                 "Offer the written journey map. On the browser path, keep the workshop and assistant tabs open; on either VS Code path, use Copilot Chat with the kit open.",
             ),
@@ -341,7 +341,7 @@ def build_slides(ctx: DeckContext) -> list[Slide]:
                 Bullets(ordered=True, items=(
                     "VS Code: open your kit folder, open Copilot Chat, type /ready-check.",
                     "Browser: copy the ready check text from letitglow.app/ahg/assistant into your assistant.",
-                    "Wait for: You are ready.",
+                    "Save and reopen the practice file; then confirm you are ready.",
                 )),
                 Para("Needs a hand? Raise it. A helper comes to you, and the room carries on.", big=True),
             ),
@@ -542,7 +542,7 @@ def build_slides(ctx: DeckContext) -> list[Slide]:
                 Para("Stuck? Start from a ready-made agent. That counts.", big=True),
             ),
             notes=(
-                "VS Code writes the agent into my-agent/SKILL.md. In a browser, copy the whole agent back to the workshop page and use Keep a copy of your agent to download version 1. Do not visit the share page until block 6.",
+                "VS Code writes my-agent/SKILL.md and my-agent/history/agent-v1.md. In a browser, paste the complete agent on the workshop page, choose version 1 and Download this version. Reopen agent-v1.md. Do not visit the share page until block 6.",
                 "You are on track when your AI tells you one thing your agent does well.",
                 "Helpers move now. Look for the person who has not typed anything yet, and sit with them quietly.",
                 "Step card 2 has every key and every expected screen in words, for screen reader users and anyone who prefers paper.",
@@ -564,7 +564,7 @@ def build_slides(ctx: DeckContext) -> list[Slide]:
             notes=(
                 _journey_note(3),
                 "PSY 101 is fictional: a course about memory and procrastination that keeps forgetting things and running late. The barriers in it are planted on purpose; the answer key is in the facilitator folder.",
-                "In the browser, copy the review text beside block 3 and save the complete revised agent on the same workshop page. Keep version 1 too. On either VS Code path, run /review-my-agent.",
+                "Save the chosen course filename and first answer in workshop notes. In the browser, copy the review text beside block 3, choose version 2 under Version to save, then Download this version. Reopen agent-v2.md; keep version 1 too. In VS Code, run /review-my-agent and check my-agent/history.",
             ),
             links=(_card(3), ("The sample course", f"{SITE}/ahg/kit#sample-course")),
         ),
@@ -615,7 +615,7 @@ def build_slides(ctx: DeckContext) -> list[Slide]:
                 _journey_note(4),
                 "The checker report is GLOW's audit for documents and axe for the web page.",
                 "Grounding supports the trusted in the session title. It reduces guessing but does not guarantee correctness. Check the source, the citation and what the checker did not test; a person decides.",
-                "In the browser, copy the review text beside block 4 and save version 3 on the workshop page. Keep earlier versions; use this one for the team.",
+                "Keep the actual first answer and grounded comparison in workshop notes. In the browser, review then choose version 3 and Download this version; reopen agent-v3.md. In VS Code check my-agent/history/agent-v3.md. Keep earlier versions for recovery.",
             ),
             links=(_card(4), ("Checker reports for PSY 101", f"{SITE}/ahg/kit#sample-course")),
         ),
@@ -679,7 +679,7 @@ def build_slides(ctx: DeckContext) -> list[Slide]:
                 "You get one team report, with your agent's section in it.",
                 "This is building an agent team: they added a specialist, and their coordinator is running it. Copilot announces each file as it finishes, so screen reader users hear progress, not silence.",
                 "On the browser path the same coordinator and specialists travel inside the block 5 text, so ChatGPT or any assistant runs the same team. If an assistant stops part way, type continue.",
-                "In the browser, copy the review text beside block 5 and save version 4 on the workshop page. Check privacy and permission before sharing next.",
+                "Save the complete team report in workshop notes. In the browser, review then choose version 4 and Download this version; reopen agent-v4.md. In VS Code check my-agent/history/agent-v4.md. Check privacy and permission before sharing next.",
             ),
             links=(_card(5), ("The office team", f"{SITE}/ahg/kit#office-team")),
         ),
@@ -725,7 +725,7 @@ def build_slides(ctx: DeckContext) -> list[Slide]:
             blocks=(
                 Bullets(ordered=True, items=(
                     "Check permission to share publicly; remove private information.",
-                    "Open letitglow.app/ahg/share, and choose your newest SKILL.md.",
+                    "Open letitglow.app/ahg/share; choose reviewed version 4.",
                     "Press Open the share form on GitHub.",
                     "Check the privacy box, and press Submit new issue.",
                     "Wait for the collection reply.",

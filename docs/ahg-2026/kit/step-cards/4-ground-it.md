@@ -23,6 +23,7 @@ The checker report gives the agent evidence to cite; it does not replace
 your judgment. Stay in the same assistant conversation on the browser path,
 or in Copilot Chat on either VS Code path. Use the same sample file as in
 block 3.
+Bring version 2 and the actual first answer from your workshop notes.
 
 ## Steps
 
@@ -32,6 +33,7 @@ block 3.
 2. Use the same file as this morning.
 3. Your agent answers again from that file's checker report: GLOW's audit for the documents, axe-core for the web page.
 4. Read the new answer, then the before and after.
+5. Save both in your workshop-notes document under "Block 4: grounded comparison".
 
 ### In VS Code
 
@@ -40,6 +42,8 @@ block 3.
 3. Use the same file as this morning.
 4. Your agent reads that file's checker report from sample-course/evidence: GLOW's audit for the documents, axe-core for the web page.
 5. Read the new answer, then Copilot's before and after.
+6. Approve appending it to my-agent/workshop-notes.md and reopen the saved
+   notes. Keep the first answer too.
 
 ### Optional, on any path
 
@@ -51,13 +55,17 @@ block 3.
 1. Return to letitglow.app/ahg/assistant. Under block 4, press "Copy the review text for block 4", then paste it in the same assistant conversation and press Enter.
 2. Read the twelve Yes or Not yet lines, then the one change it suggests and why.
 3. Say yes, or reword the change in your own words. Your assistant gives you version 3 of your agent in a box with a Copy button.
-4. Copy the whole agent, return to "Keep a copy of your agent" on the workshop page and download it. Keep the earlier versions too: if asked to replace a file, choose Cancel and save this version with a different name or in a different folder.
+4. Copy the whole agent to "Your agent to save" on the workshop page.
+   Choose version 3 under "Version to save" and press "Download this version".
+   Reopen agent-v3.md and verify its version and complete text. Keep the
+   earlier versions; never approve replacing an earlier copy.
 
 ### Then make the next version, in VS Code
 
 1. Type /review-my-agent and press Enter.
 2. Read the twelve Yes or Not yet lines, then the one change it suggests and why.
 3. Say yes, or reword the change. Copilot saves version 3 of your agent and installs it.
+4. Reopen my-agent/history/agent-v3.md and confirm versions 1 and 2 remain.
 
 ## You are on track if
 
@@ -68,7 +76,9 @@ source and verify that it supports the claim. A citation alone is not proof.
 ## If you are stuck
 
 If the assistant forgets your agent, paste the latest saved version as its
-own message, then repeat the block prompt. If a citation or claim cannot be
+own message with the chosen filename and actual first answer, then repeat
+the block prompt. If that first answer is lost, mark the comparison incomplete.
+If a citation or claim cannot be
 verified, mark it for human review rather than treating it as established.
 Use Maria's before and after or a ready-made agent with a helper.
 
@@ -78,7 +88,8 @@ Raise a hand at any time. A helper comes to you.
 
 Your agent has evidence a person can verify. Grounding reduces guessing; it
 does not guarantee correctness. Separate confirmed findings from suggested
-checks and unverified observations. Keep version 3 for the team in block 5.
+checks and unverified observations. Keep version 3 for the team in block 5
+at 2:15, after the 2:05 break.
 
 ## On Monday
 

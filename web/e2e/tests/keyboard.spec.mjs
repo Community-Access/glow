@@ -262,29 +262,35 @@ test.describe('GLOW keyboard-only smoke test', () => {
     await expect(page.locator('#save-agent-text')).toHaveAttribute('aria-invalid', 'true');
     await expect(page.locator('#save-agent-error')).toContainText('Paste your complete agent');
 
-    const first = '---\nname: example\nversion: "1"\n---\nFirst version';
-    await page.keyboard.insertText(first);
-    await expect(page.locator('#save-agent-text')).not.toHaveAttribute('aria-invalid');
-    await page.keyboard.press('Tab');
-    await expect(page.locator('#save-agent-download')).toBeFocused();
-    const [download1] = await Promise.all([
-      page.waitForEvent('download'),
-      page.keyboard.press('Enter'),
-    ]);
-    expect(download1.suggestedFilename()).toBe('SKILL.md');
-    expect(fs.readFileSync(await download1.path(), 'utf8')).toBe(`${first}\n`);
-    await expect(page.locator('#save-agent-status')).toContainText('saving SKILL.md');
-
-    await page.keyboard.press('Shift+Tab');
-    await page.keyboard.press('Control+A');
-    const second = '---\nname: example\nversion: "2"\n---\nRevised version';
-    await page.keyboard.insertText(second);
-    await page.keyboard.press('Tab');
-    const [download2] = await Promise.all([
-      page.waitForEvent('download'),
-      page.keyboard.press('Enter'),
-    ]);
-    expect(fs.readFileSync(await download2.path(), 'utf8')).toBe(`${second}\n`);
+    const saved = [];
+    for (let version = 0; version <= 4; version++) {
+      if (version > 0) {
+        await page.keyboard.press('Shift+Tab');
+        await page.keyboard.press('Shift+Tab');
+      }
+      await expect(page.locator('#save-agent-text')).toBeFocused();
+      await page.keyboard.press('Control+A');
+      const body = `---\nname: example\nmetadata:\n  version: "${version}"\n---\nComplete version ${version}`;
+      await page.keyboard.insertText(body);
+      await expect(page.locator('#save-agent-text')).not.toHaveAttribute('aria-invalid');
+      await page.keyboard.press('Tab');
+      await expect(page.locator('#save-agent-version')).toBeFocused();
+      await page.keyboard.press('Home');
+      for (let i = 0; i < version; i++) await page.keyboard.press('ArrowDown');
+      await page.keyboard.press('Tab');
+      await expect(page.locator('#save-agent-download')).toBeFocused();
+      const [download] = await Promise.all([
+        page.waitForEvent('download'),
+        page.keyboard.press('Enter'),
+      ]);
+      const filename = version === 0 ? 'practice-SKILL.md' : `agent-v${version}.md`;
+      expect(download.suggestedFilename()).toBe(filename);
+      saved.push({ path: await download.path(), body: `${body}\n` });
+      await expect(page.locator('#save-agent-status')).toContainText(`saving ${filename}`);
+    }
+    for (const copy of saved) {
+      expect(fs.readFileSync(copy.path, 'utf8')).toBe(copy.body);
+    }
     expect(requests).toEqual([]);
     await expect(page).toHaveURL(/\/ahg\/assistant$/);
   });
@@ -333,8 +339,11 @@ test.describe('GLOW keyboard-only smoke test', () => {
     await tabTo(page, '#save-agent-text', 'AHG download failure');
     await page.keyboard.insertText('My agent');
     await page.keyboard.press('Tab');
+    await page.keyboard.press('End');
+    await page.keyboard.press('Tab');
     await page.keyboard.press('Enter');
     await expect(page.locator('#save-agent-status')).toContainText('download could not start');
+    await expect(page.locator('#save-agent-status')).toContainText('agent-v4.md');
     await expect(page.locator('#save-agent-text')).toHaveValue('My agent');
   });
 

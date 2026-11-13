@@ -23,6 +23,7 @@ The plan turns today's practice into one safe, measurable next step. On the
 browser path, answer in the same assistant conversation and save a draft in
 an approved document. On either VS Code path, Copilot saves a draft in the
 kit. Both paths review the draft before saving the final version.
+Bring your latest agent, workshop notes and sharing or deferral decision.
 
 ## Steps
 
@@ -121,7 +122,8 @@ steps; do not bypass campus policy to finish the exercise.
 
 ## On Monday
 
-To write your next agent on your own, follow `write-your-own-agent.md` in the kit: eight steps, from a blank file to a shared agent, in any assistant. Keep the kit. Everything in it works after today, with any AI assistant and the checkers you already have. To keep using the full Accessibility Agents project on your own laptop, read accessibility-agents.md in the kit, or community-access.org/start.html for step-by-step setup in each AI app. Help is at jeffbis@arizona.edu.
+To write your next agent on your own, follow `write-your-own-agent.md` in the kit: eight steps, from a blank file to a shared agent, in any assistant. Keep the kit. Use the instructions after today with a campus-approved assistant and the
+checkers you already have; capabilities and limits differ. To keep using the full Accessibility Agents project on your own laptop, read accessibility-agents.md in the kit, or community-access.org/start.html for step-by-step setup in each AI app. Help is at jeffbis@arizona.edu.
 
 ## Sources
 

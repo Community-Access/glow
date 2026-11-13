@@ -13,6 +13,14 @@ Pacific Time (UTC-7).
 
 ### Fixed
 
+- Align AHG setup, prompts, cards and facilitator guidance on approved
+  tools, optional sharing and a complete written-example route. Require
+  practice-file save/reopen checks rather than relying on an AI's Ready message.
+- Add named version downloads on `/ahg/assistant`, preserve VS Code agent
+  history, and save exercise notes for interrupted sessions. Grounded
+  comparisons must use the actual first answer; missing answers remain
+  incomplete. Require draft review before the final 30-day plan save.
+
 - Keep the AHG sharing slides, step card, facilitator guidance and
   `my-30-day-plan` skill consistent: check permission first, allow deferred
   sharing, and only project participants' agents with their permission.

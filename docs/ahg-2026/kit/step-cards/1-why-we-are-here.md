@@ -44,16 +44,23 @@ fallback.
 2. Start a new conversation. Use this one conversation all day.
 3. Under "Block 1: the ready check", press the Copy button.
 4. Switch to your assistant's tab. Control+Tab moves through tabs; repeat it until you reach your assistant, or choose its tab by name. Move to the message box, paste with Control+V on Windows or Command+V on a Mac, and press Enter.
+5. Follow the save/reopen check: copy the template to "Your agent to save"
+   on the workshop page, choose "Practice template" under "Version to save",
+   then "Download this version". Reopen practice-SKILL.md and confirm its
+   seven headings in your assistant. Sharing is not required for readiness.
 
 ### In VS Code
 
 1. Open the kit if it is not open already: File, then Open Folder, then the ahg-2026-agent-kit folder. In VS Code for the Web, choose Open Folder at vscode.dev in Chrome or Edge. The welcome page opens.
 2. Open Copilot Chat: Control+Alt+I on Windows, or Control+Command+I on a Mac.
 3. Type /ready-check and press Enter.
+4. Allow the expected practice-file write in my-agent/history, reopen the
+   file and confirm its headings. Read checks alone do not prove saving works.
 
 ## You are on track if
 
 Your assistant or Copilot ends the ready check with: You are ready for 16 November.
+You have also saved, found and reopened the practice file yourself.
 
 ## If you are stuck
 
@@ -64,7 +71,7 @@ Raise a hand at any time. A helper comes to you.
 ## Your win
 
 You are set up. Next, in block 2, describe one task and make your first
-agent.
+agent at 11:05. Bring your chosen role and one non-sensitive problem.
 
 ## On Monday
 

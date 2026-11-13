@@ -3,7 +3,7 @@
   "documents": {
     "pre-event-message.md": {
       "title": "Pre-event message",
-      "sha256": "3bde347a01c17445e4916b20241845e9fe36a3d6331fdf0d709e43a124218be9",
+      "sha256": "2762602d1d3266944eb70e763f8b95006a4f2fa7ea1792743a9879648feeaf1e",
       "formats": [
         "pre-event-message.md",
         "pre-event-message.html",
@@ -14,7 +14,7 @@
     },
     "workshop-frontfacing-guide.md": {
       "title": "Accessibility Agents: Building Human-Centered AI Workflows for Trusted Accessibility Automation at Scale",
-      "sha256": "75902189033b829ced2aa624d53ade4acd561526ebc30fec5d350f3017c38649",
+      "sha256": "1a4be9dbec16c23b895b120e0892f941fa7b6c034220698db0d16ad5452c214f",
       "formats": [
         "workshop-frontfacing-guide.md",
         "workshop-frontfacing-guide.html",
@@ -25,14 +25,14 @@
     },
     "kit/README.md": {
       "title": "Welcome to the AHG 2026 agent kit",
-      "sha256": "fbb3cad5b27140ff9a2340c36e5bb2ba067b70c8a3d828a19e91d07b5539b8a0",
+      "sha256": "e48d96ed32a6c2d15fefe853f9642e77b7e85ff4cd377448257665d94683e298",
       "formats": [
         "README.md",
         "read-me.html",
         "read-me.docx",
         "read-me.pptx"
       ],
-      "slides": 26
+      "slides": 29
     },
     "kit/agent-file-principles.md": {
       "title": "What makes a good agent file",
@@ -91,14 +91,14 @@
     },
     "kit/your-day-at-a-glance.md": {
       "title": "Your day at a glance",
-      "sha256": "8d4a5fce7ecfac53630e62d0f4b644182e7832067709f02c1bae8c52d7409e94",
+      "sha256": "2ecd7655eeed510536232e4ad9e2a0536f7c54b447f6eedec3b36c1c69c1b91b",
       "formats": [
         "your-day-at-a-glance.md",
         "your-day-at-a-glance.html",
         "your-day-at-a-glance.docx",
         "your-day-at-a-glance.pptx"
       ],
-      "slides": 5
+      "slides": 11
     },
     "kit/write-your-own-agent.md": {
       "title": "Write your own accessibility agent: a tutorial",
@@ -124,18 +124,18 @@
     },
     "kit/step-cards/0-before-the-day.md": {
       "title": "Step card 0: Before the day",
-      "sha256": "e5d037fa0093ce73fd30f8b06e2b3daa524877e78db29cd61de7e04464595d22",
+      "sha256": "2d5439479e326b1ed6fb7b14742bab94997159007ccb9be2f031224101cd90eb",
       "formats": [
         "0-before-the-day.md",
         "0-before-the-day.html",
         "0-before-the-day.docx",
         "0-before-the-day.pptx"
       ],
-      "slides": 16
+      "slides": 17
     },
     "kit/step-cards/1-why-we-are-here.md": {
       "title": "Step card 1: Why we are here",
-      "sha256": "ee35b8ce1b4b1f040077f9c3aacb6066a919bc1f8cce79a3ae669e613f97cefd",
+      "sha256": "9fce9994dbd14b159202970f296893058db67bdda743fb2c46d5bcba0fb1f12a",
       "formats": [
         "1-why-we-are-here.md",
         "1-why-we-are-here.html",
@@ -146,18 +146,18 @@
     },
     "kit/step-cards/2-design-your-agent.md": {
       "title": "Step card 2: Design your agent",
-      "sha256": "4a80d1c55551f56e543f30a961d81d9bc926fbe672a3323796761e936858df48",
+      "sha256": "52da1870f017adfd97a4d4d89fb966e1006ac34141db76e7d3e5d7c4b02512af",
       "formats": [
         "2-design-your-agent.md",
         "2-design-your-agent.html",
         "2-design-your-agent.docx",
         "2-design-your-agent.pptx"
       ],
-      "slides": 14
+      "slides": 15
     },
     "kit/step-cards/3-your-agent-at-work.md": {
       "title": "Step card 3: Your agent at work",
-      "sha256": "cac79715c0ec19c99b189806fc7dc9909dbce027ac99cad719e0548810a3b123",
+      "sha256": "7670717abb393a92bdf53165bf24b805679776a956da7714c2b658690b0615be",
       "formats": [
         "3-your-agent-at-work.md",
         "3-your-agent-at-work.html",
@@ -168,7 +168,7 @@
     },
     "kit/step-cards/4-ground-it.md": {
       "title": "Step card 4: Ground it",
-      "sha256": "82da34ce02ac2e41ce182b3c35ed4497679ccfa794674eb58dd41f4ca4a58e15",
+      "sha256": "397ec693571d8ada1df4c21d5b5eb4ace66c662dda911d32cb1caf500d139b6b",
       "formats": [
         "4-ground-it.md",
         "4-ground-it.html",
@@ -179,7 +179,7 @@
     },
     "kit/step-cards/5-build-the-office.md": {
       "title": "Step card 5: Build the office",
-      "sha256": "0330e48f8103e7c1f18d48b5a629b9e85fd294c592d3fd0f8efc3446c3d08430",
+      "sha256": "d426da9799e919e5c85cefb20ab8403ef0e6f8c2a7efaaca54953e8dddbecea3",
       "formats": [
         "5-build-the-office.md",
         "5-build-the-office.html",
@@ -190,7 +190,7 @@
     },
     "kit/step-cards/6-share-it.md": {
       "title": "Step card 6: Share it",
-      "sha256": "198a9ac40e97205660999b8d3211f909df3478ea566d814b6b29ca6bcc5664be",
+      "sha256": "20d3a3bed1a69caa4b09c87cc038915c130bbe29a15de3c6eac3ce1c49709ed2",
       "formats": [
         "6-share-it.md",
         "6-share-it.html",
@@ -201,7 +201,7 @@
     },
     "kit/step-cards/7-take-it-home.md": {
       "title": "Step card 7: Take it home",
-      "sha256": "d37434e19afabb38d5afeeac0008cd339d956ae71fbd74afb2360967213ba958",
+      "sha256": "2187971855f934e65ec7ee71a01a71519896a91a24d7639b36db230994af03a9",
       "formats": [
         "7-take-it-home.md",
         "7-take-it-home.html",
@@ -212,7 +212,7 @@
     },
     "kit/examples/jordan-faculty-coach.md": {
       "title": "Worked example: Jordan's faculty coach",
-      "sha256": "c936c709deebd8a909bb34ab956e9a52cb0b109bfb131511c93874b00677daf6",
+      "sha256": "a5d03a8b5217b15db7db50a350866dec993d3dab7227799a9739d91bd53b1e2d",
       "formats": [
         "jordan-faculty-coach.md",
         "jordan-faculty-coach.html",
@@ -223,7 +223,7 @@
     },
     "kit/examples/maria-alternate-format-planner.md": {
       "title": "Worked example: Maria's alternate format planner",
-      "sha256": "e45707e4ea498a3a1d5e46723db2bc0b15165daa22339bfc535d3f7003a346d6",
+      "sha256": "95156fb8760ac27d632b761dea1436b4e9be8c0bf82a386a3ea5cbe24a6c43f1",
       "formats": [
         "maria-alternate-format-planner.md",
         "maria-alternate-format-planner.html",
@@ -234,7 +234,7 @@
     },
     "kit/examples/sam-remediation-log-keeper.md": {
       "title": "Worked example: Sam's remediation log keeper",
-      "sha256": "ca0083dcf34a5ecdbdc8609b70d8777f073e0812a64b9a1ddb56d108fd566a75",
+      "sha256": "24a7eb0e0fdb38b838b9967bd737750465fadb54a82fd7410194561ab23c0222",
       "formats": [
         "sam-remediation-log-keeper.md",
         "sam-remediation-log-keeper.html",
@@ -245,7 +245,7 @@
     },
     "repo/README.md": {
       "title": "Accessibility Agents at AHG 2026",
-      "sha256": "83ffa199a4037406b4539b68444426e7ec692126a9b3f9924fbd69d136dc9b6b",
+      "sha256": "b55f63618fdee858629dff982d89794c2bbbc772da69dfef5dd891cb6c717a21",
       "formats": [
         "README.md",
         "read-me.html",

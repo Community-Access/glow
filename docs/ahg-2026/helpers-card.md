@@ -22,6 +22,10 @@ Facilitators only; it is not in the kit.
 - Say the block number, where to work, the expected result and the next
   step. Leave the matching card available in writing; do not rely on the
   projected slide or a spoken cue alone.
+- Confirm each saved output by reopening it. Browser copies are
+  agent-v1.md through agent-v4.md; VS Code history is in my-agent/history.
+  Keep the course filename, first answer, comparison and report in workshop
+  notes. A chat success message does not prove a file was saved.
 - Never ask for, read out or repeat anything private: student names,
   records, accommodation details. If you see any on a screen, ask the person
   to remove it from the chat.
@@ -50,22 +54,24 @@ Each row is one block of the day, what to watch for, and what to do.
 1. Copilot Free limit reached, or VS Code will not work: keep the latest
    agent and use an approved browser assistant or a written example with a
    helper, from the same block. Do not bypass campus policy.
-2. An assistant forgets their agent: paste the agent as its own message,
-   then the block's text again.
+2. An assistant forgets their agent: restore the latest agent, current block,
+   chosen course filename and saved notes, then the block's text. If the
+   actual first answer is lost, label the comparison incomplete.
 3. GitHub unreachable or sharing not approved in block 6: keep the reviewed
    file local and agree who will follow up and when. Collect or transfer it
    only with the participant's permission using an approved method; do not
    call it shared until the collection confirms it.
 
 If a copy button fails, follow the selected-text instruction. If a local
-download fails, save the text in a plain-text editor as `SKILL.md`. Before
+download fails, save the text in a plain-text editor using its versioned name. Before
 switching conversations or tools, make sure the participant has the latest
 version and knows how to reopen it.
 
 ## Needs a hand
 
 If no AI tool or public sharing is approved, use the written examples and
-make the plan in Word or on paper. Keep work local pending approval.
+make the plan in Word or on paper. Follow the seven written-example steps
+in the day-at-a-glance guide; label the outputs as written exercises. Keep work local pending approval.
 Do not suggest a personal account as a way around campus policy.
 
 Shares that fail get the label needs-a-hand on
@@ -77,4 +83,6 @@ github.com/Community-Access/ahg-2026/issues. Check it at the start of block
 - "It's easy" or "just". If it were easy for them, they would not need you.
 - "Compliant" or "accessible" about any document. Say what was checked.
 - Anything that suggests a screen reader user should switch paths because
-  of their screen reader. Every path works with one.
+  of their screen reader. Test their chosen setup, record barriers and
+  agree on an accessible fallback with them. Do not claim every path is
+  validated until its actual walkthrough is recorded.

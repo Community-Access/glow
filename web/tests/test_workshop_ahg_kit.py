@@ -452,7 +452,9 @@ def test_browser_prompts_save_each_version_on_the_workshop_page():
         task = " ".join(task.split())
         assert "letitglow.app/ahg/assistant" in task
         assert "Your agent to save" in task
-        assert "Download a copy as SKILL.md" in task
+        assert "Download this version" in task
+        assert "Version to save" in task
+        assert "Reopen" in task
         assert "letitglow.app/ahg/share" not in task
 
 
@@ -467,6 +469,39 @@ def test_the_paths_page_compares_three_paths_and_each_assistant(client):
     assert "prepared Accessibility Agents prompts" in normalized
     assert "No public directory listing or connector is required" in normalized
     assert "not yet in ChatGPT's plugin directory" not in normalized
+
+
+def test_setup_paths_require_permission_and_observable_readiness(client):
+    from bs4 import BeautifulSoup
+
+    soup = BeautifulSoup(client.get("/ahg/paths").data, "html.parser")
+    for anchor in ("browser-setup", "vscode-setup", "vscode-web-setup"):
+        steps = soup.find(id=anchor).find_next("ol").get_text(" ", strip=True)
+        assert "sharing is approved" in steps, anchor
+        assert "before submission" in steps, anchor
+        assert "reopen" in steps, anchor
+    ready = (KIT / ".github/skills/ready-check/SKILL.md").read_text(encoding="utf-8")
+    assert ready.index("save/reopen check succeed") < ready.index("You are ready for 16 November")
+    assert 'report "Needs a hand", not Ready' in ready
+
+
+def test_browser_prompts_match_the_generator_and_preserve_missing_answer_boundary():
+    import sys
+
+    sys.path.insert(0, str(REPO / "scripts"))
+    import build_ahg_kit
+
+    for key in build_ahg_kit.ASSISTANT_TEXTS:
+        assert (KIT / "any-assistant" / f"{key}.txt").read_text(encoding="utf-8") == (
+            build_ahg_kit.assistant_text(key)
+        ), key
+    for path in (
+        KIT / "any-assistant/4-ground-my-agent.txt",
+        KIT / ".github/skills/ground-my-agent/SKILL.md",
+    ):
+        text = " ".join(path.read_text(encoding="utf-8").split())
+        assert "comparison incomplete" in text
+        assert "do not invent a previous result" in text
 
 
 def test_the_landing_page_offers_the_three_paths(client):

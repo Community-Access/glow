@@ -194,7 +194,11 @@ Her section of the team report:
 
 ## 6. Her agent in the collection
 
-At 3:05 Maria opens the share page, chooses her newest file, version 4, and presses the button.
+In this example, Maria has permission to publish the instructions under the
+MIT licence and has removed private and non-public information. At 3:05
+she opens the share page and chooses version 4. Opening the GitHub form
+sends the text before submission. Without approval she would instead keep
+the reviewed file locally with a permission owner and follow-up date.
 GitHub's share form opens already filled in; she checks the privacy check box and
 presses Submit new issue. A minute later the reply says "Your agent is in",
 and her agent is in the AHG 2026 collection as

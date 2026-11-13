@@ -37,7 +37,10 @@ is pending, keep the file locally and arrange later sharing with a helper.
 
 1. In your browser, open letitglow.app/ahg/share.
 2. Leave "My real agent" chosen.
-3. Give the page your agent. In VS Code: choose Your agent file, and pick my-agent/SKILL.md from the kit folder. In a browser: choose your newest SKILL.md, version 4, or paste your agent into "Your agent, as text". The page fills in your agent's short name, and says so.
+3. Give the page your agent. In VS Code: choose Your agent file, and pick
+   my-agent/SKILL.md after checking that it is version 4. In a browser:
+   choose agent-v4.md, or paste your complete reviewed agent into "Your
+   agent, as text". The page fills in your agent's short name, and says so.
 4. Press "Open the share form on GitHub". A new tab opens with GitHub's Share my agent form, already filled in: the workshop code, "My real agent", and your agent.
 5. Move to the end of the form. Select the check box that says your agent contains nothing private.
 6. Press "Submit new issue".
@@ -64,7 +67,8 @@ Raise a hand at any time. A helper comes to you.
 
 You have either contributed an approved agent with your chosen credit or
 kept a reviewed copy for later. Next, use what you learned to draft a
-30-day campus plan.
+30-day campus plan at 3:40. Keep the confirmation link or deferred-sharing
+owner and date in your workshop notes.
 
 ## On Monday
 

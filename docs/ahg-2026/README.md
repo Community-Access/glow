@@ -91,17 +91,27 @@ because it carries the room's real join address:
 
 Tests hold each of those: `web/tests/test_workshop_deck_formats.py`.
 
-## Numbered teacher and student rehearsal
+## Teacher and student rehearsal
 
-From the repository root, with the active Python environment and
-`PYTHONPATH` pointing to `web\src;desktop\src`, run:
+The existing rehearsal at `S:\ahgtest` uses 14 self-contained scenarios.
+Start with `S:\ahgtest\00-start-here.html`; editable copies are in
+`S:\ahgtest\markdown`. Each scenario includes its instructions, complete
+inputs, expected outputs and result fields. `materials` and `_old-numbered`
+retain the original snapshots and historical evidence, not the newest
+exercise instructions. Use the current-export links in the scenarios for
+the updated kit and Office files. Keep `results.csv` and observations intact;
+do not replace this folder with a fresh generated rehearsal.
+
+To create a separate, more granular numbered rehearsal, use a new empty
+destination. From the repository root, with the active Python environment
+and `PYTHONPATH` pointing to `web\src;desktop\src`, run:
 
 ```text
-python scripts\build_ahg_rehearsal.py S:\ahgtest
-python scripts\build_ahg_rehearsal.py S:\ahgtest --check
+python scripts\build_ahg_rehearsal.py S:\ahg-rehearsal-new
+python scripts\build_ahg_rehearsal.py S:\ahg-rehearsal-new --check
 ```
 
-Open `S:\ahgtest\000-start-here.html`. Every ordered HTML step names and
+Open `S:\ahg-rehearsal-new\000-start-here.html`. Every ordered HTML step names and
 links to its original source. Markdown copies are in `text`; unchanged
 course files, including all slide formats, are in `materials`. The builder
 covers every test-plan case and applicable path, all 35 slides individually,

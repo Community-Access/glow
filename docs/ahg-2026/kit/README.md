@@ -25,8 +25,9 @@ your work local. A browser is not a way around campus policy.
   block's text, and paste it into ChatGPT, Copilot on github.com, Claude,
   Gemini or your campus assistant. The same texts are in this kit, in
   `any-assistant/`. No public directory listing or external connector is needed
-  for this workshop path. Save each version on the workshop page before the
-  next block without replacing earlier files. If asked to replace a file,
+  for this workshop path. Choose the matching "Version to save" and press
+  "Download this version" on the workshop page. Keep agent-v1.md through
+  agent-v4.md and reopen each copy before the next block. If asked to replace a file,
   choose Cancel and use a different name or folder. Visit the share page in
   block 6, if approved.
 - In VS Code on your computer: you are probably reading this there. Each
@@ -38,8 +39,9 @@ your work local. A browser is not a way around campus policy.
 
 1. Open Copilot Chat: Control+Alt+I on Windows, or Control+Command+I on a
    Mac.
-2. Type /ready-check and press Enter. Copilot checks six things and tells
-   you that you are ready.
+2. Type /ready-check and press Enter. Copilot checks six readable resources,
+   then asks to save a practice copy. Reopen it and confirm its seven
+   headings. If commands or file writes fail, setup still needs a hand.
 
 If a banner says Restricted Mode, choose Manage, then Trust first. It is the
 workshop kit, and Copilot cannot work on its files until you trust it.
@@ -60,7 +62,7 @@ block has every key and every expected result in words.
 | 3. Your agent at work | 11:45 | /try-my-agent, then /review-my-agent | Its first answer on a course document, and version 2 |
 | 4. Ground it | 1:15 | /ground-my-agent, then /review-my-agent | Cited answers from real evidence, and version 3 |
 | 5. Build the office | 2:15 | /run-the-office, then /review-my-agent | Your agent in a team, across the whole course, and version 4 |
-| 6. Share it | 3:05 | letitglow.app/ahg/share | Your best version in the collection, in your name |
+| 6. Share it | 3:05 | letitglow.app/ahg/share, only if approved | A confirmed contribution, or a reviewed local copy and permission follow-up |
 | 7. Take it home | 3:40 | /my-30-day-plan | A 30-day plan for your campus |
 
 ## What is in this folder
@@ -74,6 +76,8 @@ This list follows the folders in the Explorer, top to bottom.
 | `any-assistant/` | One text per block for the browser path, to paste into any AI assistant; the review text; and four Accessibility Agents texts, `aa-*.txt` |
 | `examples/` | Finished work for every step. Maria, Jordan and Sam's stories, and six ready-made agents in `examples/agents/` |
 | `my-agent/SKILL.md` | Your agent. Seven headings: Role, Task, Trusted guidance, Output format, Example, Human review, Never |
+| `my-agent/history/` | Created during the exercises: practice and complete agent versions, never overwritten |
+| `my-agent/workshop-notes.md` | Created during exercises: course filename, first answer, grounded comparison and team report |
 | `office-team/` | The accessibility office: eight specialists your agent joins this afternoon |
 | `sample-course/` | PSY 101, the course everyone works on, with barriers planted on purpose, and `evidence/` with each file's checker report |
 | `step-cards/` | One card per block, each as Markdown, HTML, a large print Word file and a reading deck |
@@ -96,6 +100,9 @@ name on it, and carry on. That is still your agent, and it still goes into
 the open-source project with your name on it if sharing is approved. If VS
 Code gives you trouble, keep your latest version and use an approved browser
 assistant or a written example with a helper, starting at the same block.
+The complete written route and recovery sequence are in
+`your-day-at-a-glance.md`. Carry the current block, chosen course filename
+and actual first answer as well as your agent when switching tools.
 
 ## If you use a screen reader
 

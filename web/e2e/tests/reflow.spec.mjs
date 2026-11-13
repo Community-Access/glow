@@ -30,7 +30,7 @@ const PAGES = [
   { label: 'user guide', path: '/guide/', submit: null },
   { label: 'accessibility agents landing page', path: '/accessibility-agents/', submit: null },
   { label: 'accessibility agents chat', path: '/accessibility-agents/chat/', submit: /^Ask$/i },
-  { label: 'AHG browser path', path: '/ahg/assistant', submit: /Download a copy as SKILL\.md/i, primaryNav: false },
+  { label: 'AHG browser path', path: '/ahg/assistant', submit: /Download this version/i, primaryNav: false },
 ];
 
 const WIDTHS = [
@@ -68,6 +68,14 @@ for (const { zoom, width, height } of WIDTHS) {
           return { excess, culprits };
         });
         expect(overflow.excess, `${label} scrolls sideways by ${overflow.excess}px: ${overflow.culprits.join(', ')}`).toBeLessThanOrEqual(1);
+        if (path === '/ahg/assistant') {
+          const version = page.getByLabel('Version to save', { exact: true });
+          await expect(version).toBeVisible();
+          expect(await version.evaluate(el => parseFloat(getComputedStyle(el).fontSize)))
+            .toBeGreaterThanOrEqual(24);
+          await version.selectOption('agent-v4.md');
+          await expect(version).toHaveValue('agent-v4.md');
+        }
 
         await expect(page.getByRole('heading', { level: 1 }).first()).toBeVisible();
 

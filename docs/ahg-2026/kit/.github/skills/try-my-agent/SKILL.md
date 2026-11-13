@@ -20,4 +20,9 @@ the participant:
 - One thing to watch: anywhere it had to guess because it had no evidence,
   or anywhere the agent file left you unsure what to do.
 
+Ask permission to save the chosen course filename and complete first answer
+in `my-agent/workshop-notes.md`, under "Block 3: first answer". Append without
+replacing earlier notes; read it back to verify. If saving is unavailable,
+ask the participant to copy it to a local document and confirm it is saved.
+
 End with: That is your agent's first answer. Now type /review-my-agent to make version 2.

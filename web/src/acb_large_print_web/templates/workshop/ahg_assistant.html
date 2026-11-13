@@ -23,6 +23,7 @@
   <li>Open your assistant in a second browser tab, and sign in. Signing in matters: ChatGPT without an account stops after a message or two and asks you to log in.</li>
   <li>Start one new conversation, and use that same conversation all day. Your agent from block 2 stays in it, so the later blocks can find it.</li>
   <li>Never paste anything private: no student names, records, accommodation or health details. We use a fictional course all day.</li>
+  <li>Keep <a href="{{ url_for('shortlinks.ahg_kit_file', rel='your-day-at-a-glance.md') }}">your day at a glance</a> available. It includes the saved outputs, recovery steps and a written-example route if AI is unavailable or not approved.</li>
 </ol>
 
 <h2 id="how">How every block works</h2>
@@ -45,22 +46,36 @@
   After block 2 and each review in blocks 3, 4 and 5, copy the complete
   agent from your assistant and paste it here. Download a copy before you
   continue. Saving here does not send your agent to GLOW or GitHub.
-  Your browser may add a number to the filename. Keep each version and
-  choose the newest one when you share. Never replace an earlier file:
+  Choose the version that matches the agent's version line. The filenames
+  are practice-SKILL.md and agent-v1.md through agent-v4.md. Keep each version and
+  choose agent-v4.md when you share after the final review. Never replace an earlier file:
   if asked to replace it, choose Cancel and save the new version with a
   different name or in a different folder. If downloading is unavailable,
-  paste into a plain-text editor and save each version separately.
+  paste into a plain-text editor and save with the same versioned name.
+  Reopen each download to check its complete text and version. This page
+  does not retain your pasted text after you close or reload it.
 </p>
 <label for="save-agent-text">Your agent to save</label>
 <p class="hint" id="save-agent-error" hidden></p>
 <textarea id="save-agent-text" spellcheck="false" aria-describedby="save-agent-hint save-agent-error"></textarea>
-<button type="button" id="save-agent-download" hidden>Download a copy as SKILL.md</button>
+<label for="save-agent-version">Version to save</label>
+<select id="save-agent-version" aria-describedby="save-agent-hint">
+  <option value="practice-SKILL.md">Practice template</option>
+  <option value="agent-v1.md">Version 1: after block 2</option>
+  <option value="agent-v2.md">Version 2: after block 3 review</option>
+  <option value="agent-v3.md">Version 3: after block 4 review</option>
+  <option value="agent-v4.md">Version 4: after block 5 review</option>
+</select>
+<button type="button" id="save-agent-download" hidden>Download this version</button>
 <div id="save-agent-status" role="status"></div>
+<p>Keep a local workshop-notes document too: record your current block, chosen
+course filename, first answer, grounded comparison and team report. Save the
+30-day plan separately. These outputs let you resume after a lost conversation.</p>
 
 {% for b in blocks %}
 <h2 id="block-{{ b.number }}">{{ b.title }}</h2>
 {% if b.number == "1" %}
-<p>Do this before the day, and again at 10:30. Your assistant checks three things and tells you that you are ready.</p>
+<p>Do this before the day, and again at 10:30. Your assistant checks the template and rules, then waits while you save and reopen the practice file. Confirm that you can find and read it before calling setup complete.</p>
 {% elif b.number == "2" %}
 <p>Your assistant asks six questions, one at a time, and writes your agent. Copy the complete agent from its box, then <a href="#save-agent">keep a local copy on this page</a>. That is version 1; you will try it in block 3.</p>
 {% elif b.number == "3" %}
@@ -101,7 +116,7 @@
 <p>
   If approved, open the <a href="{{ url_for('shortlinks.ahg_share_short') }}">share page</a>,
   leave "My real agent" chosen, paste your newest version into "Your agent, as text"
-  (or choose the SKILL.md you saved last), and press "Open the
+  (or choose agent-v4.md), and press "Open the
   share form on GitHub". Step card 6 has every key. If approval is pending
   or GitHub is unavailable, keep your reviewed copy locally and arrange a
   next step with a helper.
@@ -166,8 +181,8 @@
 <h2 id="help">If something goes wrong</h2>
 <ul>
   <li>The assistant asks you to log in: sign in or make a free account, then paste the block's text again.</li>
-  <li>The assistant says the message is too long: start a new conversation and paste again. If it still refuses, ask a helper; message limits vary. Save your latest agent before changing conversations, then paste the agent and the block text in the new conversation.</li>
-  <li>The assistant has forgotten your agent: paste your agent again as its own message, then paste the block's text.</li>
+  <li>The assistant says the message is too long: a new conversation may not change its per-message limit. Keep your saved work and use the written-example route in the day-at-a-glance guide, or a tested campus-approved assistant with a helper. Do not remove evidence to make the prompt fit.</li>
+  <li>Before changing conversations or tools, save your agent and workshop notes. In the new conversation, paste the latest agent, then say your current block and chosen course filename. Paste the previous answer from your notes before requesting a before-and-after comparison, then paste the block text. If that answer is lost, label the comparison incomplete; do not reconstruct it as an actual result.</li>
   <li>The assistant has used up its free messages for now: use another campus-approved assistant or a written example with a helper, and carry on from this block. Your agent is on your computer, from block 2.</li>
   <li>Anything else: raise a hand, or write to <a href="mailto:jeffbis@arizona.edu">jeffbis@arizona.edu</a>.</li>
 </ul>
@@ -184,6 +199,7 @@
   var text = document.getElementById("save-agent-text");
   var error = document.getElementById("save-agent-error");
   var button = document.getElementById("save-agent-download");
+  var version = document.getElementById("save-agent-version");
   var status = document.getElementById("save-agent-status");
   var lastSaid = "";
 
@@ -211,11 +227,11 @@
       text.focus();
       return;
     }
-    if (!downloadSkillMarkdown(text.value)) {
-      say("The download could not start. Copy your agent into a plain-text editor and save it as SKILL.md.");
+    if (!downloadSkillMarkdown(text.value, version.value)) {
+      say("The download could not start. Copy your agent into a plain-text editor and save it as " + version.value + ".");
       return;
     }
-    say("Your browser is saving SKILL.md, usually to Downloads. Keep this version and return to your assistant.");
+    say("Your browser is saving " + version.value + ", usually to Downloads. Reopen it and check the version and complete text before continuing.");
   });
 }());
 </script>
