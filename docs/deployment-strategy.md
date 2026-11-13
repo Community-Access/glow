@@ -20,6 +20,12 @@ downloads for that same event room.
 The generic `/workshop/deck` deliberately uses a `your-code` placeholder
 and is not the event-ready slide URL.
 
+The presenter capstone is served at `/ahg/capstone`, with `.md`, `.docx`
+and `.pptx` downloads. Its four generated assets must be included in both
+the Docker build context and `web/Dockerfile`. Verify those downloads and
+the AHG landing page's capstone links after deployment; the guide is outside
+the participant kit.
+
 ### Recommended Pre-Production WSL Gate
 
 From Windows PowerShell on the development workstation:

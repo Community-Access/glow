@@ -11,6 +11,19 @@ Pacific Time (UTC-7).
 
 ## [Unreleased]
 
+### Added
+
+- Add four team-sharing and presenter-led ChatGPT MCP capstone slides to
+  `web/src/acb_large_print_web/workshop_deck.py`, using the fictional PSY 101
+  announcement and existing hosted GLOW tools. Regenerate the 39-slide deck.
+- Add `docs/ahg-2026/chatgpt-mcp-capstone.md` with connection setup, exact
+  prompts, measured baselines, team rollout, fallback and fresh readiness
+  checks; link it from the workshop index and run of show.
+- Publish the capstone guide at `/ahg/capstone`, with Markdown, Word and
+  PowerPoint downloads linked from `/ahg`; include all guide assets in the
+  production Docker image and keep its HTML styles compatible with the
+  application's content security policy.
+
 ### Fixed
 
 - Show direct HTML, Markdown, Word with speaker notes, PowerPoint and

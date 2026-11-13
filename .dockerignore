@@ -33,6 +33,10 @@ README.md
 LICENSE*
 *.md
 !CHANGELOG.md
+!docs/ahg-2026/chatgpt-mcp-capstone.md
+!docs/ahg-2026/chatgpt-mcp-capstone.html
+!docs/ahg-2026/chatgpt-mcp-capstone.docx
+!docs/ahg-2026/chatgpt-mcp-capstone.pptx
 
 # --- Server credentials (never send to Docker) ---
 server.credentials

@@ -43,7 +43,7 @@ def test_generated_sequence_has_every_case_path_slide_and_source_link(rehearsal)
     import json
 
     manifest = json.loads((rehearsal / "manifest.json").read_text(encoding="utf-8"))
-    assert manifest["slides"] == 35
+    assert manifest["slides"] == 39
     assert all(f"--from-{Path(step['source']).name}" in step["file"] for step in manifest["steps"])
     assert len([step for step in manifest["steps"] if step["title"].startswith("Closing demo:")]) == 3
 

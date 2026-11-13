@@ -152,6 +152,14 @@ def ahg_slides_short():
     return redirect(url_for("workshop.workshop_session_deck", session_code="ahg-2026"))
 
 
+@short_bp.route("/ahg/capstone", defaults={"extension": "html"}, methods=["GET"], strict_slashes=False)
+@short_bp.route("/ahg/capstone.<extension>", methods=["GET"])
+def ahg_capstone(extension: str):
+    from .workshop import send_ahg_capstone
+
+    return send_ahg_capstone(extension)
+
+
 @short_bp.route("/ahg/site", methods=["GET"], strict_slashes=False)
 def ahg_site():
     from .workshop import render_ahg_site

@@ -419,6 +419,8 @@ test.describe('GLOW keyboard-only smoke test', () => {
     { label: 'template form', path: '/template/' },
     { label: 'accessibility agents chat', path: '/accessibility-agents/chat/' },
     { label: 'AHG browser path', path: '/ahg/assistant' },
+    { label: 'AHG workshop landing', path: '/ahg' },
+    { label: 'AHG capstone guide', path: '/ahg/capstone' },
   ]) {
     test(`${label}: every control reachable, visible focus, logical order, no trap`, async ({ page }) => {
       await page.goto(route);
