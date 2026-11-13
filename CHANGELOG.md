@@ -13,6 +13,9 @@ Pacific Time (UTC-7).
 
 ### Fixed
 
+- Show direct HTML, Markdown, Word with speaker notes, PowerPoint and
+  large print handout download links in the AHG landing page's slides
+  section, using the same event-room URLs as the deck itself.
 - Point `/ahg/slides` and the AHG landing page to the `ahg-2026` room's
   deck and matching HTML, Markdown, Word, PowerPoint and handout downloads,
   rather than the generic `your-code` deck. Verify the room through the

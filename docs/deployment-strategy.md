@@ -14,6 +14,9 @@ Verify those live pages after deployment, not just `/health`.
 AHG slides use the `ahg-2026` room. Initialize it once through the normal
 workshop join flow at `/workshop/?code=ahg-2026` (after the consent page),
 then verify `/ahg/slides` and every download link on the event deck.
+The AHG landing page must also link directly to the offline HTML,
+Markdown, Word with speaker notes, PowerPoint and large print handout
+downloads for that same event room.
 The generic `/workshop/deck` deliberately uses a `your-code` placeholder
 and is not the event-ready slide URL.
 

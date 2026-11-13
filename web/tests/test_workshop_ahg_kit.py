@@ -227,8 +227,20 @@ def test_ahg_slides_use_the_event_room_and_matching_downloads(client):
     body = response.get_data(as_text=True)
     assert "localhost/w/ahg-2026" in body
     assert "/w/your-code" not in body
-    for suffix in ("?download=1", ".md", ".docx", ".pptx", "-handout.docx"):
-        assert f"/workshop/session/ahg-2026/deck{suffix}" in body
+    for suffix, mimetype in (
+        ("?download=1", "text/html"),
+        (".md", "text/markdown"),
+        (".docx", "application/vnd.openxmlformats-officedocument.wordprocessingml.document"),
+        (".pptx", "application/vnd.openxmlformats-officedocument.presentationml.presentation"),
+        ("-handout.docx", "application/vnd.openxmlformats-officedocument.wordprocessingml.document"),
+    ):
+        path = f"/workshop/session/ahg-2026/deck{suffix}"
+        assert f'href="{path}"' in landing
+        assert f'href="{path}"' in body
+        download = client.get(path)
+        assert download.status_code == 200
+        assert download.mimetype == mimetype
+        assert "attachment;" in download.headers["Content-Disposition"]
 
 
 def test_the_kit_downloads_as_one_zip_without_the_answer_key(client):

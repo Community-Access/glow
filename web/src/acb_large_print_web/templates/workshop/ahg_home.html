@@ -146,9 +146,16 @@
 <h2 id="slides">The slides</h2>
 <p>
   <a href="{{ url_for('shortlinks.ahg_slides_short') }}">The slides, with speaker notes</a>,
-  including a "Read as one page" mode for screen readers and a download as
-  one file, PowerPoint, Word or Markdown.
+  including a "Read as one page" mode for screen readers.
+  Choose a format to save for offline use:
 </p>
+<ul>
+  <li><a href="{{ deck_download_urls.html }}">Download the slides as one HTML file</a></li>
+  <li><a href="{{ deck_download_urls.md }}">Download the slides as Markdown (.md)</a></li>
+  <li><a href="{{ deck_download_urls.docx }}">Download the slides with speaker notes as Word (.docx)</a></li>
+  <li><a href="{{ deck_download_urls.pptx }}">Download the slides as PowerPoint (.pptx)</a></li>
+  <li><a href="{{ deck_download_urls.handout }}">Download the large print handout without speaker notes (.docx)</a></li>
+</ul>
 
 <h2 id="rules">The two rules</h2>
 <ol>
