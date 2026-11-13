@@ -3011,6 +3011,7 @@ def render_ahg_landing():
         profile_url=url_for("workshop.ahg_profile", _external=True),
         step_cards=_ahg_step_cards(),
         schedule=agenda.ahg_schedule_rows(),
+        deck_download_urls=_deck_download_urls("ahg-2026"),
         ahg_home=True,
     )
 
