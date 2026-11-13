@@ -67,7 +67,7 @@ dev = [
 where = ["src"]
 
 [tool.setuptools.package-data]
-acb_large_print_web = ["templates/*.html", "templates/partials/*.html", "templates/jobs/*.html", "templates/workshop/*.html", "static/**/*"]
+acb_large_print_web = ["templates/*.html", "templates/partials/*.html", "templates/jobs/*.html", "templates/workshop/*.html", "templates/workshop/*.js", "static/**/*"]
 
 # ---------------------------------------------------------------------------
 # Ruff -- fast Python linter + formatter

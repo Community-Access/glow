@@ -12,11 +12,13 @@ from __future__ import annotations
 import io
 import json
 import re
+import tomllib
 import zipfile
 from pathlib import Path
 
 import pytest
 from flask import Flask
+from jinja2 import meta
 
 from acb_large_print_web.app import create_app
 
@@ -37,6 +39,18 @@ def app(tmp_path: Path) -> Flask:
 @pytest.fixture()
 def client(app: Flask):
     return app.test_client()
+
+
+def test_static_template_dependencies_are_in_the_installed_package(app: Flask):
+    package = REPO / "web" / "src" / "acb_large_print_web"
+    manifest = tomllib.loads((REPO / "web" / "pyproject.toml").read_text(encoding="utf-8"))
+    patterns = manifest["tool"]["setuptools"]["package-data"]["acb_large_print_web"]
+    packaged = {path for pattern in patterns for path in package.glob(pattern) if path.is_file()}
+    for template in (package / "templates").rglob("*.html"):
+        parsed = app.jinja_env.parse(template.read_text(encoding="utf-8"))
+        for reference in meta.find_referenced_templates(parsed):
+            if reference is not None:
+                assert package / "templates" / reference in packaged, (template.name, reference)
 
 
 # ---------------------------------------------------------------------------

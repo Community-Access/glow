@@ -13,6 +13,10 @@ Pacific Time (UTC-7).
 
 ### Fixed
 
+- Package `templates/workshop/_ahg_download.js` in the installed web
+  application so `/ahg/assistant` and `/ahg/share` render after Docker
+  deployment. Check that every literal template dependency is included in
+  the distribution, not just available in the source checkout.
 - Include complete ChatGPT, VS Code desktop and VS Code web manual
   walkthroughs in `docs/ahg-2026/kit/manual-walkthroughs/`, as Markdown and
   offline HTML, for both repository and live-kit access. Keep the matching
