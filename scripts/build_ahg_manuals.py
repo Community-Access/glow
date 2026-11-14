@@ -172,7 +172,7 @@ Follow this in order to build an alternate format planner, improve it using fict
                 paste_steps((KIT / "any-assistant" / f"{key}.txt").read_text(encoding="utf-8"), key)]
         if key == "1-ready-check":
             out.append("Next: follow 'How to save every version' using Practice template. Reopen it, "
-                       "then tell the assistant: I reopened practice-SKILL.md and verified its seven headings. "
+                       "then tell the assistant: I reopened `practice-SKILL.md` and verified its seven headings. "
                        "Only then continue to block 2. Sharing the practice file is optional; see block 6 below.")
         elif key == "2-design-my-agent":
             out += [answers(DESIGN_ANSWERS),
@@ -311,6 +311,16 @@ def write_manuals() -> list[Path]:
         ("07-student-path-vscode-web", vscode_manual(True)),
     ):
         source = MANUALS / f"{name}.md"
+        if not text.startswith("---\n"):
+            # Same front matter as the step cards: the Markdown audit wants
+            # a title and language, and the library build stops without it.
+            title = text.splitlines()[0].lstrip("# ").strip().replace('"', "'")
+            text = (
+                f'---\ntitle: "{title}"\nlang: en\n'
+                'author: "Jeff Bishop, University of Arizona, IT Accessibility Consultant"\n'
+                'description: "A manual walkthrough for the AHG 2026 Accessibility Agents workshop."\n'
+                "---\n\n" + text
+            )
         source.write_text(text, encoding="utf-8")
         target = source.with_suffix(".html")
         ahg_formats.write_html(ahg_formats.read(source.relative_to(ahg_formats.AHG).as_posix()), target)

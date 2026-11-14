@@ -109,6 +109,37 @@ _ALLCAPS_WORD_RE = re.compile(r"\b[A-Z]{5,}\b")
 _HEADING_TRAIL_PUNCT_RE = re.compile(r"[.;:]$")
 # YAML front matter fence
 _YAML_FENCE_RE = re.compile(r"^---\s*$")
+# A CommonMark fence opener: three or more backticks or tildes
+_FENCE_OPEN_RE = re.compile(r"^(`{3,}|~{3,})")
+
+
+def _mask_nested_fences(lines: list[str]) -> list[str]:
+    """Hide ``` lines that sit inside a longer fence from the line checks.
+
+    The checks below toggle "in code" on any line starting with three
+    backticks. CommonMark closes a fence only with the same character, at
+    least as long, so a ```` fence (or longer) can quote ``` lines verbatim.
+    Without this, quoted fences flip the checks out of the code block and
+    its contents are audited as prose. Line numbers are unchanged.
+    """
+    out: list[str] = []
+    fence: str | None = None
+    for line in lines:
+        stripped = line.strip()
+        if fence is None:
+            m = _FENCE_OPEN_RE.match(stripped)
+            if m:
+                fence = m.group(1)
+            out.append(line)
+            continue
+        if stripped.startswith(fence) and stripped.rstrip(fence[0]) == "":
+            fence = None
+            out.append(line)
+        elif stripped.startswith("```"):
+            out.append("​" + line)
+        else:
+            out.append(line)
+    return out
 
 
 def audit_markdown(file_path: str | Path) -> AuditResult:
@@ -118,7 +149,7 @@ def audit_markdown(file_path: str | Path) -> AuditResult:
     """
     file_path = Path(file_path)
     text = file_path.read_text(encoding="utf-8", errors="replace")
-    lines = text.splitlines()
+    lines = _mask_nested_fences(text.splitlines())
     result = AuditResult(file_path=str(file_path))
 
     _check_yaml_front_matter(lines, result)
