@@ -54,20 +54,32 @@ you do not need to have used VS Code or GitHub before.
 
 A laptop and one campus-approved path. GitHub is needed for the VS Code
 paths, GitHub Copilot or approved sharing, not for the written-example
-route. The paths share learning goals, not identical tool capabilities. letitglow.app/ahg/paths compares them
+route. The paths share learning goals, not identical tool capabilities.
+[letitglow.app/ahg/paths](https://letitglow.app/ahg/paths) compares them
 and has every setup step.
 
 1. The browser path: nothing to install. ChatGPT, Copilot on github.com,
    Claude, Gemini or your campus assistant, signed in, with one text per
-   block from letitglow.app/ahg/assistant. About 10 minutes to set up.
+   block from [letitglow.app/ahg/assistant](https://letitglow.app/ahg/assistant).
+   About 10 minutes to set up.
 2. VS Code on your computer: VS Code with the AHG 2026 profile, the agent
-   kit from letitglow.app/ahg, and Copilot Free. About 25 minutes.
-3. VS Code for the Web: vscode.dev in Chrome or Edge, with the kit opened
+   kit from [letitglow.app/ahg](https://letitglow.app/ahg), and Copilot Free.
+   About 25 minutes.
+3. VS Code for the Web: [vscode.dev](https://vscode.dev) in Chrome or Edge, with the kit opened
    from your laptop. About 15 minutes. Verify command discovery, writing
    files and reopening them; desktop feature parity is not assumed.
 
 Not sure? Take the browser path. There is a setup table outside the room
 from 10:00 on the day.
+
+## The day
+
+Seven blocks, Mountain Time: 1, Why we are here, 10:30; 2, Design your
+agent, 11:05; 3, Your agent at work, 11:45; lunch 12:15 to 1:15; 4, Ground
+it, 1:15; break 2:05 to 2:15; 5, Build the office, 2:15; 6, Share it, 3:05,
+ending with a short presenter demonstration of a reviewed agent in ChatGPT;
+7, Take it home, 3:40. The commitment wall is at 4:15 and the session
+evaluation at 4:25.
 
 Campus approval comes first. If AI tools or public sharing are not approved,
 use the written examples in Word or on paper and keep your work local.
@@ -95,5 +107,5 @@ By the end of the day you will be able to:
 
 ## Support
 
-Help before and after the day: jeffbis@arizona.edu. Large print, a
+Help before and after the day: [jeffbis@arizona.edu](mailto:jeffbis@arizona.edu). Large print, a
 particular seat, a pause or a repeat: ask for any of it, before or during.

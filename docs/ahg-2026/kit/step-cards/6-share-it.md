@@ -7,7 +7,8 @@ description: "A step card for the AHG 2026 Accessibility Agents workshop."
 
 # Step card 6: Share it
 
-Block 6 of 7, 3:05 to 3:40.
+Block 6 of 7, 3:05 to 3:40 Mountain Time. Before this: block 5, Build the
+office. Next: block 7, Take it home, at 3:40.
 
 ## Where we are
 
@@ -35,7 +36,7 @@ under the MIT licence. Remove internal procedures, private data and non-public
 links. The share form cannot detect every disclosure. If approval is pending,
 keep the file locally and arrange later sharing with a helper.
 
-1. In your browser, open letitglow.app/ahg/share.
+1. In your browser, open [letitglow.app/ahg/share](https://letitglow.app/ahg/share).
 2. Leave "My real agent" chosen.
 3. Give the page your agent. In VS Code: choose Your agent file, and pick
    my-agent/SKILL.md after checking that it is version 4. In a browser: choose
@@ -53,6 +54,15 @@ keep the file locally and arrange later sharing with a helper.
 If sharing is not approved or GitHub is unavailable, save your reviewed agent
 and record who can confirm permission and when you will return to sharing. This
 is a deferred contribution, not a completed public share.
+
+### Then watch: agents your team can use
+
+Late in this block the presenter shows how a team could use a reviewed agent:
+our PSY 101 agent in ChatGPT, calling GLOW's checking tools on the sample
+course announcement, with a person reviewing the result. You only watch; you
+need no account, subscription or connection. The
+[presenter capstone guide](https://letitglow.app/ahg/capstone) has every step,
+if you want to repeat it on your campus later.
 
 ## You are on track if
 
@@ -78,10 +88,10 @@ reviewed copy for later. Next, use what you learned to draft a 30-day campus
 plan at 3:40. Keep the confirmation link or deferred-sharing owner and date in
 your workshop notes.
 
-## On Monday
+## Back at work
 
 If shared, your agent stays in the collection at
-github.com/Community-Access/ahg-2026 for others to use and improve. Otherwise
+[github.com/Community-Access/ahg-2026](https://github.com/Community-Access/ahg-2026) for others to use and improve. Otherwise
 follow up on the permission and sharing step you recorded.
 
 ## Sources

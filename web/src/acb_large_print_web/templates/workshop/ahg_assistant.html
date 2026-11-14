@@ -18,6 +18,22 @@
   has the steps for each, and how to stop your chats being used for training.
 </p>
 
+<nav aria-labelledby="jump-heading">
+<h2 id="jump-heading">The blocks on this page, by time</h2>
+<p>Monday 16 November, Mountain Time. Go to the block the room is on; each heading below repeats its time and step card.</p>
+<ul>
+  {% for b in blocks %}
+  <li><a href="#block-{{ b.number }}">{{ b.title }}</a>{% if b.clock %}, {{ b.clock }}{% endif %}</li>
+  {% if b.number == "3" %}<li>Lunch, 12:15-1:15</li>{% endif %}
+  {% if b.number == "4" %}<li>Break, 2:05-2:15</li>{% endif %}
+  {% if b.number == "5" %}<li><a href="#block-6">Block 6: share it</a>{% if block6.clock %}, {{ block6.clock }}{% endif %}</li>{% endif %}
+  {% endfor %}
+  <li>Commitment wall 4:15, session evaluation 4:25, the day ends 4:30</li>
+  <li><a href="#review">Review your agent</a>, after blocks 3, 4 and 5</li>
+  <li><a href="#help">If something goes wrong</a></li>
+</ul>
+</nav>
+
 <h2 id="before">Before you start</h2>
 <ol>
   <li>Open your assistant in a second browser tab, and sign in. Signing in matters: ChatGPT without an account stops after a message or two and asks you to log in.</li>
@@ -32,6 +48,8 @@
   <li>Switch to your assistant's tab. Control+Tab moves through tabs on Windows or Mac; repeat it until you reach your assistant, or choose its tab by name.</li>
   <li>Move to the message box, where you would type a question. Paste with Control+V on Windows, or Command+V on a Mac.</li>
   <li>Press Enter to send. The assistant starts the block, usually by asking you one question.</li>
+  <li>For the longer texts (block 2, blocks 4 and 5, the review and the Accessibility Agents texts), your assistant may not put the paste in the message box. ChatGPT, for one, shows it as an attached file called "Pasted text", and the message box stays empty, so your screen reader may announce an empty edit field. That is expected: press Enter anyway. Wait a moment after pasting. If pressing Enter does nothing, press it again. You will know it was sent when your assistant starts answering. The block 1 text is short and pastes into the box itself.</li>
+  <li>Wait until your assistant has finished answering before you paste the next block or review text. If Enter does nothing, it is probably still writing; wait, then press Enter again. Block 5's team report is the longest answer of the day.</li>
   <li>Answer each question in the same message box. When it gives you something to keep, it puts it in a box with its own Copy button.</li>
 </ol>
 <p>
@@ -74,6 +92,7 @@ course filename, first answer, grounded comparison and team report. Save the
 
 {% for b in blocks %}
 <h2 id="block-{{ b.number }}">{{ b.title }}</h2>
+<p>Block {{ b.number }} of 7{% if b.clock %}, {{ b.clock }} Mountain Time{% endif %}.{% if b.card_rel %} <a href="{{ url_for('shortlinks.ahg_kit_file', rel=b.card_rel) }}">Step card {{ b.number }}</a> has every key.{% endif %}</p>
 {% if b.number == "1" %}
 <p>Do this before the day, and again at 10:30. Your assistant checks the template and rules, then waits while you save and reopen the practice file. Confirm that you can find and read it before calling setup complete.</p>
 {% elif b.number == "2" %}
@@ -108,6 +127,7 @@ course filename, first answer, grounded comparison and team report. Save the
 {% endif %}
 {% if b.number == "5" %}
 <h2 id="block-6">Block 6: share it</h2>
+<p>Block 6 of 7{% if block6.clock %}, {{ block6.clock }} Mountain Time{% endif %}. There is no text to paste in this block.{% if block6.card_rel %} <a href="{{ url_for('shortlinks.ahg_kit_file', rel=block6.card_rel) }}">Step card 6</a> has every key.{% endif %}</p>
 <p>
   Before opening the GitHub form, confirm that public sharing is approved
   and remove private or non-public information. Opening the form sends
@@ -117,9 +137,15 @@ course filename, first answer, grounded comparison and team report. Save the
   If approved, open the <a href="{{ url_for('shortlinks.ahg_share_short') }}">share page</a>,
   leave "My real agent" chosen, paste your newest version into "Your agent, as text"
   (or choose agent-v4.md), and press "Open the
-  share form on GitHub". Step card 6 has every key. If approval is pending
+  share form on GitHub". If approval is pending
   or GitHub is unavailable, keep your reviewed copy locally and arrange a
   next step with a helper.
+</p>
+<p>
+  Late in block 6 the presenter shows a reviewed agent at work in ChatGPT
+  with GLOW's checking tools. You only watch; the
+  <a href="{{ url_for('shortlinks.ahg_capstone') }}">presenter capstone guide</a>
+  has every step if you want to repeat it later. Block 7 follows at 3:40.
 </p>
 {% endif %}
 {% endfor %}
@@ -180,6 +206,8 @@ course filename, first answer, grounded comparison and team report. Save the
 
 <h2 id="help">If something goes wrong</h2>
 <ul>
+  <li>The message box sounds empty after you paste: for a long text, your assistant may have attached it as a file called "Pasted text" instead of putting it in the box. Wait a moment after pasting, then press Enter. If pressing Enter does nothing, press it again. You will know it was sent when your assistant starts answering.</li>
+  <li>The Copy button says copying did not work: the text is selected under "Read the text first"; press Control+C, or Command+C on a Mac. If that fails too, open the plain-text link under it, select all and copy.</li>
   <li>The assistant asks you to log in: sign in or make a free account, then paste the block's text again.</li>
   <li>The assistant says the message is too long: a new conversation may not change its per-message limit. Keep your saved work and use the written-example route in the day-at-a-glance guide, or a tested campus-approved assistant with a helper. Do not remove evidence to make the prompt fit.</li>
   <li>Before changing conversations or tools, save your agent and workshop notes. In the new conversation, paste the latest agent, then say your current block and chosen course filename. Paste the previous answer from your notes before requesting a before-and-after comparison, then paste the block text. If that answer is lost, label the comparison incomplete; do not reconstruct it as an actual result.</li>

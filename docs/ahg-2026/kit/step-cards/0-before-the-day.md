@@ -7,8 +7,13 @@ description: "A step card for the AHG 2026 Accessibility Agents workshop."
 
 # Step card 0: Before the day
 
-About 10 to 25 minutes, any time before 16 November, depending on your path.
-Everything starts at letitglow.app/ahg.
+About 10 to 25 minutes, any time before Monday 16 November, depending on your
+path. Everything starts at [letitglow.app/ahg](https://letitglow.app/ahg).
+
+The workshop runs 10:30 AM to 4:30 PM Mountain Time, in Matchless at the Hilton
+Denver City Center, in seven blocks. This card is the setup before block 1. On
+the day, block 1 repeats the ready check at 10:30, and the setup table outside
+the room opens at 10:00.
 
 ## What you will have at the end
 
@@ -17,14 +22,15 @@ saying so. If public sharing is approved, you will also have shared a practice
 agent. Otherwise keep it local and note how to seek approval.
 
 New to words like agent, skill or Copilot Chat? Read `glossary.md` in the kit,
-or at letitglow.app/ahg/kit, first. It is one page.
+or [the glossary online](https://letitglow.app/ahg/kit/glossary.md), first. It is one page.
 
 ## Choose your path
 
 The day is the same on every path. Not sure? Take the browser path.
-letitglow.app/ahg/paths compares them. Choose an approved path now so you can
-stay in it during the exercises. `your-day-at-a-glance.md` in the kit shows
-where each block leads.
+[letitglow.app/ahg/paths](https://letitglow.app/ahg/paths) compares them.
+Choose an approved path now so you can stay in it during the exercises.
+[Your day at a glance](https://letitglow.app/ahg/kit/your-day-at-a-glance.md),
+also in the kit, shows where each block leads.
 
 - The browser path: nothing to install. ChatGPT, Copilot on github.com, Claude,
   Gemini or your campus assistant, in any browser.
@@ -47,20 +53,26 @@ agent local until approval is confirmed.
    allows it. If GitHub asks you to set up two-factor sign-in, choose the option
    that works best with your screen reader or phone; GitHub Mobile and an
    authenticator app both work.
-2. Answer the five-minute survey at letitglow.app/ahg/survey: your name, email
-   and GitHub username, your path, what your laptop and campus allow, and
-   anything we should have ready for you.
+2. Answer the five-minute survey at
+   [letitglow.app/ahg/survey](https://letitglow.app/ahg/survey): your name and
+   registration email, your path, what your laptop and campus allow, and
+   anything we should have ready for you. A GitHub username is optional.
 
 ### In a browser
 
-1. Open your assistant in a new tab and sign in: chatgpt.com,
-   github.com/copilot, claude.ai, gemini.google.com, or m365copilot.com with
-   your work account. Sign in even if the assistant lets you start without it:
+1. Open your assistant in a new tab and sign in:
+   [chatgpt.com](https://chatgpt.com),
+   [github.com/copilot](https://github.com/copilot),
+   [claude.ai](https://claude.ai),
+   [gemini.google.com](https://gemini.google.com), or
+   [m365copilot.com](https://m365copilot.com) with your work account. Sign in even if the assistant lets you start without it:
    ChatGPT stops after a message or two without an account.
 2. Optional, and a good habit: turn off training. In ChatGPT, open your profile
    menu, then Settings, then Data controls, and turn off "Improve the model for
-   everyone". letitglow.app/ahg/paths has the steps for the others.
-3. In another tab, open letitglow.app/ahg/assistant. Under "Block 1: the ready
+   everyone". [letitglow.app/ahg/paths](https://letitglow.app/ahg/paths) has
+   the steps for the others.
+3. In another tab, open
+   [letitglow.app/ahg/assistant](https://letitglow.app/ahg/assistant). Under "Block 1: the ready
    check", press the Copy button. A message under the button says it is copied.
 4. Switch to your assistant's tab. Control+Tab moves through tabs; repeat it
    until you reach your assistant, or choose its tab by name. Move to the
@@ -70,7 +82,7 @@ agent local until approval is confirmed.
    to save", press "Download this version", then reopen practice-SKILL.md and
    confirm its seven headings in the assistant.
 5. If public sharing is approved, share your practice agent. Open
-   letitglow.app/ahg/share, choose "My practice agent", press "Fill in the
+   [letitglow.app/ahg/share](https://letitglow.app/ahg/share), choose "My practice agent", press "Fill in the
    practice template", and press "Open the share form on GitHub". On GitHub,
    sign in if asked, select the privacy check box at the end of the form, and
    press "Submit new issue". If sharing is not approved, keep the saved practice
@@ -78,17 +90,24 @@ agent local until approval is confirmed.
 
 ### In VS Code on your computer
 
-1. Install VS Code from code.visualstudio.com. On Windows it installs without
+1. Install VS Code from
+   [code.visualstudio.com](https://code.visualstudio.com). On Windows it installs without
    administrator rights. You need version 1.143 or later.
 2. Open VS Code. Open the Accounts menu, at the bottom of the bar on the left,
    and sign in with GitHub. Copilot Free turns on by itself for an account with
    no Copilot plan.
 3. Import the AHG 2026 profile: open File, then Preferences, then Profiles. Open
    the menu on the New Profile button, choose Import Profile, paste the profile
-   address from letitglow.app/ahg, and choose Create. It makes the text larger
-   and turns on screen reader support.
-4. Download the agent kit from letitglow.app/ahg and unzip it. Open the folder
-   in VS Code: File, then Open Folder.
+   address, and choose Create. Copy the address from the
+   [AHG 2026 page, letitglow.app/ahg](https://letitglow.app/ahg), where it is
+   printed in full under "For both VS Code paths"; it ends in
+   ahg-2026.code-profile. It makes the text larger
+   and turns on screen reader support. If pasting the address does not work,
+   [download the AHG 2026 profile file](https://letitglow.app/workshop/ahg-2026/ahg-2026.code-profile),
+   choose Select File instead of pasting, pick the downloaded file, and choose
+   Create.
+4. Download [the agent kit](https://letitglow.app/ahg/kit.zip) and unzip it.
+   Open the folder in VS Code: File, then Open Folder.
 5. If a banner says Restricted Mode, choose Manage, then Trust. It is the
    workshop kit, and Copilot cannot work on its files until you trust it.
 6. Open Copilot Chat: Control+Alt+I on Windows, or Control+Command+I on a Mac.
@@ -96,16 +115,18 @@ agent local until approval is confirmed.
    my-agent/history. Approve only that expected write, then reopen the file and
    confirm its seven headings. If saving fails, setup needs a hand.
 7. If public sharing is approved, share your practice agent. Open
-   letitglow.app/ahg/share in your browser, choose "My practice agent", choose
+   [letitglow.app/ahg/share](https://letitglow.app/ahg/share) in your browser,
+   choose "My practice agent", choose
    the file my-agent/SKILL.md from the kit, and press "Open the share form on
    GitHub". On GitHub, select the privacy check box at the end of the form and
    press "Submit new issue".
 
 ### In VS Code for the Web
 
-1. Download the agent kit from letitglow.app/ahg and unzip it. On Windows, open
+1. Download [the agent kit](https://letitglow.app/ahg/kit.zip) and unzip it.
+   On Windows, open
    the zip and choose Extract all. On a Mac, open the zip.
-2. In Chrome or Edge, go to vscode.dev. Safari and Firefox cannot open a folder
+2. In Chrome or Edge, go to [vscode.dev](https://vscode.dev). Safari and Firefox cannot open a folder
    from your laptop.
 3. Choose Open Folder, and pick the ahg-2026-agent-kit folder. Your browser asks
    whether vscode.dev may see the files, and later whether it may save changes.
@@ -138,7 +159,8 @@ AI or an account.
 ## Your win
 
 You are set up, and your practice is either shared or safely kept for later.
-Bring your chosen path and this card to block 1.
+Bring your chosen path and this card to block 1, Why we are here, at 10:30 on
+Monday 16 November.
 
 ## Sources
 

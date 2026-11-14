@@ -7,7 +7,9 @@ description: "A step card for the AHG 2026 Accessibility Agents workshop."
 
 # Step card 4: Ground it
 
-Block 4 of 7, 1:15 to 2:05.
+Block 4 of 7, 1:15 to 2:05 Mountain Time. Before this: block 3, Your agent at
+work, and lunch. Next: a break, 2:05 to 2:15, then block 5, Build the office, at
+2:15.
 
 ## Where we are
 
@@ -30,8 +32,11 @@ Bring version 2 and the actual first answer from your workshop notes.
 ### In a browser
 
 1. In the same conversation, paste the text for "Block 4: ground it" from
-   letitglow.app/ahg/assistant, and press Enter. It carries every course file's
-   checker report.
+   [letitglow.app/ahg/assistant](https://letitglow.app/ahg/assistant), and press Enter. It carries every course file's
+   checker report. If the message box sounds empty after pasting, your
+   assistant has attached the long text as "Pasted text". Wait a moment after
+   pasting. If pressing Enter does nothing, press it again. You will know it
+   was sent when your assistant starts answering.
 2. Use the same file as this morning.
 3. Your agent answers again from that file's checker report: GLOW's audit for
    the documents, axe-core for the web page.
@@ -54,12 +59,13 @@ Bring version 2 and the actual first answer from your workshop notes.
 
 1. Open the syllabus in Word, choose Review, then Check Accessibility, and paste
    the results into the chat with your agent. Same skill, different checker.
-2. The course announcement is online at letitglow.app/ahg/site. Run
+2. The course announcement is online at
+   [letitglow.app/ahg/site](https://letitglow.app/ahg/site). Run
    Accessibility Insights FastPass on it and compare with its checker report.
 
 ### Then make the next version, in a browser
 
-1. Return to letitglow.app/ahg/assistant. Under block 4, press "Copy the review
+1. Return to [letitglow.app/ahg/assistant](https://letitglow.app/ahg/assistant). Under block 4, press "Copy the review
    text for block 4", then paste it in the same assistant conversation and press
    Enter.
 2. Read the twelve Yes or Not yet lines, then the one change it suggests and
@@ -104,7 +110,7 @@ not guarantee correctness. Separate confirmed findings from suggested checks and
 unverified observations. Keep version 3 for the team in block 5 at 2:15, after
 the 2:05 break.
 
-## On Monday
+## Back at work
 
 Before you ask any AI about a document, run a checker and give it the results:
 Word's, PowerPoint's or Acrobat's own checker, Accessibility Insights, or axe.

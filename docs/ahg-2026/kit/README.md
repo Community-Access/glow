@@ -18,14 +18,16 @@ own assistive technology, including a braille display, remains welcome.
 ## Three paths into the same day
 
 Every path leads to an agent, a team report and a plan. Sharing on GitHub is
-optional until public sharing is approved. letitglow.app/ahg/paths compares the
-paths; `your-day-at-a-glance.md` maps the seven stops.
+optional until public sharing is approved.
+[letitglow.app/ahg/paths](https://letitglow.app/ahg/paths) compares the paths;
+[your day at a glance](your-day-at-a-glance.md) maps the seven stops.
 
 Use only campus-approved tools and data. If AI use or public sharing is not
 approved, use the worked examples in Word or on paper with a helper and keep
 your work local. A browser is not a way around campus policy.
 
-- In a browser: no kit needed. Open letitglow.app/ahg/assistant, copy each
+- In a browser: no kit needed. Open
+  [letitglow.app/ahg/assistant](https://letitglow.app/ahg/assistant), copy each
   block's text, and paste it into ChatGPT, Copilot on github.com, Claude, Gemini
   or your campus assistant. The same texts are in this kit, in `any-assistant/`.
   No public directory listing or external connector is needed for this workshop
@@ -66,6 +68,12 @@ key and every expected result in words.
 | 5. Build the office   | 2:15  | /run-the-office, then /review-my-agent    | Your agent in a team, across the whole course, and version 4                |
 | 6. Share it           | 3:05  | letitglow.app/ahg/share, only if approved | A confirmed contribution, or a reviewed local copy and permission follow-up |
 | 7. Take it home       | 3:40  | /my-30-day-plan                           | A 30-day plan for your campus                                               |
+
+Times are Mountain Time, Monday 16 November, in Matchless at the Hilton Denver
+City Center. Lunch is 12:15 to 1:15 and the break 2:05 to 2:15. Late in block 6
+the presenter shows a reviewed agent in ChatGPT with GLOW's tools; you only
+watch. After block 7: the commitment wall at 4:15, the session evaluation at
+4:25, and the day ends at 4:30.
 
 ## What is in this folder
 

@@ -11,11 +11,16 @@ use private documents. Braille production is not required.
    Extract all files to a new writable folder so you do not overwrite an earlier
    run.
 2. Install and open [VS Code](https://code.visualstudio.com) if your institution
-   permits it. Sign in with your approved GitHub account through Accounts. Use
-   File, Open Folder to open the extracted `ahg-2026-agent-kit` folder, not the
-   ZIP or its parent. Trust only this reviewed workshop folder if Restricted
-   Mode prevents access. If Copilot access or writes are unavailable, record
-   Blocked.
+   permits it. Sign in with your approved GitHub account through Accounts.
+   Import the AHG 2026 profile: open File, then Preferences, then Profiles; open
+   the menu on the New Profile button, choose Import Profile, paste
+   `https://letitglow.app/workshop/ahg-2026/ahg-2026.code-profile`, and choose
+   Create. If pasting the address does not work, [download the profile
+   file](https://letitglow.app/workshop/ahg-2026/ahg-2026.code-profile), choose
+   Select File instead, pick the downloaded file and choose Create. Use File,
+   Open Folder to open the extracted `ahg-2026-agent-kit` folder, not the ZIP or
+   its parent. Trust only this reviewed workshop folder if Restricted Mode
+   prevents access. If Copilot access or writes are unavailable, record Blocked.
 3. In Explorer, confirm you can see `my-agent`, `sample-course` and `.github`.
    Open Copilot Chat with Control+Alt+I on Windows or Control+Command+I on a
    Mac. Choose Agent mode if available; the mode must permit the expected

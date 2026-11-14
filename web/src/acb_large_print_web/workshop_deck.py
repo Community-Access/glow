@@ -880,11 +880,11 @@ def build_slides(ctx: DeckContext) -> list[Slide]:
             links=(_card(7), ("Putting it to work in your office", _kit("write-your-own-agent.md"))),
         ),
         Slide(
-            id="monday", section="Close", kicker="With tools you already have", title="On Monday",
+            id="monday", section="Close", kicker="With tools you already have", title="Back at work",
             blocks=(
                 Table(
-                    caption="What you learned, and what you can use it with on Monday",
-                    headers=("You learned", "Monday, with"),
+                    caption="What you learned, and what you can use it with back at work",
+                    headers=("You learned", "Back at work, with"),
                     rows=(
                         ("Writing an agent", "Your campus-approved AI assistant"),
                         ("Grounding it", "Office and Acrobat checkers, Accessibility Insights, axe"),

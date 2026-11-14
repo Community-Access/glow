@@ -7,35 +7,65 @@ description: "The seven workshop stops, where to work, and what to keep."
 
 # Your day at a glance
 
-Choose one campus-approved path. Times are Mountain Time.
+Accessibility Agents, at Accessing Higher Ground: Monday 16 November 2026,
+10:30 AM to 4:30 PM Mountain Time, in Matchless at the Hilton Denver City
+Center. The setup table outside the room opens at 10:00. Everything for the
+day starts at [letitglow.app/ahg](https://letitglow.app/ahg).
+
+What the day is for: you write a small AI helper, an agent, for one
+accessibility task from your job, test it, ground it in checker evidence, put
+it in a team, share it if approved, and leave with a 30-day plan. Choose one
+campus-approved path and stay on it.
 
 ## Where to work
 
-- Browser: keep the workshop page at letitglow.app/ahg/assistant and your
+- Browser: keep the workshop page at
+  [letitglow.app/ahg/assistant](https://letitglow.app/ahg/assistant) and your
   assistant in separate tabs. Copy each prompt to the same conversation.
   Save each complete agent version on the workshop page: choose the matching
   "Version to save", then "Download this version". Keep agent-v1.md through
   agent-v4.md without replacing
   an earlier file. If asked to replace it, choose Cancel and use a different
-  name or folder.
+  name or folder. A long text may arrive in your assistant as an attached
+  file called "Pasted text", with the message box still empty. Wait a moment
+  after pasting. If pressing Enter does nothing, press it again. You will know
+  it was sent when your assistant starts answering. Wait until your
+  assistant has finished answering before you paste the next block. If Enter
+  does nothing, it is probably still writing; wait, then press Enter again.
 - VS Code on your computer or at vscode.dev: keep the kit open and use
   Copilot Chat. Your working agent is in `my-agent/SKILL.md`; earlier
   versions are in `my-agent/history/`. Reopen the saved files to check them.
-- Sharing: use letitglow.app/ahg/share in block 6 only when public sharing
-  is approved. Otherwise keep a reviewed copy and a next step locally.
+- Sharing: use [letitglow.app/ahg/share](https://letitglow.app/ahg/share) in
+  block 6 only when public sharing is approved. Otherwise keep a reviewed copy
+  and a next step locally.
 
 ## The seven stops
 
-1. 10:30, ready check: set up your chosen path; a helper can get you unstuck.
-2. 11:05, design: answer the questions and save your agent, version 1.
-3. 11:45, try: test it without a report, review one change and save version 2.
-4. 1:15, ground: use the same file's evidence, verify the answer and save
-   version 3. Lunch is at 12:15.
-5. 2:15, office: add your agent to a team, review the report and save
-   version 4. The break starts at 2:05.
-6. 3:05, share: review privacy and permission; share or record a later step.
-7. 3:40, plan: make a draft, check it with a partner and save your final
-   30-day plan. The commitment wall opens at 4:15.
+1. 10:30, block 1, Why we are here: the ready check. Set up your chosen
+   path; a helper can get you unstuck.
+2. 11:05, block 2, Design your agent: answer the questions and save your
+   agent, version 1.
+3. 11:45, block 3, Your agent at work: test it without a report, review one
+   change and save version 2. Before lunch, answer the two-question check-in
+   at [letitglow.app/ahg/check-in](https://letitglow.app/ahg/check-in).
+
+   Lunch, 12:15 to 1:15.
+4. 1:15, block 4, Ground it: use the same file's evidence, verify the answer
+   and save version 3.
+
+   Break, 2:05 to 2:15.
+5. 2:15, block 5, Build the office: add your agent to a team, review the
+   report and save version 4.
+6. 3:05, block 6, Share it: review privacy and permission; share or record a
+   later step. Late in the block, watch the presenter capstone: a reviewed
+   agent in ChatGPT with GLOW's tools
+   ([the capstone guide](https://letitglow.app/ahg/capstone)).
+7. 3:40, block 7, Take it home: make a draft, check it with a partner and
+   save your final 30-day plan.
+
+Then: the commitment wall at 4:15
+([letitglow.app/w/ahg-2026/11](https://letitglow.app/w/ahg-2026/11)), the
+AHG session evaluation at 4:25, and the day ends at 4:30.
 
 Each step card has the detailed keys, expected result and recovery options.
 Keep earlier versions. Never paste private information into an AI, and
@@ -84,7 +114,7 @@ works, do not bypass campus policy.
 
 Use Maria's alternate-format-planner example in the kit's `examples`
 folder, or its online page at
-letitglow.app/ahg/kit/examples/maria-alternate-format-planner.md.
+[letitglow.app/ahg/kit/examples/maria-alternate-format-planner.md](https://letitglow.app/ahg/kit/examples/maria-alternate-format-planner.md).
 Download or print it before the day if you need to work offline.
 Use Word, a plain-text editor or paper. Label all outputs "written-example
 exercise"; do not claim that you ran an assistant or an independent team.

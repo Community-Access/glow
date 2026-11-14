@@ -7,7 +7,9 @@ description: "A step card for the AHG 2026 Accessibility Agents workshop."
 
 # Step card 7: Take it home
 
-Block 7 of 7, 3:40 to 4:15.
+Block 7 of 7, 3:40 to 4:15 Mountain Time. Before this: block 6, Share it.
+Next: the commitment wall at 4:15, the AHG session evaluation at 4:25, and the
+day ends at 4:30.
 
 ## Where we are
 
@@ -30,7 +32,7 @@ agent, workshop notes and sharing or deferral decision.
 ### In a browser
 
 1. In the same conversation, paste the text for "Block 7: take it home" from
-   letitglow.app/ahg/assistant, and press Enter.
+   [letitglow.app/ahg/assistant](https://letitglow.app/ahg/assistant), and press Enter.
 2. Answer eight short questions: workflow, handoff, partner, review safeguard,
    approved tools and data, first step, approval, and a measurable 30-day check.
 3. Your assistant gives your plan back in a box with a Copy button. Copy it into
@@ -55,8 +57,11 @@ stay pending, with a role and next action to confirm them.
 1. Correct the unclear handoff and save the final plan. In VS Code, ask Copilot
    to update my-30-day-plan.md or edit and save it yourself. In a browser,
    update the draft document or email.
-2. At 4:15, open letitglow.app/w/ahg-2026/11 in your browser and add your
-   one-sentence commitment for the wall. It appears with no name on it.
+2. At 4:15, open [letitglow.app/w/ahg-2026/11](https://letitglow.app/w/ahg-2026/11)
+   in your browser and add your one-sentence commitment for the wall. It
+   appears with no name on it.
+3. At 4:25, the last five minutes belong to the AHG session evaluation. The
+   conference proctor hands it out; it shapes next year's conference.
 
 ## You are on track if
 
@@ -130,14 +135,15 @@ No approved AI tool yet? Use the same eight questions and the worked examples in
 Word or on paper. A workflow map and an approval request are useful first steps;
 do not bypass campus policy to finish the exercise.
 
-## On Monday
+## Back at work
 
 To write your next agent on your own, follow `write-your-own-agent.md` in the
 kit: eight steps, from a blank file to a shared agent, in any assistant. Keep
 the kit. Use the instructions after today with a campus-approved assistant and
 the checkers you already have; capabilities and limits differ. To keep using the
 full Accessibility Agents project on your own laptop, read
-accessibility-agents.md in the kit, or community-access.org/start.html for
+accessibility-agents.md in the kit, or
+[community-access.org/start.html](https://community-access.org/start.html) for
 step-by-step setup in each AI app. Help is at <jeffbis@arizona.edu>.
 
 ## Sources

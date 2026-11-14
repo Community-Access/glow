@@ -35,10 +35,13 @@ application is outside this demonstration.
 
 ## 2. Files, addresses and preparation order
 
-Use the new slides titled "Your coworkers can use it, too", "Our PSY 101
+When: late in block 6, Share it (3:05 to 3:40 Mountain Time, Monday 16
+November), for about eight minutes, before block 7, Take it home, at 3:40.
+
+Use the slides titled "Your coworkers can use it, too", "Our PSY 101
 agent, inside ChatGPT", "The tool checked it. A person still decides." and
-"From this demonstration to your department". They follow "Shared agents,
-together" and precede "Take it home".
+"From this demonstration to your department" (slides 31 to 34). They follow
+"Shared agents, together" and precede "Take it home".
 
 The following links identify the demonstration's public resources:
 
@@ -99,22 +102,29 @@ labels actually present; do not repeatedly change security settings to find
 a missing control.
 
 1. Before sharing your screen, open ChatGPT's Plugins page.
-2. Select the plus button, then "Add custom MCP server".
+2. Select the button named "Add", at the top right. It opens a menu with
+   "Create plugin", "Upload plugin archive" and "Add custom MCP server".
+   Choose "Add custom MCP server".
 3. Enter the name `GLOW Accessibility - AHG Demo`.
 4. Enter the description `Read-only PSY 101 accessibility checks for the AHG presenter demonstration`.
 5. Choose the remote connection and enter
    `https://letitglow.app/a11y/mcp` as the HTTPS endpoint. Do not enter the
    GLOW home page, the course URL or localhost.
-6. For the currently public endpoint, select no authentication if offered.
-   If it now requests authentication, stop and confirm the server's actual
-   requirements with its owner; do not enter unrelated credentials.
-7. Review the risk warning and discovered tools before accepting.
-8. Select "Create as a plugin", then install or enable the resulting
-   connection for the presenter account if prompted.
+6. Authentication is a combo box with three choices: OAuth (the default),
+   "No authentication", and "OAuth or no authentication". For the currently
+   public endpoint, choose "No authentication". If the server now requires
+   authentication, stop and confirm its actual requirements with its owner;
+   do not enter unrelated credentials.
+7. Review the risk warning and discovered tools, then check
+   "I understand and want to continue".
+8. Select "Create as a plugin", then "Connect GLOW Accessibility - AHG Demo".
 9. Confirm these tool names appear: `check_heading_structure`,
    `check_link_text` and `check_contrast`.
 10. Review all other exposed tools as well. Limit enabled tools to those
-    three if the workspace offers action controls. Otherwise do not describe
+    three if the workspace offers action controls. As checked on 14 November
+    2026, the plugin's settings page has no per-tool controls, only a
+    Permission setting ("Allow low-risk"), so the next sentence applies.
+    Otherwise do not describe
     the entire connection as technically read-only: the server also exposes
     document-processing and alt-text-writing capabilities.
 11. Start a new chat. Type `@` and select the GLOW connection. Confirm it is

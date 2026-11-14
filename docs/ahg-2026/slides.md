@@ -905,13 +905,13 @@ In the kit and on the site:
 
 ---
 
-## 37. On Monday
+## 37. Back at work
 
 Block 7 of 7, slide 3 of 3 - With tools you already have
 
-What you learned, and what you can use it with on Monday
+What you learned, and what you can use it with back at work
 
-| You learned | Monday, with |
+| You learned | Back at work, with |
 |---|---|
 | Writing an agent | Your campus-approved AI assistant |
 | Grounding it | Office and Acrobat checkers, Accessibility Insights, axe |
