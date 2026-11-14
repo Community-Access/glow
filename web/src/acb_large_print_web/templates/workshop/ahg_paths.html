@@ -4,6 +4,11 @@
 
 {% block content %}
 <p>
+  Use this page before the day, with step card 0: choose a path, set it up,
+  and run the ready check. Then, on Monday 16 November at 10:30 Mountain
+  Time, block 1 starts in Matchless and you follow your path all day.
+</p>
+<p>
   The day is the same whichever path you take: the same seven blocks, the
   same learning goals: an agent, an evidence-based team report and a plan.
   Share publicly only if approved; otherwise keep your reviewed work locally.
@@ -96,13 +101,14 @@
 </ol>
 
 <h3 id="chatgpt">ChatGPT</h3>
-<p>The primary browser rehearsal path. A full-day run with your account tier
-and assistive technology still needs to be recorded; opening this page is
-not proof that all exercises work.</p>
+<p>The assistant the browser path was rehearsed in. Accounts and screen
+reader setups differ, so run the block 1 ready check on your own account
+and laptop before the day.</p>
 <ol>
-  <li>Go to chatgpt.com and choose "Sign up for free", or "Log in" if you have an account.</li>
+  <li>Go to <a href="https://chatgpt.com">chatgpt.com</a> and choose "Sign up for free", or "Log in" if you have an account.</li>
   <li>To turn off training: open your profile menu, then Settings, then Data controls, and turn off "Improve the model for everyone".</li>
   <li>Use an ordinary chat, not a Temporary Chat, so your conversation is still there after lunch.</li>
+  <li>A long block text may arrive as an attached file called "Pasted text", with the message box still empty; your screen reader may call the box empty. Wait a moment after pasting, then press Enter. If pressing Enter does nothing, press it again. You will know it was sent when your assistant starts answering.</li>
 </ol>
 <p>Free account limits can interrupt the exercises. Save your latest agent;
 a helper can help you continue with a written example or another
@@ -115,26 +121,26 @@ listing or connector is required for this path.</p>
 <h3 id="copilot-web">GitHub Copilot on github.com</h3>
 <p>Uses the same GitHub account you share with, so there is one account for the whole day.</p>
 <ol>
-  <li>Go to github.com/copilot and sign in to GitHub. Copilot Free needs no other setup.</li>
+  <li>Go to <a href="https://github.com/copilot">github.com/copilot</a> and sign in to GitHub. Copilot Free needs no other setup.</li>
   <li>Copilot Free has a monthly allowance. If it runs out during the day, save your latest agent and use another campus-approved assistant, or a written example with a helper.</li>
 </ol>
 
 <h3 id="claude">Claude</h3>
 <ol>
-  <li>Go to claude.ai and sign up or log in.</li>
+  <li>Go to <a href="https://claude.ai">claude.ai</a> and sign up or log in.</li>
   <li>To turn off training: open the menu with your name, then Settings, then Privacy, and turn off "Help improve Claude".</li>
   <li>Free-plan limits may interrupt the day. Save your agent and notes before switching to another approved assistant, or use the written-example route. Limits and menus may change.</li>
 </ol>
 
 <h3 id="gemini">Gemini</h3>
 <ol>
-  <li>Go to gemini.google.com and sign in with a Google account.</li>
+  <li>Go to <a href="https://gemini.google.com">gemini.google.com</a> and sign in with a Google account.</li>
   <li>To stop chats being kept: open Settings and help, then Activity, and turn off Keep Activity.</li>
 </ol>
 
 <h3 id="m365">Microsoft 365 Copilot Chat, or your campus assistant</h3>
 <ol>
-  <li>Go to m365copilot.com and sign in with your work or school account.</li>
+  <li>Go to <a href="https://m365copilot.com">m365copilot.com</a> and sign in with your work or school account.</li>
   <li>With a work or school account, enterprise data protection applies, and your campus may log what you type. That is why the rule is the same everywhere: nothing private, ever.</li>
   <li>If your campus has its own assistant, use it the same way: one conversation, paste each block's text.</li>
 </ol>
@@ -149,10 +155,10 @@ listing or connector is required for this path.</p>
 </p>
 <h3 id="vscode-setup">Set it up: about 25 minutes</h3>
 <ol>
-  <li>Make a free GitHub account at github.com, if you do not have one.</li>
-  <li>Install VS Code from code.visualstudio.com. On Windows it installs without administrator rights. You need version 1.143 or later; Help, then About, shows yours.</li>
+  <li>Make a free GitHub account at <a href="https://github.com/signup">github.com</a>, if you do not have one.</li>
+  <li>Install VS Code from <a href="https://code.visualstudio.com">code.visualstudio.com</a>. On Windows it installs without administrator rights. You need version 1.143 or later; Help, then About, shows yours.</li>
   <li>Sign in: in VS Code, open the Accounts menu at the bottom of the left-hand bar, and choose to sign in with GitHub. An account with no Copilot plan is put on Copilot Free automatically.</li>
-  <li>Import the AHG 2026 profile: open File, then Preferences, then Profiles. Open the menu on the New Profile button, choose Import Profile, paste <code>{{ profile_url }}</code>, and choose Create. It makes the text larger and turns on screen reader support.</li>
+  <li>Import the AHG 2026 profile: open File, then Preferences, then Profiles. Open the menu on the New Profile button, choose Import Profile, paste <code>{{ profile_url }}</code>, and choose Create. It makes the text larger and turns on screen reader support. If pasting the address does not work, <a href="{{ url_for('workshop.ahg_profile') }}">download the AHG 2026 profile file</a>, choose Select File instead, and pick the downloaded file.</li>
   <li>Download <a href="{{ url_for('workshop.ahg_kit_zip') }}">the agent kit</a>, unzip it, and open the folder: File, then Open Folder.</li>
   <li>If a banner says Restricted Mode, choose Manage, then Trust. It is the workshop kit, and Copilot cannot work on its files until you trust it.</li>
   <li>Open Copilot Chat: Control+Alt+I on Windows, or Control+Command+I on a Mac. Type <kbd>/ready-check</kbd> and press Enter. Confirm command discovery, then allow the expected practice-file write and reopen it. If the command is missing, ask a helper before continuing.</li>
@@ -177,9 +183,9 @@ listing or connector is required for this path.</p>
 </p>
 <h3 id="vscode-web-setup">Set it up: about 15 minutes</h3>
 <ol>
-  <li>Make a free GitHub account at github.com, if you do not have one.</li>
+  <li>Make a free GitHub account at <a href="https://github.com/signup">github.com</a>, if you do not have one.</li>
   <li>Download <a href="{{ url_for('workshop.ahg_kit_zip') }}">the agent kit</a> and unzip it. On Windows, open the zip and choose Extract all. On a Mac, open the zip and it unzips itself.</li>
-  <li>In Chrome or Edge, go to vscode.dev.</li>
+  <li>In Chrome or Edge, go to <a href="https://vscode.dev">vscode.dev</a>.</li>
   <li>Choose Open Folder, and pick the unzipped ahg-2026-agent-kit folder. The browser asks whether vscode.dev may see the files, and later whether it may save changes. Allow both: that is how your agent is saved into the kit.</li>
   <li>Sign in: open the Accounts menu at the bottom of the left-hand bar, and choose to sign in with GitHub.</li>
   <li>Open Copilot Chat: Control+Alt+I on Windows, or Control+Command+I on a Mac. Type <kbd>/ready-check</kbd> and press Enter. Confirm that the command runs, writes the practice copy, and that you can reopen that saved file. If commands or writes are unavailable, use an approved browser assistant or the written-example route with a helper.</li>
@@ -203,13 +209,14 @@ solve a per-message size limit.</p>
   <li>From the browser path to VS Code: complete the VS Code ready check first. Preserve any existing agent in <code>my-agent/history/</code>, then paste your latest complete agent into <code>my-agent/SKILL.md</code> and save it. Copy your exercise notes into <code>my-agent/workshop-notes.md</code>. Tell Copilot the current block and filename before resuming.</li>
   <li>Copilot allowance used up: use another campus-approved assistant or the written-example route, from the same block.</li>
 </ul>
-<h2 id="validation">What still needs a walkthrough</h2>
-<p>These are documented paths, not a guarantee about every account or assistive
-technology. Validate a complete day, including long prompts, saving, recovery
-and optional sharing, on the setup you will use. NVDA, JAWS, VoiceOver,
-keyboard-only and zoom walkthroughs require actual observations. Helpers
-should record the environment and any blocked step, not infer a pass from
-automated page checks.</p>
+<h2 id="validation">Test your own setup before the day</h2>
+<p>Every account, browser and screen reader behaves a little differently, so
+nothing on this page can promise your exact setup works. On the laptop you
+will bring, run the ready check, save and reopen the practice file, and paste
+one long block text. If a step does not work with your screen reader or
+settings, write to <a href="mailto:jeffbis@arizona.edu">jeffbis@arizona.edu</a>
+or come to the setup table from 10:00 on the day. Helpers note what was
+blocked and find you a route that works.</p>
 
 <h2 id="rules">The two rules, on every path</h2>
 <ol>

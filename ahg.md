@@ -598,7 +598,7 @@ These cover the opening and every format of the deck.
 
 | ID | Steps | Expected | Result |
 |---|---|---|---|
-| Deck-01 | Open `/workshop/session/ahg-2026/deck` | 35 slides; first title "Accessibility Agents"; subtitle is the program title word for word | |
+| Deck-01 | Open `/workshop/session/ahg-2026/deck` | 39 slides; first title "Accessibility Agents"; subtitle is the program title word for word | |
 | Deck-02 | Move through the deck with arrow keys, Page Up and Page Down, Home and End | Each change moves focus to the slide heading and is announced politely | |
 | Deck-03 | Turn speaker notes on and off with the `n` key and the button | Notes show and hide; state is announced | |
 | Deck-04 | Use "Read as one page" | The deck becomes one document with one heading per slide | |

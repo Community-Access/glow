@@ -27,6 +27,8 @@
   .skip-link:focus { top: 0.5rem; }
   header { border-bottom: 2px solid var(--line); padding: 0.75rem 0; }
   header p { margin: 0; font-weight: 700; }
+  .ahg-nav { list-style: none; padding: 0; margin: 0.5rem 0 0; display: flex; flex-wrap: wrap; gap: 0.25rem 1.25rem; }
+  .ahg-nav li + li { margin-top: 0; }
   main { padding: 0.5rem 0 3rem; }
   main:focus { outline: none; }
   h1 { font-size: 2.2rem; line-height: 1.2; margin: 1.25rem 0 1rem; }
@@ -74,6 +76,16 @@
 <header>
   <div class="wrap">
     <p><a href="{{ site }}/ahg"{% if ahg_home %} aria-current="page"{% endif %}>AHG 2026: Accessibility Agents</a></p>
+    {#- The same five places on every conference page, so a person who lands
+        on any of them can reach the rest without going home first. -#}
+    {%- set here = request.path.rstrip('/') if request else '' %}
+    <nav aria-label="Workshop pages">
+      <ul class="ahg-nav">
+        {%- for href, label in (("/ahg/paths", "Choose a path"), ("/ahg/assistant", "Browser path"), ("/ahg/kit", "The kit"), ("/ahg/site", "Sample course"), ("/ahg/share", "Share your agent")) %}
+        <li><a href="{{ site }}{{ href }}"{% if here == href %} aria-current="page"{% endif %}>{{ label }}</a></li>
+        {%- endfor %}
+      </ul>
+    </nav>
   </div>
 </header>
 <main id="main" tabindex="-1">

@@ -8,7 +8,7 @@ description: "What the workshop is, who it is for, and what you leave with, in a
 # The workshop, in plain language
 
 Monday 16 November 2026, 10:30 to 4:30 Mountain Time, at Accessing Higher
-Ground in Denver.
+Ground in Denver: Matchless, at the Hilton Denver City Center.
 
 ## What it is
 
@@ -43,4 +43,4 @@ pending. The setup page walks you through it:
 Nothing private goes into any AI. A person checks everything an agent
 writes.
 
-Questions: jeffbis@arizona.edu.
+Questions: [jeffbis@arizona.edu](mailto:jeffbis@arizona.edu).

@@ -303,6 +303,17 @@ def test_the_profile_is_served_for_import(client):
     resp = client.get("/workshop/ahg-2026/ahg-2026.code-profile")
     assert resp.status_code == 200
     assert json.loads(resp.data)["name"] == "AHG 2026 Accessibility Agents"
+    # VS Code fetches the address from a browser renderer: no CORS header,
+    # "Failed to fetch" (participant report, 14 Nov 2026).
+    assert resp.headers.get("Access-Control-Allow-Origin") == "*"
+
+
+def test_printed_conference_addresses_are_https(client):
+    """Behind the TLS proxy url_for(_external) printed http://; people paste these."""
+    for page in ("/ahg", "/ahg/paths"):
+        body = client.get(page, base_url="http://letitglow.app").get_data(as_text=True)
+        assert "https://letitglow.app/workshop/ahg-2026/ahg-2026.code-profile" in body, page
+        assert "http://letitglow.app/" not in body, page
 
 
 def test_the_share_page_works_under_the_content_security_policy(client):
@@ -331,7 +342,8 @@ def test_the_conference_pages_open_without_a_consent_form():
 
     for path in ("/ahg", "/ahg/", "/AHG", "/ahg/capstone", "/ahg/capstone.docx", "/workshop/ahg-2026/ahg-2026.code-profile",
                  "/workshop/ahg-2026/kit.zip", "/workshop/ahg-2026/share",
-                 "/workshop/ahg-2026/step-cards/2-design-your-agent.docx"):
+                 "/workshop/ahg-2026/step-cards/2-design-your-agent.docx",
+                 "/workshop/session/ahg-2026/deck", "/workshop/session/ahg-2026/deck.pptx"):
         req = SimpleNamespace(path=path, cookies={}, headers={})
         assert consent_required(req) is False, path
     tool = SimpleNamespace(path="/audit/", cookies={}, headers={})
@@ -398,8 +410,12 @@ def test_the_conference_pages_carry_none_of_glows_chrome(client, path):
 
 def test_the_landing_page_marks_itself_current(client):
     body = client.get("/ahg").get_data(as_text=True)
-    assert 'aria-current="page"' in body
-    assert 'aria-current="page"' not in client.get("/ahg/kit").get_data(as_text=True)
+    assert '<a href="/ahg" aria-current="page">' in body
+    kit = client.get("/ahg/kit").get_data(as_text=True)
+    assert '<a href="/ahg" aria-current="page">' not in kit
+    # The workshop nav marks the page you are on, and only that one.
+    assert kit.count('aria-current="page"') == 1
+    assert '<a href="/ahg/kit" aria-current="page">' in kit
 
 
 def test_the_slides_open_without_the_consent_page(client):

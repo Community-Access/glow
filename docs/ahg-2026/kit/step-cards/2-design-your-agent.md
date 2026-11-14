@@ -7,7 +7,8 @@ description: "A step card for the AHG 2026 Accessibility Agents workshop."
 
 # Step card 2: Design your agent
 
-Block 2 of 7, 11:05 to 11:45.
+Block 2 of 7, 11:05 to 11:45 Mountain Time. Before this: block 1, the ready
+check. Next: block 3, Your agent at work, at 11:45.
 
 ## Where we are
 
@@ -33,19 +34,23 @@ is for block 6.
 
 ### In a browser
 
-1. On letitglow.app/ahg/assistant, under "Block 2: design your agent", press the
+1. On [letitglow.app/ahg/assistant](https://letitglow.app/ahg/assistant), under "Block 2: design your agent", press the
    Copy button.
 2. Switch to your assistant's tab. Control+Tab moves through tabs; repeat it
    until you reach your assistant, or choose its tab by name. Move to the
    message box, paste with Control+V on Windows or Command+V on a Mac, and press
-   Enter.
+   Enter. This text is long: ChatGPT and some others attach it as a file called
+   "Pasted text" and leave the message box empty, so your screen reader may say
+   the box is empty. Wait a moment after pasting. If pressing Enter does
+   nothing, press it again. You will know it was sent when your assistant
+   starts answering.
 3. Answer your assistant's questions one at a time: your role card and problem,
    then role, task, trusted guidance, output format, an example of a good answer
    and human review. Author credit is optional in the conversation; a helper can
    add it locally later. Borrow from the example whenever you like.
 4. Your assistant gives your agent back in a box with a Copy button. Press that
    Copy button.
-5. Return to letitglow.app/ahg/assistant. Under "Keep a copy of your agent",
+5. Return to [letitglow.app/ahg/assistant](https://letitglow.app/ahg/assistant). Under "Keep a copy of your agent",
    paste it into "Your agent to save", choose "Version 1: after block 2" under
    "Version to save", then press "Download this version". Reopen agent-v1.md,
    usually in Downloads, and check its complete text and version. Keep it; do
@@ -73,13 +78,13 @@ Your saved agent names one task, its input, its output and a reviewer role. You
 can find the file and explain that task in one sentence.
 
 To see a finished example first, open
-examples/maria-alternate-format-planner.md, or the same file at
-letitglow.app/ahg/kit.
+examples/maria-alternate-format-planner.md, or the same file online:
+[Maria's alternate-format planner](https://letitglow.app/ahg/kit/examples/maria-alternate-format-planner.md).
 
 ## If you are stuck
 
-Start from a ready-made agent at 11:45. Bring version 1 and choose one sample
-course filename. At letitglow.app/ahg/kit, under Ready-made agents, open the one
+Start from a ready-made agent, so you have a version 1 to bring to block 3 at
+11:45. At [letitglow.app/ahg/kit](https://letitglow.app/ahg/kit), under Ready-made agents, open the one
 nearest your card and press "Copy this file's text". In a browser, paste it into
 your assistant as your agent and save a local copy. In VS Code, paste it over
 my-agent/SKILL.md. Add your chosen public credit locally when you are ready.
@@ -93,7 +98,7 @@ Your agent exists. You wrote it in plain English, and it follows the same format
 as the open-source Accessibility Agents project. Keep version 1; next you will
 test it on one sample file.
 
-## On Monday
+## Back at work
 
 Writing an agent works in any AI assistant your campus allows: paste the whole
 agent file in as its instructions.

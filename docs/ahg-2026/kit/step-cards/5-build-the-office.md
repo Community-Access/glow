@@ -7,7 +7,8 @@ description: "A step card for the AHG 2026 Accessibility Agents workshop."
 
 # Step card 5: Build the office
 
-Block 5 of 7, 2:15 to 3:05.
+Block 5 of 7, 2:15 to 3:05 Mountain Time. Before this: block 4, Ground it, and
+the break. Next: block 6, Share it, at 3:05.
 
 ## Where we are
 
@@ -31,8 +32,12 @@ for it.
 ### In a browser
 
 1. In the same conversation, paste the text for "Block 5: build the office" from
-   letitglow.app/ahg/assistant, and press Enter. It is the longest text of the
-   day: the coordinator, eight specialists and every checker report.
+   [letitglow.app/ahg/assistant](https://letitglow.app/ahg/assistant), and press Enter. It is the longest text of the
+   day: the coordinator, eight specialists and every checker report. If the
+   message box sounds empty after pasting, your assistant has attached it as
+   "Pasted text". Wait a moment after pasting. If pressing Enter does nothing,
+   press it again. You will know it was sent when your assistant starts
+   answering.
 2. Your assistant says what is about to happen, then works through the course
    one file at a time, saying which specialists worked on each file.
 3. Read the team report. Find the section your agent wrote.
@@ -54,7 +59,11 @@ for it.
 
 ### Then make the next version, in a browser
 
-1. Return to letitglow.app/ahg/assistant. Under block 5, press "Copy the review
+Wait until your assistant has finished answering before you paste the next
+block. If Enter does nothing, it is probably still writing; wait, then press
+Enter again. The team report is the longest answer of the day.
+
+1. Return to [letitglow.app/ahg/assistant](https://letitglow.app/ahg/assistant). Under block 5, press "Copy the review
    text for block 5", then paste it in the same assistant conversation and press
    Enter.
 2. Read the twelve Yes or Not yet lines, then the one change it suggests and
@@ -103,7 +112,7 @@ You built part of an agent team today, and it worked through a whole course.
 Keep version 4; in block 6 you will review it for sharing permission and privacy
 at 3:05. Bring your reviewed version 4, not the practice template.
 
-## On Monday
+## Back at work
 
 Big jobs split into specialists and a coordinator. Start with one specialist;
 add the next when the first one earns its place.

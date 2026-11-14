@@ -77,6 +77,10 @@ CONSENT_EXEMPT_PREFIXES = (
     # The workshop slides and their downloads, linked from /ahg/slides. They
     # are reading material, and process nothing a visitor sends.
     "/workshop/deck",
+    # /ahg/slides redirects here, so the AHG deck and its downloads must be
+    # exempt too, or the "no consent page" slides link lands on the form.
+    # Only the deck: the wall, facilitator and activity pages still ask.
+    "/workshop/session/ahg-2026/deck",
     "/ahg",
     "/AHG",
     "/Ahg",

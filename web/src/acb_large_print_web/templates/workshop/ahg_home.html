@@ -21,6 +21,14 @@
   says what it is, who it is for and what you do, in about 150 words.
 </p>
 
+<h2 id="start-here">Where to start</h2>
+<ul>
+  <li>Before the day: <a href="#survey">answer the survey</a>, then <a href="#get-ready">choose a path and run the ready check</a>. Step card 0 has every click.</li>
+  <li>On the day, from 10:00: the setup table is outside Matchless. Block 1 starts at 10:30. <a href="#the-day">The day</a> lists all seven blocks and their times.</li>
+  <li>During a block: on the browser path, use <a href="{{ url_for('shortlinks.ahg_assistant') }}">the browser path page</a>; in VS Code, type the block's command. Each block has <a href="#step-cards">its own step card</a>.</li>
+  <li>Lost your place? <a href="{{ url_for('shortlinks.ahg_kit_file', rel='your-day-at-a-glance.md') }}">Your day at a glance</a> says what each block makes and how to resume.</li>
+</ul>
+
 <h2 id="what-you-will-do">What you will do</h2>
 <ol>
   <li>Design your own accessibility agent, in plain English, for a real problem from your job.</li>
@@ -60,14 +68,14 @@
   </li>
   <li>
     <a href="{{ url_for('shortlinks.ahg_paths') }}#vscode-web">VS Code for the Web</a>:
-    VS Code in Chrome or Edge at vscode.dev, with the kit opened from your
+    VS Code in Chrome or Edge at <a href="https://vscode.dev">vscode.dev</a>, with the kit opened from your
     laptop and nothing to install. About 15 minutes. Confirm commands and
     file saving work in the ready check; browser capabilities can differ.
   </li>
 </ul>
 <p>Finish setup on your chosen path:</p>
 <ol>
-  <li>If your path or approved sharing needs GitHub, make a free account at github.com, if you do not have one.</li>
+  <li>If your path or approved sharing needs GitHub, make a free account at <a href="https://github.com/signup">github.com</a>, if you do not have one.</li>
   <li>Run the ready check: block 1 on the browser path page, or <kbd>/ready-check</kbd> in Copilot Chat in VS Code. Save the practice file and reopen it yourself before setup is complete.</li>
   <li>
     If public sharing is approved, share your practice agent: open <a href="{{ url_for('workshop.ahg_share') }}?practice=1">the share page</a>,
@@ -94,7 +102,7 @@
 </p>
 
 <h2 id="the-day">The day</h2>
-<p>Times are Mountain Time. Each block has its own step card, its own Copilot command in VS Code, and its own text on the browser path. Keep <a href="{{ url_for('shortlinks.ahg_kit_file', rel='your-day-at-a-glance.md') }}">your day at a glance</a> open for the seven stops and where to work.</p>
+<p>Monday 16 November, in Matchless at the Hilton Denver City Center. Times are Mountain Time. Before lunch, answer the two-question <a href="{{ url_for('ahg_checkin.checkin_form') }}">check-in</a>, so the helpers know who to see first. Each block has its own step card, its own Copilot command in VS Code, and its own text on the browser path. Keep <a href="{{ url_for('shortlinks.ahg_kit_file', rel='your-day-at-a-glance.md') }}">your day at a glance</a> open for the seven stops and where to work.</p>
 <div class="table-scroll" role="region" aria-labelledby="schedule-caption" tabindex="0">
 <table>
   <caption id="schedule-caption">The workshop, 10:30 AM to 4:30 PM</caption>
@@ -159,8 +167,10 @@
 
 <h2 id="capstone">Presenter capstone: agents your team can use</h2>
 <p>
-  Watch the presenter use ChatGPT with GLOW's Model Context Protocol (MCP)
-  tools on the fictional PSY 101 announcement. Participants do not need to
+  Late in block 6, Share it (3:05 to 3:40), before block 7: watch the
+  presenter use ChatGPT with GLOW's Model Context Protocol (MCP)
+  tools on the fictional PSY 101 announcement. It shows how a team could use
+  a reviewed agent after today. Participants only watch: you do not need to
   configure a connection or buy a subscription.
   The <a href="{{ url_for('shortlinks.ahg_capstone') }}">complete capstone setup and rehearsal guide</a>
   includes exact prompts, the full sample HTML, expected results, recovery

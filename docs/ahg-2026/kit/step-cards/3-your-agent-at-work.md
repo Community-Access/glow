@@ -7,7 +7,8 @@ description: "A step card for the AHG 2026 Accessibility Agents workshop."
 
 # Step card 3: Your agent at work
 
-Block 3 of 7, 11:45 to 12:15.
+Block 3 of 7, 11:45 to 12:15 Mountain Time. Before this: block 2, Design your
+agent. Next: lunch, 12:15 to 1:15, then block 4, Ground it, at 1:15.
 
 ## Where we are
 
@@ -30,7 +31,7 @@ and the open kit.
 ### In a browser
 
 1. In the same conversation as block 2, paste the text for "Block 3: your agent
-   at work" from letitglow.app/ahg/assistant, and press Enter.
+   at work" from [letitglow.app/ahg/assistant](https://letitglow.app/ahg/assistant), and press Enter.
 2. Your assistant uses your agent from block 2. If it asks for your agent, paste
    it, or open your downloaded SKILL.md and copy it from there.
 3. Choose a file from the PSY 101 sample course. Your assistant suggests the one
@@ -55,7 +56,7 @@ and the open kit.
 
 ### Then make the next version, in a browser
 
-1. Return to letitglow.app/ahg/assistant. Under block 3, press "Copy the review
+1. Return to [letitglow.app/ahg/assistant](https://letitglow.app/ahg/assistant). Under block 3, press "Copy the review
    text for block 3", then paste it in the same assistant conversation and press
    Enter.
 2. Read the twelve Yes or Not yet lines, then the one change it suggests and
@@ -99,7 +100,11 @@ You tested how your agent handles missing evidence, and made its instructions
 clearer. Keep the answer and version 2. After lunch, use the same file's report
 in block 4 and verify the new answer.
 
-## On Monday
+Before you leave for lunch at 12:15, answer two questions, with no name, at
+[letitglow.app/ahg/check-in](https://letitglow.app/ahg/check-in). It tells the
+helpers who to see first. Lunch ends at 1:15; come back to the same room.
+
+## Back at work
 
 Try your agent on one document from your own work, with nothing private in it.
 

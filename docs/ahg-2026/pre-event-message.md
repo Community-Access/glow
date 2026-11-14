@@ -85,7 +85,7 @@ agent local until sharing is approved.
 
 - A Windows or Mac laptop and its charger.
 - Headphones, if you use a screen reader. Read "If you use a screen
-  reader" in the [kit README](https://letitglow.app/ahg/kit) before the day.
+  reader" in the [kit README](https://letitglow.app/ahg/kit/README.md#if-you-use-a-screen-reader) before the day.
 - One real accessibility problem from your job. Nothing private: no student
   names, records or accommodation details. You will work on a sample course,
   and your problem is what makes your agent yours.

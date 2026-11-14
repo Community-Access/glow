@@ -230,7 +230,12 @@ def vscode_manual(web: bool) -> str:
         "or writes are denied, stop and record Blocked; use an approved browser or written route instead."
         if web else
         "Install and open [VS Code](https://code.visualstudio.com) if your institution permits it. "
-        "Sign in with your approved GitHub account through Accounts. Use File, Open Folder to open "
+        "Sign in with your approved GitHub account through Accounts. Import the AHG 2026 profile: open "
+        "File, then Preferences, then Profiles; open the menu on the New Profile button, choose Import "
+        "Profile, paste `https://letitglow.app/workshop/ahg-2026/ahg-2026.code-profile`, and choose Create. "
+        "If pasting the address does not work, [download the profile file]"
+        "(https://letitglow.app/workshop/ahg-2026/ahg-2026.code-profile), choose Select File instead, pick "
+        "the downloaded file and choose Create. Use File, Open Folder to open "
         "the extracted `ahg-2026-agent-kit` folder, not the ZIP or its parent. Trust only this reviewed workshop "
         "folder if Restricted Mode prevents access. If Copilot access or writes are unavailable, record Blocked."
     )

@@ -7,11 +7,14 @@ description: "A step card for the AHG 2026 Accessibility Agents workshop."
 
 # Step card 1: Why we are here
 
-Block 1 of 7, 10:30 to 11:05.
+Block 1 of 7, 10:30 to 11:05 Mountain Time, Monday 16 November, in Matchless
+at the Hilton Denver City Center. Next: block 2, Design your agent, at 11:05.
 
 ## Where we are
 
 Step 1 of 7: the problem. A course full of barriers, and a team too small.
+This block gets every laptop ready and shows where the day ends, so the next
+six blocks make sense.
 
 ## What you will have at the end
 
@@ -42,7 +45,7 @@ the kit open. Stay on your chosen path unless you need an approved fallback.
 
 ### In a browser
 
-1. Open letitglow.app/ahg/assistant in one tab, and your AI assistant, signed
+1. Open [letitglow.app/ahg/assistant](https://letitglow.app/ahg/assistant) in one tab, and your AI assistant, signed
    in, in another.
 2. Start a new conversation. Use this one conversation all day.
 3. Under "Block 1: the ready check", press the Copy button.
@@ -83,7 +86,7 @@ Raise a hand at any time. A helper comes to you.
 You are set up. Next, in block 2, describe one task and make your first agent at
 11:05. Bring your chosen role and one non-sensitive problem.
 
-## On Monday
+## Back at work
 
 The two rules travel with you: nothing private goes into any AI, and a person
 reviews everything an agent writes.

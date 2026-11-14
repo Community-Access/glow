@@ -21,6 +21,8 @@
   .skip-link:focus { top: 0.5rem; }
   header { border-bottom: 2px solid var(--line); padding: 0.75rem 0; }
   header p { margin: 0; font-weight: 700; }
+  .ahg-nav { list-style: none; padding: 0; margin: 0.5rem 0 0; display: flex; flex-wrap: wrap; gap: 0.25rem 1.25rem; }
+  .ahg-nav li + li { margin-top: 0; }
   main { padding: 0.5rem 0 3rem; }
   main:focus { outline: none; }
   h1 { font-size: 2.2rem; line-height: 1.2; margin: 1.25rem 0 1rem; }
@@ -68,6 +70,15 @@
 <header>
   <div class="wrap">
     <p><a href="https://letitglow.app/ahg">AHG 2026: Accessibility Agents</a></p>
+    <nav aria-label="Workshop pages">
+      <ul class="ahg-nav">
+        <li><a href="https://letitglow.app/ahg/paths">Choose a path</a></li>
+        <li><a href="https://letitglow.app/ahg/assistant">Browser path</a></li>
+        <li><a href="https://letitglow.app/ahg/kit">The kit</a></li>
+        <li><a href="https://letitglow.app/ahg/site">Sample course</a></li>
+        <li><a href="https://letitglow.app/ahg/share">Share your agent</a></li>
+      </ul>
+    </nav>
   </div>
 </header>
 <main id="main" tabindex="-1">

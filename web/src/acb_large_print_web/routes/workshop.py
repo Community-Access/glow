@@ -496,6 +496,24 @@ def _workshop_enabled() -> bool:
     return bool(get_flag("GLOW_ENABLE_WORKSHOP_MODE", True))
 
 
+_LOCAL_HOSTS = ("localhost", "127.0.0.1", "[::1]")
+
+
+def _public_url(endpoint: str, **values) -> str:
+    """An absolute address to print, speak or paste, always https in production.
+
+    GLOW runs behind a TLS-terminating proxy, so a plain
+    ``url_for(..., _external=True)`` sees the inner http request and printed
+    ``http://letitglow.app/...`` on the conference pages: the address people
+    paste into VS Code's Import Profile and read off the projected deck.
+    Local development keeps whatever scheme it was served on.
+    """
+    host = (request.host or "").split(":")[0].lower()
+    if host in _LOCAL_HOSTS or host.endswith(".localhost") or host.endswith(".test"):
+        return url_for(endpoint, _external=True, **values)
+    return url_for(endpoint, _external=True, _scheme="https", **values)
+
+
 def _lab_hub_enabled() -> bool:
     return bool(get_flag("GLOW_ENABLE_WORKSHOP_LAB_HUB", True))
 
@@ -2755,9 +2773,9 @@ def workshop_pulse_stream(session_code: str):
 def _short_url(session_code: str, *, number: int | None = None) -> str:
     """The short, sayable address for a session or one of its activities."""
     if number is None:
-        return url_for("shortlinks.short_session", session_code=session_code, _external=True)
-    return url_for(
-        "shortlinks.short_activity", session_code=session_code, number=number, _external=True
+        return _public_url("shortlinks.short_session", session_code=session_code)
+    return _public_url(
+        "shortlinks.short_activity", session_code=session_code, number=number
     )
 
 
@@ -3008,7 +3026,7 @@ def render_ahg_landing():
         abort(404)
     return render_template(
         "workshop/ahg_home.html",
-        profile_url=url_for("workshop.ahg_profile", _external=True),
+        profile_url=_public_url("workshop.ahg_profile"),
         step_cards=_ahg_step_cards(),
         schedule=agenda.ahg_schedule_rows(),
         deck_download_urls=_deck_download_urls("ahg-2026"),
@@ -3079,7 +3097,15 @@ def ahg_profile():
     path = kit / "ahg-2026.code-profile" if kit else None
     if path is None or not path.is_file():
         abort(404)
-    return send_file(str(path), mimetype="application/json", download_name="ahg-2026.code-profile")
+    response = send_file(
+        str(path), mimetype="application/json", download_name="ahg-2026.code-profile"
+    )
+    # VS Code's Import Profile fetches the address from its renderer, which is
+    # a browser: without this header the request fails with "Failed to fetch"
+    # (reported by a participant on 14 Nov 2026). The file is public and
+    # carries no cookie-dependent content, so any origin may read it.
+    response.headers["Access-Control-Allow-Origin"] = "*"
+    return response
 
 
 @workshop_bp.route("/ahg-2026/share", methods=["GET"])
@@ -3258,7 +3284,7 @@ def _ahg_assistant_text(kit: Path, key: str, title: str, command: str, short: st
         "key": key, "number": key.split("-", 1)[0], "short": short,
         "title": title, "command": command,
         "text": text, "kb": max(1, round(len(text.encode("utf-8")) / 1024)),
-        "raw_url": url_for("shortlinks.ahg_kit_raw", rel=f"any-assistant/{key}.txt", _external=True),
+        "raw_url": _public_url("shortlinks.ahg_kit_raw", rel=f"any-assistant/{key}.txt"),
     }
 
 
@@ -3272,12 +3298,29 @@ def render_ahg_assistant():
         _ahg_assistant_text(kit, key, title, command, "block " + key.split("-", 1)[0])
         for key, title, command in AHG_ASSISTANT_BLOCKS
     ) if b]
+    # Each block says when it runs and which step card goes with it, so a
+    # person arriving mid-day can tell where they are. Times come from the
+    # one agenda the deck and the landing page read.
+    day = agenda.ahg_blocks()
+    cards = {c["file"].split("-", 1)[0]: c["file"] for c in _ahg_step_cards()}
+    when = {}
+    for n in range(1, len(day) + 1):
+        card = cards.get(str(n), "")
+        when[str(n)] = {
+            "clock": day[n - 1].clock,
+            "card_rel": f"step-cards/{card[:-len('.docx')]}.md" if card.endswith(".docx") else "",
+        }
+    for b in blocks:
+        b.update(when.get(b["number"], {}))
     review = _ahg_assistant_text(kit, *AHG_ASSISTANT_REVIEW, "the review")
     aa_texts = [t for t in (
         _ahg_assistant_text(kit, key, title, entry, title)
         for key, title, entry in AHG_ASSISTANT_AA
     ) if t]
-    return render_template("workshop/ahg_assistant.html", blocks=blocks, review=review, aa_texts=aa_texts)
+    return render_template(
+        "workshop/ahg_assistant.html", blocks=blocks, review=review, aa_texts=aa_texts,
+        block6=when.get("6", {}),
+    )
 
 
 def render_ahg_paths():
@@ -3285,7 +3328,7 @@ def render_ahg_paths():
         abort(404)
     return render_template(
         "workshop/ahg_paths.html",
-        profile_url=url_for("workshop.ahg_profile", _external=True),
+        profile_url=_public_url("workshop.ahg_profile"),
     )
 
 
@@ -3316,7 +3359,7 @@ def render_ahg_kit_file(rel: str):
         "workshop/ahg_kit_file.html",
         rel=rel, title=title, front=front, body=body,
         plain=text if body is None else "", formats=kit_online.other_formats(kit, rel), raw_text=text,
-        raw_url=url_for("shortlinks.ahg_kit_raw", rel=rel, _external=True),
+        raw_url=_public_url("shortlinks.ahg_kit_raw", rel=rel),
     )
 
 
