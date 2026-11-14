@@ -64,7 +64,7 @@ Working time is 300 minutes, plus the hour for lunch.
 ### Optional closing demonstration, after the evaluation
 
 If the room can remain open, offer 4:30 to 4:40 for
-[ChatGPT Dots and Claude Duet](kit/closing-demo.md). Use its separate reading
+[ChatGPT Dots and Claude Duet](https://letitglow.app/ahg/kit/closing-demo.md). Use its separate reading
 slides, `kit/closing-demo.pptx`, and the same fictional evidence in both
 products. Demonstrate draft preparation, evidence limits and human approval, not
 access to a campus inbox. Rehearse access first; both products have eligibility
@@ -89,7 +89,7 @@ require a paid subscription or preview access.
   agent title aloud. Helpers watch the issues labelled needs-a-hand and go to
   those people first.
 - At the end of block 6, use the eight-minute presenter-led
-  [ChatGPT and GLOW MCP capstone](chatgpt-mcp-capstone.md) to show how coworkers
+  [ChatGPT and GLOW MCP capstone](https://letitglow.app/ahg/capstone) to show how coworkers
   can use reviewed instructions with shared tools on the fictional PSY 101
   announcement. Replace the optional shared-agent rerun if needed; do not
   extend the block or cut permission review. Preconfigure the account off
