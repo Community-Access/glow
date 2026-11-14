@@ -1,3 +1,10 @@
+---
+title: "ChatGPT walkthrough: paste text, do not attach files"
+lang: en
+author: "Jeff Bishop, University of Arizona, IT Accessibility Consultant"
+description: "A manual walkthrough for the AHG 2026 Accessibility Agents workshop."
+---
+
 # ChatGPT walkthrough: paste text, do not attach files
 
 ## Start here: what, why and where
@@ -234,7 +241,7 @@ RUN 1-ready-check
 ````````
 
 Next: follow 'How to save every version' using Practice template. Reopen it,
-then tell the assistant: I reopened practice-SKILL.md and verified its seven
+then tell the assistant: I reopened `practice-SKILL.md` and verified its seven
 headings. Only then continue to block 2. Sharing the practice file is optional;
 see block 6 below.
 

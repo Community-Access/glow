@@ -172,7 +172,7 @@ Follow this in order to build an alternate format planner, improve it using fict
                 paste_steps((KIT / "any-assistant" / f"{key}.txt").read_text(encoding="utf-8"), key)]
         if key == "1-ready-check":
             out.append("Next: follow 'How to save every version' using Practice template. Reopen it, "
-                       "then tell the assistant: I reopened practice-SKILL.md and verified its seven headings. "
+                       "then tell the assistant: I reopened `practice-SKILL.md` and verified its seven headings. "
                        "Only then continue to block 2. Sharing the practice file is optional; see block 6 below.")
         elif key == "2-design-my-agent":
             out += [answers(DESIGN_ANSWERS),
@@ -202,7 +202,7 @@ Follow this in order to build an alternate format planner, improve it using fict
                     "worked example. Correct an unclear handoff, save the final plan, reopen it, then "
                     "confirm the review and save to the assistant. Do not call an unreviewed draft final."]
     out += [FINISH, fence((KIT / "examples" / "maria-alternate-format-planner.md").read_text(encoding="utf-8"))]
-    return format_prose("\n\n".join(out))
+    return _front_matter(format_prose("\n\n".join(out)))
 
 
 def sharing() -> str:
@@ -299,7 +299,19 @@ def vscode_manual(web: bool) -> str:
                     "run-the-office", "review-my-agent", "my-30-day-plan"):
         out += [f"### Instructions for /{command}",
                 fence((KIT / ".github" / "skills" / command / "SKILL.md").read_text(encoding="utf-8"))]
-    return format_prose("\n\n".join(out))
+    return _front_matter(format_prose("\n\n".join(out)))
+
+
+def _front_matter(text: str) -> str:
+    """Same front matter as the step cards: the Markdown audit wants a title
+    and language, and the library build stops without it."""
+    title = text.splitlines()[0].lstrip("# ").strip().replace('"', "'")
+    return (
+        f'---\ntitle: "{title}"\nlang: en\n'
+        'author: "Jeff Bishop, University of Arizona, IT Accessibility Consultant"\n'
+        'description: "A manual walkthrough for the AHG 2026 Accessibility Agents workshop."\n'
+        "---\n\n" + text
+    )
 
 
 def write_manuals() -> list[Path]:

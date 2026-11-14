@@ -20,7 +20,7 @@ own assistive technology, including a braille display, remains welcome.
 Every path leads to an agent, a team report and a plan. Sharing on GitHub is
 optional until public sharing is approved.
 [letitglow.app/ahg/paths](https://letitglow.app/ahg/paths) compares the paths;
-[your day at a glance](your-day-at-a-glance.md) maps the seven stops.
+[your day at a glance](https://letitglow.app/ahg/kit/your-day-at-a-glance.md) maps the seven stops.
 
 Use only campus-approved tools and data. If AI use or public sharing is not
 approved, use the worked examples in Word or on paper with a helper and keep
@@ -78,9 +78,9 @@ watch. After block 7: the commitment wall at 4:15, the session evaluation at
 ## What is in this folder
 
 For an exact manual rehearsal, use the complete
-[ChatGPT walkthrough](manual-walkthroughs/05-student-path-chatgpt.md),
-[VS Code desktop walkthrough](manual-walkthroughs/06-student-path-vscode-desktop.md)
-or [VS Code web walkthrough](manual-walkthroughs/07-student-path-vscode-web.md).
+[ChatGPT walkthrough](https://letitglow.app/ahg/kit/manual-walkthroughs/05-student-path-chatgpt.md),
+[VS Code desktop walkthrough](https://letitglow.app/ahg/kit/manual-walkthroughs/06-student-path-vscode-desktop.md)
+or [VS Code web walkthrough](https://letitglow.app/ahg/kit/manual-walkthroughs/07-student-path-vscode-web.md).
 Each includes every input, expected output and blank result fields, with an
 offline HTML copy beside it. These are test scripts, not a claim that a
 particular assistant or environment has passed.

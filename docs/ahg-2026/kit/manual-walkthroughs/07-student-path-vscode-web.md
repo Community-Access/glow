@@ -1,3 +1,10 @@
+---
+title: "VS Code for the Web walkthrough: commands, exact answers and saved results"
+lang: en
+author: "Jeff Bishop, University of Arizona, IT Accessibility Consultant"
+description: "A manual walkthrough for the AHG 2026 Accessibility Agents workshop."
+---
+
 # VS Code for the Web walkthrough: commands, exact answers and saved results
 
 ## Start here
