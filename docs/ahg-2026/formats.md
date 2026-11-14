@@ -2,9 +2,7 @@
 title: "AHG 2026 participant documents, in every format"
 lang: en
 author: "Jeff Bishop, University of Arizona, IT Accessibility Consultant"
-description:
-  "Every document a participant receives, the formats each comes in, how they
-  are built and checked, and why some files have no copies."
+description: "Every document a participant receives, the formats each comes in, how they are built and checked, and why some files have no copies."
 ---
 
 # AHG 2026 participant documents, in every format

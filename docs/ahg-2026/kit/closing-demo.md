@@ -2,9 +2,7 @@
 title: "Closing demo: ChatGPT Dots and Claude Duet"
 lang: en
 author: "Community Access"
-description:
-  "An optional, ten-minute demonstration of bounded AI delegation, evidence and
-  human approval."
+description: "An optional, ten-minute demonstration of bounded AI delegation, evidence and human approval."
 ---
 
 # Closing demo: ChatGPT Dots and Claude Duet

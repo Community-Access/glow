@@ -2,8 +2,7 @@
 title: "AHG test folder: full instructions"
 lang: en
 author: "Community Access"
-description:
-  "Complete instructions for the numbered teacher and student rehearsal."
+description: "Complete instructions for the numbered teacher and student rehearsal."
 ---
 
 # AHG test folder: full instructions

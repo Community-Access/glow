@@ -2,9 +2,7 @@
 title: "Monday readiness: evidence and sign-off"
 lang: en
 author: "Community Access"
-description:
-  "Required observations, evidence and final release decision for the AHG
-  rehearsal."
+description: "Required observations, evidence and final release decision for the AHG rehearsal."
 ---
 
 # Monday readiness: evidence and sign-off

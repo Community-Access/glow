@@ -202,7 +202,7 @@ Follow this in order to build an alternate format planner, improve it using fict
                     "worked example. Correct an unclear handoff, save the final plan, reopen it, then "
                     "confirm the review and save to the assistant. Do not call an unreviewed draft final."]
     out += [FINISH, fence((KIT / "examples" / "maria-alternate-format-planner.md").read_text(encoding="utf-8"))]
-    return format_prose("\n\n".join(out))
+    return _front_matter(format_prose("\n\n".join(out)))
 
 
 def sharing() -> str:
@@ -299,7 +299,19 @@ def vscode_manual(web: bool) -> str:
                     "run-the-office", "review-my-agent", "my-30-day-plan"):
         out += [f"### Instructions for /{command}",
                 fence((KIT / ".github" / "skills" / command / "SKILL.md").read_text(encoding="utf-8"))]
-    return format_prose("\n\n".join(out))
+    return _front_matter(format_prose("\n\n".join(out)))
+
+
+def _front_matter(text: str) -> str:
+    """Same front matter as the step cards: the Markdown audit wants a title
+    and language, and the library build stops without it."""
+    title = text.splitlines()[0].lstrip("# ").strip().replace('"', "'")
+    return (
+        f'---\ntitle: "{title}"\nlang: en\n'
+        'author: "Jeff Bishop, University of Arizona, IT Accessibility Consultant"\n'
+        'description: "A manual walkthrough for the AHG 2026 Accessibility Agents workshop."\n'
+        "---\n\n" + text
+    )
 
 
 def write_manuals() -> list[Path]:
@@ -311,16 +323,6 @@ def write_manuals() -> list[Path]:
         ("07-student-path-vscode-web", vscode_manual(True)),
     ):
         source = MANUALS / f"{name}.md"
-        if not text.startswith("---\n"):
-            # Same front matter as the step cards: the Markdown audit wants
-            # a title and language, and the library build stops without it.
-            title = text.splitlines()[0].lstrip("# ").strip().replace('"', "'")
-            text = (
-                f'---\ntitle: "{title}"\nlang: en\n'
-                'author: "Jeff Bishop, University of Arizona, IT Accessibility Consultant"\n'
-                'description: "A manual walkthrough for the AHG 2026 Accessibility Agents workshop."\n'
-                "---\n\n" + text
-            )
         source.write_text(text, encoding="utf-8")
         target = source.with_suffix(".html")
         ahg_formats.write_html(ahg_formats.read(source.relative_to(ahg_formats.AHG).as_posix()), target)

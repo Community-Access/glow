@@ -2,9 +2,7 @@
 title: "Run of show: Accessibility Agents at AHG 2026"
 lang: en
 author: "Jeff Bishop, University of Arizona, IT Accessibility Consultant"
-description:
-  "The AHG 2026 workshop day by the clock, with commands, pacing rules,
-  fallbacks and pre-flight."
+description: "The AHG 2026 workshop day by the clock, with commands, pacing rules, fallbacks and pre-flight."
 ---
 
 # Run of show: Accessibility Agents at AHG 2026
