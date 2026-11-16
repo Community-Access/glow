@@ -12,6 +12,8 @@ left elsewhere in `docs/`.
 
 ## Read in this order
 
+For presenting, start with the [complete slide-by-slide presenter script](presenter-slide-script.md), also available as [standalone HTML](presenter-slide-script.html). Participants can follow and take home the [guided course companion](kit/guided-course-companion.md). After editing the presenter script, regenerate its HTML with `python scripts/build_ahg_presenter.py` from the repository root, with the project source paths configured.
+
 On 9 October 2026 the workshop was redesigned to keep every promise in the
 published AHG program. Everything below is current unless marked September.
 `scripts/check_material_conformance.py` checks the materials against the

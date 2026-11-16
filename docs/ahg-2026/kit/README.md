@@ -108,6 +108,7 @@ This list follows the folders in the Explorer, top to bottom.
 | `glossary.md`                        | The words used today, one line each                                                                                                                                                                 |
 | `session-in-plain-language.md`       | The workshop in about 150 words, to pass on                                                                                                                                                         |
 | `your-day-at-a-glance.md`            | The seven stops, where to work and what to keep                                                                                                                                                     |
+| `guided-course-companion.md`        | The full guided journey, with questions, examples, what to keep and how to repeat the work afterward                                                                                                 |
 | `write-your-own-agent.md`            | The full tutorial: write, test, ground, revise and share an agent on your own, in any assistant                                                                                                     |
 
 ## You cannot fall behind

@@ -32,6 +32,33 @@ is for block 6.
 2. Think of one real problem from your job. Nothing private: no student names,
    records or accommodation details.
 
+## The six questions, together
+
+Jeff will walk through these with Maria's example, then you can answer them for
+your own agent. Your assistant may phrase them differently or move at a
+different pace. Short answers are fine; you can change them later.
+
+1. Role: Who is the agent, and who will use its work? Example: an
+   alternate format planner working for a disability resource specialist.
+2. Task: What one job should it do, and what input does it need? Example:
+   use a checker report and a generic format requirement to draft a plan.
+3. Trusted guidance: Which standards or approved procedures should it use
+   and cite? Example: WCAG 2.2 and the ACB Large Print Guidelines. If you do
+   not know a specific criterion, say so and verify it later.
+4. Output format: What should it give back, and in what shape? Example: a
+   short problem statement, numbered steps with responsible roles, and a
+   review checklist.
+5. Example: What would one useful answer look like? Example: obtain clean
+   text from a scanned reading, then plan large print and audio from that text.
+6. Human review: Who checks the draft, and what must they check before it
+   is used? Example: the alternate format specialist checks the text against
+   the original; the student confirms the format works for them.
+
+Use fictional or non-sensitive information in your answers. If a question is
+hard, borrow and adapt the example or ask a helper. Keep your answers in your
+assistant conversation or write them on paper; you do not have to share them
+with the room.
+
 ### In a browser
 
 1. On [letitglow.app/ahg/assistant](https://letitglow.app/ahg/assistant), under "Block 2: design your agent", press the
