@@ -13,7 +13,7 @@ Speak into the microphone, repeat audience contributions, describe what you show
 
 ## Direct addresses to give the room
 
-These are the public addresses to display, read aloud or share in the meeting chat. The companion and updated card must be deployed before their public links show this revision. The HTML copy of this script is usable offline; online tools and links need a connection.
+These are the public addresses to display, read aloud or share in the meeting chat. The HTML copy of this script is usable offline; online tools and links need a connection.
 
 - Starting point and downloadable kit: [https://letitglow.app/ahg](https://letitglow.app/ahg)
 - Choose a path: [https://letitglow.app/ahg/paths](https://letitglow.app/ahg/paths)
@@ -30,6 +30,8 @@ These are the public addresses to display, read aloud or share in the meeting ch
 ## Before 10:30
 
 Open the [39-slide deck](https://letitglow.app/ahg/slides), [workshop home](https://letitglow.app/ahg), [assistant page](https://letitglow.app/ahg/assistant), sample course, share page and commitment wall. Have the kit, Maria's example, your demo chat and a labelled saved capstone fallback ready. Confirm the microphone, captions, clock, helper assignments and projector. Ask RaLynn to begin on slide 1 and advance only on your cue. The setup table opens at 10:00.
+
+**How to rehearse from this one file:** Read each slide section in order. The **Words to say** are your narration; **Show**, **Do**, **Ask**, **Debrief**, and timed instructions tell you what happens next. Every transition through slide 38 has a **Cue** for RaLynn. The [file and prompt desk reference](#file-and-prompt-desk-reference) at the end identifies exact kit paths and contains the complete browser and capstone setup texts in this HTML. Expand the needed prompt and use its Copy button, or select its text manually. The presenter must still switch to the assistant or sample page when actually demonstrating it; participants use their own paths. The original prompt files are in the kit too.
 
 For the capstone, prepare the authorized ChatGPT connection, fictional announcement source and reviewed instructions in advance; test the actual tools and keep the fallback available. The [capstone guide](https://letitglow.app/ahg/capstone) has the setup and source. If readiness is unverified, use its labelled recorded or written demonstration. The prompts and direct-test fallback are included at the end of this script.
 
@@ -120,6 +122,8 @@ For the capstone, prepare the authorized ChatGPT connection, fictional announcem
 
 **Give participants:** [Step card 0: https://letitglow.app/ahg/kit/step-cards/0-before-the-day.md](https://letitglow.app/ahg/kit/step-cards/0-before-the-day.md) and [browser prompts: https://letitglow.app/ahg/assistant](https://letitglow.app/ahg/assistant).
 
+**Presenter prompt:** VS Code: `/ready-check`. Browser: [open the complete ready-check prompt in this file](#browser-prompt-1). The source in the kit is `any-assistant/1-ready-check.txt`.
+
 **Show:** In VS Code, open the kit and Copilot Chat with Control+Alt+I on Windows or Control+Command+I on Mac. Run `/ready-check`. Describe the response and save/reopen the practice file.
 
 
@@ -173,6 +177,8 @@ For the capstone, prepare the authorized ChatGPT connection, fictional announcem
 
 **Ask:** "Which part comes from your experience?" Take a brief response: the instructions and review reflect their expertise.
 
+**Debrief — say:** “Your experience tells the assistant what a useful result should contain, which sources matter and what a reviewer must check. The model supplies language; it does not know your local process unless you provide appropriate instructions.”
+
 **Cue:** "Slide 12, please."
 
 ### Slide 12. The instructions are six answers | 10:56-11:00
@@ -198,6 +204,8 @@ For the capstone, prepare the authorized ChatGPT connection, fictional announcem
 
 
 **Ask:** "What would you want a person to check before a draft reaches a student or colleague?" Take one response.
+
+**If needed — say:** “For example, compare the finding with the actual file and report, open its citation, and check whether the proposed action fits the student’s situation. If evidence is missing, mark that point for review instead of filling the gap with a guess.”
 
 **Cue:** "Slide 14, please."
 
@@ -240,6 +248,8 @@ For the capstone, prepare the authorized ChatGPT connection, fictional announcem
 
 **Show:** Run `/design-my-agent` in Copilot Chat, or use the block 2 browser text. Follow the assistant's actual prompts; if it phrases or orders them differently, identify each of the six answers as it arises. Read the following aloud and enter the corresponding answer:
 
+**Exact browser demonstration prompt:** [Open the complete design prompt in this file](#browser-prompt-2); its kit source is `any-assistant/2-design-my-agent.txt`. Use the same approved assistant conversation. The full worked agent is `examples/maria-alternate-format-planner.md`; for the ready-made skill use `examples/agents/alternate-format-planner/SKILL.md`.
+
 1. **Role — say:** "Who is this agent, and who does it work for? Maria's answer is: 'You are an alternate-format planner working for a disability resource specialist.' This gives the assistant a perspective and tells it who needs the result. It does not mean the assistant is a real specialist."
 2. **Task — say:** "What one job does it do, and what does it need? Maria says: 'Given a checker report and a generic format requirement, draft a plan for producing those formats.' The report and requirement are inputs; the plan is the output. Keeping the task narrow makes it easier to test."
 3. **Trusted guidance — say:** "What should it use and cite? Maria names WCAG 2.2, including 1.4.5 and 1.1.1 where relevant, the ACB Large Print Guidelines and her center's approved procedure. Naming a source gives the reviewer somewhere to check a claim. It does not make every citation correct: we still verify that the criterion actually applies and that the procedure can be used in the approved assistant."
@@ -262,6 +272,8 @@ For the capstone, prepare the authorized ChatGPT connection, fictional announcem
 “I will say each of the six questions and give you an example. Your assistant may ask in a different order; keep going at your own pace. The goal is a complete first draft, not perfection.”
 
 **Give participants:** [Step card 2: https://letitglow.app/ahg/kit/step-cards/2-design-your-agent.md](https://letitglow.app/ahg/kit/step-cards/2-design-your-agent.md) and [Maria's full example: https://letitglow.app/ahg/kit/examples/maria-alternate-format-planner.md](https://letitglow.app/ahg/kit/examples/maria-alternate-format-planner.md).
+
+**For your reference:** `/design-my-agent` or [the complete block 2 browser prompt](#browser-prompt-2). If an assistant forgets the agent later, give it the latest saved complete agent as a separate message before continuing.
 
 
 **Guide the room:** Allow roughly 16 minutes. Say each question and its example below about two to three minutes apart, whether or not someone asks for help. Pause after each so participants can answer. People may proceed at their own pace if their assistant is ahead or behind. Helpers sit with anyone stuck; nobody must speak publicly.
@@ -292,6 +304,8 @@ For the capstone, prepare the authorized ChatGPT connection, fictional announcem
 “Do not give it a checker report yet. If it does not have evidence, a good agent asks for it instead of guessing. Save the filename and the first answer so we can compare them after lunch. If you are behind, use a ready-made agent: the lesson is the same. The steps are at [https://letitglow.app/ahg/kit/step-cards/3-your-agent-at-work.md](https://letitglow.app/ahg/kit/step-cards/3-your-agent-at-work.md).”
 
 **Give participants:** [Step card 3: https://letitglow.app/ahg/kit/step-cards/3-your-agent-at-work.md](https://letitglow.app/ahg/kit/step-cards/3-your-agent-at-work.md) and [sample files: https://letitglow.app/ahg/kit#sample-course](https://letitglow.app/ahg/kit#sample-course).
+
+**Files and prompts:** The worked Maria choice is `sample-course/psy101-reading-forgetting-scanned.pdf`. Participants may choose another file from the [sample file and evidence map](#sample-file-and-evidence-map). VS Code: `/try-my-agent`, then `/review-my-agent`. Browser: [complete block 3 prompt](#browser-prompt-3), then [complete review prompt](#browser-prompt-review). Do not supply the matching checker report until block 4. In VS Code, save the first answer and filename in `my-agent/workshop-notes.md`; on the browser path, save them in a local notes document.
 
 **Say:** "PSY 101 is fictional and its barriers are deliberate. Your goal is a first answer and version 2. A request for missing evidence is a good result."
 
@@ -342,6 +356,8 @@ For the capstone, prepare the authorized ChatGPT connection, fictional announcem
 
 **Give participants:** [Step card 4: https://letitglow.app/ahg/kit/step-cards/4-ground-it.md](https://letitglow.app/ahg/kit/step-cards/4-ground-it.md) and [sample files and checker reports: https://letitglow.app/ahg/kit#sample-course](https://letitglow.app/ahg/kit#sample-course).
 
+**Files and prompts:** For Maria's scanned reading, use `sample-course/evidence/psy101-reading-forgetting-scanned.txt`; for another choice, use its matching report in the [file map](#sample-file-and-evidence-map). VS Code: `/ground-my-agent`, then `/review-my-agent`. Browser: [complete block 4 prompt](#browser-prompt-4), then [complete review prompt](#browser-prompt-review). The browser block text already includes the reports; participants still name their same selected file.
+
 
 **Do:** Participants run `/ground-my-agent`, or paste block 4 text. The evidence is the supplied GLOW report for documents or axe report for the web page. Read the new answer and compare it with the saved first answer. Save the grounded answer and comparison. If the first answer was lost, mark the comparison incomplete.
 
@@ -360,6 +376,8 @@ For the capstone, prepare the authorized ChatGPT connection, fictional announcem
 
 **Ask:** "What changed when evidence was supplied? What still needs a person?" Take one or two responses and, with permission, one participant's actual comparison. Verify the cited source together if feasible.
 
+**Debrief — say:** “The later answer can name the report instead of guessing about the file. A reviewer still checks that the report describes this file, that the citation supports the claim, and that the proposed clean text and formats work. If the original answer is missing, we cannot invent the before side.”
+
 **Cue:** "Slide 23, please."
 
 ### Slide 23. Any checker, and a person | 1:52-2:05
@@ -373,6 +391,8 @@ For the capstone, prepare the authorized ChatGPT connection, fictional announcem
 **Reinforce:** “The same practice works with the evidence from other approved checkers.” "A checker result is evidence about what it checked, not proof that everything passed."
 
 **Optional show:** If time and Word are available, open the fictional syllabus, choose Review, then Check Accessibility, and describe the result. Otherwise discuss one example. **Ask:** "Which of these would a checker miss in your work?" Take one response.
+
+**For the demonstration:** Open `sample-course/psy101-syllabus.docx` in Word; choose **Review**, then **Check Accessibility**. Read only the findings actually displayed. **Debrief — say:** “A checker may notice that an image has alternative text, but a person must judge whether the words describe the image’s purpose. The same distinction applies to captions and a policy’s meaning.”
 
 **Close:** "Keep version 3 and your evidence. After the break your agent joins the team."
 
@@ -399,6 +419,8 @@ For the capstone, prepare the authorized ChatGPT connection, fictional announcem
 
 **Give participants:** [Step card 5: https://letitglow.app/ahg/kit/step-cards/5-build-the-office.md](https://letitglow.app/ahg/kit/step-cards/5-build-the-office.md) and [office team: https://letitglow.app/ahg/kit#office-team](https://letitglow.app/ahg/kit#office-team).
 
+**Files and prompts:** The course is in `sample-course/`; its supplied reports are in `sample-course/evidence/`. VS Code: `/run-the-office`, then `/review-my-agent`. Browser: [complete block 5 prompt](#browser-prompt-5), then [complete review prompt](#browser-prompt-review). The browser block carries the specialist instructions and reports. If it stops, say “continue” and wait; do not describe an unfinished report as complete.
+
 
 **Do:** Participants run `/run-the-office`, or paste block 5 text. If it stops, ask it to continue. Read the report, find their agent's contribution, and check its evidence and human reviewer. Save the complete report in workshop notes.
 
@@ -417,6 +439,8 @@ For the capstone, prepare the authorized ChatGPT connection, fictional announcem
 **Say:** "Look for an evidence source, a relevant WCAG link, a reviewer and what the evidence cannot establish. Seven sample files demonstrate the method; they do not prove production throughput. A report that leaves out a source or reviewer gives us a reason to pause and improve it, not a reason to invent one."
 
 **Ask:** "What would it take to do this across ten courses? Where would human review time go?" Take two responses. "Errors, review time and deadlines determine whether a pilot can grow."
+
+**If the room needs a starting point — say:** “We would need permission to use the materials, enough reviewer time, a way to track the source and owner of each finding, and a plan for what happens when evidence is missing. Measure the whole workflow before increasing the number of courses.”
 
 **Cue:** "Slide 27, please."
 
@@ -498,6 +522,8 @@ For the capstone, prepare the authorized ChatGPT connection, fictional announcem
 
 **Give participants:** [Fictional announcement: https://letitglow.app/ahg/site/psy101-announcement.html](https://letitglow.app/ahg/site/psy101-announcement.html) and [capstone guide: https://letitglow.app/ahg/capstone](https://letitglow.app/ahg/capstone).
 
+**Before the room opens:** Use an authorized account and approved scope. The endpoint is `https://letitglow.app/a11y/mcp`. In a fresh chat, select the prepared connection, send the [reviewed agent instructions](#browser-prompt-capstone-agent), then send the [source message with the complete fictional HTML](#browser-prompt-capstone-source). The local source is `sample-course/psy101-announcement.html`, opened as text, not the rendered page. Test the connection with the [exact smoke prompt](#browser-prompt-capstone-smoke); retain the actual result or the labelled fallback below. This guide contains the exact tool and coaching requests at the end. Connection setup and account permissions are explained in the linked capstone guide; do not change workspace access during the workshop.
+
 **Show:** Describe the fictional announcement and the prepared chat containing the reviewed agent instructions and complete source HTML. Select the GLOW connection. Send the tool request in the capstone prompts at the end of this script to call `check_heading_structure`, `check_link_text` and `check_contrast` for `#b5b5b5` on `#ffffff`.
 
 **Say and do:** Expand each actual tool result and read its name and result. The direct-test baseline is one heading jump, two ambiguous links and approximately 2.05:1 contrast; report actual results if different. These tools examine supplied HTML or colors; they do not crawl the site. If a call stalls for 45 seconds or fails, stop and show the labelled recorded rehearsal or written direct-test baseline. Do not present it as a live ChatGPT result.
@@ -515,6 +541,8 @@ For the capstone, prepare the authorized ChatGPT connection, fictional announcem
 **Show:** Send the coaching request in the capstone prompts at the end of this script. Review the draft aloud: evidence and suggested fixes, relevant criteria and a human-review checklist. Ask: "Which part came from a tool, and which part still needs a person?" Take one brief response. Nothing is sent or changed.
 
 On the fictional page, use Tab to try to reach the reflection control without activating it. Describe what actually happens. "The three tools did not test keyboard or screen reader behavior. A heading jump is a warning to review in context, not automatic proof of failure. No result means not checked."
+
+**Debrief — say:** “The tool result is evidence for its particular check. A suggested replacement link label is a draft that someone compares with the destination. Keyboard operation and the screen reader experience require separate testing, and the instructor or accessibility specialist reviews the coaching note before anything is sent.”
 
 **Cue:** "Slide 34, please."
 
@@ -540,6 +568,8 @@ On the fictional page, use Tab to try to reach the reflection control without ac
 “Later we will put a one-sentence commitment on the wall at [https://letitglow.app/w/ahg-2026/11](https://letitglow.app/w/ahg-2026/11), without names or private information. If you are behind, adapt a worked example with a helper. The card is [https://letitglow.app/ahg/kit/step-cards/7-take-it-home.md](https://letitglow.app/ahg/kit/step-cards/7-take-it-home.md). First, let’s hear Maria’s plan, then I will guide you through eight questions.”
 
 **Give participants:** [Step card 7: https://letitglow.app/ahg/kit/step-cards/7-take-it-home.md](https://letitglow.app/ahg/kit/step-cards/7-take-it-home.md) and [browser prompts: https://letitglow.app/ahg/assistant](https://letitglow.app/ahg/assistant).
+
+**Presenter prompt:** VS Code: `/my-30-day-plan`. Browser: [complete block 7 prompt](#browser-prompt-7), from `any-assistant/7-my-30-day-plan.txt`. The worked plan is in `examples/maria-alternate-format-planner.md`; the participant card is `step-cards/7-take-it-home.md`.
 
 **First five minutes:** Show Maria's 30-day plan in her worked example. Say: "Maria plans to draft production plans for up to five approved non-sensitive scanned readings alongside the existing process. Staff keep student details in the case system. A specialist checks each draft. The director and privacy team must first confirm the assistant and permitted data, so approval is pending. Maria rehearses on the fictional reading and records baseline staff and review time. At day 30 the specialist and director compare total time, corrections and on-time delivery, then decide whether to continue. Private data, an uncertain source or a threatened deadline stops the pilot. An accommodation is never delayed for it." Point to the reviewer, approval and stop rule as you describe them.
 
@@ -622,6 +652,14 @@ On the fictional page, use Tab to try to reach the reflection control without ac
 
 Prepare the authorized connection and a fresh chat with the reviewed faculty-coach instructions and the complete fictional announcement source before the room opens. The [capstone guide](https://letitglow.app/ahg/capstone) contains those preparation steps and the full source. Keep a saved successful rehearsal result or this direct-test baseline available offline. Do not change accounts or workspace permissions in front of the room.
 
+### Capstone setup before participants arrive
+
+1. Confirm your presenter account and workspace allow a custom MCP connection and that sending the fictional source to ChatGPT and GLOW is approved. Do this before sharing your screen. If access or approval is missing, use the written fallback below.
+2. In the current ChatGPT Plugins interface, choose **Add**, then **Add custom MCP server**. Name it `GLOW Accessibility - AHG Demo` and enter `https://letitglow.app/a11y/mcp` as the remote HTTPS endpoint. The documented public endpoint used **No authentication**; if that has changed, stop and confirm the current requirements rather than entering unrelated credentials. Review the warning and tools, acknowledge the warning, choose **Create as a plugin**, then connect it. Interface labels can change; use the [connection help](https://letitglow.app/accessibility-agents) or the [full capstone guide](https://letitglow.app/ahg/capstone) if they differ.
+3. Confirm `check_heading_structure`, `check_link_text` and `check_contrast` appear. Do not assume the whole server is read-only: it may offer other actions. Approve only the intended checks and fictional input; decline unrelated or write actions. Keep the connection private for rehearsal unless workspace publication has separately been approved.
+4. Start a fresh chat, select the connection, and send the [smoke-test prompt](#browser-prompt-capstone-smoke). Open the actual tool result; the direct-test reference is about 2.05:1. A model's answer without a visible tool result is not a successful test. If it fails, prepare the fallback.
+5. In another fresh chat, select the connection and send the [reviewed agent instructions](#browser-prompt-capstone-agent). Then send the [source message and complete announcement HTML](#browser-prompt-capstone-source). Wait for acknowledgment. The source is also in `sample-course/psy101-announcement.html`; preserve it unchanged. At the demonstration, select the connection again if needed and use the exact tool request below. Save a dated actual rehearsal result as a fallback if available.
+
 ### Tool request for slide 32
 
 Select the prepared GLOW connection and send:
@@ -664,3 +702,34 @@ This is a draft for a person to review, not a message to send.
 Say: "The live connection did not produce a result. I will show a direct server test from 13 November, not a live ChatGPT check." Read this baseline: the heading tool reported one jump from h1 to h4; the link tool reported "Click here" and "Read more"; the contrast tool measured approximately 2.05:1 for the stated colors, below the 4.5:1 normal-text threshold. This does not establish keyboard access, screen reader behavior or the accessibility of the whole course. If available, show an actual saved rehearsal instead and label it with its date and scope.
 
 Say: "A useful coaching draft would identify those measured results, propose descriptive link labels such as 'Week 3 lecture slides' and 'Updated PSY 101 syllabus', and ask a person to inspect heading relationships and test the reflection control. A person reviews the source and draft before anything is sent." These are illustrative recommendations, not a recorded ChatGPT answer.
+
+## File and prompt desk reference
+
+Paths below are relative to the extracted workshop kit folder. The HTML embeds the complete browser texts, so you can open a prompt here, expand it and copy it without first opening the assistant page. The assistant itself and a live demonstration still need their own window or tab. Browser participants can use the copy buttons at [https://letitglow.app/ahg/assistant](https://letitglow.app/ahg/assistant).
+
+- Ready check, slide 7: `any-assistant/1-ready-check.txt`; [ready-check prompt in this HTML](#browser-prompt-1); VS Code `/ready-check`.
+- Design, slides 16 and 17: `any-assistant/2-design-my-agent.txt`; [design prompt in this HTML](#browser-prompt-2); VS Code `/design-my-agent`.
+- First test, slide 18: `any-assistant/3-try-my-agent.txt`; [try prompt in this HTML](#browser-prompt-3); VS Code `/try-my-agent`.
+- Grounding, slide 21: `any-assistant/4-ground-my-agent.txt`; [grounding prompt in this HTML](#browser-prompt-4); VS Code `/ground-my-agent`.
+- Office, slide 25: `any-assistant/5-run-the-office.txt`; [office prompt in this HTML](#browser-prompt-5); VS Code `/run-the-office`.
+- Review after blocks 3, 4 and 5: `any-assistant/review-my-agent.txt`; [review prompt in this HTML](#browser-prompt-review); VS Code `/review-my-agent`.
+- Plan, slide 35: `any-assistant/7-my-30-day-plan.txt`; [plan prompt in this HTML](#browser-prompt-7); VS Code `/my-30-day-plan`.
+- Capstone, slides 31 to 34: [connection smoke test](#browser-prompt-capstone-smoke), [reviewed faculty-coach instructions](#browser-prompt-capstone-agent), and [source message with the complete announcement HTML](#browser-prompt-capstone-source). The tool and coaching requests are immediately above this desk reference.
+
+### Sample file and evidence map
+
+For the first test, choose a file from `sample-course/` and save its name and first answer without the report. For grounding, use the matching file from `sample-course/evidence/`; the browser grounding prompt contains the reports. Do not treat a report as proof of the whole file's accessibility.
+
+- Scanned reading: `sample-course/psy101-reading-forgetting-scanned.pdf`; report `sample-course/evidence/psy101-reading-forgetting-scanned.txt`. This is Maria's worked example.
+- Syllabus: `sample-course/psy101-syllabus.docx`; report `sample-course/evidence/psy101-syllabus.txt`.
+- Lecture slides: `sample-course/psy101-week3-lecture.pptx`; report `sample-course/evidence/psy101-week3-lecture.txt`.
+- Gradebook: `sample-course/psy101-gradebook.xlsx`; report `sample-course/evidence/psy101-gradebook.txt`.
+- Lab: `sample-course/psy101-lab1-stroop.pdf`; report `sample-course/evidence/psy101-lab1-stroop.txt`.
+- Captions: `sample-course/psy101-week3-captions.vtt`; report `sample-course/evidence/psy101-week3-captions.txt`.
+- Web announcement: `sample-course/psy101-announcement.html`; report `sample-course/evidence/psy101-announcement.txt`. The capstone uses the complete HTML source, not this report alone.
+
+### Complete copy-ready browser and capstone setup prompts
+
+These are embedded from the kit and capstone guide when this HTML is built. Expand the relevant section to access its complete text. After blocks 3, 4 and 5 use the same review text in the same conversation, then save the numbered version. The browser prompt text may be attached as “Pasted text”; wait for the assistant to finish before sending the next message.
+
+PRESENTER_BROWSER_PROMPTS
