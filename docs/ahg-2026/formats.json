@@ -25,7 +25,7 @@
     },
     "kit/README.md": {
       "title": "Welcome to the AHG 2026 agent kit",
-      "sha256": "7e4f0b509a9245bba00059d824f2671e19b5ef2582746d780c09ca49a9b3297a",
+      "sha256": "6188e37f00c89de410017a4c9bd9e817f69c4ef14f2471fdf39dac4d1f6fe686",
       "formats": [
         "README.md",
         "read-me.html",
@@ -100,6 +100,17 @@
       ],
       "slides": 12
     },
+    "kit/guided-course-companion.md": {
+      "title": "Your guided course companion",
+      "sha256": "a3000fa7ded7fb2ab9dfaf236c0406791d8445fd3132e5477a959682324e1297",
+      "formats": [
+        "guided-course-companion.md",
+        "guided-course-companion.html",
+        "guided-course-companion.docx",
+        "guided-course-companion.pptx"
+      ],
+      "slides": 31
+    },
     "kit/write-your-own-agent.md": {
       "title": "Write your own accessibility agent: a tutorial",
       "sha256": "a594d5c1692e6fe9cd4576f15e8c79f85263a9988ff75197d3bec00bbbab9d27",
@@ -146,14 +157,14 @@
     },
     "kit/step-cards/2-design-your-agent.md": {
       "title": "Step card 2: Design your agent",
-      "sha256": "462befb1f7c72f47b638b6af8d20464ed51aaae2027930e1a8f14364b9f5dbf4",
+      "sha256": "7972d96997e8350ca1e7f30686a544b10775b3b3ec06d021ed2b7f482319d2ce",
       "formats": [
         "2-design-your-agent.md",
         "2-design-your-agent.html",
         "2-design-your-agent.docx",
         "2-design-your-agent.pptx"
       ],
-      "slides": 16
+      "slides": 18
     },
     "kit/step-cards/3-your-agent-at-work.md": {
       "title": "Step card 3: Your agent at work",

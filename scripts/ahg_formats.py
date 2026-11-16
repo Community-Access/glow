@@ -65,6 +65,7 @@ SOURCES: tuple[str, ...] = (
     "kit/glossary.md",
     "kit/session-in-plain-language.md",
     "kit/your-day-at-a-glance.md",
+    "kit/guided-course-companion.md",
     "kit/write-your-own-agent.md",
     "kit/closing-demo.md",
     "kit/step-cards/0-before-the-day.md",
